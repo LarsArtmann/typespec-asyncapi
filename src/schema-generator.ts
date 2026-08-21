@@ -1,7 +1,7 @@
 import { createAssetEmitter } from "@typespec/asset-emitter";
 import type { EmitContext } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions, JsonSchema } from "./domain/models/asyncapi-document.js";
-import { $lib } from "./lib.js";
+import { reportProgramDiagnostic } from "./decorator-helpers.js";
 import { collectAllStdlibNames } from "./stdlib-helpers.js";
 import { AsyncAPISchemaEmitter } from "./schema-emitter.js";
 
@@ -10,6 +10,17 @@ export function generateSchemas(
 ): Record<string, JsonSchema> {
   const schemas: Record<string, JsonSchema> = {};
   const stdlibNames = collectAllStdlibNames(context.program);
+
+  const report = (
+    code: "duplicate-schema-name" | "schema-generation-failed",
+    format: Record<string, string>,
+  ): void => {
+    reportProgramDiagnostic(context.program, {
+      code,
+      target: context.program.getGlobalNamespaceType(),
+      format,
+    });
+  };
 
   try {
     const assetEmitter = createAssetEmitter<JsonSchema, AsyncAPIEmitterOptions>(
@@ -30,16 +41,14 @@ export function generateSchemas(
         ) {
           continue;
         }
+        if (schemas[declaration.name] !== undefined) {
+          report("duplicate-schema-name", { name: declaration.name });
+        }
         schemas[declaration.name] = declaration.value as JsonSchema;
       }
     }
   } catch (error) {
-    $lib.reportDiagnostic(context.program, {
-      code: "schema-generation-failed",
-      messageId: "default",
-      target: context.program.getGlobalNamespaceType(),
-      format: { error: String(error) },
-    });
+    report("schema-generation-failed", { error: String(error) });
   }
 
   return schemas;

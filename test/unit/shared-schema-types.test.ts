@@ -256,8 +256,15 @@ describe("shared barrel public API surface", () => {
     expect(AsyncAPISchemaEmitter.prototype.modelDeclaration).toBeTypeOf(
       "function",
     );
-    expect(AsyncAPISchemaEmitter.prototype.union).toBeTypeOf("function");
-    expect(AsyncAPISchemaEmitter.prototype.enum).toBeTypeOf("function");
+    expect(AsyncAPISchemaEmitter.prototype.modelInstantiation).toBeTypeOf(
+      "function",
+    );
+    expect(AsyncAPISchemaEmitter.prototype.unionDeclaration).toBeTypeOf(
+      "function",
+    );
+    expect(AsyncAPISchemaEmitter.prototype.enumDeclaration).toBeTypeOf(
+      "function",
+    );
   });
 
   it("type exports are usable at compile time", () => {

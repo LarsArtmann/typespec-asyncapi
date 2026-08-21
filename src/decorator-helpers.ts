@@ -6,6 +6,7 @@ import type {
   DecoratorContext,
   DiagnosticTarget,
   Model,
+  Program,
 } from "@typespec/compiler";
 import { $lib } from "./lib.js";
 import { PROTOCOL_LIST } from "./constants/protocols.js";
@@ -13,6 +14,31 @@ import type { Tag } from "./domain/models/asyncapi-document.js";
 import type { MessageConfigData } from "./state.js";
 
 // === DIAGNOSTIC HELPERS ===
+
+/** Diagnostic fields for {@link reportProgramDiagnostic}. */
+export interface ProgramDiagnostic {
+  code: keyof typeof $lib.diagnostics;
+  target: unknown;
+  format?: Record<string, unknown>;
+  messageId?: string;
+}
+
+/**
+ * Report a diagnostic against a Program (for non-decorator call sites like
+ * the schema generator). The code must be declared in $lib.diagnostics
+ * (src/lib.ts) — TypeScript enforces this at compile time.
+ */
+export const reportProgramDiagnostic = (
+  program: Program,
+  diagnostic: ProgramDiagnostic,
+): void => {
+  $lib.reportDiagnostic(program, {
+    code: diagnostic.code,
+    format: diagnostic.format,
+    messageId: diagnostic.messageId as "default",
+    target: diagnostic.target as DiagnosticTarget,
+  });
+};
 
 /**
  * Report a decorator diagnostic using the library's registered diagnostic codes.
@@ -26,12 +52,7 @@ export const reportDiagnostic = (
   format?: Record<string, unknown>,
   messageId?: string,
 ): void => {
-  $lib.reportDiagnostic(context.program, {
-    code,
-    format,
-    messageId: messageId as "default",
-    target: target as DiagnosticTarget,
-  });
+  reportProgramDiagnostic(context.program, { code, target, format, messageId });
 };
 
 /** Shared diagnostic context shape for validate* guards. */

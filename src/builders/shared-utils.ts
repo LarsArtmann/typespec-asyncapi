@@ -23,6 +23,7 @@ import {
 } from "../constants/binding-versions.js";
 import { nameOfType } from "./types.js";
 import type { DocumentBuildContext } from "./types.js";
+import { schemaNameForType } from "../schema-ref.js";
 
 const OAUTH2_FLOW_KEYS = [
   "implicit",
@@ -172,9 +173,10 @@ export function resolveMessageKey(
   stateMessages: Map<Type, MessageConfigData>,
 ): string {
   const name =
-    "name" in modelType && typeof modelType.name === "string"
+    schemaNameForType(modelType) ??
+    ("name" in modelType && typeof modelType.name === "string"
       ? modelType.name
-      : "";
+      : "");
   const msgData = stateMessages.get(modelType);
   return msgData?.messageId ?? name;
 }

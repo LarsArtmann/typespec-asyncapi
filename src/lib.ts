@@ -88,6 +88,12 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "warning",
     },
+    "duplicate-schema-name": {
+      messages: {
+        default: paramMessage`Two schemas resolve to the same name '${"name"}' (e.g. a model named 'PageUser' colliding with a template instantiation 'Page<User>'). Rename one of them; the last declaration wins in the output.`,
+      },
+      severity: "warning",
+    },
     "server-protocol-required": {
       messages: {
         default: "Server protocol is required.",

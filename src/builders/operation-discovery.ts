@@ -22,6 +22,7 @@ import {
   type BuilderFn,
   type DocumentBuildContext,
 } from "./_imports.js";
+import { schemaNameForType } from "../schema-ref.js";
 
 /**
  * Discover all operations from three sources:
@@ -53,7 +54,9 @@ function resolveMessageInfo(
   }
   return {
     messageNames: models.map((m) => resolveMessageKey(m, state.messages)),
-    messageSchemaNames: models.map((m) => nameOfType(m) ?? fallbackName),
+    messageSchemaNames: models.map(
+      (m) => schemaNameForType(m) ?? nameOfType(m) ?? fallbackName,
+    ),
   };
 }
 

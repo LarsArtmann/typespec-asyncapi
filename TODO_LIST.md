@@ -41,9 +41,10 @@ Sorted by Pareto tier (P1 = the 1% that delivers 51%).
       $ref integrity, constraint sanity, determinism, split-schemas graph)
 - [ ] **P3: EFv1 containment** — `generateSchemas()` sole
       `@typespec/asset-emitter` seam + eslint no-restricted-imports guard
-- [ ] **P3: Stable template-instantiation names** — verify golden for
-      `Page<string>`-style instantiations; lock or implement `PageString`
-      naming with collision diagnostic
+- [x] **P3: Stable template-instantiation names** — DONE (M15): argument-derived
+      naming (`PageUser`, `BoxInt32`, `PagePageUser`) + `duplicate-schema-name`
+      collision diagnostic + inline-allOf for unspeakable bases; dangling `$ref`
+      bug fixed. Locked by `test/compliance/template-instantiations.test.ts`
 - [ ] **P3: Publish stable v0.3.0** — CHANGELOG, tag, verify, fresh-install
       smoke (only after all P2/P3 above are green)
 
