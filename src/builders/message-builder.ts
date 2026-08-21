@@ -6,23 +6,20 @@
  */
 
 import type { JsonSchema, MessageObject } from "../domain/models/asyncapi-document.js";
-import { refSchema } from "../domain/models/asyncapi-document.js";
 import type { Program, Type } from "@typespec/compiler";
 import { getDoc, getExamples, nameOfType, serializeValueAsJson, withMessage } from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
-import { iterNamedTypes, resolveMessageKey } from "./shared-utils.js";
+import { buildMessageObject, iterNamedTypes, resolveMessageKey } from "./shared-utils.js";
 
 /** Merge explicit @message decorator data into the messages map. */
 export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
   for (const { type, name, data } of iterNamedTypes(state.messages)) {
     const msgKey = data.messageId ?? name;
-    const msgObj: MessageObject = {
-      name: data.title ?? name,
-      contentType: data.contentType ?? "application/json",
-      title: data.title ?? name,
-      ...(data.description ? { summary: data.description } : {}),
-      payload: refSchema(name),
-    };
+    const msgObj: MessageObject = buildMessageObject(msgKey, name, {
+      title: data.title,
+      contentType: data.contentType,
+      summary: data.description,
+    });
 
     if (data.schemaFormat !== undefined) {
       msgObj.schemaFormat = data.schemaFormat;

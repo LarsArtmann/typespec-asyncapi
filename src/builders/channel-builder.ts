@@ -14,10 +14,10 @@ import {
   escapeRefToken,
   ref,
   refMessage,
-  refSchema,
 } from "../domain/models/asyncapi-document.js";
 import type { BuilderFn, DocumentBuildContext } from "./_imports.js";
 import {
+  buildMessageObject,
   buildProtocolBindings,
   channelForName,
   extractChannelParameters,
@@ -50,13 +50,11 @@ export function registerMessage(
 ): void {
   if (!ctx.messages[messageName]) {
     const schema = schemaName ?? messageName;
-    ctx.messages[messageName] = {
-      name: msgData?.title ?? messageName,
-      contentType: msgData?.contentType ?? "application/json",
-      title: msgData?.title ?? messageName,
-      ...(msgData?.description ? { summary: msgData.description } : {}),
-      payload: refSchema(schema),
-    };
+    ctx.messages[messageName] = buildMessageObject(messageName, schema, {
+      title: msgData?.title,
+      contentType: msgData?.contentType,
+      summary: msgData?.description,
+    });
   }
   const channel = ensureChannel(ctx, channelKey);
   const channelMsgs = channel.messages ?? {};

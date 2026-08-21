@@ -3,12 +3,14 @@
  */
 
 import type { Type } from "@typespec/compiler";
-import type {
-  ChannelObject,
-  OperationAction,
-  ParameterObject,
-  ProtocolBindings,
-  SecurityScheme,
+import {
+  refSchema,
+  type ChannelObject,
+  type MessageObject,
+  type OperationAction,
+  type ParameterObject,
+  type ProtocolBindings,
+  type SecurityScheme,
 } from "../domain/models/asyncapi-document.js";
 import type {
   MessageConfigData,
@@ -63,6 +65,29 @@ export function namesOfTypes<K>(map: Map<K, unknown>): Set<string> {
     }
   }
   return out;
+}
+
+/**
+ * Build a base `MessageObject` from the canonical defaults.
+ * Consolidates the duplicated object construction in `mergeExplicitMessages`
+ * and `registerMessage`.
+ */
+export function buildMessageObject(
+  name: string,
+  schemaName: string,
+  overrides?: {
+    title?: string;
+    contentType?: string;
+    summary?: string;
+  },
+): MessageObject {
+  return {
+    name: overrides?.title ?? name,
+    contentType: overrides?.contentType ?? "application/json",
+    title: overrides?.title ?? name,
+    ...(overrides?.summary ? { summary: overrides.summary } : {}),
+    payload: refSchema(schemaName),
+  };
 }
 
 /**
