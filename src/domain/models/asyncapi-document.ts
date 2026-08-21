@@ -83,10 +83,7 @@ export interface OAuth2Flow {
  * is accepted alongside the spec-correct `availableScopes` and normalized by
  * `normalizeOAuth2Scopes()`.
  */
-export interface OAuth2FlowInput {
-  authorizationUrl?: string;
-  tokenUrl?: string;
-  refreshUrl?: string;
+export interface OAuth2FlowInput extends Omit<OAuth2Flow, "availableScopes"> {
   availableScopes?: Record<string, string>;
   /** Legacy key; renamed to `availableScopes` in the emitted document. */
   scopes?: Record<string, string>;
