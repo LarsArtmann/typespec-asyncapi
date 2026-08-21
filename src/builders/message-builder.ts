@@ -104,12 +104,12 @@ const applyAutoMessageDecorators: BuilderFn = (state, ctx) => {
  */
 function readDecoratorValue<T>(
   state: AsyncAPIConsolidatedState,
-  type: unknown,
+  type: Type,
   msg: MessageObject,
   opts: {
     prop: keyof MessageObject;
     skipExisting: boolean;
-    read: (s: AsyncAPIConsolidatedState, t: unknown) => T | null;
+    read: (s: AsyncAPIConsolidatedState, t: Type) => T | null;
   },
 ): T | null {
   if (opts.skipExisting && msg[opts.prop] !== undefined) {
@@ -136,11 +136,11 @@ type MessageDecoratorFn = (
  */
 function applyMessageDecorator<K extends keyof MessageObject>(opts: {
   state: AsyncAPIConsolidatedState;
-  type: unknown;
+  type: Type;
   msg: MessageObject;
   prop: K;
   skipExisting: boolean;
-  read: (s: AsyncAPIConsolidatedState, t: unknown) => MessageObject[K] | null;
+  read: (s: AsyncAPIConsolidatedState, t: Type) => MessageObject[K] | null;
 }): void {
   const value = readDecoratorValue(opts.state, opts.type, opts.msg, {
     prop: opts.prop,
@@ -164,13 +164,13 @@ function messageDecorator<K extends keyof MessageObject>(
 
 /** Apply correlation ID to a message if present in state. */
 const applyCorrelationId = messageDecorator("correlationId", (s, t) => {
-  const correlation = s.correlationIds.get(t as never);
+  const correlation = s.correlationIds.get(t);
   return correlation ? { location: correlation.location } : null;
 });
 
 /** Apply headers to a message if present in state. */
 const applyHeaders = messageDecorator("headers", (s, t) => {
-  const headers = s.messageHeaders.get(t as never);
+  const headers = s.messageHeaders.get(t);
   if (!headers || headers.length === 0) {
     return null;
   }
@@ -186,7 +186,7 @@ const applyHeaders = messageDecorator("headers", (s, t) => {
 
 /** Apply protocol bindings to a message if present in state. */
 const applyMessageBindings = messageDecorator("bindings", (s, t) => {
-  const msgBindings = s.protocolBindings.get(t as never);
+  const msgBindings = s.protocolBindings.get(t);
   if (msgBindings && Object.keys(msgBindings).length > 0) {
     return msgBindings;
   }
@@ -198,7 +198,7 @@ const applyMessageBindings = messageDecorator("bindings", (s, t) => {
  * Each example value is serialized to JSON and wrapped as `{ payload: value }`.
  */
 function applyMessageExamples(program: Program, type: Type, msg: MessageObject): void {
-  const examples = getExamples(program, type as never);
+  const examples = getExamples(program, type);
   if (examples.length === 0) {
     return;
   }
