@@ -12,6 +12,7 @@
 import Ajv from "ajv";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
+import YAML from "yaml";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 
 const asyncApiSchema = JSON.parse(
@@ -288,7 +289,7 @@ describe("e2E: Real-World E-Commerce System", () => {
     const content = host.fs.get(asyncApiFile) as string;
     const spec = content.startsWith("{")
       ? JSON.parse(content)
-      : require("yaml").parse(content);
+      : YAML.parse(content);
 
     // Validate e-commerce event domains
     const schemas = spec.components?.schemas || {};

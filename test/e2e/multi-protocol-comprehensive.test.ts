@@ -6,6 +6,7 @@
  */
 
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
+import YAML from "yaml";
 
 describe("e2E: Multi-Protocol Comprehensive Test", () => {
   it("should generate AsyncAPI 3.1 with all protocols", async () => {
@@ -148,9 +149,7 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
       emit: ["@lars-artmann/typespec-asyncapi"],
     });
 
-    if (diagnostics.length > 0) {
-      // Diagnostics available for debugging if needed
-    }
+    expect(diagnostics).toHaveLength(0);
 
     // Find generated AsyncAPI file
     const outputFiles = [...host.fs.keys()];
@@ -164,7 +163,7 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
     const content = host.fs.get(asyncApiFile!) as string;
     const spec = content.startsWith("{")
       ? JSON.parse(content)
-      : require("yaml").parse(content);
+      : YAML.parse(content);
 
     // Validate AsyncAPI 3.1
     expect(spec.asyncapi).toBe("3.1.0");
@@ -205,5 +204,27 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
     // Validate security schemes (all 4 different auth types)
     const securitySchemes = spec.components?.securitySchemes || {};
     expect(Object.keys(securitySchemes).length).toBeGreaterThanOrEqual(3);
+
+    // Validate protocol bindings are emitted
+    const channels = spec.channels || {};
+    expect(channels["user.lifecycle.created"]?.bindings?.kafka).toBeDefined();
+    expect(channels["user.lifecycle.created"].bindings.kafka.topic).toBe(
+      "user-events",
+    );
+
+    expect(channels["notifications.{userId}.live"]?.bindings?.ws).toBeDefined();
+    expect(channels["notifications.{userId}.live"].bindings.ws.method).toBe("GET");
+
+    expect(channels["webhooks.external.events"]?.bindings?.http).toBeDefined();
+    expect(channels["webhooks.external.events"].bindings.http.type).toBe("request");
+    expect(channels["webhooks.external.events"].bindings.http.method).toBe("POST");
+
+    expect(channels["devices.{deviceId}.status"]?.bindings?.mqtt).toBeDefined();
+    expect(channels["devices.{deviceId}.status"].bindings.mqtt.qos).toBe(1);
+    expect(channels["devices.{deviceId}.status"].bindings.mqtt.retain).toBe(true);
+
+    const operations = spec.operations || {};
+    const publishUserCreated = operations.publishUserCreated || {};
+    expect(publishUserCreated.bindings?.kafka?.groupId).toBeDefined();
   });
 });

@@ -24,7 +24,7 @@ const hasWarningCode = (
   diagnostics.some((d) => d.severity === "warning" && d.code.endsWith(suffix));
 
 describe("negative: operationTrait", () => {
-  it("reports invalid-trait-config for empty name", async () => {
+  it("reports invalid-trait-config for empty operationTrait name", async () => {
     const result = await compileAsyncAPISpecRaw(`
       @operationTrait("", #{ description: "test" })
       namespace Test;
@@ -45,7 +45,7 @@ describe("negative: operationTrait", () => {
 });
 
 describe("negative: messageTrait", () => {
-  it("reports invalid-trait-config for empty name", async () => {
+  it("reports invalid-trait-config for empty messageTrait name", async () => {
     const result = await compileAsyncAPISpecRaw(`
       @messageTrait("", #{ description: "test" })
       namespace Test;
@@ -129,7 +129,7 @@ describe("negative: reusableCorrelationId", () => {
 });
 
 describe("negative: reusableBinding", () => {
-  it("reports invalid-bindings-config for empty name", async () => {
+  it("reports invalid-bindings-config for empty reusableBinding name", async () => {
     const result = await compileAsyncAPISpecRaw(`
       @reusableBinding("", #{ kafka: #{ bindingVersion: "0.5.0" } })
       namespace Test;
@@ -165,7 +165,7 @@ describe("negative: reusableBinding", () => {
 });
 
 describe("negative: useChannelBinding", () => {
-  it("reports invalid-bindings-config for empty name", async () => {
+  it("reports invalid-bindings-config for empty useChannelBinding name", async () => {
     const result = await compileAsyncAPISpecRaw(`
       namespace Test;
       model Event { id: string; }

@@ -5,6 +5,7 @@
  */
 
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
+import YAML from "yaml";
 
 describe("e2E: Complex Nested Schemas", () => {
   it("should handle deeply nested and complex schema structures", async () => {
@@ -178,7 +179,7 @@ describe("e2E: Complex Nested Schemas", () => {
     const content = host.fs.get(asyncApiFile!) as string;
     const spec = content.startsWith("{")
       ? JSON.parse(content)
-      : require("yaml").parse(content);
+      : YAML.parse(content);
 
     const schemas = spec.components?.schemas || {};
 

@@ -1,4 +1,5 @@
 import { compileAsyncAPI } from "../utils/test-helpers.js";
+import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/asyncAPIEmitterOptions.js";
 import YAML from "yaml";
 
 describe("schema splitting (split-schemas option)", () => {
@@ -31,7 +32,7 @@ describe("schema splitting (split-schemas option)", () => {
     const result = await compileAsyncAPI(multiSchemaSource, {
       "split-schemas": true,
       "file-type": "json",
-    } as never);
+    } as AsyncAPIEmitterOptions);
 
     const outputFiles = [...result.allOutputFiles.keys()];
     expect(outputFiles.length).toBeGreaterThanOrEqual(3);
@@ -44,7 +45,7 @@ describe("schema splitting (split-schemas option)", () => {
     const result = await compileAsyncAPI(multiSchemaSource, {
       "split-schemas": true,
       "file-type": "json",
-    } as never);
+    } as AsyncAPIEmitterOptions);
 
     const mainDoc = result.asyncApiDoc;
     expect(mainDoc).not.toBeNull();
@@ -55,7 +56,7 @@ describe("schema splitting (split-schemas option)", () => {
     const result = await compileAsyncAPI(multiSchemaSource, {
       "split-schemas": true,
       "file-type": "json",
-    } as never);
+    } as AsyncAPIEmitterOptions);
 
     const mainDoc = result.asyncApiDoc!;
     const mainJson = JSON.stringify(mainDoc);
@@ -71,7 +72,7 @@ describe("schema splitting (split-schemas option)", () => {
     const result = await compileAsyncAPI(multiSchemaSource, {
       "split-schemas": true,
       "file-type": "json",
-    } as never);
+    } as AsyncAPIEmitterOptions);
 
     const userFile = result.allOutputFiles.get("User.json");
     expect(userFile).toBeDefined();
@@ -105,7 +106,7 @@ describe("schema splitting (split-schemas option)", () => {
     const result = await compileAsyncAPI(multiSchemaSource, {
       "split-schemas": true,
       "file-type": "yaml",
-    } as never);
+    } as AsyncAPIEmitterOptions);
 
     const userFile = result.allOutputFiles.get("User.yaml");
     expect(userFile).toBeDefined();
@@ -118,7 +119,7 @@ describe("schema splitting (split-schemas option)", () => {
   it("does not split when split-schemas is not set", async () => {
     const result = await compileAsyncAPI(multiSchemaSource, {
       "file-type": "json",
-    } as never);
+    } as AsyncAPIEmitterOptions);
 
     const outputFiles = [...result.allOutputFiles.keys()];
     expect(outputFiles).toStrictEqual(["asyncapi.json"]);
@@ -133,7 +134,7 @@ describe("schema splitting (split-schemas option)", () => {
     const result = await compileAsyncAPI(multiSchemaSource, {
       "split-schemas": false,
       "file-type": "json",
-    } as never);
+    } as AsyncAPIEmitterOptions);
 
     const outputFiles = [...result.allOutputFiles.keys()];
     expect(outputFiles).toStrictEqual(["asyncapi.json"]);
@@ -152,7 +153,7 @@ describe("schema splitting (split-schemas option)", () => {
     const result = await compileAsyncAPI(noSchemaSource, {
       "split-schemas": true,
       "file-type": "json",
-    } as never);
+    } as AsyncAPIEmitterOptions);
 
     expect(
       result.diagnostics.filter((d) => d.severity === "error"),
@@ -182,7 +183,7 @@ describe("schema splitting (split-schemas option)", () => {
     const result = await compileAsyncAPI(nestedSource, {
       "split-schemas": true,
       "file-type": "json",
-    } as never);
+    } as AsyncAPIEmitterOptions);
 
     const personFile = result.allOutputFiles.get("Person.json");
     expect(personFile).toBeDefined();

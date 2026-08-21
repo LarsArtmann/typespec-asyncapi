@@ -10,6 +10,7 @@
  */
 
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
+import YAML from "yaml";
 
 describe("e2E: Error Handling and Edge Cases", () => {
   it("should handle empty models gracefully", async () => {
@@ -52,7 +53,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
     const content1 = host.fs.get(asyncApiFile!) as string;
     const spec1 = content1.startsWith("{")
       ? JSON.parse(content1)
-      : require("yaml").parse(content1);
+      : YAML.parse(content1);
 
     // Empty model should still generate valid schema
     expect(spec1.components?.schemas?.EmptyMessage).toBeDefined();
@@ -87,8 +88,8 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     // Should compile (might have warnings but not errors)
     expect(
-      diagnostics.filter((d) => d.severity === "error").length,
-    ).toBeLessThanOrEqual(1);
+      diagnostics.filter((d) => d.severity === "error"),
+    ).toHaveLength(0);
   });
 
   it("should handle edge case data types", async () => {
@@ -228,8 +229,8 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     // Should handle recursion without infinite loops
     expect(
-      diagnostics.filter((d) => d.severity === "error").length,
-    ).toBeLessThanOrEqual(1);
+      diagnostics.filter((d) => d.severity === "error"),
+    ).toHaveLength(0);
   });
 
   it("should validate required vs optional fields correctly", async () => {
@@ -282,7 +283,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
     const content5 = host.fs.get(asyncApiFile!) as string;
     const spec5 = content5.startsWith("{")
       ? JSON.parse(content5)
-      : require("yaml").parse(content5);
+      : YAML.parse(content5);
 
     const schema = spec5.components?.schemas?.StrictMessage;
     expect(schema).toBeDefined();
@@ -344,7 +345,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
     const content6 = host.fs.get(asyncApiFile!) as string;
     const spec6 = content6.startsWith("{")
       ? JSON.parse(content6)
-      : require("yaml").parse(content6);
+      : YAML.parse(content6);
 
     // Should have valid AsyncAPI without security
     expect(spec6.asyncapi).toBe("3.1.0");
