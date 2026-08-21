@@ -337,17 +337,31 @@ describe("e2E: Real-World E-Commerce System", () => {
     const securitySchemes = spec.components?.securitySchemes || {};
     expect(Object.keys(securitySchemes).length).toBeGreaterThanOrEqual(3);
 
-    // Validate protocol diversity (Kafka, WebSocket, HTTP)
-    const serialized = JSON.stringify({
-      channels: Object.values(channels),
-      operations: Object.values(operations),
-    });
-    const hasKafka = serialized.includes("kafka");
-    const hasWebSocket = serialized.includes("ws");
-    const hasHTTP = serialized.includes("http");
-    expect(hasKafka).toBeTruthy();
-    expect(hasWebSocket).toBeTruthy();
-    expect(hasHTTP).toBeTruthy();
+    // Validate protocol diversity (Kafka, WebSocket, HTTP) via channel/operation bindings
+    const allProtos = new Set<string>();
+    for (const ch of Object.values(channels)) {
+      const bindings = (ch as Record<string, unknown>).bindings as
+        | Record<string, unknown>
+        | undefined;
+      if (bindings) {
+        for (const proto of Object.keys(bindings)) {
+          allProtos.add(proto);
+        }
+      }
+    }
+    for (const op of Object.values(operations)) {
+      const bindings = (op as Record<string, unknown>).bindings as
+        | Record<string, unknown>
+        | undefined;
+      if (bindings) {
+        for (const proto of Object.keys(bindings)) {
+          allProtos.add(proto);
+        }
+      }
+    }
+    expect(allProtos).toContain("kafka");
+    expect(allProtos).toContain("ws");
+    expect(allProtos).toContain("http");
 
     // Validate against AsyncAPI 3.1 JSON Schema
     const valid = validate(spec);

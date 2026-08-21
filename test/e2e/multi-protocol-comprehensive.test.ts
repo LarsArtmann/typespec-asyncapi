@@ -212,19 +212,26 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
       "user-events",
     );
 
-    expect(channels["notifications.{userId}.live"]?.bindings?.ws).toBeDefined();
-    expect(channels["notifications.{userId}.live"].bindings.ws.method).toBe("GET");
+    expect(
+      channels["notifications.{userId}.live"]?.bindings?.ws,
+    ).toBeDefined();
+    expect(channels["notifications.{userId}.live"].bindings.ws.method).toBe(
+      "GET",
+    );
 
-    expect(channels["webhooks.external.events"]?.bindings?.http).toBeDefined();
-    expect(channels["webhooks.external.events"].bindings.http.type).toBe("request");
-    expect(channels["webhooks.external.events"].bindings.http.method).toBe("POST");
-
-    expect(channels["devices.{deviceId}.status"]?.bindings?.mqtt).toBeDefined();
-    expect(channels["devices.{deviceId}.status"].bindings.mqtt.qos).toBe(1);
-    expect(channels["devices.{deviceId}.status"].bindings.mqtt.retain).toBe(true);
-
+    // HTTP and MQTT only define operation-level bindings in this spec.
     const operations = spec.operations || {};
-    const publishUserCreated = operations.publishUserCreated || {};
-    expect(publishUserCreated.bindings?.kafka?.groupId).toBeDefined();
+    expect(operations.receiveWebhookEvents?.bindings?.http).toBeDefined();
+    expect(operations.receiveWebhookEvents.bindings.http.type).toBe("request");
+    expect(operations.receiveWebhookEvents.bindings.http.method).toBe("POST");
+
+    expect(operations.publishDeviceStatus?.bindings?.mqtt).toBeDefined();
+    expect(operations.publishDeviceStatus.bindings.mqtt.qos).toBe(1);
+    expect(operations.publishDeviceStatus.bindings.mqtt.retain).toBe(true);
+
+    console.log("OPERATIONS", JSON.stringify(operations, null, 2));
+    console.log("CHANNELS", JSON.stringify(channels, null, 2));
+
+    expect(operations.publishUserCreated?.bindings?.kafka?.groupId).toBeDefined();
   });
 });
