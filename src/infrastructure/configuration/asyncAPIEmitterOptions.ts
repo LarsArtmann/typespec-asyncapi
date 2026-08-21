@@ -32,6 +32,9 @@ export interface EmitterOptions {
   /** External documentation URL */
   externalDocs?: ExternalDocumentationObject;
 
+  /** Unique document identifier (AsyncAPI root `id`, e.g. a URN) */
+  "asyncapi-id"?: string;
+
   /** Output file name without extension */
   "output-file"?: string;
 

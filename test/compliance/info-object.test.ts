@@ -89,4 +89,16 @@ describe("spec Compliance: Info Object Fields", () => {
     expect(info.termsOfService).toBe("https://test.com/tos");
     expect(info.externalDocs?.url).toBe("https://wiki.test.com");
   });
+
+  it("emits root id from asyncapi-id option", async () => {
+    const doc = await compileAndValidateOrThrow(baseSpec, {
+      "asyncapi-id": "urn:com:test:events",
+    });
+    expect((doc as ParsedAsyncAPIDocument).id).toBe("urn:com:test:events");
+  });
+
+  it("omits root id when asyncapi-id is not set", async () => {
+    const doc = await compileAndValidateOrThrow(baseSpec);
+    expect((doc as ParsedAsyncAPIDocument).id).toBeUndefined();
+  });
 });

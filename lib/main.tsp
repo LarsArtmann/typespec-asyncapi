@@ -248,6 +248,9 @@ model EmitterOptions {
   /** External documentation: url (required), description */
   externalDocs?: { url: string; description?: string };
 
+  /** Unique document identifier (AsyncAPI root `id`, e.g. a URN) */
+  "asyncapi-id"?: string;
+
   /** Split schemas into individual files under schemas/ (default: false) */
   "split-schemas"?: boolean;
 }

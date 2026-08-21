@@ -177,6 +177,7 @@ function assembleDocument(
 
   return {
     asyncapi: ASYNCAPI_SPEC_VERSION,
+    ...(options["asyncapi-id"] ? { id: options["asyncapi-id"] } : {}),
     info: {
       description: options.description,
       title: options.title ?? serviceTitle ?? "Generated API",
