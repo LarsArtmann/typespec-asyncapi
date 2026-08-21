@@ -1,0 +1,24 @@
+---
+import SectionHeader from './SectionHeader.astro';
+---
+
+<div id="demo">
+  <SectionHeader eyebrow="See it work" title="From TypeSpec to AsyncAPI in 30 seconds" subtitle="One compile: a typed TypeSpec definition becomes a validated AsyncAPI 3.1 document with channels, operations, messages, and schemas." />
+</div>
+
+<div class="max-w-3xl mx-auto mb-6">
+  <div class="relative rounded-xl border border-border bg-bg-card-solid shadow-2xl overflow-hidden">
+    <div class="flex items-center gap-1.5 px-4 py-3 border-b border-border bg-bg-card-solid/50">
+      {Array(3).fill(null).map(() => (
+        <span class="w-2.5 h-2.5 rounded-full bg-code-dot"></span>
+      ))}
+      <span class="ml-3 text-xs text-text-muted font-mono">demo.mp4 — 30s product tour</span>
+    </div>
+    <video controls preload="metadata" poster="/screenshots/demo-poster.png" class="w-full block">
+      <source src="/demo.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+  </div>
+</div>
+
+<p class="text-center text-sm text-text-muted">See it work end-to-end — 30 seconds, no audio required.</p>

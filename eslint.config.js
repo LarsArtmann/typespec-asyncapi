@@ -10,6 +10,7 @@ export default [
       "test/**",
       "examples/**",
       "docs/**",
+      "website/**",
       "*.config.js",
       "*.config.ts",
       "src/constants/generated-bindings.ts",

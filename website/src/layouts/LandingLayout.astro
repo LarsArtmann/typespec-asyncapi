@@ -3,7 +3,6 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import { siteConfig } from '../data/config';
-import { generatorCount } from '../data/generators';
 import { ClientRouter } from 'astro:transitions';
 
 export interface Props {
@@ -11,7 +10,7 @@ export interface Props {
 }
 
 const { title } = Astro.props;
-const ogDesc = siteConfig.ogDescription.replace('{count}', String(generatorCount));
+const ogDesc = siteConfig.ogDescription;
 ---
 
 <!doctype html>
@@ -26,18 +25,18 @@ const ogDesc = siteConfig.ogDescription.replace('{count}', String(generatorCount
     <meta property="og:description" content={ogDesc} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={siteConfig.siteUrl} />
-    <meta property="og:image" content={`${siteConfig.siteUrl}/og/home.png`} />
-    <meta property="og:image:alt" content="gogenfilter — Detect & Filter Auto-Generated Go Code" />
+    <meta property="og:image" content={`${siteConfig.siteUrl}/screenshots/demo-poster.png`} />
+    <meta property="og:image:alt" content="typespec-asyncapi — TypeSpec in, validated AsyncAPI 3.1 out" />
+    <meta property="og:video" content={`${siteConfig.siteUrl}/demo.mp4`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={siteConfig.name} />
     <meta name="twitter:description" content={ogDesc} />
-    <meta name="twitter:image" content={`${siteConfig.siteUrl}/og/home.png`} />
+    <meta name="twitter:image" content={`${siteConfig.siteUrl}/screenshots/demo-poster.png`} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="canonical" href={siteConfig.siteUrl} />
     <link rel="manifest" href="/manifest.json" />
-    <meta name="theme-color" content="#0c0a09" media="(prefers-color-scheme: dark)" />
-    <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0a0908" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#faf8f5" media="(prefers-color-scheme: light)" />
     <script is:inline src="/js/theme-init.js"></script>
   </head>
   <body class="font-sans bg-bg-primary text-text-secondary antialiased leading-relaxed">
@@ -45,12 +44,12 @@ const ogDesc = siteConfig.ogDescription.replace('{count}', String(generatorCount
     <script type="application/ld+json" is:inline set:html={JSON.stringify({
       "@context": "https://schema.org",
       "@type": "SoftwareApplication",
-      "name": "gogenfilter",
+      "name": "typespec-asyncapi",
       "description": siteConfig.description,
       "url": siteConfig.siteUrl,
       "applicationCategory": "DeveloperApplication",
-      "operatingSystem": "Go",
-      "programmingLanguage": "Go",
+      "operatingSystem": "Node.js",
+      "programmingLanguage": "TypeScript",
       "license": "https://opensource.org/licenses/MIT",
       "author": {
         "@type": "Person",
@@ -62,6 +61,16 @@ const ogDesc = siteConfig.ogDescription.replace('{count}', String(generatorCount
         "price": "0",
         "priceCurrency": "USD"
       }
+    })} />
+    <script type="application/ld+json" is:inline set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "typespec-asyncapi — From TypeSpec to AsyncAPI 3.1 in 30 seconds",
+      "description": "A typed TypeSpec definition compiles to an AsyncAPI 3.1 document that validates against the official JSON Schema.",
+      "thumbnailUrl": [`${siteConfig.siteUrl}/screenshots/demo-poster.png`],
+      "uploadDate": "2026-08-22",
+      "contentUrl": `${siteConfig.siteUrl}/demo.mp4`,
+      "embedUrl": `${siteConfig.siteUrl}/#demo`
     })} />
     <Header />
     <main id="main-content">

@@ -1,0 +1,20 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import Card from './Card.astro';
+import Icon from './Icon.astro';
+import { useCases } from '../data/sections';
+---
+
+<SectionHeader eyebrow="Use cases" title="Built for event-driven teams" subtitle="Where a typed, validated AsyncAPI source of truth pays for itself." />
+
+<div class="grid gap-4 md:grid-cols-2">
+  {useCases.map((useCase) => (
+    <Card variant="usecase">
+      <div class={`inline-flex items-center justify-center w-10 h-10 rounded-lg mb-4 bg-${useCase.accent}/10 text-${useCase.accent}`}>
+        <Icon name={useCase.icon} size={22} />
+      </div>
+      <h3 class="text-base font-semibold text-text-primary mb-2">{useCase.title}</h3>
+      <p class="text-sm text-text-secondary leading-relaxed">{useCase.desc}</p>
+    </Card>
+  ))}
+</div>

@@ -1,0 +1,20 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import Card from './Card.astro';
+import Icon from './Icon.astro';
+import { features } from '../data/features';
+---
+
+<SectionHeader eyebrow="Why this emitter" title="Typed in. Validated out." subtitle="Everything between your TypeSpec source and a spec-compliant AsyncAPI 3.1 document is table-driven, tested, and deterministic." />
+
+<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 text-left">
+  {features.map((feature) => (
+    <Card variant="feature">
+      <div class={`inline-flex items-center justify-center w-10 h-10 rounded-lg mb-4 bg-${feature.accent}/10 text-${feature.accent}`}>
+        <Icon name={feature.icon} size={22} />
+      </div>
+      <h3 class="text-base font-semibold text-text-primary mb-2">{feature.title}</h3>
+      <p class="text-sm text-text-secondary leading-relaxed">{feature.desc}</p>
+    </Card>
+  ))}
+</div>

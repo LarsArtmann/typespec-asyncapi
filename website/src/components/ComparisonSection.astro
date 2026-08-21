@@ -1,0 +1,31 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import { comparisonRows } from '../data/sections';
+---
+
+<SectionHeader eyebrow="Comparison" title="This emitter vs the alternatives" subtitle="Measured against the other TypeSpec AsyncAPI emitter and the hand-written YAML status quo (August 2026)." />
+
+<div class="overflow-x-auto rounded-xl border border-border">
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="border-b border-border bg-bg-card">
+        <th class="text-left px-4 py-3 font-semibold text-text-primary">Capability</th>
+        <th class="text-left px-4 py-3 font-semibold text-accent">typespec-asyncapi</th>
+        <th class="text-left px-4 py-3 font-semibold text-text-secondary">tsp-asyncapi</th>
+        <th class="text-left px-4 py-3 font-semibold text-text-secondary">Hand-written YAML</th>
+      </tr>
+    </thead>
+    <tbody>
+      {comparisonRows.map((row) => (
+        <tr class="border-b border-border last:border-b-0">
+          <td class="px-4 py-3 text-text-secondary">{row.feature}</td>
+          <td class="px-4 py-3 text-text-primary font-medium">{row.emitter}</td>
+          <td class="px-4 py-3 text-text-muted">{row.tspAsyncapi}</td>
+          <td class="px-4 py-3 text-text-muted">{row.handwritten}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
+<p class="text-center text-xs text-text-muted mt-4 max-w-2xl mx-auto">The real differentiator is the first two rows: no other workflow proves, on every build, that the emitted document passes the official AsyncAPI 3.1.0 JSON Schema.</p>

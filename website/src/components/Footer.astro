@@ -1,0 +1,19 @@
+---
+import Logo from './Logo.astro';
+import { siteConfig } from '../data/config';
+---
+
+<footer role="contentinfo" class="border-t border-border mt-32" data-animate>
+  <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2.5">
+      <Logo width={28} height={28} />
+      <span class="text-sm text-text-muted">typespec-asyncapi — MIT License — Built by <a href={siteConfig.author.url} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-primary transition-colors duration-150 underline">{siteConfig.author.name}</a></span>
+    </div>
+    <div class="flex items-center gap-6 text-sm">
+      <a href="/getting-started/installation/" data-astro-prefetch class="text-text-muted hover:text-text-primary transition-colors duration-150">Documentation</a>
+      <a href={siteConfig.github} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-primary transition-colors duration-150">GitHub</a>
+      <a href={siteConfig.npm} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-primary transition-colors duration-150">npm</a>
+      <a href="/changelog/" data-astro-prefetch class="text-text-muted hover:text-text-primary transition-colors duration-150">Changelog</a>
+    </div>
+  </div>
+</footer>

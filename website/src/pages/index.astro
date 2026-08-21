@@ -1,6 +1,6 @@
 ---
 import LandingLayout from '../layouts/LandingLayout.astro';
-import GeneratorGrid from '../components/GeneratorGrid.astro';
+import ShowcaseSection from '../components/ShowcaseSection.astro';
 import FeatureGrid from '../components/FeatureGrid.astro';
 import HeroSection from '../components/HeroSection.astro';
 import Sections from '../components/Sections.astro';
@@ -11,8 +11,8 @@ import { siteConfig } from '../data/config';
 <LandingLayout title={siteConfig.title}>
   <HeroSection />
 
-  <Section width="wide" tone="raised">
-    <GeneratorGrid />
+  <Section width="wide" tone="raised" padding="sm">
+    <ShowcaseSection />
   </Section>
 
   <Section width="wide">
@@ -20,24 +20,6 @@ import { siteConfig } from '../data/config';
   </Section>
 
   <Sections />
-
-  <Section width="narrow" padding="sm" tone="raised">
-    <div class="text-center">
-      <h2 class="text-xl font-semibold text-text-primary mb-3">
-        Trusted by Go tooling
-      </h2>
-      <p class="text-text-muted mb-6 max-w-md mx-auto">
-        gogenfilter is used by linters, analyzers, and CI pipelines that need to skip
-        generated code. See who depends on it.
-      </p>
-      <a
-        href="/dependents"
-        class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-on-accent font-semibold rounded-lg text-sm hover:bg-accent-hover transition-all duration-200 border-none cursor-pointer whitespace-nowrap shadow-lg shadow-accent/20 hover:shadow-accent/30 hover:-translate-y-0.5"
-      >
-        View dependents
-      </a>
-    </div>
-  </Section>
 </LandingLayout>
 
 <script is:inline src="/js/animations.js"></script>

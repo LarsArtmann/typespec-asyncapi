@@ -1,0 +1,16 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import { pipelineSteps } from '../data/sections';
+---
+
+<SectionHeader eyebrow="How it works" title="Model, compile, validate, ship" subtitle="Four deterministic steps from typed source to a spec-compliant AsyncAPI document." />
+
+<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 text-left">
+  {pipelineSteps.map((step) => (
+    <div class="rounded-xl border border-border bg-bg-card p-6 transition-colors duration-150 hover:border-border-hover">
+      <div class="text-xs font-bold font-mono text-accent mb-3">{step.step}</div>
+      <h3 class="text-base font-semibold text-text-primary mb-2">{step.title}</h3>
+      <p class="text-sm text-text-secondary leading-relaxed">{step.desc}</p>
+    </div>
+  ))}
+</div>

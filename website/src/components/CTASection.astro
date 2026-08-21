@@ -1,0 +1,11 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import { siteConfig } from '../data/config';
+---
+
+<SectionHeader eyebrow="Get started" title="Your first validated spec is one compile away" subtitle="Install the emitter, add two decorators to a TypeSpec file, and generate AsyncAPI 3.1 that already passes the official JSON Schema." />
+
+<div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+  <a href="/getting-started/quick-start/" data-astro-prefetch class="px-6 py-3 bg-accent text-on-accent font-semibold rounded-lg text-base hover:bg-accent-hover transition-colors duration-150 inline-flex items-center gap-2 border-none cursor-pointer">Read the Quick Start &rarr;</a>
+  <a href={siteConfig.github} target="_blank" rel="noopener noreferrer" class="px-6 py-3 border border-border rounded-lg text-base font-semibold text-text-secondary hover:text-text-primary hover:border-border-hover transition-all duration-150 inline-flex items-center gap-2">View on GitHub</a>
+</div>

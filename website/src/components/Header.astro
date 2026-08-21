@@ -1,0 +1,35 @@
+---
+import Logo from './Logo.astro';
+import Icon from './Icon.astro';
+import { siteConfig } from '../data/config';
+---
+
+<header role="banner">
+<nav class="fixed top-0 left-0 right-0 z-50 border-b border-border backdrop-blur-2xl bg-bg-primary/75" aria-label="Main navigation">
+  <div class="max-w-7xl mx-auto px-6 h-[4.5rem] flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3 group">
+      <Logo width={40} height={40} class="transition-transform duration-200 group-hover:scale-105" />
+      <span class="text-xl font-bold text-text-primary tracking-tight">{siteConfig.name}</span>
+    </a>
+    <button class="nav-toggle bg-transparent border-none text-text-muted cursor-pointer p-1 hover:text-text-primary lg:hidden" id="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">
+      <span class="menu-icon"><Icon name="menu" size={24} /></span>
+      <span class="close-icon hidden"><Icon name="close" size={24} /></span>
+    </button>
+    <div class="nav-links flex items-center gap-7 max-sm:hidden max-sm:absolute max-sm:top-[4.5rem] max-sm:inset-x-0 max-sm:flex-col max-sm:p-6 max-sm:gap-4 max-sm:bg-bg-primary max-sm:backdrop-blur-[40px] max-sm:border-b max-sm:border-border [&.open]:max-sm:flex" id="nav-links">
+      <button id="theme-toggle" class="bg-transparent border-none text-text-muted cursor-pointer p-1 hover:text-text-primary transition-colors" aria-label="Cycle light/dark/auto theme">
+        <span class="theme-icon-light hidden"><Icon name="sun" size={18} /></span>
+        <span class="theme-icon-dark"><Icon name="moon" size={18} /></span>
+        <span class="theme-icon-auto hidden"><Icon name="monitor" size={18} /></span>
+      </button>
+      <a href="/getting-started/installation/" data-astro-prefetch class="text-base font-medium text-text-secondary hover:text-text-primary transition-colors duration-150">Docs</a>
+      <a href="/guides/bindings/" data-astro-prefetch class="text-base font-medium text-text-secondary hover:text-text-primary transition-colors duration-150">Bindings</a>
+      <a href={siteConfig.github} target="_blank" rel="noopener noreferrer" class="text-base font-medium inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-border text-text-secondary hover:text-text-primary hover:border-border-hover transition-all duration-150">
+        <span class="text-text-secondary"><Icon name="github" size={18} /></span>
+        GitHub
+      </a>
+    </div>
+  </div>
+</nav>
+</header>
+
+<script is:inline src="/js/header.js"></script>

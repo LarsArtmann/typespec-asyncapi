@@ -260,7 +260,7 @@ The emitter reads the latest version enum value for `info.version`. Precedence: 
 
 ### Validation
 
-The emitter provides 30 compile-time diagnostics (20 error + 10 warning) that catch invalid configurations before they reach your AsyncAPI output — unsupported protocols, invalid binding versions, missing channel paths, malformed server URLs, and more.
+The emitter provides 32 compile-time diagnostics (20 error + 12 warning) that catch invalid configurations before they reach your AsyncAPI output — unsupported protocols, invalid binding versions, missing channel paths, malformed server URLs, and more.
 
 ### Rigor
 
@@ -366,7 +366,7 @@ The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publi
 | Build | 0 TypeScript errors (strict mode) |
 | Lint | 0 errors, 0 warnings (ESLint + oxlint) |
 | Decorators | 30 |
-| Diagnostics | 30 codes (20 error + 10 warning) |
+| Diagnostics | 32 codes (20 error + 12 warning) |
 | Protocols | 22 (auto-generated from `@asyncapi/specs`) |
 | Duplication | 0% (jscpd, 0% threshold) |
 | Output | Validates against official AsyncAPI 3.1.0 JSON Schema |

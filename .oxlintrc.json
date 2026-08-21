@@ -1,5 +1,11 @@
 {
-  "plugins": ["node", "oxc", "typescript", "unicorn", "vitest"],
+  "plugins": [
+    "node",
+    "oxc",
+    "typescript",
+    "unicorn",
+    "vitest"
+  ],
   "categories": {
     "perf": "warn",
     "style": "warn",
@@ -37,12 +43,40 @@
     "node/no-sync": "off",
     "oxc/no-map-spread": "off",
     "unicorn/prefer-number-coercion": "off",
-    "eslint/max-statements": ["warn", { "max": 80 }],
-    "eslint/max-lines-per-function": ["warn", { "max": 200 }],
-    "eslint/max-params": ["warn", { "max": 5 }],
-    "eslint/max-lines": ["warn", { "max": 400 }],
-    "eslint/complexity": ["warn", { "max": 50 }],
-    "eslint/eqeqeq": ["error", "always"],
+    "eslint/max-statements": [
+      "warn",
+      {
+        "max": 80
+      }
+    ],
+    "eslint/max-lines-per-function": [
+      "warn",
+      {
+        "max": 200
+      }
+    ],
+    "eslint/max-params": [
+      "warn",
+      {
+        "max": 5
+      }
+    ],
+    "eslint/max-lines": [
+      "warn",
+      {
+        "max": 400
+      }
+    ],
+    "eslint/complexity": [
+      "warn",
+      {
+        "max": 50
+      }
+    ],
+    "eslint/eqeqeq": [
+      "error",
+      "always"
+    ],
     "eslint/one-var": "off"
   },
   "overrides": [
@@ -66,7 +100,9 @@
       }
     },
     {
-      "files": ["test/**"],
+      "files": [
+        "test/**"
+      ],
       "rules": {
         "vitest/require-test-timeout": "off",
         "vitest/prefer-expect-assertions": "off",
@@ -133,5 +169,8 @@
   "env": {
     "node": true,
     "builtin": true
-  }
+  },
+  "ignorePatterns": [
+    "website/**"
+  ]
 }

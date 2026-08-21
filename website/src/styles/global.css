@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  /* Dark mode (default) */
+  --color-bg-primary: #0a0908;
+  --color-bg-raised: #110e0c;
+  --color-bg-card: rgba(28, 25, 23, 0.5);
+  --color-bg-card-solid: #1c1917;
+  --color-bg-code: rgba(28, 25, 23, 0.8);
+
+  --color-border: rgba(41, 37, 36, 0.6);
+  --color-border-hover: rgba(41, 37, 36, 1);
+
+  --color-text-primary: #e7e5e4;
+  --color-text-secondary: #a8a29e;
+  --color-text-muted: #8e8884;
+
+  --color-accent: #14b8a6;
+  --color-accent-hover: #2dd4bf;
+  --color-accent-dim: rgba(20, 184, 166, 0.1);
+  --color-accent-light: #5eead4;
+  --color-on-accent: #0a0908;
+
+  --color-amber: #fbbf24;
+
+  --color-code-inline-bg: #1c1917;
+  --color-code-dot: #44403c;
+  --color-success: #4ade80;
+
+  --font-sans: var(--font-space-grotesk), -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), monospace;
+
+  --animate-fade-in: fade-in 0.6s ease both;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --color-bg-primary: #faf8f5;
+  --color-bg-raised: #f3f2f0;
+  --color-bg-card: rgba(245, 245, 244, 0.7);
+  --color-bg-card-solid: #f5f5f4;
+  --color-bg-code: rgba(245, 245, 244, 0.9);
+
+  --color-border: rgba(231, 229, 228, 0.8);
+  --color-border-hover: rgba(231, 229, 228, 1);
+
+  --color-text-primary: #1c1917;
+  --color-text-secondary: #57534e;
+  --color-text-muted: #66605a;
+
+  --color-accent: #0d9488;
+  --color-accent-hover: #0f766e;
+  --color-accent-dim: rgba(13, 148, 136, 0.1);
+  --color-accent-light: #2dd4bf;
+  --color-on-accent: #ffffff;
+
+  --color-code-inline-bg: #e7e5e4;
+  --color-code-dot: #a8a29e;
+  --color-amber: #b45309;
+  --color-success: #15803d;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+[data-animate]:not(.animate-fade-in) {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-animate]:not(.animate-fade-in) {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+:focus:not(:focus-visible) {
+  outline: none;
+}

@@ -1,0 +1,16 @@
+{
+  "name": "typespec-asyncapi",
+  "short_name": "tsp-asyncapi",
+  "description": "Generate validated AsyncAPI 3.1 specifications from TypeSpec",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0908",
+  "theme_color": "#14b8a6",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
