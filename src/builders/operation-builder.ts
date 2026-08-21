@@ -12,6 +12,7 @@ import {
   type OperationObject,
   type OperationReply,
 } from "../domain/models/asyncapi-document.js";
+import type { Type } from "@typespec/compiler";
 import { getDoc, getSummary, nameOfType } from "./_imports.js";
 import type {
   AsyncAPIConsolidatedState,
@@ -23,8 +24,28 @@ import {
   registerMessage,
 } from "./channel-builder.js";
 
+/** Build a name → Type lookup for operations and channels. */
+function buildTypeNameLookup(state: AsyncAPIConsolidatedState): Map<string, Type> {
+  const lookup = new Map<string, Type>();
+  for (const type of state.operations.keys()) {
+    const name = nameOfType(type);
+    if (name) {
+      lookup.set(name, type);
+    }
+  }
+  for (const type of state.channels.keys()) {
+    const name = nameOfType(type);
+    if (name && !lookup.has(name)) {
+      lookup.set(name, type);
+    }
+  }
+  return lookup;
+}
+
 /** Build all operations from discovered ops, applying decorators and replies. */
 export const buildOperations: BuilderFn = (state, ctx) => {
+  const opTypeLookup = buildTypeNameLookup(state);
+
   for (const op of ctx.discoveredOps) {
     for (let i = 0; i < op.messageNames.length; i++) {
       const messageName = op.messageNames[i];
@@ -43,9 +64,7 @@ export const buildOperations: BuilderFn = (state, ctx) => {
       ),
     };
 
-    const opType = [...state.operations.keys(), ...state.channels.keys()].find(
-      (t) => nameOfType(t) === op.opName,
-    );
+    const opType = opTypeLookup.get(op.opName);
     if (opType) {
       const doc = getDoc(ctx.program, opType);
       if (doc) {
