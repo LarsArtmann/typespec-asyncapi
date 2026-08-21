@@ -1,7 +1,7 @@
 # Feature Inventory
 
 **Verified:** 2026-08-06 against actual code + test run (1000+ pass, 0 fail, 0 skip, 0 todo)
-**Project:** `@lars-artmann/typespec-asyncapi` v0.2.0-beta
+**Project:** `@lars-artmann/typespec-asyncapi` v0.2.1-beta
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 25 codes (19 error + 6 warning), all compile-time validated via `$lib.reportDiagnostic()`
 **Decorators:** 26 declared in `lib/main.tsp` (16 emitter decorators + 10 reusable-component decorators); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.2.1-beta] - 2026-08-21
+
 ### Added
 
 - **Named-union metadata as public contract** — Named unions now emit `@doc`/`@summary` as `description`/`title`, consistent with enums/scalars via the shared `declareSchema` path. Locked in by the "named union metadata propagation" compliance suite in `test/compliance/polymorphism.test.ts` (2 tests). Previously silently dropped; no test pinned the old behavior. (`7f6c9b1`, `2e2ef0b`)

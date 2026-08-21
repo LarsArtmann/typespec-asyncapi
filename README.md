@@ -217,7 +217,7 @@ Run all commands inside `nix develop .#default` to get the right toolchain (pnpm
 
 | Metric  | Value      |
 | ------- | ---------- |
-| Version | 0.2.0-beta |
+| Version | 0.2.1-beta |
 
 | Build | 0 TypeScript errors (strict mode) |
 | Lint | 0 errors, 0 warnings (ESLint + oxlint) |
