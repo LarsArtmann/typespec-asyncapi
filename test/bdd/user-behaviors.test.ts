@@ -8,6 +8,7 @@
  * They verify observable behavior, not implementation details.
  */
 
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
@@ -101,7 +102,7 @@ describe("bdd: user configures protocol bindings", () => {
     const channel = Object.values(doc.channels!)[0]!;
     expect(channel.bindings).toBeDefined();
     expect(inlineObject(channel.bindings, "bindings").kafka).toBeDefined();
-    expect(inlineObject(channel.bindings, "bindings").kafka!.bindingVersion).toBe("0.5.0");
+    expect(inlineObject(channel.bindings, "bindings").kafka!.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
   });
 });
 

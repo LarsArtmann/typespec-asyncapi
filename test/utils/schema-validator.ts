@@ -88,6 +88,25 @@ export async function compileAndValidate(
 }
 
 /**
+ * Validate an already-parsed AsyncAPI document against the official
+ * AsyncAPI 3.1.0 JSON Schema. Throws with formatted errors on failure.
+ *
+ * Use when a test compiles via a helper that returns the parsed document
+ * (e.g. `compileAsyncAPISpecWithoutErrors` + `parseAsyncAPIOutput`) instead
+ * of `compileAndValidateOrThrow`.
+ */
+export function validateAsyncAPIDocument(
+  document: ParsedAsyncAPIDocument,
+): void {
+  const valid = validateSchema(document);
+  if (!valid) {
+    throw new Error(
+      `AsyncAPI 3.1.0 validation failed:\n${formatValidationErrors(validateSchema.errors ?? null)}`,
+    );
+  }
+}
+
+/**
  * Assert that a TypeSpec source compiles and validates successfully.
  * Returns the parsed AsyncAPI document for further assertions.
  *

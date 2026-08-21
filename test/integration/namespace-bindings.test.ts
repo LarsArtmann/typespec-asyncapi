@@ -4,6 +4,7 @@
  * Verifies that @bindings applied to a Namespace attaches bindings to servers.
  */
 
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
@@ -31,7 +32,7 @@ describe("integration: namespace @bindings", () => {
     const binding = inlineObject(doc.servers!["mqtt-broker"].bindings, "bindings");
     expect(binding.mqtt).toBeDefined();
     expect(binding.mqtt.clientId).toBe("my-client");
-    expect(binding.mqtt.bindingVersion).toBe("0.2.0");
+    expect(binding.mqtt.bindingVersion).toBe(LATEST_BINDING_VERSIONS.mqtt);
   });
 
   it("applies bindings to all servers on the namespace", async () => {

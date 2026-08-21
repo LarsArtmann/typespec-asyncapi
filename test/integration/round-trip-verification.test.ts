@@ -97,8 +97,11 @@ const COMPREHENSIVE_SPEC = `
 describe("round-Trip Verification", () => {
   let doc: ParsedAsyncAPIDocument;
 
-  it("compiles and validates against AsyncAPI 3.1 JSON Schema", async () => {
+  beforeAll(async () => {
     doc = await compileAndValidateOrThrow(COMPREHENSIVE_SPEC);
+  });
+
+  it("validates against the AsyncAPI 3.1 JSON Schema", () => {
     expect(doc.asyncapi).toBe("3.1.0");
   });
 

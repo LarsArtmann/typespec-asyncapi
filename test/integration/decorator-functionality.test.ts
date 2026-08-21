@@ -12,8 +12,8 @@
 import {
   compileAsyncAPISpecWithoutErrors,
   parseAsyncAPIOutput,
-  validateAsyncAPIObjectComprehensive,
 } from "../utils/test-helpers.js";
+import { validateAsyncAPIDocument } from "../utils/schema-validator.js";
 
 describe("real Decorator Functionality Tests", () => {
   describe("@message Decorator Real Processing", () => {
@@ -627,9 +627,8 @@ describe("real Decorator Functionality Tests", () => {
       expect(publishOp.action).toBe("send");
       expect(subscribeOp.action).toBe("receive");
 
-      // Run comprehensive validation
-      const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
-      expect(validation.valid).toBeTruthy();
+      // Full AsyncAPI 3.1.0 schema compliance
+      validateAsyncAPIDocument(asyncapiDoc);
     });
   });
 });

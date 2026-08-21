@@ -165,7 +165,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
     const content3 = host.fs.get(asyncApiFile!) as string;
     const spec3 = content3.startsWith("{")
       ? JSON.parse(content3)
-      : require("yaml").parse(content3);
+      : YAML.parse(content3);
 
     const schema = spec3.components?.schemas?.EdgeCaseMessage;
     expect(schema).toBeDefined();

@@ -15,8 +15,8 @@ import {
   TestValidationPatterns,
   compileAsyncAPISpecWithoutErrors,
   parseAsyncAPIOutput,
-  validateAsyncAPIObjectComprehensive,
 } from "../utils/test-helpers.js";
+import { validateAsyncAPIDocument } from "../utils/schema-validator.js";
 
 function generateLargeTypeSpecSource(): string {
   const models = [];
@@ -429,13 +429,7 @@ describe("real AsyncAPI Generation Tests", () => {
         "receive",
       );
 
-      // Run comprehensive AsyncAPI validation
-      const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
-      expect(validation.valid).toBeTruthy();
-      if (!validation.valid) {
-        console.error("Validation errors:", validation.errors);
-        throw new Error(`AsyncAPI validation failed: ${validation.summary}`);
-      }
+      validateAsyncAPIDocument(asyncapiDoc);
 
       // Log completion using shared utility
       TestValidationPatterns.validateAndLogCompletion(
@@ -675,19 +669,8 @@ describe("real AsyncAPI Generation Tests", () => {
       expect(subscribeOp.action).toBe("receive");
       expect(subscribeOp.channel).toBeDefined();
 
-      // Run comprehensive specification compliance validation
-      const validation = await validateAsyncAPIObjectComprehensive(asyncapiDoc);
-      expect(validation.valid).toBeTruthy();
-
-      if (!validation.valid) {
-        console.error("AsyncAPI 3.1.0 compliance validation failed:");
-        validation.errors.forEach((error) => {
-          console.error(`- ${error.path}: ${error.message}`);
-        });
-        throw new Error(
-          `AsyncAPI 3.1.0 compliance validation failed: ${validation.summary}`,
-        );
-      }
+      // Full AsyncAPI 3.1.0 schema compliance
+      validateAsyncAPIDocument(asyncapiDoc);
     });
 
     it("should handle complex schema references correctly", async () => {

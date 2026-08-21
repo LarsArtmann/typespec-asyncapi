@@ -129,7 +129,7 @@ describe("webSocket & MQTT bindingVersion injection", () => {
       op send(): Msg;
     `);
     const { ws } = inlineObject(doc.channels!.events.bindings, "bindings");
-    expect(ws.bindingVersion).toBe("0.1.0");
+    expect(ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
     expect(ws.method).toBe("GET");
   });
 });
@@ -172,7 +172,7 @@ describe("mQTT binding fields", () => {
     expect(mqtt.clientId).toBe("telemetry-1");
     expect(mqtt.cleanSession).toBeFalsy();
     expect(mqtt.keepAlive).toBe(30);
-    expect(mqtt.bindingVersion).toBe("0.2.0");
+    expect(mqtt.bindingVersion).toBe(LATEST_BINDING_VERSIONS.mqtt);
   });
 
   it("emits message bindings from @bindings on the payload model", async () => {
@@ -186,7 +186,7 @@ describe("mQTT binding fields", () => {
     const message = inlineObject(doc.components!.messages!.Reading, "message");
     const { mqtt } = inlineObject(message.bindings, "bindings");
     expect(mqtt.contentType).toBe("application/json");
-    expect(mqtt.bindingVersion).toBe("0.2.0");
+    expect(mqtt.bindingVersion).toBe(LATEST_BINDING_VERSIONS.mqtt);
   });
 });
 
