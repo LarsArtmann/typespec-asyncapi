@@ -78,7 +78,10 @@ Research findings (2026-08-21, from primary sources):
   source-code emitters (js/csharp/java/python clients). Only those use it.
 - Microsoft's own data-document emitters (`openapi3`, `json-schema`) still use
   EFv1 on typespec main TODAY. EFv1 lives as long as openapi3 lives.
-- Our exposure is confined: 5 files, ~490 lines, all in schema generation.
+- Our exposure is confined: 3 files import it, 480 lines total
+  (`schema-emitter.ts` 399, `schema-generator.ts` 55, `extract-value.ts` 26).
+  `schema-ref.ts` (109 lines, no import) mirrors EFv1's declaration naming,
+  so the rewrite blast radius is 4 files / 589 lines.
   `extract-value.ts` exists only to fight EFv1's `EmitEntity`/`Placeholder`.
   The document pipeline (11 builders) never touches asset-emitter.
 
@@ -93,7 +96,7 @@ Plan:
    `@typespec/emitter-framework` (or asset-emitter being marked deprecated on
    npm). Check quarterly.
 3. **Rewrite (v0.4.0 headline or when trigger fires):** replace the
-   `TypeEmitter` subclass (~15 overrides, `src/schema-emitter.ts`) with a
+   `TypeEmitter` subclass (18 overrides, `src/schema-emitter.ts`) with a
    direct recursive type-to-JsonSchema walker. Kills `extract-value.ts`, the
    Placeholder gotchas, the deprecation risk, and neutralizes the competing
    emitter's only architectural differentiator. The test suite + golden
