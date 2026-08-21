@@ -19,36 +19,41 @@ Sorted by Pareto tier (P1 = the 1% that delivers 51%).
       version bumped, tarball audited, tag-triggered release workflow
       (SHA-pinned, verify gate, provenance), `0.3.0-beta.1` live on npm
       (`latest` tag), registry install + compile smoke verified
-- [ ] **P2: README sales page** — quick start, competitor comparison table,
-      feature matrix, rigor callouts, EFv1-architecture honesty section
-- [ ] **P2: Five worked examples** (`examples/`) — streetlights MQTT, Kafka +
-      security, WS chat, reusable components, split-schemas; CI compiles and
-      AJV-validates each
-- [ ] **P2: `@jsonSchemaExtension(key, value)`** — arbitrary JSON Schema
-      keywords on Model/ModelProperty/Union/Enum/Scalar, incl. `$ref`-sibling
-      policy
-- [ ] **P2: `@encodedName` support** — stdlib decorator, wire-format property
-      renaming in schema emitter + required arrays
-- [ ] **P2: `@extension("x-...", value)`** — AsyncAPI object spec extensions
-      (server/channel/operation/message); key must start `x-`. Neither emitter
-      ships this; we go first
+- [x] **P2: README sales page** — DONE (M4): hero + comparison table,
+      30-decorator matrix, installation with tspconfig, rigor callouts,
+      architecture honesty (EFv1 containment + v0.4.0 roadmap)
+- [x] **P2: Five worked examples** (`examples/`) — DONE (M5): streetlights
+      MQTT, Kafka + security, WS chat, reusable components, split-schemas;
+      `pnpm run check-examples` compiles all 13 examples with 0 diagnostics
+      and AJV-validates each in CI
+- [x] **P2: `@jsonSchemaExtension(key, value)`** — DONE (M6): arbitrary JSON
+      Schema keywords on Model/ModelProperty/Union/Enum/Scalar, inline +
+      `$ref`-sibling policy, 7 AJV-validated tests
+- [x] **P2: `@encodedName` support** — DONE (M7): wire-format renaming for
+      properties/required/discriminator via resolveEncodedName, 5 tests
+- [x] **P2: `@extension("x-...", value)`** — DONE (M8): AsyncAPI object spec
+      extensions on root/operations/messages, x- key guard, shipped first
+      (comparison-table row flipped)
 - [x] **P2: `asyncapi-id` emitter option** — DONE (M9): top-level document
       `id`; precedence: option > unset. 2 compliance tests + README/AGENTS docs
-- [ ] **P3: Rewrite `test/domain/protocol-websocket-mqtt.test.ts`** — 1515
-      lines / 50 tests asserting only `=== "3.1.0"`; replace with fixture
-      table asserting real binding keys, normalization, auto-bindingVersion
-- [ ] **P3: Tighten security-\* tests** — assert `in`/`name`/`scheme`/flows,
-      delete AWS SigV4/MAC/Hawk bearer clones
-- [ ] **P3: fast-check property suite** — ~7 properties (AJV always passes,
-      $ref integrity, constraint sanity, determinism, split-schemas graph)
-- [ ] **P3: EFv1 containment** — `generateSchemas()` sole
-      `@typespec/asset-emitter` seam + eslint no-restricted-imports guard
+- [x] **P3: Rewrite `test/domain/protocol-websocket-mqtt.test.ts`** — DONE
+      (M11): 1515 fake lines → 14 real tests locking normalization,
+      bindingVersions, field placement matrix; all AJV-validated
+- [x] **P3: Tighten security-\* tests** — DONE (M12): 5 fantasy suites (3208
+      lines, HOBA/VAPID/risk-auth clones) → 13 spec-exact AJV-validated tests;
+      corrected the apiKey-locations claim in AGENTS.md
+- [x] **P3: fast-check property suite** — DONE (M13): 6 properties (AJV
+      always passes, $ref integrity, constraint sanity, determinism,
+      split-schemas graph, shape), FC_SEED reproduction convention
+- [x] **P3: EFv1 containment** — DONE (M14): eslint no-restricted-imports
+      bans asset-emitter outside the 3-file schema seam; ROADMAP checked off
 - [x] **P3: Stable template-instantiation names** — DONE (M15): argument-derived
       naming (`PageUser`, `BoxInt32`, `PagePageUser`) + `duplicate-schema-name`
       collision diagnostic + inline-allOf for unspeakable bases; dangling `$ref`
       bug fixed. Locked by `test/compliance/template-instantiations.test.ts`
-- [ ] **P3: Publish stable v0.3.0** — CHANGELOG, tag, verify, fresh-install
-      smoke (only after all P2/P3 above are green)
+- [ ] **P3: Publish stable v0.3.0** — BLOCKED on user answers (M15 in 0.3.0
+      vs 0.4.0; stable timing; NPM_TOKEN rotation). CHANGELOG, tag, verify,
+      fresh-install smoke once unblocked. All other Phase 1-3 tasks green.
 - [ ] **P4: `@protocol` on Model never attaches message bindings** — found
       during M11 rewrite: `attachChannelBindings` looks up
       `ctx.channels[modelName]` (misses models); message bindings only work
