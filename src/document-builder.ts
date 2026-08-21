@@ -12,7 +12,7 @@
  */
 
 import { listServices } from "@typespec/compiler";
-import type { Program } from "@typespec/compiler";
+import type { Program, Type } from "@typespec/compiler";
 import { getVersion } from "@typespec/versioning";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { AsyncAPIConsolidatedState } from "./state.js";
@@ -84,8 +84,20 @@ export function buildAsyncAPIDocument(
   buildReusableComponents(state, ctx);
   applyReusableRefs(state, ctx);
 
-  const defaultContentType = getDefaultContentType(program, state);
-  const apiVersion = getApiVersion(program, state);
+  const defaultContentType = getFirstWithConflictWarning(
+    program,
+    state.defaultContentType,
+    (data) => data.contentType,
+    "conflicting-default-content-type",
+    (first, current) => ({ contentType: first, ignoredContentType: current }),
+  );
+  const apiVersion = getFirstWithConflictWarning(
+    program,
+    state.apiVersion,
+    (data) => data,
+    "conflicting-api-version",
+    (first, current) => ({ version: first, ignoredVersion: current }),
+  );
   const versionedVersion = getVersionedApiVersion(program);
 
   const document = assembleDocument(
@@ -106,62 +118,26 @@ export function buildAsyncAPIDocument(
     : document;
 }
 
-function getDefaultContentType(
-  program: Program,
-  state: AsyncAPIConsolidatedState,
-): string | undefined {
-  return getFirstWithConflictWarning(
-    program,
-    state.defaultContentType,
-    (data) => data.contentType,
-    (prog, type, first, current) =>
-      reportProgramDiagnostic(prog, {
-        code: "conflicting-default-content-type",
-        target: type,
-        format: { contentType: first, ignoredContentType: current },
-      }),
-  );
-}
-
-function getApiVersion(
-  program: Program,
-  state: AsyncAPIConsolidatedState,
-): string | undefined {
-  return getFirstWithConflictWarning(
-    program,
-    state.apiVersion,
-    (data) => data,
-    (prog, type, first, current) =>
-      reportProgramDiagnostic(prog, {
-        code: "conflicting-api-version",
-        target: type,
-        format: { version: first, ignoredVersion: current },
-      }),
-  );
-}
-
 function getFirstWithConflictWarning<T, V>(
   program: Program,
   map: Map<Type, T>,
   getValue: (data: T) => V,
-  reportConflict: (
-    program: Program,
-    type: Type,
-    firstValue: V,
-    currentValue: V,
-  ) => void,
+  code: "conflicting-default-content-type" | "conflicting-api-version",
+  buildFormat: (firstValue: V, currentValue: V) => Record<string, unknown>,
 ): V | undefined {
-  let firstType: Type | undefined;
   let firstValue: V | undefined;
   for (const [type, data] of map) {
     const value = getValue(data);
-    if (firstType === undefined) {
-      firstType = type;
+    if (firstValue === undefined) {
       firstValue = value;
       continue;
     }
     if (value !== firstValue) {
-      reportConflict(program, type, firstValue, value);
+      reportProgramDiagnostic(program, {
+        code,
+        target: type,
+        format: buildFormat(firstValue, value),
+      });
       break;
     }
   }
