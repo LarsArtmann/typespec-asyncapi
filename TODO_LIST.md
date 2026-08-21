@@ -15,14 +15,18 @@ and the v0.3.0 beta program are DONE — see CHANGELOG `[Unreleased]` and
 ## Release
 
 - [ ] **Publish stable v0.3.0** — BLOCKED on maintainer decisions (ship M15
-      in 0.3.0 vs 0.4.0; stable timing; NPM_TOKEN rotation). CHANGELOG, tag,
-      verify, fresh-install smoke once unblocked. `0.3.0-beta.1` is live on
+      in 0.3.0 vs 0.4.0; stable timing; NPM_TOKEN rotation; stale `beta`
+      dist-tag still points at `0.2.1-beta`). CHANGELOG, tag, verify,
+      fresh-install smoke once unblocked. `0.3.0-beta.1` is live on
       npm; everything else in the v0.3.0 plan (Phases 1-3) is green.
 - [ ] **`@protocol` on Model never attaches message bindings** — found during
       the M11 rewrite: `attachChannelBindings` looks up
       `ctx.channels[modelName]` (misses models); message bindings only work
       via `@bindings` on the model. Either route model protocolConfigs to the
       message object or warn on dead config.
+- [ ] **Examples for the three newest decorators** — `@jsonSchemaExtension`,
+      `@encodedName`, `@extension` appear in zero `examples/` projects; add
+      showcase usage so `check-examples` exercises them.
 
 ## Emitter Correctness
 
@@ -112,6 +116,11 @@ still-present 2026-08-21:
 
 **Hygiene:**
 
+- [ ] Property-suite depth — `test/property/emitter-properties.test.ts`
+      invariants P2 (constraint ordering) and P5 (ref-graph preservation)
+      only assert AJV validity, less than their names claim; generators cover
+      a narrow slice (no model→model refs, unions of models, inheritance,
+      generics, channel parameters). Either deepen assertions or rename.
 - [ ] `test/integration/round-trip-verification.test.ts` — module-level
       `doc` (line ~134) set by the first test, read by the rest; convert to
       `beforeAll`.
@@ -132,9 +141,10 @@ still-present 2026-08-21:
       would restore signal.
 - [ ] Root-cause the transient `bun test` exit-1-with-zero-failures (last
       seen 2026-08-15; suspected race over `coverage/`; clean re-runs pass).
-- [ ] Golden-file locks for the rewritten protocol/security suites
-      (M11/M12 cover behavior; no byte-level golden) and a named-union
-      fixture in an existing golden file.
+- [ ] Golden-file locks: for the rewritten protocol/security suites
+      (M11/M12 cover behavior; no byte-level golden), a named-union fixture,
+      and template-instantiation output (no golden file contains generic
+      instantiation names today).
 
 Post-release (feeds 0.3.1/0.4.0): docs site, v0.4.0 direct-AST spike + memo,
 openapi3 EFv2-migration watch. See `docs/planning/2026-08-21_09-04_SUPERB-v0.3.0-CLEAR-WINNER.md`

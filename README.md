@@ -317,7 +317,7 @@ Run all commands inside `nix develop .#default` to get the right toolchain (pnpm
 
 ### Releasing
 
-Releases are published automatically by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a `v*` tag runs the full `pnpm run verify` gate (build, lint, 1300+ tests, coverage ≥ 75%/file, zero code clones) and then publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements) attestation.
+Releases are published automatically by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a `v*` tag runs the full `pnpm run verify` gate (build, lint, 1250+ tests, coverage ≥ 75%/file, zero code clones) and then publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements) attestation.
 
 ```bash
 # bump version in package.json and update CHANGELOG.md first
@@ -332,12 +332,12 @@ The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publi
 | Metric | Value |
 | --- | --- |
 | Version | 0.3.0-beta.1 (npm, `latest`) |
-| Tests | 1310 passing (vitest) |
-| Coverage | ~97% average line coverage (gated at 75% per file) |
+| Tests | 1259 passing (vitest) |
+| Coverage | 98.1% average line coverage (gated at 75% per file) |
 | Build | 0 TypeScript errors (strict mode) |
 | Lint | 0 errors, 0 warnings (ESLint + oxlint) |
-| Decorators | 28 |
-| Diagnostics | 25 codes (19 error + 6 warning) |
+| Decorators | 30 |
+| Diagnostics | 30 codes (20 error + 10 warning) |
 | Protocols | 22 (auto-generated from `@asyncapi/specs`) |
 | Duplication | 0% (jscpd, 0% threshold) |
 | Output | Validates against official AsyncAPI 3.1.0 JSON Schema |

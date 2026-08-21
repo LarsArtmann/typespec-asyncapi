@@ -28,6 +28,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 - **`asyncapi-id` emitter option** — sets the AsyncAPI 3.1 root `id` identifier (typically a URN) from tspconfig.yaml; omitted when unset.
 
+### Changed
+
+- **WebSocket/MQTT suite rewritten with real assertions** — `test/domain/protocol-websocket-mqtt.test.ts`: 1515 lines / 50 fake tests (every assertion was only `asyncapi === "3.1.0"`) → 14 real tests locking `websocket`/`wss`/`mqtt5` normalization, exact auto-injected bindingVersions (ws 0.1.0, mqtt 0.2.0), mqtt `qos`/`retain`/`clientId`/`cleanSession`/`keepAlive`, and the ws-channel-only vs mqtt-server/operation/message placement matrix, including the misplacement warning (−1272 lines). (`fded21d`)
+- **Security suites consolidated to spec-exact checks** — five fantasy suites (3208 lines, 81 tests: HOBA/VAPID/AWS-SigV4/MAC/risk-based-auth bearer clones) → 13 AJV-validated tests in `test/domain/security-schemes.test.ts` asserting `in`/`name`/`scheme`/`bearerFormat`/`availableScopes` maps across all four OAuth2 flows, `openIdConnectUrl`, SASL types, X509, and `@operationSecurity` `$ref`s. Also corrected the AGENTS.md claim about `apiKey` locations (AsyncAPI 3.1 `apiKey` allows `in: user|password` only; header/query/cookie is `httpApiKey`). (`c816637`)
+- **fast-check property suite** — 6 invariants × 20 seeded runs over randomly generated specs: AJV always passes, consistent constraints, `~1`/`~0`-aware `$ref` resolution, type/const shape, split-schemas graph validity, byte-identical determinism. `FC_SEED` env reproduces counterexamples exactly. (`b2c2a5c`)
+- **asset-emitter containment enforced** — ESLint `no-restricted-imports` bans `@typespec/asset-emitter` in all of `src/` except the three-file schema seam (`schema-generator.ts`, `schema-emitter.ts`, `extract-value.ts`); the 11 document builders are compiler-only by construction. (`8669e9b`)
+
 ## [0.2.1-beta] - 2026-08-21
 
 ### Added
