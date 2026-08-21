@@ -9,13 +9,38 @@
 
 A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.1](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML or JSON.
 
-Every byte of output is validated against the official AsyncAPI 3.1.0 JSON Schema (AJV). All 19 AsyncAPI protocol bindings are auto-generated from `@asyncapi/specs` with version auto-injection, field-level validation, and placement checking. Model inheritance emits `allOf`, unions of models emit `oneOf`, and `@discriminator` enables polymorphic type patterns.
+For teams building event-driven APIs who want a **typed, validated, protocol-aware** AsyncAPI source of truth instead of hand-written YAML. Every byte of output is validated against the official AsyncAPI 3.1.0 JSON Schema (AJV) across a 270+-test compliance suite; all 19 protocol bindings are auto-generated from `@asyncapi/specs` with version auto-injection, field-level validation, and placement checking.
 
-## Quick Start
+## Why this emitter
+
+| Capability | This emitter | `tsp-asyncapi` (as of 2026-08) |
+| --- | --- | --- |
+| AsyncAPI version | 3.1.0 (latest), AJV-validated | 3.0.0 |
+| Protocols | 22, bindings auto-generated from official specs | 13, hand-written |
+| Reusable components | 7 `components.*` slots via 11 decorators (traits, parameters, correlationIds, bindings) | Not supported |
+| Multi-file output | `split-schemas` with `$ref` rewriting | Not supported |
+| `@typespec/versioning` | Integrated (`info.version` from versioned enums) | Deferred |
+| Generic models | Stable argument-derived schema names (`Page<User>` → `PageUser`) | — |
+| `x-` spec extensions | Planned for 0.3.0 | Planned |
+| Output validation | 270+ compliance tests against the official AsyncAPI 3.1.0 JSON Schema | 15 property tests |
+
+## Installation
 
 ```bash
-pnpm add @lars-artmann/typespec-asyncapi
+pnpm add @lars-artmann/typespec-asyncapi @typespec/compiler
 ```
+
+`@lars-artmann/typespec-asyncapi` is the scoped npm package; the emitter is loaded by the `tsp` compiler via `tspconfig.yaml`:
+
+```yaml
+emit:
+  - "@lars-artmann/typespec-asyncapi"
+options:
+  "@lars-artmann/typespec-asyncapi":
+    file-type: yaml
+```
+
+## Quick Start
 
 Create a TypeSpec file (`api.tsp`):
 
@@ -37,7 +62,7 @@ op publishEvent(): Event;
 Generate AsyncAPI:
 
 ```bash
-bunx tsp compile api.tsp --emit @lars-artmann/typespec-asyncapi
+npx tsp compile api.tsp
 ```
 
 Output (`tsp-output/@lars-artmann/typespec-asyncapi/asyncapi.yaml`):
@@ -83,25 +108,69 @@ components:
 
 ## Features
 
-### 16 Decorators
+### 28 Decorators
 
-| Decorator                         | Target                        | Purpose                                            |
-| --------------------------------- | ----------------------------- | -------------------------------------------------- |
-| `@channel(address, description?)` | Operation                     | Defines a channel address                          |
-| `@publish` / `@subscribe`         | Operation                     | Marks operation as send / receive                  |
-| `@server(name, config)`           | Namespace                     | Defines server (host, protocol, description)       |
-| `@message(config)`                | Model                         | Configures message metadata (title, contentType)   |
-| `@protocol(config)`               | Operation / Model             | Applies protocol-specific channel bindings         |
-| `@security(config)`               | Operation / Namespace         | Applies security schemes                           |
-| `@bindings(config)`               | Operation / Model / Namespace | Applies generic protocol bindings (auto-versioned) |
-| `@tags(value)`                    | Model / Operation / Namespace | Categorizes with tag arrays                        |
-| `@correlationId(location)`        | Model                         | Specifies correlation ID for message tracing       |
-| `@header(name, value?)`           | Model / ModelProperty         | Defines message headers                            |
-| `@reply(replyModel, address?)`    | Operation                     | Operation reply with message reference             |
-| `@defaultContentType(type)`       | Namespace                     | Sets `defaultContentType` on document root         |
-| `@operationId(id)`                | Operation                     | Overrides auto-generated operation key             |
-| `@messageId(id)`                  | Model                         | Overrides auto-generated message key               |
-| `@apiVersion(version)`            | Namespace                     | Sets `info.version` on document root               |
+**Core messaging**
+
+| Decorator | Target | Purpose |
+| --- | --- | --- |
+| `@channel(address, description?)` | Operation | Defines a channel address |
+| `@publish` / `@subscribe` | Operation | Marks operation as send / receive |
+| `@reply(replyModel, address?)` | Operation | Operation reply with message reference |
+
+**Servers**
+
+| Decorator | Target | Purpose |
+| --- | --- | --- |
+| `@server(name, config)` | Namespace | Defines server (url, protocol, description, variables) |
+| `@useChannelServer(name)` | Operation | Binds a channel to a specific server |
+
+**Messages**
+
+| Decorator | Target | Purpose |
+| --- | --- | --- |
+| `@message(config)` | Model | Message metadata (title, contentType, description, examples) |
+| `@messageId(id)` | Model | Overrides auto-generated message key |
+| `@header(name, value?)` | Model / ModelProperty | Defines message headers |
+| `@correlationId(location)` | Model | Correlation ID runtime expression for message tracing |
+
+**Protocols & bindings**
+
+| Decorator | Target | Purpose |
+| --- | --- | --- |
+| `@protocol(config)` | Operation / Model | Protocol-specific config at spec-correct placements |
+| `@bindings(config)` | Operation / Model / Namespace | Generic protocol bindings (auto-versioned, placement-checked) |
+| `@reusableBinding(name, config)` | Namespace | Declares a reusable binding |
+| `@useBinding(name)` | Operation / Model / Namespace | References a reusable binding |
+| `@useChannelBinding(name)` | Operation | References a reusable channel binding |
+
+**Security**
+
+| Decorator | Target | Purpose |
+| --- | --- | --- |
+| `@security(config)` | Operation / Namespace | Declares security schemes (`oauth2`, `httpApiKey`, `scramSha512`, …) |
+| `@operationSecurity(config)` | Operation | Attaches security requirements to one operation |
+
+**Document metadata**
+
+| Decorator | Target | Purpose |
+| --- | --- | --- |
+| `@apiVersion(version)` | Namespace | Sets `info.version` |
+| `@defaultContentType(type)` | Namespace | Sets `defaultContentType` on document root |
+| `@operationId(id)` | Operation | Overrides auto-generated operation key |
+| `@tags(value)` | Model / Operation / Namespace | Tags (strings or rich `#{name, description, externalDocs}` objects) |
+
+**Reusable components** (`components.*` slots — traits, parameters, correlation IDs)
+
+| Decorator | Target | Purpose |
+| --- | --- | --- |
+| `@operationTrait(name, config)` | Namespace | Declares `components.operationTraits` entry |
+| `@useOperationTrait(name)` | Operation | References an operation trait |
+| `@messageTrait(name, config)` | Namespace | Declares `components.messageTraits` entry |
+| `@useMessageTrait(name)` | Model | References a message trait |
+| `@parameter(name, config)` | Namespace | Declares `components.parameters` for channel address templating |
+| `@reusableCorrelationId(name, location)` | Namespace | Declares `components.correlationIds` entry |
+| `@useCorrelationId(name)` | Model | References a reusable correlation ID |
 
 Decorators accept both `{}` (model expression) and `#{}` (value literal) syntax.
 
@@ -155,6 +224,26 @@ The emitter reads the latest version enum value for `info.version`. Precedence: 
 ### Validation
 
 The emitter provides 25 compile-time diagnostics (19 error + 6 warning) that catch invalid configurations before they reach your AsyncAPI output — unsupported protocols, invalid binding versions, missing channel paths, malformed server URLs, and more.
+
+### Rigor
+
+- **1310 tests** (vitest), including a **270+ test AsyncAPI 3.1.0 compliance suite** that validates every output against the official AsyncAPI 3.1.0 JSON Schema via AJV
+- **~97% line coverage** (gated at 75% minimum per file in CI)
+- **Zero code clones** (jscpd, 0% threshold enforced in CI)
+- **Strict TypeScript** — zero `any`, `noUncheckedIndexedAccess`, type-aware ESLint (`strictTypeChecked`) with zero errors and zero warnings
+- Real-world regression guards: canonical AsyncAPI specs (Streetlights MQTT, WebSocket Chat, Sensor IoT, Enterprise Notifications) and adapted model patterns from real GitHub projects compile and validate on every CI run
+
+## Architecture
+
+This emitter is built on the official `@typespec/asset-emitter` framework ("EFv1"). That framework gives us declaration scoping, reference resolution, and cycle handling for free — but it is intentionally thin: schema assembly happens in our own table-driven pipeline.
+
+**Honest trade-off:** the asset-emitter is an undocumented internal API of the TypeSpec compiler. Major compiler releases can change it. We contain this risk in three ways:
+
+1. `generateSchemas()` in `src/schema-generator.ts` is the single `@typespec/asset-emitter` import seam — everything downstream is plain compiler AST types.
+2. The compliance suite + golden files pin exact output, so any framework drift breaks CI loudly, not silently.
+3. A direct-AST emitter (framework-free) is the v0.4.0 roadmap item; the schema-emitter surface is small enough that the migration is bounded.
+
+If you evaluate emitters on architecture, the deciding fact is output: every document this emitter ships validates against the AsyncAPI 3.1.0 JSON Schema.
 
 ## Examples
 
@@ -230,12 +319,14 @@ The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publi
 
 ## Status
 
-| Metric  | Value      |
-| ------- | ---------- |
-| Version | 0.2.1-beta |
-
+| Metric | Value |
+| --- | --- |
+| Version | 0.3.0-beta.1 (npm, `latest`) |
+| Tests | 1310 passing (vitest) |
+| Coverage | ~97% average line coverage (gated at 75% per file) |
 | Build | 0 TypeScript errors (strict mode) |
 | Lint | 0 errors, 0 warnings (ESLint + oxlint) |
+| Decorators | 28 |
 | Diagnostics | 25 codes (19 error + 6 warning) |
 | Protocols | 22 (auto-generated from `@asyncapi/specs`) |
 | Duplication | 0% (jscpd, 0% threshold) |
