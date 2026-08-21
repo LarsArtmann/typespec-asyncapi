@@ -44,9 +44,21 @@ import {
   serializeValueAsJson,
 } from "@typespec/compiler";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
+import { jsonSchemaExtensionMap } from "./state-writers.js";
 
 /** Types that accept `@example` per TypeSpec stdlib. */
 type ExampleTarget = Model | Scalar | Enum | Union | ModelProperty;
+
+/**
+ * Read a target's merged `@jsonSchemaExtension` record (repeatable; the
+ * outermost same-key application wins). Returns `undefined` when none exist.
+ */
+function getJsonSchemaExtensions(
+  program: Program,
+  target: ExampleTarget,
+): Record<string, unknown> | undefined {
+  return jsonSchemaExtensionMap(program).get(target);
+}
 
 /**
  * Validation-constraint mapping table: each entry pairs a TypeSpec getter
@@ -114,6 +126,11 @@ export function applyMetadata(
     schema.examples = examples.map((ex) =>
       serializeValueAsJson(program, ex.value, ex.value.type, encode),
     );
+  }
+
+  const extensions = getJsonSchemaExtensions(program, target);
+  if (extensions) {
+    Object.assign(schema, extensions);
   }
 }
 

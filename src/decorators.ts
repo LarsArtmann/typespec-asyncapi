@@ -34,6 +34,7 @@ import {
   $reusableCorrelationId,
   $server,
 } from "./namespace-decorators.js";
+import { $jsonSchemaExtension } from "./extension-decorators.js";
 import {
   $useBinding,
   $useChannelBinding,
@@ -58,6 +59,7 @@ export const $decorators = {
     operationId: $operationId,
     operationSecurity: $operationSecurity,
     operationTrait: $operationTrait,
+    jsonSchemaExtension: $jsonSchemaExtension,
     parameter: $parameter,
     protocol: $protocol,
     publish: $publish,

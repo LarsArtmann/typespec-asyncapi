@@ -94,6 +94,12 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "warning",
     },
+    "invalid-json-schema-extension-key": {
+      messages: {
+        default: paramMessage`Invalid @jsonSchemaExtension key '${"key"}': must be a non-empty string matching /^[A-Za-z_][A-Za-z0-9_.-]*$/. The extension was skipped.`,
+      },
+      severity: "warning",
+    },
     "server-protocol-required": {
       messages: {
         default: "Server protocol is required.",
@@ -251,4 +257,5 @@ export const stateSymbols = {
   channelBindingRefs: Symbol("channelBindingRefs"),
   channelServerRefs: Symbol("channelServerRefs"),
   operationSecurityRefs: Symbol("operationSecurityRefs"),
+  jsonSchemaExtensions: Symbol("jsonSchemaExtensions"),
 } as const;

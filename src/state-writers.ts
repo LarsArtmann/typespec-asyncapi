@@ -333,3 +333,20 @@ export const storeOperationSecurityRef = (
 ): void =>
   // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
   storeMulti(program, stateSymbols.operationSecurityRefs, target, ref);
+
+/** State map of merged `@jsonSchemaExtension` records (keyword → JSON value). */
+export const jsonSchemaExtensionMap = (
+  program: Program,
+): Map<Type, Record<string, unknown>> =>
+  getStateMap(program, stateSymbols.jsonSchemaExtensions);
+
+/** Merge one `@jsonSchemaExtension(key, value)` entry into the target's record. */
+export const storeJsonSchemaExtension = (
+  program: Program,
+  target: Type,
+  key: string,
+  value: unknown,
+): void => {
+  const map = jsonSchemaExtensionMap(program);
+  map.set(target, { ...map.get(target), [key]: value });
+};

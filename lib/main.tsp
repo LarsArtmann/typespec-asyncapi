@@ -135,6 +135,18 @@ extern dec messageId(target: Model, id: valueof string);
 extern dec apiVersion(target: Namespace, version: valueof string);
 
 /**
+ * Attach an arbitrary JSON Schema keyword to a schema. Repeatable; later
+ * applications with the same key win. Applied inline and as a $ref sibling.
+ * @param key The JSON Schema keyword (e.g. "x-custom-flag", "multipleOf")
+ * @param value The keyword value (any JSON value)
+ */
+extern dec jsonSchemaExtension(
+  target: Model | ModelProperty | Union | Enum | Scalar,
+  key: valueof string,
+  value: valueof unknown
+);
+
+/**
  * Define a reusable operation trait
  * @param name Trait name (used as key in components.operationTraits)
  * @param config Trait configuration (description, summary, title)

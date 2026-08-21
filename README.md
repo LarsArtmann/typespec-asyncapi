@@ -108,7 +108,7 @@ components:
 
 ## Features
 
-### 28 Decorators
+### 29 Decorators
 
 **Core messaging**
 
@@ -158,6 +158,7 @@ components:
 | `@apiVersion(version)` | Namespace | Sets `info.version` |
 | `@defaultContentType(type)` | Namespace | Sets `defaultContentType` on document root |
 | `@operationId(id)` | Operation | Overrides auto-generated operation key |
+| `@jsonSchemaExtension(key, value)` | Model / ModelProperty / Union / Enum / Scalar | Arbitrary JSON Schema keywords, repeatable |
 | `@tags(value)` | Model / Operation / Namespace | Tags (strings or rich `#{name, description, externalDocs}` objects) |
 
 **Reusable components** (`components.*` slots — traits, parameters, correlation IDs)
@@ -194,6 +195,8 @@ Binding versions are auto-injected when omitted. Protocol aliases (`websocket`�
 Every TypeSpec scalar maps to the correct JSON Schema type and format (int8-64, uint8-64, float32/64, decimal, dateTime, duration, bytes, url, and more). Named models, enums, and scalars use `$ref` for clean component reuse. Inheritance, unions, tuples, records, and multi-message operations are all supported.
 
 **Constraint decorators** are fully mapped: `@minValue`, `@maxValue`, `@minValueExclusive`, `@maxValueExclusive`, `@minLength`, `@maxLength`, `@pattern`, `@format`, `@minItems`, `@maxItems`, `#deprecated`, `@summary` (→`title`), `@example` (→`examples`), and `@visibility` (→`readOnly`/`writeOnly`) all produce the correct JSON Schema keywords.
+
+**`@jsonSchemaExtension(key, value)`** attaches arbitrary JSON Schema keywords (`x-` extensions, `multipleOf`, vendor keywords) to any Model, ModelProperty, Union, Enum, or Scalar — inline and as `$ref` siblings. Repeatable; the outermost same-key application wins; object/array values use `#{}` / `#[]` literals.
 
 **Generic models** get stable, argument-derived schema names: `Page<User>` becomes `components.schemas.PageUser`, `Box<int32>` becomes `BoxInt32`, and `Page<Page<User>>` becomes `PagePageUser` (each argument's name with its first letter capitalized, applied recursively). Unspeakable instantiations — anonymous or literal arguments like `Box<{ x: string }>` — are inlined instead of referenced, and `Record<string, T>` maps to `{ type: "object", additionalProperties }`. A model named `PageUser` colliding with an instantiation `Page<User>` triggers a `duplicate-schema-name` warning.
 
