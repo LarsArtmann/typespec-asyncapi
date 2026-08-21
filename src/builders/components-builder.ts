@@ -74,7 +74,6 @@ export const buildReusableComponents: BuilderFn = (state, ctx) => {
   Object.assign(
     ctx.messageTraits,
     populateNamed(state.messageTraits, (t) => ({
-      name: t.name,
       ...pickOpt(t, [
         "contentType",
         "description",
@@ -85,6 +84,7 @@ export const buildReusableComponents: BuilderFn = (state, ctx) => {
         "headers",
         "correlationId",
       ]),
+      name: t.name,
     })),
   );
   Object.assign(
@@ -147,12 +147,16 @@ export const applyReusableRefs: BuilderFn = (state, ctx) => {
   applyChannelBindingRefs(state, ctx);
 };
 
-function pickOpt(data: object, keys: string[]): DataRecord {
-  const src = data as DataRecord;
-  const out: DataRecord = {};
+function pickOpt<T extends object, K extends keyof T>(
+  data: T,
+  keys: readonly K[],
+): Pick<T, K> {
+  const out = {} as Pick<T, K>;
+  const src = data as Record<K, unknown>;
   for (const key of keys) {
-    if (src[key] !== undefined) {
-      out[key] = src[key];
+    const value = src[key];
+    if (value !== undefined) {
+      out[key] = value as T[K];
     }
   }
   return out;
