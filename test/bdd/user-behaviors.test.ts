@@ -8,6 +8,7 @@
  * They verify observable behavior, not implementation details.
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 import {
@@ -100,7 +101,7 @@ describe("bdd: user configures protocol bindings", () => {
     const channel = Object.values(doc.channels!)[0]!;
     expect(channel.bindings).toBeDefined();
     expect(channel.bindings!.kafka).toBeDefined();
-    expect(channel.bindings!.kafka!.bindingVersion).toBe("0.5.0");
+    expect(inlineObject(channel.bindings, "bindings").kafka!.bindingVersion).toBe("0.5.0");
   });
 });
 
@@ -270,6 +271,6 @@ describe("bdd: user applies @bindings on Namespace for server bindings", () => {
     `);
     expect(doc.servers!.broker.bindings).toBeDefined();
     expect(doc.servers!.broker.bindings!.mqtt).toBeDefined();
-    expect(doc.servers!.broker.bindings!.mqtt!.clientId).toBe("my-client");
+    expect(inlineObject(doc.servers!.broker.bindings, "bindings").mqtt!.clientId).toBe("my-client");
   });
 });

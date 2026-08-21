@@ -4,6 +4,7 @@
  * Verifies that @bindings applied to a Namespace attaches bindings to servers.
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 describe("integration: namespace @bindings", () => {
@@ -27,7 +28,7 @@ describe("integration: namespace @bindings", () => {
 
     expect(doc.servers!["mqtt-broker"]).toBeDefined();
     expect(doc.servers!["mqtt-broker"].bindings).toBeDefined();
-    const binding = doc.servers!["mqtt-broker"].bindings!;
+    const binding = inlineObject(doc.servers!["mqtt-broker"].bindings, "bindings");
     expect(binding.mqtt).toBeDefined();
     expect(binding.mqtt.clientId).toBe("my-client");
     expect(binding.mqtt.bindingVersion).toBe("0.2.0");

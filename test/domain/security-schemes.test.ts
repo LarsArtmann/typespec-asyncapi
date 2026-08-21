@@ -8,6 +8,7 @@
  * `flows.availableScopes`, `openIdConnectUrl`), all AJV-validated.
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type { SecurityScheme } from "../../src/domain/models/asyncapi-document.js";
 
@@ -104,7 +105,7 @@ describe("http security schemes", () => {
       @channel("events")
       op send(): Msg;
     `);
-    expect(doc.components!.securitySchemes!.digest.scheme).toBe("digest");
+    expect(inlineObject(doc.components!.securitySchemes!.digest, "security scheme").scheme).toBe("digest");
   });
 });
 
@@ -260,8 +261,8 @@ describe("openIdConnect and asymmetric schemes", () => {
       @channel("events")
       op send(): Msg;
     `);
-    expect(doc.components!.securitySchemes!.cert.type).toBe("X509");
-    expect(doc.components!.securitySchemes!.gss.type).toBe("gssapi");
+    expect(inlineObject(doc.components!.securitySchemes!.cert, "security scheme").type).toBe("X509");
+    expect(inlineObject(doc.components!.securitySchemes!.gss, "security scheme").type).toBe("gssapi");
   });
 });
 

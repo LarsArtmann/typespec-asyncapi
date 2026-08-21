@@ -5,6 +5,7 @@
  * namespaces do not cross-contaminate when compiled in the same document.
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 describe("integration: multi-namespace isolation", () => {
@@ -78,10 +79,10 @@ describe("integration: multi-namespace isolation", () => {
     expect(doc.components?.securitySchemes?.["ns-b-auth"]).toBeDefined();
 
     // Correct types
-    expect(doc.components!.securitySchemes!["ns-a-auth"].type).toBe(
+    expect(inlineObject(doc.components!.securitySchemes!["ns-a-auth"], "security scheme").type).toBe(
       "userPassword",
     );
-    expect(doc.components!.securitySchemes!["ns-b-auth"].type).toBe(
+    expect(inlineObject(doc.components!.securitySchemes!["ns-b-auth"], "security scheme").type).toBe(
       "scramSha256",
     );
   });

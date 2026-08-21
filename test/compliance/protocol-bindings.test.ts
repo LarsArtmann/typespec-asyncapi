@@ -10,6 +10,7 @@
  * Spec reference: https://github.com/asyncapi/bindings
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
@@ -42,7 +43,7 @@ function getMsgBindings(
   name: string,
 ): ProtocolBindings {
   const msg = doc.components!.messages![name] as MessageObject;
-  return msg.bindings!;
+  return inlineObject(msg.bindings, "bindings");
 }
 
 // ============================================================================
@@ -66,7 +67,7 @@ describe("spec Compliance: Kafka Bindings", () => {
       op publish(): Event;
     `);
 
-    const binding = doc.channels!["events"].bindings!;
+    const binding = inlineObject(doc.channels!["events"].bindings, "bindings");
     expect(binding.kafka).toBeDefined();
     expect(binding.kafka.topic).toBe("events-topic");
     expect(binding.kafka.partitions).toBe(3);
@@ -86,7 +87,7 @@ describe("spec Compliance: Kafka Bindings", () => {
       op publish(): Event;
     `);
 
-    const binding = doc.channels!["events"].bindings!;
+    const binding = inlineObject(doc.channels!["events"].bindings, "bindings");
     expect(binding.kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
   });
 
@@ -105,7 +106,7 @@ describe("spec Compliance: Kafka Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings!;
+    const binding = inlineObject(op.bindings, "bindings");
     expect(binding.kafka).toBeDefined();
     expect(binding.kafka.groupId).toBeDefined();
     expect(binding.kafka.clientId).toBeDefined();
@@ -148,7 +149,7 @@ describe("spec Compliance: Kafka Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings!;
+    const binding = inlineObject(op.bindings, "bindings");
     expect(binding.kafka.bindingVersion).toBe("0.4.0");
   });
 });
@@ -175,7 +176,7 @@ describe("spec Compliance: AMQP Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings!;
+    const binding = inlineObject(op.bindings, "bindings");
     expect(binding.amqp).toBeDefined();
     expect(binding.amqp.priority).toBe(5);
     expect(binding.amqp.deliveryMode).toBe(2);
@@ -224,7 +225,7 @@ describe("spec Compliance: MQTT Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings!;
+    const binding = inlineObject(op.bindings, "bindings");
     expect(binding.mqtt).toBeDefined();
     expect(binding.mqtt.qos).toBe(2);
     expect(binding.mqtt.retain).toBeTruthy();
@@ -258,7 +259,7 @@ describe("spec Compliance: MQTT Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings!;
+    const binding = inlineObject(op.bindings, "bindings");
     expect(binding.mqtt.qos).toBe(0);
     expect(binding.mqtt.bindingVersion).toBe(LATEST_BINDING_VERSIONS.mqtt);
   });
@@ -283,7 +284,7 @@ describe("spec Compliance: WebSocket Bindings", () => {
       op subscribe(): Message;
     `);
 
-    const binding = doc.channels!["ws-channel"].bindings!;
+    const binding = inlineObject(doc.channels!["ws-channel"].bindings, "bindings");
     expect(binding.ws).toBeDefined();
     expect(binding.ws.method).toBe("GET");
     expect(binding.ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
@@ -301,7 +302,7 @@ describe("spec Compliance: WebSocket Bindings", () => {
       op subscribe(): Event;
     `);
 
-    const binding = doc.channels!["ws-channel"].bindings!;
+    const binding = inlineObject(doc.channels!["ws-channel"].bindings, "bindings");
     expect(binding.ws).toBeDefined();
     expect(binding.websocket).toBeUndefined();
     expect(binding.ws.method).toBe("GET");
@@ -320,7 +321,7 @@ describe("spec Compliance: WebSocket Bindings", () => {
       op subscribe(): Event;
     `);
 
-    const binding = doc.channels!["ws-channel"].bindings!;
+    const binding = inlineObject(doc.channels!["ws-channel"].bindings, "bindings");
     expect(binding.ws.method).toBe("POST");
     expect(binding.ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
   });
@@ -364,7 +365,7 @@ describe("spec Compliance: HTTP Bindings", () => {
     `);
 
     const op = getOp(doc);
-    const binding = op.bindings!;
+    const binding = inlineObject(op.bindings, "bindings");
     expect(binding.http).toBeDefined();
     expect(binding.http.method).toBe("POST");
     expect(binding.http.bindingVersion).toBe(LATEST_BINDING_VERSIONS.http);
@@ -415,12 +416,12 @@ describe("spec Compliance: @protocol Field Placement", () => {
       op publish(): Event;
     `);
 
-    const channelBinding = doc.channels!["events"].bindings!;
+    const channelBinding = inlineObject(doc.channels!["events"].bindings, "bindings");
     expect(channelBinding.kafka.partitions).toBe(3);
     expect(channelBinding.kafka.replicas).toBe(2);
     expect(channelBinding.kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
 
-    const opBinding = getOp(doc).bindings!;
+    const opBinding = inlineObject(getOp(doc).bindings, "bindings");
     expect(opBinding.kafka.groupId).toStrictEqual({
       type: "string",
       const: "order-service",
@@ -450,7 +451,7 @@ describe("spec Compliance: @protocol Field Placement", () => {
     `);
 
     expect(doc.channels!["events"].bindings).toBeUndefined();
-    const opBinding = getOp(doc).bindings!;
+    const opBinding = inlineObject(getOp(doc).bindings, "bindings");
     expect(opBinding.mqtt.qos).toBe(2);
     expect(opBinding.mqtt.retain).toBe(true);
     expect(opBinding.mqtt.bindingVersion).toBeDefined();
@@ -469,7 +470,7 @@ describe("spec Compliance: @protocol Field Placement", () => {
       op publish(): Event;
     `);
 
-    const channelBinding = doc.channels!["events"].bindings!;
+    const channelBinding = inlineObject(doc.channels!["events"].bindings, "bindings");
     expect(channelBinding.ws).toBeDefined();
     expect(channelBinding.ws.headers).toStrictEqual({
       authorization: "Bearer",
@@ -492,7 +493,7 @@ describe("spec Compliance: @protocol Field Placement", () => {
       op publish(): Event;
     `);
 
-    const opBinding = getOp(doc).bindings!;
+    const opBinding = inlineObject(getOp(doc).bindings, "bindings");
     expect(opBinding.kafka.groupId).toStrictEqual({
       type: "string",
       const: "order-service",
@@ -564,10 +565,10 @@ describe("spec Compliance: Multi-Protocol Bindings", () => {
     `);
 
     const channels = doc.channels!;
-    const kBinding = channels["kafka-ch"].bindings!;
+    const kBinding = inlineObject(channels["kafka-ch"].bindings, "bindings");
     expect(kBinding.kafka?.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
 
-    const wsBinding = channels["ws-ch"].bindings!;
+    const wsBinding = inlineObject(channels["ws-ch"].bindings, "bindings");
     expect(wsBinding.ws?.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
   });
 });

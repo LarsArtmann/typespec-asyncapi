@@ -9,6 +9,7 @@
  *   https://www.asyncapi.com/docs/reference/specification/v3.1.0#securitySchemeObject
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 describe("spec Compliance: Servers", () => {
@@ -133,7 +134,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    expect(doc.components!.securitySchemes!.scram.type).toBe("scramSha256");
+    expect(inlineObject(doc.components!.securitySchemes!.scram, "security scheme").type).toBe("scramSha256");
   });
 
   it("emits oauth2 security scheme with flows", async () => {
@@ -173,7 +174,7 @@ describe("spec Compliance: Security Schemes", () => {
       op publish(): Event;
     `);
 
-    expect(doc.components!.securitySchemes!.cert.type).toBe("X509");
+    expect(inlineObject(doc.components!.securitySchemes!.cert, "security scheme").type).toBe("X509");
   });
 
   it("emits multiple security schemes on one target", async () => {

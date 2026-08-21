@@ -11,6 +11,7 @@
  * still correct per the @asyncapi/specs binding definitions.
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
@@ -68,7 +69,7 @@ describe("integration: new protocol bindings end-to-end", () => {
     expect(server).toBeDefined();
     expect(server.bindings).toBeDefined();
     expect(server.bindings!.solace).toBeDefined();
-    expect(server.bindings!.solace.bindingVersion).toBe(LATEST_BINDING_VERSIONS.solace);
+    expect(inlineObject(server.bindings, "bindings").solace.bindingVersion).toBe(LATEST_BINDING_VERSIONS.solace);
   });
 
   it("anypointmq bindings compile through emitter without errors", async () => {

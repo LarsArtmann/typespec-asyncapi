@@ -23,7 +23,60 @@
  * ```
  */
 
-import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
+import type {
+  JsonSchema,
+  ParsedAsyncAPIDocument,
+  Ref,
+} from "../../src/domain/models/asyncapi-document.js";
+
+/**
+ * Narrows a `Ref | T` union to the inline object variant and throws otherwise.
+ *
+ * Emitted documents mix `$ref` pointers and inline objects (e.g. channel
+ * `bindings` may be inline or a `#/components/channelBindings/*` ref). Tests
+ * that deep-assert inline values use this guard so a surprise `$ref` fails
+ * loudly instead of silently reading `undefined` fields.
+ *
+ * @param value - Union value to narrow
+ * @param label - Human-readable description for the error message
+ * @returns The inline object variant
+ * @throws {Error} If the value is undefined or a `$ref` pointer
+ */
+export function inlineObject<T extends object>(
+  value: Ref | T | undefined | null,
+  label = "value",
+): T {
+  if (!value) {
+    throw new Error(`Expected ${label} to be defined`);
+  }
+  if ("$ref" in value) {
+    throw new Error(
+      `Expected ${label} to be an inline object, got a $ref pointer: ${value.$ref}`,
+    );
+  }
+  return value;
+}
+
+/**
+ * Narrows a JSON Schema `items`-style union (`JsonSchema | JsonSchema[] |
+ * boolean`) to a single inline schema object and throws otherwise.
+ *
+ * @param value - Union value to narrow
+ * @param label - Human-readable description for the error message
+ * @returns The single schema object
+ * @throws {Error} If the value is undefined, a boolean schema, or a tuple array
+ */
+export function asJsonSchema(
+  value: JsonSchema | JsonSchema[] | boolean | undefined | null,
+  label = "schema",
+): JsonSchema {
+  if (!value || typeof value === "boolean" || Array.isArray(value)) {
+    throw new Error(
+      `Expected ${label} to be a single inline schema object, got: ${JSON.stringify(value)}`,
+    );
+  }
+  return value;
+}
 
 /**
  * Type guard: Asserts value is AsyncAPI 3.1 document

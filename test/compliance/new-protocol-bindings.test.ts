@@ -5,6 +5,7 @@
  * validates against the official AsyncAPI 3.1.0 JSON Schema.
  */
 
+import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
 import { parse as parseYAML } from "yaml";
@@ -40,7 +41,7 @@ describe("spec Compliance: Google Pub/Sub Bindings", () => {
       op publish(): Event;
     `);
 
-    const binding = doc.channels!["events"].bindings!;
+    const binding = inlineObject(doc.channels!["events"].bindings, "bindings");
     expect(binding.googlepubsub).toBeDefined();
     expect(binding.googlepubsub.messageRetentionDuration).toBe("600s");
     expect(binding.googlepubsub.bindingVersion).toBe("0.2.0");
@@ -66,8 +67,8 @@ describe("spec Compliance: Google Pub/Sub Bindings", () => {
     };
     expect(msgObj.bindings).toBeDefined();
     expect(msgObj.bindings!.googlepubsub).toBeDefined();
-    expect(msgObj.bindings!.googlepubsub.orderingKey).toBe("partition-1");
-    expect(msgObj.bindings!.googlepubsub.bindingVersion).toBe("0.2.0");
+    expect(inlineObject(msgObj.bindings, "bindings").googlepubsub.orderingKey).toBe("partition-1");
+    expect(inlineObject(msgObj.bindings, "bindings").googlepubsub.bindingVersion).toBe("0.2.0");
   });
 
   it("accepts Google Pub/Sub as server protocol", async () => {
@@ -101,7 +102,7 @@ describe("spec Compliance: SNS Bindings", () => {
       op publish(): Event;
     `);
 
-    const binding = doc.channels!.notifications.bindings!;
+    const binding = inlineObject(doc.channels!.notifications.bindings, "bindings");
     expect(binding.sns).toBeDefined();
     expect(binding.sns.name).toBe("my-topic");
     expect(binding.sns.bindingVersion).toBe("0.1.0");
@@ -127,9 +128,9 @@ describe("spec Compliance: SNS Bindings", () => {
 
     expect(op.bindings).toBeDefined();
     expect(op.bindings!.sns).toBeDefined();
-    expect(op.bindings!.sns.topic).toBeDefined();
-    expect(op.bindings!.sns.consumers).toBeDefined();
-    expect(op.bindings!.sns.bindingVersion).toBe("0.1.0");
+    expect(inlineObject(op.bindings, "bindings").sns.topic).toBeDefined();
+    expect(inlineObject(op.bindings, "bindings").sns.consumers).toBeDefined();
+    expect(inlineObject(op.bindings, "bindings").sns.bindingVersion).toBe("0.1.0");
   });
 
   it("accepts SNS as server protocol", async () => {
