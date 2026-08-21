@@ -2,17 +2,40 @@
  * Integration tests for AsyncAPI Standard Protocol Bindings with Emitter
  *
  * Tests the integration of AsyncAPI 3.1 standard protocol bindings with the TypeSpec emitter.
- * Focuses on emitter functionality rather than custom binding factories.
+ * Focuses on whole-document integration: every compiled spec must produce zero error
+ * diagnostics and validate against the official AsyncAPI 3.1.0 JSON Schema.
+ * Binding-field placement is covered by test/compliance/protocol-bindings.test.ts.
  */
 
-import { compileAsyncAPISpec } from "../utils/test-helpers";
+import {
+  compileAsyncAPISpec,
+  parseAsyncAPIOutput,
+  type ParsedAsyncAPIDocument,
+} from "../utils/test-helpers";
 import { validateAsyncAPIDocument } from "../utils/schema-validator.js";
-import { inlineObject } from "../utils/type-guards.js";
-import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import {
   PROTOCOL_LIST,
   isSupportedProtocol,
 } from "../../src/constants/protocols.js";
+
+/**
+ * Compile TypeSpec source, assert zero error diagnostics, and validate the
+ * parsed document against the official AsyncAPI 3.1.0 schema.
+ *
+ * Returns the clean parsed document (without the test-only `diagnostics` /
+ * `outputFiles` extras), which the strict root schema would reject.
+ */
+async function compileAndValidateIntegrationSpec(
+  source: string,
+): Promise<ParsedAsyncAPIDocument> {
+  const spec = await compileAsyncAPISpec(source);
+  expect(
+    spec.diagnostics.filter((d) => d.severity === "error"),
+  ).toHaveLength(0);
+  const document = await parseAsyncAPIOutput(spec.outputFiles);
+  validateAsyncAPIDocument(document);
+  return document;
+}
 
 describe("asyncAPI Protocol Binding Integration", () => {
   describe("kafka Protocol Integration", () => {
@@ -37,7 +60,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
         op handleUserEvent(): UserEvent;
       `;
 
-      const spec = await compileAsyncAPISpec(source);
+      const spec = await compileAndValidateIntegrationSpec(source);
 
       // Verify basic structure
       expect(spec.servers).toBeDefined();
@@ -65,7 +88,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
         op handleTestEvent(): TestEvent;
       `;
 
-      const spec = await compileAsyncAPISpec(source);
+      const spec = await compileAndValidateIntegrationSpec(source);
 
       // Verify AsyncAPI 3.1 compliance
       expect(spec.asyncapi).toBe("3.1.0");
@@ -101,7 +124,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
         op sendMessage(): ChatMessage;
       `;
 
-      const spec = await compileAsyncAPISpec(source);
+      const spec = await compileAndValidateIntegrationSpec(source);
 
       // Verify WebSocket server configuration
       expect(spec.servers).toBeDefined();
@@ -133,14 +156,14 @@ describe("asyncAPI Protocol Binding Integration", () => {
         op sendMessage(): Message;
       `;
 
-      const spec = await compileAsyncAPISpec(source);
+      const spec = await compileAndValidateIntegrationSpec(source);
 
       expect(spec.servers!["ws-api"].protocol).toBe("wss");
       expect(spec.channels!["messages"]).toBeDefined();
     });
   });
 
-  describe("hTTP Protocol Integration", () => {
+  describe("http Protocol Integration", () => {
     it("should generate AsyncAPI spec with HTTP operation bindings", async () => {
       const source = `
         @server("http-api", #{
@@ -162,12 +185,12 @@ describe("asyncAPI Protocol Binding Integration", () => {
         op sendWebhookEvent(): WebhookEvent;
       `;
 
-      const spec = await compileAsyncAPISpec(source);
+      const spec = await compileAndValidateIntegrationSpec(source);
 
       // Verify HTTP server configuration
       expect(spec.servers).toBeDefined();
       expect(spec.servers!["http-api"]).toBeDefined();
-      expect(spec.servers!["http-api"].protocol).toMatch(/https?/);
+      expect(spec.servers!["http-api"].protocol).toBe("https");
       expect(spec.channels).toBeDefined();
       expect(spec.channels!["webhook-notifications"]).toBeDefined();
     });
@@ -192,7 +215,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
         op sendPaymentNotification(): PaymentEvent;
       `;
 
-      const spec = await compileAsyncAPISpec(source);
+      const spec = await compileAndValidateIntegrationSpec(source);
 
       expect(spec.servers!["webhook-endpoint"].protocol).toBe("https");
       expect(spec.channels!["payment-events"]).toBeDefined();
@@ -230,7 +253,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
         op sendNotification(): Event;
       `;
 
-      const spec = await compileAsyncAPISpec(source);
+      const spec = await compileAndValidateIntegrationSpec(source);
 
       // Verify multiple servers are defined
       expect(spec.servers).toBeDefined();
@@ -238,7 +261,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
       expect(spec.servers!["kafka-broker"]).toBeDefined();
       expect(spec.servers!["kafka-broker"].protocol).toBe("kafka");
       expect(spec.servers!["webhook-endpoint"]).toBeDefined();
-      expect(spec.servers!["webhook-endpoint"].protocol).toMatch(/https?/);
+      expect(spec.servers!["webhook-endpoint"].protocol).toBe("https");
 
       // Verify multiple channels are defined
       expect(spec.channels).toBeDefined();
@@ -279,7 +302,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
         op handleTestEvent(): TestMessage;
       `;
 
-      const spec = await compileAsyncAPISpec(source);
+      const spec = await compileAndValidateIntegrationSpec(source);
 
       // Verify AsyncAPI 3.1 specification compliance
       expect(spec.asyncapi).toBe("3.1.0");
@@ -312,7 +335,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
         op handleEvent(): Event;
       `;
 
-      const spec = await compileAsyncAPISpec(source);
+      const spec = await compileAndValidateIntegrationSpec(source);
 
       expect(spec.servers!["kafka-srv"].protocol).toBe("kafka");
       expect(spec.servers!["ws-srv"].protocol).toBe("ws");
@@ -346,7 +369,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
         op generateBusinessEvent(): BusinessEvent;
       `;
 
-      const spec = await compileAsyncAPISpec(source);
+      const spec = await compileAndValidateIntegrationSpec(source);
 
       // Verify complex scenario handling
       expect(Object.keys(spec.servers!)).toHaveLength(2);
