@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **Thirteen runnable examples with a CI example gate** — five new examples (`streetlights-mqtt`, `kafka-orders` with Kafka binding placements + scramSha512 security, `websocket-chat` with headers/correlation/reply, `reusable-components` showcasing all `components.*` slots, `split-schemas` multi-file output) join the eight existing ones as pnpm workspace projects. `pnpm run check-examples` compiles every example with zero diagnostics and validates each emitted document against the official AsyncAPI 3.1.0 JSON Schema; CI enforces it on every push.
+
 - **`asyncapi-id` emitter option** — sets the AsyncAPI 3.1 root `id` identifier (typically a URN) from tspconfig.yaml; omitted when unset.
 
 ## [0.2.1-beta] - 2026-08-21

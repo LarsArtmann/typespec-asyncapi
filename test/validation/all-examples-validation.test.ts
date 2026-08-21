@@ -43,6 +43,9 @@ function findTspFiles(
   acc: { name: string; path: string }[] = [],
 ): { name: string; path: string }[] {
   for (const entry of readdirSync(dir)) {
+    if (entry === "node_modules" || entry === "tsp-output") {
+      continue;
+    }
     const fullPath = join(dir, entry);
     const stat = statSync(fullPath);
     if (stat.isDirectory()) {

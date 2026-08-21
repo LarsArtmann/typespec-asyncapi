@@ -31,13 +31,5 @@ jobs:
       - name: Verify (build + lint + test + coverage + duplication)
         run: pnpm run verify
 
-      - name: Compile examples
-        run: |
-          for dir in examples/*/; do
-            dir=${dir%/}
-            for f in "$dir"/*.tsp; do
-              [ -f "$f" ] || continue
-              echo "Compiling $f..."
-              (cd "$dir" && pnpm exec tsp compile "$(basename "$f")")
-            done
-          done
+      - name: Compile and validate examples (0 diagnostics + AsyncAPI 3.1 AJV)
+        run: pnpm run check-examples

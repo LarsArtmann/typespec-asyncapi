@@ -1,0 +1,9 @@
+{
+  "name": "example-kafka-orders",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@lars-artmann/typespec-asyncapi": "workspace:*",
+    "@typespec/compiler": "^1.15.0"
+  }
+}

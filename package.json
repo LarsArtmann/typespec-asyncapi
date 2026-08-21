@@ -71,6 +71,7 @@
   },
   "scripts": {
     "build": "bun run scripts/generate-binding-specs.ts && pnpm exec tsc -p tsconfig.json",
+    "check-examples": "pnpm run build && bun run scripts/check-examples.ts",
     "build:watch": "pnpm exec tsc -p tsconfig.json --watch",
     "compile": "tsp compile .",
     "clean": "trash dist .tsbuildinfo 2>/dev/null || true",

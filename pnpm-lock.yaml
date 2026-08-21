@@ -79,6 +79,51 @@ importers:
         specifier: ^4.1.11
         version: 4.1.11(@types/node@26.2.0)(vite@8.2.0(@types/node@26.2.0)(esbuild@0.28.1)(tsx@4.23.12)(yaml@2.9.0))
 
+  examples/kafka-orders:
+    dependencies:
+      '@lars-artmann/typespec-asyncapi':
+        specifier: workspace:*
+        version: link:../..
+      '@typespec/compiler':
+        specifier: ^1.15.0
+        version: 1.15.0(@types/node@26.2.0)
+
+  examples/reusable-components:
+    dependencies:
+      '@lars-artmann/typespec-asyncapi':
+        specifier: workspace:*
+        version: link:../..
+      '@typespec/compiler':
+        specifier: ^1.15.0
+        version: 1.15.0(@types/node@26.2.0)
+
+  examples/split-schemas:
+    dependencies:
+      '@lars-artmann/typespec-asyncapi':
+        specifier: workspace:*
+        version: link:../..
+      '@typespec/compiler':
+        specifier: ^1.15.0
+        version: 1.15.0(@types/node@26.2.0)
+
+  examples/streetlights-mqtt:
+    dependencies:
+      '@lars-artmann/typespec-asyncapi':
+        specifier: workspace:*
+        version: link:../..
+      '@typespec/compiler':
+        specifier: ^1.15.0
+        version: 1.15.0(@types/node@26.2.0)
+
+  examples/websocket-chat:
+    dependencies:
+      '@lars-artmann/typespec-asyncapi':
+        specifier: workspace:*
+        version: link:../..
+      '@typespec/compiler':
+        specifier: ^1.15.0
+        version: 1.15.0(@types/node@26.2.0)
+
 packages:
 
   '@asyncapi/parser@3.6.3':

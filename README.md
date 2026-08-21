@@ -247,6 +247,8 @@ If you evaluate emitters on architecture, the deciding fact is output: every doc
 
 ## Examples
 
+Thirteen runnable examples live in [`examples/`](./examples/) — every one compiles with zero diagnostics and its output validates against the official AsyncAPI 3.1.0 JSON Schema in CI. Start with [`streetlights-mqtt`](./examples/streetlights-mqtt/) (the canonical AsyncAPI example), then see [`kafka-orders`](./examples/kafka-orders/) (bindings + security), [`websocket-chat`](./examples/websocket-chat/) (headers + correlation), [`reusable-components`](./examples/reusable-components/) (traits, parameters, reusable bindings), and [`split-schemas`](./examples/split-schemas/) (multi-file output).
+
 ### Kafka with Bindings
 
 ```typespec
