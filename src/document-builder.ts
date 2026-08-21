@@ -24,8 +24,8 @@ import type {
 } from "./domain/models/asyncapi-document.js";
 import type { DocumentBuildContext } from "./builders/types.js";
 import { discoverOperations } from "./builders/operation-discovery.js";
-import {
-  applyChannelDocs,
+import { reportProgramDiagnostic } from "./decorator-helpers.js";
+import { applyChannelDocs,
   attachChannelBindings,
   attachChannelServerRefs,
 } from "./builders/channel-builder.js";
@@ -84,8 +84,8 @@ export function buildAsyncAPIDocument(
   buildReusableComponents(state, ctx);
   applyReusableRefs(state, ctx);
 
-  const defaultContentType = getDefaultContentType(state);
-  const apiVersion = getApiVersion(state);
+  const defaultContentType = getDefaultContentType(program, state);
+  const apiVersion = getApiVersion(program, state);
   const versionedVersion = getVersionedApiVersion(program);
 
   const document = assembleDocument(
@@ -107,19 +107,50 @@ export function buildAsyncAPIDocument(
 }
 
 function getDefaultContentType(
+  program: Program,
   state: AsyncAPIConsolidatedState,
 ): string | undefined {
-  for (const [, data] of state.defaultContentType) {
-    return data.contentType;
+  let first: { contentType: string } | undefined;
+  for (const [type, data] of state.defaultContentType) {
+    if (first === undefined) {
+      first = data;
+      continue;
+    }
+    if (data.contentType !== first.contentType) {
+      reportProgramDiagnostic(program, {
+        code: "conflicting-default-content-type",
+        target: type,
+        format: {
+          contentType: first.contentType,
+          ignoredContentType: data.contentType,
+        },
+      });
+      break;
+    }
   }
-  return undefined;
+  return first?.contentType;
 }
 
-function getApiVersion(state: AsyncAPIConsolidatedState): string | undefined {
-  if (state.apiVersion.size > 0) {
-    return [...state.apiVersion.values()][0];
+function getApiVersion(
+  program: Program,
+  state: AsyncAPIConsolidatedState,
+): string | undefined {
+  let first: string | undefined;
+  for (const [type, data] of state.apiVersion) {
+    if (first === undefined) {
+      first = data;
+      continue;
+    }
+    if (data !== first) {
+      reportProgramDiagnostic(program, {
+        code: "conflicting-api-version",
+        target: type,
+        format: { version: first, ignoredVersion: data },
+      });
+      break;
+    }
   }
-  return undefined;
+  return first;
 }
 
 function getVersionedApiVersion(program: Program): string | undefined {

@@ -184,6 +184,18 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "warning",
     },
+    "conflicting-default-content-type": {
+      messages: {
+        default: paramMessage`Multiple @defaultContentType values found; using '${"contentType"}' and ignoring '${"ignoredContentType"}'.`,
+      },
+      severity: "warning",
+    },
+    "conflicting-api-version": {
+      messages: {
+        default: paramMessage`Multiple @apiVersion values found; using '${"version"}' and ignoring '${"ignoredVersion"}'.`,
+      },
+      severity: "warning",
+    },
   },
   name: "@lars-artmann/typespec-asyncapi",
   state: {

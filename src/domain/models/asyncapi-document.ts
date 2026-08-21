@@ -275,8 +275,6 @@ export type OperationTraitObject = TraitMetadata & {
 export type MessageTraitObject = TraitMetadata &
   Pick<MessageObject, "headers" | "correlationId" | "contentType" | "name">;
 
-/** Security Requirement Object — defined later, forward-declared here. */
-
 const SECURITY_SCHEME_TYPES = [
   "apiKey",
   "asymmetricEncryption",
@@ -302,9 +300,6 @@ export const VALID_SCHEME_TYPES: ReadonlySet<SecuritySchemeType> = new Set(
 export function isValidSchemeType(value: string): value is SecuritySchemeType {
   return VALID_SCHEME_TYPES.has(value as SecuritySchemeType);
 }
-
-export const SCHEME_TYPE_LIST: readonly SecuritySchemeType[] =
-  SECURITY_SCHEME_TYPES;
 
 export interface SecurityScheme {
   type: SecuritySchemeType;
@@ -366,6 +361,6 @@ interface DocumentBody {
  * Eliminates `as any` casts in test assertions.
  */
 export interface ParsedAsyncAPIDocument extends DocumentBody {
-  asyncapi: "3.1.0";
+  asyncapi: string;
   channels?: Record<string, ChannelObject>;
 }
