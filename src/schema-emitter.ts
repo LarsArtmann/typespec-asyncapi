@@ -21,7 +21,7 @@ import type {
   Type,
   Union,
 } from "@typespec/compiler";
-import { getDiscriminator, isTemplateInstance } from "@typespec/compiler";
+import { getDiscriminator, isTemplateInstance, resolveEncodedName } from "@typespec/compiler";
 import { TypeEmitter } from "@typespec/asset-emitter";
 import type {
   Context,
@@ -73,9 +73,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     }
     const disc = getDiscriminator(program, model);
     if (disc) {
-      schema.discriminator = disc.propertyName;
-      if (!(schema.required ??= []).includes(disc.propertyName)) {
-        schema.required.push(disc.propertyName);
+      const discProp = model.properties.get(disc.propertyName);
+      const wireName = discProp ? this.wireNameOf(discProp) : disc.propertyName;
+      schema.discriminator = wireName;
+      if (!(schema.required ??= []).includes(wireName)) {
+        schema.required.push(wireName);
       }
     }
     return this.declareSchema(name, model, schema);
@@ -307,19 +309,25 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       if (includeBase && m.baseModel) {
         visit(m.baseModel);
       }
-      for (const [name, prop] of m.properties) {
-        if (properties[name] !== undefined) {
+      for (const [, prop] of m.properties) {
+        const wireName = this.wireNameOf(prop);
+        if (properties[wireName] !== undefined) {
           continue;
         }
-        properties[name] = this.propertyToSchema(prop);
+        properties[wireName] = this.propertyToSchema(prop);
         if (!prop.optional) {
-          required.push(name);
+          required.push(wireName);
         }
       }
     };
     visit(model);
 
     return { properties, required };
+  }
+
+  /** Wire-format property name: `@encodedName("application/json", ...)` if set. */
+  private wireNameOf(prop: ModelProperty): string {
+    return resolveEncodedName(this.emitter.getProgram(), prop, "application/json");
   }
 
   private propertyToSchema(prop: ModelProperty): JsonSchema {

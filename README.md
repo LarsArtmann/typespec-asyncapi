@@ -198,6 +198,8 @@ Every TypeSpec scalar maps to the correct JSON Schema type and format (int8-64, 
 
 **`@jsonSchemaExtension(key, value)`** attaches arbitrary JSON Schema keywords (`x-` extensions, `multipleOf`, vendor keywords) to any Model, ModelProperty, Union, Enum, or Scalar — inline and as `$ref` siblings. Repeatable; the outermost same-key application wins; object/array values use `#{}` / `#[]` literals.
 
+**`@encodedName("application/json", "wireName")`** (core TypeSpec decorator) renames properties on the wire: `properties` keys, `required` entries, and `discriminator` values all use the encoded name, with MIME-subtype resolution handled by the compiler.
+
 **Generic models** get stable, argument-derived schema names: `Page<User>` becomes `components.schemas.PageUser`, `Box<int32>` becomes `BoxInt32`, and `Page<Page<User>>` becomes `PagePageUser` (each argument's name with its first letter capitalized, applied recursively). Unspeakable instantiations — anonymous or literal arguments like `Box<{ x: string }>` — are inlined instead of referenced, and `Record<string, T>` maps to `{ type: "object", additionalProperties }`. A model named `PageUser` colliding with an instantiation `Page<User>` triggers a `duplicate-schema-name` warning.
 
 ### Multi-File Output

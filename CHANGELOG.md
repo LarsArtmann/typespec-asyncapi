@@ -18,6 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **`@encodedName` wire-format property renaming** — the core TypeSpec decorator `@encodedName("application/json", "wireName")` now drives `properties` keys, `required` entries, and `discriminator` values in emitted schemas. MIME-subtype resolution (e.g. `application/merge-patch+json`) is handled by the compiler's `resolveEncodedName`. 5 AJV-validated compliance tests.
+
 - **`@jsonSchemaExtension(key, value)` decorator (29th)** — attaches arbitrary JSON Schema keywords (`x-` extensions, `multipleOf`, vendor keywords) to Model, ModelProperty, Union, Enum, and Scalar schemas. Repeatable with merge semantics (outermost same-key application wins); applied inline and as `$ref` siblings; object/array values via `#{}`/`#[]` literals. Invalid keys (empty, spaces) emit `invalid-json-schema-extension-key` and are skipped. 7 compliance tests, all AJV-validated.
 
 - **Thirteen runnable examples with a CI example gate** — five new examples (`streetlights-mqtt`, `kafka-orders` with Kafka binding placements + scramSha512 security, `websocket-chat` with headers/correlation/reply, `reusable-components` showcasing all `components.*` slots, `split-schemas` multi-file output) join the eight existing ones as pnpm workspace projects. `pnpm run check-examples` compiles every example with zero diagnostics and validates each emitted document against the official AsyncAPI 3.1.0 JSON Schema; CI enforces it on every push.
