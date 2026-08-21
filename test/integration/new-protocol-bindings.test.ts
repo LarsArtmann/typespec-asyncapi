@@ -12,6 +12,7 @@
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
 import { parse as parseYAML } from "yaml";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
@@ -67,7 +68,7 @@ describe("integration: new protocol bindings end-to-end", () => {
     expect(server).toBeDefined();
     expect(server.bindings).toBeDefined();
     expect(server.bindings!.solace).toBeDefined();
-    expect(server.bindings!.solace.bindingVersion).toBe("0.4.0");
+    expect(server.bindings!.solace.bindingVersion).toBe(LATEST_BINDING_VERSIONS.solace);
   });
 
   it("anypointmq bindings compile through emitter without errors", async () => {

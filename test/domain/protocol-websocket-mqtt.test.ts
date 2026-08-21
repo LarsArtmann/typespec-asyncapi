@@ -12,6 +12,7 @@ import {
   compileAndValidate,
   compileAndValidateOrThrow,
 } from "../utils/schema-validator.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import type {
   OperationObject,
   ParsedAsyncAPIDocument,
@@ -101,7 +102,7 @@ describe("webSocket & MQTT bindingVersion injection", () => {
       @protocol(#{ protocol: "ws", method: "POST" })
       op send(): Msg;
     `);
-    expect(doc.channels!.events.bindings!.ws.bindingVersion).toBe("0.1.0");
+    expect(doc.channels!.events.bindings!.ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
   });
 
   it("auto-injects mqtt operation bindingVersion 0.2.0", async () => {
@@ -112,7 +113,7 @@ describe("webSocket & MQTT bindingVersion injection", () => {
       @bindings(#{ mqtt: #{ retain: true } })
       op send(): Msg;
     `);
-    expect(opOf(doc).bindings!.mqtt.bindingVersion).toBe("0.2.0");
+    expect(opOf(doc).bindings!.mqtt.bindingVersion).toBe(LATEST_BINDING_VERSIONS.mqtt);
   });
 
   it("preserves an explicit bindingVersion", async () => {

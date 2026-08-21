@@ -8,6 +8,7 @@
  */
 
 import {
+  LATEST_BINDING_VERSIONS,
   getValidPlacements,
   supportsBindingPlacement,
 } from "../../src/constants/binding-versions.js";
@@ -204,7 +205,7 @@ describe("processBindings placement validation", () => {
       "operation",
     );
     expect(bindings.ws).toBeDefined();
-    expect(bindings.ws.bindingVersion).toBe("0.1.0");
+    expect(bindings.ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
   });
 
   it("emits misplaced-binding for multiple misplaced protocols", () => {

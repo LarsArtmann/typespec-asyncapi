@@ -7,6 +7,7 @@
 
 import { processBindings } from "../../src/validation/binding-validator.js";
 import { validateBindingFields } from "../../src/validation/binding-field-validator.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 
 describe("binding field validation", () => {
   it("catches invalid MQTT qos value", () => {
@@ -170,7 +171,7 @@ describe("binding field validation", () => {
       "channel",
     );
     expect(bindings.ws).toBeDefined();
-    expect(bindings.ws.bindingVersion).toBe("0.1.0");
+    expect(bindings.ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
   });
 
   it("auto-injects bindingVersion when missing", () => {
@@ -178,7 +179,7 @@ describe("binding field validation", () => {
       { kafka: { topic: "events" } },
       "channel",
     );
-    expect(bindings.kafka.bindingVersion).toBe("0.5.0");
+    expect(bindings.kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
   });
 
   it("normalizes wss to ws binding key", () => {
@@ -242,7 +243,7 @@ describe("binding field validation", () => {
       const solaceIssues = issues.filter((i) => i.format.protocol === "solace");
       expect(solaceIssues).toHaveLength(0);
       expect(bindings.solace).toBeDefined();
-      expect(bindings.solace.bindingVersion).toBe("0.4.0");
+      expect(bindings.solace.bindingVersion).toBe(LATEST_BINDING_VERSIONS.solace);
     });
 
     it("catches solace priority exceeding max (255)", () => {
@@ -291,7 +292,7 @@ describe("binding field validation", () => {
       );
       expect(issues).toHaveLength(0);
       expect(bindings.anypointmq).toBeDefined();
-      expect(bindings.anypointmq.bindingVersion).toBe("0.0.1");
+      expect(bindings.anypointmq.bindingVersion).toBe(LATEST_BINDING_VERSIONS.anypointmq);
     });
 
     it("normalizes and auto-injects bindingVersion for ros2", () => {
@@ -301,7 +302,7 @@ describe("binding field validation", () => {
       );
       expect(issues).toHaveLength(0);
       expect(bindings.ros2).toBeDefined();
-      expect(bindings.ros2.bindingVersion).toBe("0.1.0");
+      expect(bindings.ros2.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ros2);
     });
 
     it("catches invalid bindingVersion for solace", () => {

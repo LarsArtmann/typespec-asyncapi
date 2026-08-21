@@ -11,6 +11,7 @@
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
 import { parse as parseYAML } from "yaml";
 import type {
@@ -70,7 +71,7 @@ describe("spec Compliance: Kafka Bindings", () => {
     expect(binding.kafka.topic).toBe("events-topic");
     expect(binding.kafka.partitions).toBe(3);
     expect(binding.kafka.replicas).toBe(2);
-    expect(binding.kafka.bindingVersion).toBe("0.5.0");
+    expect(binding.kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
   });
 
   it("auto-injects bindingVersion when missing", async () => {
@@ -86,7 +87,7 @@ describe("spec Compliance: Kafka Bindings", () => {
     `);
 
     const binding = doc.channels!["events"].bindings!;
-    expect(binding.kafka.bindingVersion).toBe("0.5.0");
+    expect(binding.kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
   });
 
   it("emits valid Kafka operation binding with Schema-typed fields", async () => {
@@ -108,7 +109,7 @@ describe("spec Compliance: Kafka Bindings", () => {
     expect(binding.kafka).toBeDefined();
     expect(binding.kafka.groupId).toBeDefined();
     expect(binding.kafka.clientId).toBeDefined();
-    expect(binding.kafka.bindingVersion).toBe("0.5.0");
+    expect(binding.kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
   });
 
   it("emits valid Kafka message binding with Schema-typed key", async () => {
@@ -178,7 +179,7 @@ describe("spec Compliance: AMQP Bindings", () => {
     expect(binding.amqp).toBeDefined();
     expect(binding.amqp.priority).toBe(5);
     expect(binding.amqp.deliveryMode).toBe(2);
-    expect(binding.amqp.bindingVersion).toBe("0.3.0");
+    expect(binding.amqp.bindingVersion).toBe(LATEST_BINDING_VERSIONS.amqp);
   });
 
   it("emits valid AMQP message binding with contentEncoding", async () => {
@@ -227,7 +228,7 @@ describe("spec Compliance: MQTT Bindings", () => {
     expect(binding.mqtt).toBeDefined();
     expect(binding.mqtt.qos).toBe(2);
     expect(binding.mqtt.retain).toBeTruthy();
-    expect(binding.mqtt.bindingVersion).toBe("0.2.0");
+    expect(binding.mqtt.bindingVersion).toBe(LATEST_BINDING_VERSIONS.mqtt);
   });
 
   it("emits valid MQTT server binding via @server protocol", async () => {
@@ -259,7 +260,7 @@ describe("spec Compliance: MQTT Bindings", () => {
     const op = getOp(doc);
     const binding = op.bindings!;
     expect(binding.mqtt.qos).toBe(0);
-    expect(binding.mqtt.bindingVersion).toBe("0.2.0");
+    expect(binding.mqtt.bindingVersion).toBe(LATEST_BINDING_VERSIONS.mqtt);
   });
 });
 
@@ -285,7 +286,7 @@ describe("spec Compliance: WebSocket Bindings", () => {
     const binding = doc.channels!["ws-channel"].bindings!;
     expect(binding.ws).toBeDefined();
     expect(binding.ws.method).toBe("GET");
-    expect(binding.ws.bindingVersion).toBe("0.1.0");
+    expect(binding.ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
   });
 
   it("normalizes websocket alias to ws in binding keys", async () => {
@@ -304,7 +305,7 @@ describe("spec Compliance: WebSocket Bindings", () => {
     expect(binding.ws).toBeDefined();
     expect(binding.websocket).toBeUndefined();
     expect(binding.ws.method).toBe("GET");
-    expect(binding.ws.bindingVersion).toBe("0.1.0");
+    expect(binding.ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
   });
 
   it("emits WebSocket binding with POST method", async () => {
@@ -321,7 +322,7 @@ describe("spec Compliance: WebSocket Bindings", () => {
 
     const binding = doc.channels!["ws-channel"].bindings!;
     expect(binding.ws.method).toBe("POST");
-    expect(binding.ws.bindingVersion).toBe("0.1.0");
+    expect(binding.ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
   });
 
   it("works with wss (secure WebSocket) server protocol", async () => {
@@ -366,7 +367,7 @@ describe("spec Compliance: HTTP Bindings", () => {
     const binding = op.bindings!;
     expect(binding.http).toBeDefined();
     expect(binding.http.method).toBe("POST");
-    expect(binding.http.bindingVersion).toBe("0.3.0");
+    expect(binding.http.bindingVersion).toBe(LATEST_BINDING_VERSIONS.http);
   });
 
   it("emits valid HTTP message binding with headers schema", async () => {
@@ -417,14 +418,14 @@ describe("spec Compliance: @protocol Field Placement", () => {
     const channelBinding = doc.channels!["events"].bindings!;
     expect(channelBinding.kafka.partitions).toBe(3);
     expect(channelBinding.kafka.replicas).toBe(2);
-    expect(channelBinding.kafka.bindingVersion).toBe("0.5.0");
+    expect(channelBinding.kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
 
     const opBinding = getOp(doc).bindings!;
     expect(opBinding.kafka.groupId).toStrictEqual({
       type: "string",
       const: "order-service",
     });
-    expect(opBinding.kafka.bindingVersion).toBe("0.5.0");
+    expect(opBinding.kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
   });
 
   it("does not fabricate binding fields the user did not write", async () => {
@@ -564,9 +565,9 @@ describe("spec Compliance: Multi-Protocol Bindings", () => {
 
     const channels = doc.channels!;
     const kBinding = channels["kafka-ch"].bindings!;
-    expect(kBinding.kafka?.bindingVersion).toBe("0.5.0");
+    expect(kBinding.kafka?.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
 
     const wsBinding = channels["ws-ch"].bindings!;
-    expect(wsBinding.ws?.bindingVersion).toBe("0.1.0");
+    expect(wsBinding.ws?.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
   });
 });
