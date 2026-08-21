@@ -1,8 +1,8 @@
 # 📊 Comprehensive Project Status Report
 
-**Project:** TypeSpec AsyncAPI Emitter  
-**Status Date:** 2026-01-22 07:04 UTC  
-**TypeSpec Version:** 1.8.0 | **Effect.TS Version:** 3.19.14  
+**Project:** TypeSpec AsyncAPI Emitter\
+**Status Date:** 2026-01-22 07:04 UTC\
+**TypeSpec Version:** 1.8.0 | **Effect.TS Version:** 3.19.14\
 **Test Pass Rate:** 247/606 (40.6%) | **Build Status:** ✅ Passing | **Lint Status:** ✅ Passing
 
 ---
@@ -132,7 +132,7 @@ The TypeSpec AsyncAPI emitter project has successfully completed TypeSpec 1.8.0 
 
 #### Issue #1: Test Suite Reliability
 
-**Severity:** CRITICAL  
+**Severity:** CRITICAL\
 **Status:** 💀 BLOCKING
 
 **Details:**
@@ -152,7 +152,7 @@ The TypeSpec AsyncAPI emitter project has successfully completed TypeSpec 1.8.0 
 
 #### Issue #2: Feature Implementation Gap
 
-**Severity:** CRITICAL  
+**Severity:** CRITICAL\
 **Status:** 💀 BLOCKING
 
 **Details:**
@@ -182,7 +182,7 @@ components:
 
 #### Issue #3: Uncommitted Debug Work
 
-**Severity:** MEDIUM  
+**Severity:** MEDIUM\
 **Status:** 💀 RISK
 
 **Details:**
@@ -441,5 +441,5 @@ The TypeSpec AsyncAPI emitter project is in **good health** with modern dependen
 
 ---
 
-_Report Generated: 2026-01-22 07:04 UTC_  
+_Report Generated: 2026-01-22 07:04 UTC_\
 _Next Update: 2026-01-29 07:04 UTC (Weekly)_

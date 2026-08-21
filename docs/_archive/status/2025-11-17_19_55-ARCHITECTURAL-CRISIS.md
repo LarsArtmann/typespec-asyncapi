@@ -1,7 +1,7 @@
 # 🚨 CRITICAL ARCHITECTURAL FAILURE ANALYSIS - 2025-11-17_19_55
 
-**Generated:** 2025-11-17 19:55:10 CET  
-**Assessment:** **ARCHITECTURAL CRISIS** - Massive Type Safety Theater & Split Brains  
+**Generated:** 2025-11-17 19:55:10 CET\
+**Assessment:** **ARCHITECTURAL CRISIS** - Massive Type Safety Theater & Split Brains\
 **Sr. Architect Confidence:** **15%** - Foundamental architectural violations
 
 ---
@@ -121,7 +121,8 @@ interface ValidationResult {
 
 // AFTER: INVALID STATES UNREPRESENTABLE
 type ValidationResult<T> =
-  { _tag: "Success"; data: T } | { _tag: "Failure"; errors: ValidationError[] };
+  | { _tag: "Success"; data: T }
+  | { _tag: "Failure"; errors: ValidationError[] };
 // Can't have valid=true AND errors non-empty - IMPOSSIBLE!
 ```
 
@@ -271,6 +272,6 @@ class GenericProtocolBinding<T> implements ProtocolBinding<T> { ... }
 
 ---
 
-**Assessment Completed:** 2025-11-17 19:55:10 CET  
-**Architectural Crisis Level:** **CRITICAL**  
+**Assessment Completed:** 2025-11-17 19:55:10 CET\
+**Architectural Crisis Level:** **CRITICAL**\
 **Immediate Action Required:** **CRITICAL REPAIR PHASE EXECUTION**

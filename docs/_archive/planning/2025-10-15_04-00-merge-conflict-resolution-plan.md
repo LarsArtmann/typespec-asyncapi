@@ -1,8 +1,8 @@
 # Merge Conflict Resolution - Comprehensive Execution Plan
 
-**Date:** 2025-10-15_04-00  
-**Project:** TypeSpec AsyncAPI Emitter  
-**Branch:** feature/effect-ts-complete-migration  
+**Date:** 2025-10-15_04-00\
+**Project:** TypeSpec AsyncAPI Emitter\
+**Branch:** feature/effect-ts-complete-migration\
 **Status:** 32 files with 108 conflict markers requiring resolution
 
 ## 🎯 PARETO ANALYSIS - Strategic Value Distribution

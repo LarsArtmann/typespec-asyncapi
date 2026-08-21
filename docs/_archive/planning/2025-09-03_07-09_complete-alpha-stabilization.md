@@ -1,7 +1,7 @@
 # Complete Alpha Stabilization Plan
 
-**Session Date:** 2025-09-03 07:09 CEST  
-**Target:** Fix all 83+ failing tests and achieve rock-solid Alpha v0.0.1-alpha.2  
+**Session Date:** 2025-09-03 07:09 CEST\
+**Target:** Fix all 83+ failing tests and achieve rock-solid Alpha v0.0.1-alpha.2\
 **Current Status:** Build ✅, Lint ✅, TypeSpec ✅, Tests ❌ (83+ failures)
 
 ## 🎯 Impact Analysis
@@ -61,11 +61,11 @@
 
 | ID                        | Task                                                                        | Priority | Duration | Dependencies  |
 | ------------------------- | --------------------------------------------------------------------------- | -------- | -------- | ------------- |
-| **ARCHITECTURE FIXES**    |
+| **ARCHITECTURE FIXES**    |                                                                             |          |          |               |
 | A01                       | Find/replace `components.messages` → `components.schemas` in test files     | CRITICAL | 15min    | None          |
 | A02                       | Update message access patterns in README.test.ts style                      | CRITICAL | 15min    | A01           |
 | A03                       | Verify schema access works in test-example-advanced.tsp                     | CRITICAL | 15min    | A01,A02       |
-| **FIXTURE CLEANUP**       |
+| **FIXTURE CLEANUP**       |                                                                             |          |          |               |
 | F01                       | Remove @service decorators from CoreFixtures.ts                             | CRITICAL | 15min    | None          |
 | F02                       | Remove @message decorators from CoreFixtures.ts                             | CRITICAL | 15min    | F01           |
 | F03                       | Remove @body decorators from all fixtures                                   | CRITICAL | 15min    | F01,F02       |
@@ -74,7 +74,7 @@
 | F06                       | Update namespace syntax in decoratorsCore fixture                           | CRITICAL | 15min    | F01-F03       |
 | F07                       | Update namespace syntax in channelsAdvanced fixture                         | CRITICAL | 15min    | F01-F03       |
 | F08                       | Remove unsupported protocol bindings from fixtures                          | HIGH     | 15min    | F01-F07       |
-| **DATA TYPE FIXES**       |
+| **DATA TYPE FIXES**       |                                                                             |          |          |               |
 | D01                       | Fix nullable string test expectations (oneOf pattern)                       | HIGH     | 15min    | A01           |
 | D02                       | Update string format constraint expectations                                | HIGH     | 15min    | D01           |
 | D03                       | Fix minLength/maxLength constraint expectations                             | HIGH     | 15min    | D01,D02       |
@@ -83,26 +83,26 @@
 | D06                       | Fix object type mapping expectations                                        | HIGH     | 15min    | D01-D05       |
 | D07                       | Update union type mapping expectations                                      | HIGH     | 15min    | D01-D06       |
 | D08                       | Fix enum type mapping expectations                                          | HIGH     | 15min    | D01-D07       |
-| **OPERATIONS & CHANNELS** |
+| **OPERATIONS & CHANNELS** |                                                                             |          |          |               |
 | O01                       | Fix request-reply pattern test expectations                                 | HIGH     | 15min    | A01,F01-F03   |
 | O02                       | Update correlation ID test expectations                                     | HIGH     | 15min    | O01           |
 | O03                       | Fix channel path validation expectations                                    | HIGH     | 15min    | O01,O02       |
 | O04                       | Update operation type classification expectations                           | HIGH     | 15min    | O01-O03       |
 | O05                       | Fix publish operation test expectations                                     | HIGH     | 15min    | O01-O04       |
 | O06                       | Fix subscribe operation test expectations                                   | HIGH     | 15min    | O01-O05       |
-| **DECORATORS**            |
+| **DECORATORS**            |                                                                             |          |          |               |
 | DC01                      | Update @message decorator test expectations                                 | HIGH     | 15min    | A01,F01-F03   |
 | DC02                      | Fix @header decorator test expectations                                     | HIGH     | 15min    | DC01          |
 | DC03                      | Update @correlationId decorator expectations                                | MEDIUM   | 15min    | DC01,DC02     |
 | DC04                      | Fix @security decorator test expectations                                   | MEDIUM   | 15min    | DC01-DC03     |
 | DC05                      | Update @server decorator test expectations                                  | MEDIUM   | 15min    | DC01-DC04     |
 | DC06                      | Fix @protocol decorator test expectations                                   | MEDIUM   | 15min    | DC01-DC05     |
-| **PARAMETER SYNTAX**      |
+| **PARAMETER SYNTAX**      |                                                                             |          |          |               |
 | P01                       | Update operation parameter syntax in 02-data-types fixtures                 | HIGH     | 15min    | F01-F03       |
 | P02                       | Update operation parameter syntax in 03-operations fixtures                 | HIGH     | 15min    | P01           |
 | P03                       | Update operation parameter syntax in 05-decorators fixtures                 | HIGH     | 15min    | P01,P02       |
 | P04                       | Fix parameter type annotations across all fixtures                          | HIGH     | 15min    | P01-P03       |
-| **TEST FILE REPAIRS**     |
+| **TEST FILE REPAIRS**     |                                                                             |          |          |               |
 | T01                       | Fix failing test in 02-data-types.test.ts (StringData)                      | HIGH     | 15min    | A01,D01-D08   |
 | T02                       | Fix failing test in 02-data-types.test.ts (FormattedStringData)             | HIGH     | 15min    | T01           |
 | T03                       | Fix failing test in 02-data-types.test.ts (ConstrainedStringData)           | HIGH     | 15min    | T01,T02       |
@@ -111,22 +111,22 @@
 | T06                       | Fix failing test in 05-decorators.test.ts (MessageWithDecorators)           | HIGH     | 15min    | A01,DC01-DC06 |
 | T07                       | Fix integration test failures                                               | HIGH     | 15min    | T01-T06       |
 | T08                       | Fix validation test failures                                                | HIGH     | 15min    | T01-T07       |
-| **PERFORMANCE TESTS**     |
+| **PERFORMANCE TESTS**     |                                                                             |          |          |               |
 | PF01                      | Update PerformanceFixtures.ts e-commerce example                            | MEDIUM   | 15min    | F01-F08       |
 | PF02                      | Update PerformanceFixtures.ts IoT example                                   | MEDIUM   | 15min    | PF01          |
 | PF03                      | Update PerformanceFixtures.ts financial example                             | MEDIUM   | 15min    | PF01,PF02     |
 | PF04                      | Fix performance test expectations                                           | MEDIUM   | 15min    | PF01-PF03     |
-| **PROTOCOL BINDINGS**     |
+| **PROTOCOL BINDINGS**     |                                                                             |          |          |               |
 | PB01                      | Fix Kafka protocol binding test expectations                                | MEDIUM   | 15min    | A01,F08       |
 | PB02                      | Fix WebSocket protocol binding test expectations                            | MEDIUM   | 15min    | PB01          |
 | PB03                      | Fix MQTT protocol binding test expectations                                 | MEDIUM   | 15min    | PB01,PB02     |
 | PB04                      | Fix HTTP protocol binding test expectations                                 | MEDIUM   | 15min    | PB01-PB03     |
-| **SECURITY & ADVANCED**   |
+| **SECURITY & ADVANCED**   |                                                                             |          |          |               |
 | S01                       | Update security scheme test expectations                                    | LOW      | 15min    | A01,DC04      |
 | S02                       | Fix authentication test expectations                                        | LOW      | 15min    | S01           |
 | S03                       | Update authorization test expectations                                      | LOW      | 15min    | S01,S02       |
 | S04                       | Fix cloud binding test expectations                                         | LOW      | 15min    | S01-S03       |
-| **VALIDATION & CLEANUP**  |
+| **VALIDATION & CLEANUP**  |                                                                             |          |          |               |
 | V01                       | Run comprehensive test suite after core fixes                               | HIGH     | 15min    | A01-T08       |
 | V02                       | Identify remaining test failures                                            | HIGH     | 15min    | V01           |
 | V03                       | Fix edge case test failures                                                 | MEDIUM   | 15min    | V01,V02       |

@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Critical Fixes - Pareto Execution Plan
 
-**Date:** 2025-08-31 13:03  
-**Session:** Critical TypeSpec Library & Type Safety Fixes  
+**Date:** 2025-08-31 13:03\
+**Session:** Critical TypeSpec Library & Type Safety Fixes\
 **Priority:** PRODUCTION BLOCKING ISSUES
 
 ## Executive Summary
@@ -156,5 +156,5 @@ graph TD
 
 ---
 
-**Generated:** 2025-08-31 13:03 CEST  
+**Generated:** 2025-08-31 13:03 CEST\
 **Status:** READY FOR EXECUTION

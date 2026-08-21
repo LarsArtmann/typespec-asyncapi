@@ -1,7 +1,7 @@
 # Complete Execution Plan - TypeSpec AsyncAPI Production Readiness
 
-**Date:** 2025-10-05 05:07  
-**Status:** Emitter works perfectly, test infrastructure needs fixes  
+**Date:** 2025-10-05 05:07\
+**Status:** Emitter works perfectly, test infrastructure needs fixes\
 **Goal:** Make emitter production-ready and fix all tests
 
 ---
@@ -93,7 +93,7 @@
 | 22  | Security audit                                     | 45min | Low      | 99.5%  | P3       |
 | 23  | Accessibility review                               | 30min | Low      | 100%   | P3       |
 
-**Total estimated time:** ~17 hours  
+**Total estimated time:** ~17 hours\
 **Time to 80% value:** ~4.25 hours
 
 ---
@@ -179,13 +179,13 @@
 
 ### **Phase 8: More Code Quality (85% Value) - 45 minutes**
 
-| # | Task | Time | Details |
+| #   | Task                                    | Time  | Details        |
 | --- | --------------------------------------- | ----- | -------------- | --- | ------- |
-| 8.1 | Fix prefer-nullish-coalescing (batch 1) | 15min | Replace | | with ?? |
-| 8.2 | Fix prefer-nullish-coalescing (batch 2) | 15min | Replace | | with ?? |
-| 8.3 | Fix prefer-nullish-coalescing (batch 3) | 10min | Replace | | with ?? |
-| 8.4 | Verify with eslint | 3min | Check warnings |
-| 8.5 | Commit changes | 2min | git commit |
+| 8.1 | Fix prefer-nullish-coalescing (batch 1) | 15min | Replace        |     | with ?? |
+| 8.2 | Fix prefer-nullish-coalescing (batch 2) | 15min | Replace        |     | with ?? |
+| 8.3 | Fix prefer-nullish-coalescing (batch 3) | 10min | Replace        |     | with ?? |
+| 8.4 | Verify with eslint                      | 3min  | Check warnings |
+| 8.5 | Commit changes                          | 2min  | git commit     |
 
 ### **Phase 9: Type Safety (87% Value) - 60 minutes**
 
@@ -208,8 +208,8 @@
 | 10.5 | Update usages                    | 7min  | Replace string with branded |
 | 10.6 | Commit changes                   | 2min  | git commit                  |
 
-**Total micro-tasks:** 65 tasks  
-**Total estimated time:** ~9.5 hours  
+**Total micro-tasks:** 65 tasks\
+**Total estimated time:** ~9.5 hours\
 **Time to 80% value:** ~4.25 hours
 
 ---
@@ -300,8 +300,8 @@ graph TD
 
 ## 📝 NOTES
 
-**Critical Path:** Phases 1-3 are MUST DO (1% → 4% value)  
-**High Value:** Phases 4-6 complete the 20% → 80%  
+**Critical Path:** Phases 1-3 are MUST DO (1% → 4% value)\
+**High Value:** Phases 4-6 complete the 20% → 80%\
 **Nice to Have:** Phases 7-10 are quality improvements
 
 **Risk Mitigation:**
@@ -318,6 +318,6 @@ graph TD
 
 ---
 
-**Created:** 2025-10-05 05:07  
-**Author:** Claude Code  
+**Created:** 2025-10-05 05:07\
+**Author:** Claude Code\
 **Status:** Ready for execution

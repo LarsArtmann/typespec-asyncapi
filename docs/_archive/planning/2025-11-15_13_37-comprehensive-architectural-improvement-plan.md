@@ -88,7 +88,8 @@ This codebase has **EXCELLENT type safety** in isolated components, but **POOR i
 
    ```typescript
    export type ValidationResult<T> =
-     { _tag: "Success"; value: T } | { _tag: "Failure"; errors: readonly string[] };
+     | { _tag: "Success"; value: T }
+     | { _tag: "Failure"; errors: readonly string[] };
    ```
 
    - **Impact:** Unrepresentable invalid states
@@ -1535,8 +1536,8 @@ This is the high-level plan. Next sections will break down into:
 
 **END OF COMPREHENSIVE ARCHITECTURAL IMPROVEMENT PLAN**
 
-_Generated: 2025-11-15 13:37_  
-_Architect: Senior Software Architect + Product Owner_  
-_Standards: MAXIMUM_  
-_Target: 80% value, 20% effort_  
+_Generated: 2025-11-15 13:37_\
+_Architect: Senior Software Architect + Product Owner_\
+_Standards: MAXIMUM_\
+_Target: 80% value, 20% effort_\
 _Status: READY FOR EXECUTION_

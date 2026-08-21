@@ -1,8 +1,8 @@
 # TypeSpec AsyncAPI Emitter - Detailed 150-Task Breakdown
 
-**Date:** 2026-03-20 23:40  
-**Granularity:** 15-minute tasks maximum  
-**Total Tasks:** 150  
+**Date:** 2026-03-20 23:40\
+**Granularity:** 15-minute tasks maximum\
+**Total Tasks:** 150\
 **Estimated Duration:** 37.5 hours
 
 ---
@@ -433,11 +433,11 @@ flowchart TD
 ```markdown
 ### Task XX-XXX: [Task Name]
 
-**Started:** YYYY-MM-DD HH:MM  
-**Completed:** YYYY-MM-DD HH:MM  
-**Status:** 🔴 Not Started / 🟡 In Progress / 🟢 Complete  
-**Blocked By:** [Task IDs]  
-**Blocks:** [Task IDs]  
+**Started:** YYYY-MM-DD HH:MM\
+**Completed:** YYYY-MM-DD HH:MM\
+**Status:** 🔴 Not Started / 🟡 In Progress / 🟢 Complete\
+**Blocked By:** [Task IDs]\
+**Blocks:** [Task IDs]\
 **Notes:** [Any issues, decisions, learnings]
 
 #### Checklist:
@@ -449,7 +449,7 @@ flowchart TD
 
 ---
 
-_Generated: 2026-03-20 23:40_  
-_Task Count: 150_  
-_Total Duration: 37.5 hours_  
+_Generated: 2026-03-20 23:40_\
+_Task Count: 150_\
+_Total Duration: 37.5 hours_\
 _Granularity: 15 minutes per task_

@@ -1,6 +1,6 @@
 # Schema Integration Status Report
 
-**Date:** 2025-11-21 14:40:41 CET  
+**Date:** 2025-11-21 14:40:41 CET\
 **Status:** EFFECT.SCHEMA INTEGRATION STEP 2 COMPLETE - BRANDED TYPES SUCCESS ✅
 
 ---
@@ -27,7 +27,9 @@ export const ChannelPath = Schema.String.pipe(
 );
 
 // ✅ Type-safe constructors with schema validation
-export const createChannelPath = (path: string): Effect.Effect<typeof ChannelPath.Type, Error> =>
+export const createChannelPath = (
+  path: string,
+): Effect.Effect<typeof ChannelPath.Type, Error> =>
   Effect.try({
     try: () => Schema.decodeSync(ChannelPath)(path),
     catch: (error) => new Error(`Channel path validation failed: ${error}`),

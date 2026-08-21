@@ -215,7 +215,7 @@ graph TD
 ### 🚀 GROUP 2: PLUGIN EXPANSION (M16-M50)
 
 **Focus:** WebSocket/AMQP/MQTT Plugins, Test Fixtures, Constants
-**Agent:** micro-kernel-architect + testing-architecture-expert  
+**Agent:** micro-kernel-architect + testing-architecture-expert\
 **Timeline:** 8 hours
 **Dependencies:** Group 1 completion
 

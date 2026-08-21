@@ -1,8 +1,8 @@
 # 🚀 EFFECT.TS MIGRATION EXECUTION PLAN
 
-**TypeSpec AsyncAPI Project - Systematic Anti-Pattern Elimination**  
-**Generated:** September 3, 2025  
-**Status:** READY FOR EXECUTION  
+**TypeSpec AsyncAPI Project - Systematic Anti-Pattern Elimination**\
+**Generated:** September 3, 2025\
+**Status:** READY FOR EXECUTION\
 **Total Effort:** 15-20 developer days
 
 ---
@@ -23,8 +23,8 @@
 
 ## 📋 PHASE 1: CRITICAL INFRASTRUCTURE (Week 1-2)
 
-**Priority:** IMMEDIATE  
-**Effort:** 8-10 developer days  
+**Priority:** IMMEDIATE\
+**Effort:** 8-10 developer days\
 **Impact:** System-wide reliability and error handling
 
 ### 🚨 Task 1.1: Core Emitter Layer Migration (3 days)
@@ -150,7 +150,9 @@ type ConfigOptions = {
 
 ```typescript
 // Create tagged error classes
-export class EmitterConstructorError extends Data.TaggedError("EmitterConstructorError")<{
+export class EmitterConstructorError extends Data.TaggedError(
+  "EmitterConstructorError",
+)<{
   message: string;
   context?: Record<string, unknown>;
 }> {}
@@ -171,8 +173,8 @@ export class ValidationError extends Data.TaggedError("ValidationError")<{
 
 ## 📋 PHASE 2: SERVICE LAYER EFFECTS (Week 3)
 
-**Priority:** HIGH  
-**Effort:** 5-7 developer days  
+**Priority:** HIGH\
+**Effort:** 5-7 developer days\
 **Impact:** Business logic composability
 
 ### ⚠️ Task 2.1: Validation Services Migration (2 days)
@@ -214,8 +216,12 @@ interface IAsyncAPIEmitter {
 }
 // BECOMES:
 interface IAsyncAPIEmitter {
-  programContext(program: Program): Effect.Effect<Record<string, unknown>, ProgramContextError>;
-  writeOutput(sourceFiles: SourceFile<string>[]): Effect.Effect<void, WriteOutputError>;
+  programContext(
+    program: Program,
+  ): Effect.Effect<Record<string, unknown>, ProgramContextError>;
+  writeOutput(
+    sourceFiles: SourceFile<string>[],
+  ): Effect.Effect<void, WriteOutputError>;
 }
 
 // Convert existing Promise chains to Effect composition
@@ -259,7 +265,7 @@ export function validateConfiguration(
 
 ## 📋 PHASE 3: INFRASTRUCTURE & POLISH (Week 4)
 
-**Priority:** MEDIUM  
+**Priority:** MEDIUM\
 **Effort:** 2-3 developer days
 **Impact:** Developer experience and consistency
 
@@ -271,8 +277,11 @@ export function validateConfiguration(
 
 ```typescript
 // Convert async functions to Effect.gen
-export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
-  const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
+export async function $onEmit(
+  context: EmitContext<AsyncAPIEmitterOptions>,
+): Promise<void> {
+  const { generateAsyncAPIWithEffect } =
+    await import("./emitter-with-effect.js");
   await Effect.runPromise(generateAsyncAPIWithEffect(context));
 }
 // BECOMES:
@@ -326,7 +335,7 @@ runRegressionTest(testCaseName: string, testFunction: Effect.Effect<void, TestEr
 
 ## 📋 PHASE 4: TESTING & VALIDATION (Week 5)
 
-**Priority:** CRITICAL FOR SUCCESS  
+**Priority:** CRITICAL FOR SUCCESS\
 **Effort:** 3-4 developer days
 **Impact:** Ensures migration success
 
@@ -487,5 +496,5 @@ function getValue(obj: { prop: Option.Option<string> }): string {
 
 ---
 
-_🤖 Generated with Claude Code - Effect.TS Migration Plan Complete_  
+_🤖 Generated with Claude Code - Effect.TS Migration Plan Complete_\
 _Ready for systematic execution to achieve 100% Effect.TS compliance_

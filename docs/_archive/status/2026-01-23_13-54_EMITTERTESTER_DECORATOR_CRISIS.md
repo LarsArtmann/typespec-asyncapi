@@ -1,10 +1,10 @@
 # 🔥 EMERGENCY STATUS REPORT - EMITTERTESTER DECORATOR CRISIS
 
-**Report Date:** 2026-01-23 13:54:56 CET  
-**Report Type:** Critical Infrastructure Failure Analysis  
-**Current Phase:** Emergency Recovery & Decision Point  
-**Build Status:** ✅ GREEN (0 TypeScript compilation errors)  
-**Test Status:** 🔴 40.7% passing (246/605) | 54.5% failing (330/605)  
+**Report Date:** 2026-01-23 13:54:56 CET\
+**Report Type:** Critical Infrastructure Failure Analysis\
+**Current Phase:** Emergency Recovery & Decision Point\
+**Build Status:** ✅ GREEN (0 TypeScript compilation errors)\
+**Test Status:** 🔴 40.7% passing (246/605) | 54.5% failing (330/605)\
 **Critical Blocker:** EmitterTester decorator loading failure
 
 ---
@@ -510,21 +510,21 @@ console.log(instance.program.stateMap.size);
 
 ### What I've Verified:
 
-✅ **Library path:** correct (`@lars-artmann/typespec-asyncapi`)  
-✅ **Library exports:** `dist/src/tsp-index.js` exports `$decorators`  
-✅ **Package.json:** `tspMain: "lib/main.tsp"` points to correct lib  
-✅ **Import call:** `.importLibraries()` called in test setup  
-✅ **Emit call:** `.emit("@lars-artmann/typespec-asyncapi")` called  
-✅ **Using declaration:** `.using("TypeSpec.AsyncAPI")` added  
-✅ **Emitter invoked:** `$onEmit` called successfully  
+✅ **Library path:** correct (`@lars-artmann/typespec-asyncapi`)\
+✅ **Library exports:** `dist/src/tsp-index.js` exports `$decorators`\
+✅ **Package.json:** `tspMain: "lib/main.tsp"` points to correct lib\
+✅ **Import call:** `.importLibraries()` called in test setup\
+✅ **Emit call:** `.emit("@lars-artmann/typespec-asyncapi")` called\
+✅ **Using declaration:** `.using("TypeSpec.AsyncAPI")` added\
+✅ **Emitter invoked:** `$onEmit` called successfully\
 ❌ **Decorators execute:** NEVER happen in EmitterTester mode
 
 ### What I Cannot Determine:
 
-❓ Is the JavaScript library file (`dist/src/tsp-index.js`) loaded?  
-❓ Are decorator functions registered with TypeSpec program?  
-❓ If registered, why aren't they executed during AST processing?  
-❓ Is this a TypeSpec 1.8.0 undocumented behavior change?  
+❓ Is the JavaScript library file (`dist/src/tsp-index.js`) loaded?\
+❓ Are decorator functions registered with TypeSpec program?\
+❓ If registered, why aren't they executed during AST processing?\
+❓ Is this a TypeSpec 1.8.0 undocumented behavior change?\
 ❓ Do other emitters face this same issue?
 
 ### What I Need:

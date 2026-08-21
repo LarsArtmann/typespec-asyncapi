@@ -1,13 +1,13 @@
 # Schema Integration Status Report
 
-**Date:** 2025-11-21 14:32:32 CET  
+**Date:** 2025-11-21 14:32:32 CET\
 **Status:** EFFECT.SCHEMA INTEGRATION STEP 2 - API MISMATCH CORRECTION IN PROGRESS ⚠️
 
 ---
 
 ## 🚨 CURRENT ISSUE: Schema API Corrections Needed
 
-**Problem:** Initial attempt used outdated `Schema.branded()` API  
+**Problem:** Initial attempt used outdated `Schema.branded()` API\
 **Resolution:** In progress - converting to modern `Schema.brand()` API
 
 ### Current API Issues Identified:
@@ -48,12 +48,12 @@
 
 ### 1. Fix ServerUrl Schema Chain
 
-**Issue:** Complex brand + fromBrand pattern not working  
+**Issue:** Complex brand + fromBrand pattern not working\
 **Solution:** Use separate validation pipeline
 
 ### 2. Complete Type Inference
 
-**Issue:** Still using old Schema.Schema.To API  
+**Issue:** Still using old Schema.Schema.To API\
 **Solution:** Use typeof Schema.Type pattern
 
 ### 3. Build Verification
@@ -94,13 +94,18 @@
 
 ```typescript
 // ✅ Modern branded type creation
-export const UserId = Schema.String.pipe(Schema.minLength(1), Schema.brand("UserId"));
+export const UserId = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.brand("UserId"),
+);
 
 // ✅ Modern type inference
 export type UserId = typeof UserId.Type;
 
 // ✅ Modern decode/encode
-const create = (value: string): Effect.Effect<typeof UserId.Type, Schema.Schema.DecodeError> =>
+const create = (
+  value: string,
+): Effect.Effect<typeof UserId.Type, Schema.Schema.DecodeError> =>
   Schema.decode(UserId)(value);
 ```
 
@@ -108,7 +113,10 @@ const create = (value: string): Effect.Effect<typeof UserId.Type, Schema.Schema.
 
 ```typescript
 // Need to fix this pattern
-export const ServerUrl = Schema.String.pipe(Schema.minLength(1), Schema.brand("ServerUrl"))
+export const ServerUrl = Schema.String.pipe(
+  Schema.minLength(1),
+  Schema.brand("ServerUrl"),
+)
   .pipe
   // Additional URL validation
   ();

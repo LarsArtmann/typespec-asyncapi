@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter - Pareto Execution Plan
 
-**Date:** 2025-08-30 22:44  
-**Session:** PARETO_EXECUTION_PLAN  
+**Date:** 2025-08-30 22:44\
+**Session:** PARETO_EXECUTION_PLAN\
 **Objective:** Fix AsyncAPI validation and make the emitter production-ready
 
 ## Executive Summary
@@ -193,6 +193,6 @@ graph TD
 
 ---
 
-_Generated: 2025-08-30 22:44_  
-_Objective: Make AsyncAPI validation actually work_  
+_Generated: 2025-08-30 22:44_\
+_Objective: Make AsyncAPI validation actually work_\
 _Method: Pareto principle - maximize value, minimize effort_

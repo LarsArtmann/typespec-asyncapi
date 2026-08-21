@@ -533,7 +533,8 @@ type SecurityScheme = {
 ```typescript
 // ✅ SecurityScheme - Discriminated Union
 type SecurityScheme =
-  { type: "oauth2"; flows: OAuth2Flows } | { type: "apiKey"; name: string; in: Location };
+  | { type: "oauth2"; flows: OAuth2Flows }
+  | { type: "apiKey"; name: string; in: Location };
 
 // ✅ IMPOSSIBLE to have oauth2 without flows
 // ✅ IMPOSSIBLE to have apiKey without name
@@ -565,8 +566,10 @@ type ServerUrl = string & { readonly __brand: "ServerUrl" };
 
 const ChannelPath = {
   create: (value: string): Result<ChannelPath, ValidationError> => {
-    if (value.includes("//")) return Result.fail(new ValidationError("No double slashes"));
-    if (!value.startsWith("/")) return Result.fail(new ValidationError("Must start with /"));
+    if (value.includes("//"))
+      return Result.fail(new ValidationError("No double slashes"));
+    if (!value.startsWith("/"))
+      return Result.fail(new ValidationError("Must start with /"));
     return Result.ok(value as ChannelPath);
   },
 };

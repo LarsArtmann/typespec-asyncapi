@@ -101,15 +101,15 @@
 
 | #                                      | Task                                              | Time  | Impact   | Effort  | Value | Priority |
 | -------------------------------------- | ------------------------------------------------- | ----- | -------- | ------- | ----- | -------- |
-| **PHASE 1: FOUNDATION (1%)**           |
+| **PHASE 1: FOUNDATION (1%)**           |                                                   |       |          |         |       |          |
 | 1                                      | Add pre-test cleanup to package.json              | 5min  | CRITICAL | TRIVIAL | 51%   | P0       |
 | 2                                      | Test cleanup works (run bun test)                 | 5min  | HIGH     | TRIVIAL | 10%   | P0       |
-| **PHASE 2: GHOST SYSTEM REMOVAL (4%)** |
+| **PHASE 2: GHOST SYSTEM REMOVAL (4%)** |                                                   |       |          |         |       |          |
 | 3                                      | Remove broken emitters config (lines 119-121)     | 10min | HIGH     | LOW     | 15%   | P0       |
 | 4                                      | Simplify parseAsyncAPIOutput (delete 200+ lines)  | 30min | CRITICAL | MEDIUM  | 40%   | P0       |
 | 5                                      | Replace with simple file read (<20 lines)         | 20min | CRITICAL | LOW     | 30%   | P0       |
 | 6                                      | Test that parseAsyncAPIOutput still works         | 15min | HIGH     | LOW     | 10%   | P0       |
-| **PHASE 3: TEST UPDATES (20%)**        |
+| **PHASE 3: TEST UPDATES (20%)**        |                                                   |       |          |         |       |          |
 | 7                                      | Update basic-emit.test.ts expectations            | 15min | HIGH     | LOW     | 8%    | P1       |
 | 8                                      | Update simple-emitter.test.ts expectations        | 15min | HIGH     | LOW     | 8%    | P1       |
 | 9                                      | Update basic-functionality.test.ts (5 tests)      | 20min | HIGH     | MEDIUM  | 10%   | P1       |
@@ -118,12 +118,12 @@
 | 12                                     | Update real-world-scenarios.test.ts (4 tests)     | 20min | HIGH     | MEDIUM  | 8%    | P1       |
 | 13                                     | Run full test suite and measure improvement       | 15min | CRITICAL | LOW     | 15%   | P1       |
 | 14                                     | Fix any broken tests from updates                 | 30min | HIGH     | MEDIUM  | 10%   | P1       |
-| **PHASE 4: VERIFICATION & COMMIT**     |
+| **PHASE 4: VERIFICATION & COMMIT**     |                                                   |       |          |         |       |          |
 | 15                                     | Verify test pass rate ≥90%                        | 10min | CRITICAL | TRIVIAL | 20%   | P1       |
 | 16                                     | Run quality checks (build, lint)                  | 10min | HIGH     | TRIVIAL | 5%    | P1       |
 | 17                                     | Git commit with detailed message                  | 10min | MEDIUM   | TRIVIAL | 2%    | P1       |
 | 18                                     | Git push changes                                  | 5min  | MEDIUM   | TRIVIAL | 1%    | P1       |
-| **PHASE 5: DOCUMENTATION & CLEANUP**   |
+| **PHASE 5: DOCUMENTATION & CLEANUP**   |                                                   |       |          |         |       |          |
 | 19                                     | Update issue #138 with completion status          | 10min | MEDIUM   | TRIVIAL | 5%    | P2       |
 | 20                                     | Update issue #139 with completion status          | 10min | MEDIUM   | TRIVIAL | 5%    | P2       |
 | 21                                     | Close issue #137 (batch-fix obsolete)             | 5min  | LOW      | TRIVIAL | 2%    | P2       |
@@ -139,17 +139,17 @@
 
 | #                                                       | Task (15min each)                                                      | Phase | Impact   | Priority | Dependencies |
 | ------------------------------------------------------- | ---------------------------------------------------------------------- | ----- | -------- | -------- | ------------ |
-| **FOUNDATION**                                          |
+| **FOUNDATION**                                          |                                                                        |       |          |          |              |
 | 1                                                       | Read current package.json scripts section                              | 1     | HIGH     | P0       | None         |
 | 2                                                       | Add pretest cleanup script to package.json                             | 1     | CRITICAL | P0       | Task 1       |
 | 3                                                       | Run bun test to verify cleanup executes                                | 1     | HIGH     | P0       | Task 2       |
 | 4                                                       | Verify tsp-test/ deleted before tests                                  | 1     | HIGH     | P0       | Task 3       |
-| **GHOST SYSTEM ANALYSIS**                               |
+| **GHOST SYSTEM ANALYSIS**                               |                                                                        |       |          |          |              |
 | 5                                                       | Read test-helpers.ts lines 115-125 (emitters config)                   | 2     | HIGH     | P0       | Task 4       |
 | 6                                                       | Document why emitters config doesn't work                              | 2     | MEDIUM   | P0       | Task 5       |
 | 7                                                       | Read test-helpers.ts lines 365-484 (ghost system)                      | 2     | HIGH     | P0       | Task 5       |
 | 8                                                       | Document what ghost system does                                        | 2     | MEDIUM   | P0       | Task 7       |
-| **GHOST SYSTEM REMOVAL**                                |
+| **GHOST SYSTEM REMOVAL**                                |                                                                        |       |          |          |              |
 | 9                                                       | Delete lines 119-121 (broken emitters config)                          | 2     | HIGH     | P0       | Task 8       |
 | 10                                                      | Remove output-file parameter from compileAsyncAPISpec signature        | 2     | HIGH     | P0       | Task 9       |
 | 11                                                      | Remove file-type parameter from compileAsyncAPISpec signature          | 2     | HIGH     | P0       | Task 10      |
@@ -160,7 +160,7 @@
 | 16                                                      | Test new parseAsyncAPIOutput with simple test                          | 2     | HIGH     | P0       | Task 15      |
 | 17                                                      | Fix any compilation errors from removal                                | 2     | HIGH     | P0       | Task 16      |
 | 18                                                      | Run TypeScript build to verify no errors                               | 2     | HIGH     | P0       | Task 17      |
-| **TEST FILE UPDATES - basic-emit.test.ts**              |
+| **TEST FILE UPDATES - basic-emit.test.ts**              |                                                                        |       |          |          |              |
 | 19                                                      | Read basic-emit.test.ts test 1 (lines 10-61)                           | 3     | HIGH     | P1       | Task 18      |
 | 20                                                      | Update test 1: Remove output-file option                               | 3     | HIGH     | P1       | Task 19      |
 | 21                                                      | Update test 1: Change expected filename to AsyncAPI.yaml               | 3     | HIGH     | P1       | Task 20      |
@@ -171,12 +171,12 @@
 | 26                                                      | Update test 3: Remove output-file option                               | 3     | HIGH     | P1       | Task 25      |
 | 27                                                      | Update test 3: Change expected filename to AsyncAPI.yaml               | 3     | HIGH     | P1       | Task 26      |
 | 28                                                      | Run basic-emit.test.ts to verify all pass                              | 3     | HIGH     | P1       | Task 27      |
-| **TEST FILE UPDATES - simple-emitter.test.ts**          |
+| **TEST FILE UPDATES - simple-emitter.test.ts**          |                                                                        |       |          |          |              |
 | 29                                                      | Read simple-emitter.test.ts all tests                                  | 3     | HIGH     | P1       | Task 28      |
 | 30                                                      | Update all tests: Remove output-file options                           | 3     | HIGH     | P1       | Task 29      |
 | 31                                                      | Update all tests: Change to AsyncAPI.yaml                              | 3     | HIGH     | P1       | Task 30      |
 | 32                                                      | Run simple-emitter.test.ts to verify                                   | 3     | HIGH     | P1       | Task 31      |
-| **TEST FILE UPDATES - basic-functionality.test.ts**     |
+| **TEST FILE UPDATES - basic-functionality.test.ts**     |                                                                        |       |          |          |              |
 | 33                                                      | Read basic-functionality.test.ts test 1                                | 3     | HIGH     | P1       | Task 32      |
 | 34                                                      | Update test 1 (multi-channel): Remove options                          | 3     | HIGH     | P1       | Task 33      |
 | 35                                                      | Update test 1: Change filename expectation                             | 3     | HIGH     | P1       | Task 34      |
@@ -193,7 +193,7 @@
 | 46                                                      | Update test 5 (unique-names): Remove options                           | 3     | HIGH     | P1       | Task 45      |
 | 47                                                      | Update test 5: Change filename expectation                             | 3     | HIGH     | P1       | Task 46      |
 | 48                                                      | Run basic-functionality.test.ts to verify                              | 3     | HIGH     | P1       | Task 47      |
-| **TEST FILE UPDATES - asyncapi-generation.test.ts**     |
+| **TEST FILE UPDATES - asyncapi-generation.test.ts**     |                                                                        |       |          |          |              |
 | 49                                                      | Read asyncapi-generation.test.ts structure                             | 3     | HIGH     | P1       | Task 48      |
 | 50                                                      | Update first 2 tests: Remove output-file                               | 3     | HIGH     | P1       | Task 49      |
 | 51                                                      | Update first 2 tests: Change filenames                                 | 3     | HIGH     | P1       | Task 50      |
@@ -202,7 +202,7 @@
 | 54                                                      | Update final 2 tests: Remove output-file                               | 3     | HIGH     | P1       | Task 53      |
 | 55                                                      | Update final 2 tests: Change filenames                                 | 3     | HIGH     | P1       | Task 54      |
 | 56                                                      | Run asyncapi-generation.test.ts to verify                              | 3     | HIGH     | P1       | Task 55      |
-| **TEST FILE UPDATES - decorator-functionality.test.ts** |
+| **TEST FILE UPDATES - decorator-functionality.test.ts** |                                                                        |       |          |          |              |
 | 57                                                      | Read decorator-functionality.test.ts structure (10 tests)              | 3     | HIGH     | P1       | Task 56      |
 | 58                                                      | Update tests 1-3: Remove output-file options                           | 3     | HIGH     | P1       | Task 57      |
 | 59                                                      | Update tests 1-3: Change filename expectations                         | 3     | HIGH     | P1       | Task 58      |
@@ -211,14 +211,14 @@
 | 62                                                      | Update tests 7-10: Remove output-file options                          | 3     | HIGH     | P1       | Task 61      |
 | 63                                                      | Update tests 7-10: Change filename expectations                        | 3     | HIGH     | P1       | Task 62      |
 | 64                                                      | Run decorator-functionality.test.ts to verify                          | 3     | HIGH     | P1       | Task 63      |
-| **TEST FILE UPDATES - real-world-scenarios.test.ts**    |
+| **TEST FILE UPDATES - real-world-scenarios.test.ts**    |                                                                        |       |          |          |              |
 | 65                                                      | Read real-world-scenarios.test.ts structure (4 tests)                  | 3     | HIGH     | P1       | Task 64      |
 | 66                                                      | Update tests 1-2: Remove output-file options                           | 3     | HIGH     | P1       | Task 65      |
 | 67                                                      | Update tests 1-2: Change filename expectations                         | 3     | HIGH     | P1       | Task 66      |
 | 68                                                      | Update tests 3-4: Remove output-file options                           | 3     | HIGH     | P1       | Task 67      |
 | 69                                                      | Update tests 3-4: Change filename expectations                         | 3     | HIGH     | P1       | Task 68      |
 | 70                                                      | Run real-world-scenarios.test.ts to verify                             | 3     | HIGH     | P1       | Task 69      |
-| **FULL TEST SUITE VERIFICATION**                        |
+| **FULL TEST SUITE VERIFICATION**                        |                                                                        |       |          |          |              |
 | 71                                                      | Run full test suite: bun test                                          | 4     | CRITICAL | P1       | Task 70      |
 | 72                                                      | Count passing tests (should be 725+)                                   | 4     | CRITICAL | P1       | Task 71      |
 | 73                                                      | Calculate pass rate (should be 92%+)                                   | 4     | CRITICAL | P1       | Task 72      |
@@ -227,30 +227,30 @@
 | 76                                                      | If < 90%: Fix first failing test                                       | 4     | HIGH     | P1       | Task 75      |
 | 77                                                      | If < 90%: Repeat fix cycle for next failures                           | 4     | HIGH     | P1       | Task 76      |
 | 78                                                      | Verify all critical tests passing                                      | 4     | HIGH     | P1       | Task 77      |
-| **QUALITY CHECKS**                                      |
+| **QUALITY CHECKS**                                      |                                                                        |       |          |          |              |
 | 79                                                      | Run TypeScript build: bun run build                                    | 4     | HIGH     | P1       | Task 78      |
 | 80                                                      | Verify zero TypeScript errors                                          | 4     | HIGH     | P1       | Task 79      |
 | 81                                                      | Run ESLint: bun run lint                                               | 4     | MEDIUM   | P1       | Task 80      |
 | 82                                                      | Fix any new ESLint violations                                          | 4     | MEDIUM   | P1       | Task 81      |
 | 83                                                      | Run typecheck: bun run typecheck                                       | 4     | MEDIUM   | P1       | Task 82      |
-| **GIT COMMIT & PUSH**                                   |
+| **GIT COMMIT & PUSH**                                   |                                                                        |       |          |          |              |
 | 84                                                      | Review all changed files with git diff                                 | 4     | MEDIUM   | P1       | Task 83      |
 | 85                                                      | Write comprehensive commit message                                     | 4     | MEDIUM   | P1       | Task 84      |
 | 86                                                      | Git add all changes                                                    | 4     | MEDIUM   | P1       | Task 85      |
 | 87                                                      | Git commit with detailed message                                       | 4     | MEDIUM   | P1       | Task 86      |
 | 88                                                      | Git push to feature branch                                             | 4     | MEDIUM   | P1       | Task 87      |
-| **GITHUB ISSUE UPDATES**                                |
+| **GITHUB ISSUE UPDATES**                                |                                                                        |       |          |          |              |
 | 89                                                      | Update issue #138: Add completion comment                              | 5     | MEDIUM   | P2       | Task 88      |
 | 90                                                      | Update issue #139: Add completion comment                              | 5     | MEDIUM   | P2       | Task 89      |
 | 91                                                      | Close issue #138 as completed                                          | 5     | MEDIUM   | P2       | Task 90      |
 | 92                                                      | Close issue #139 as completed                                          | 5     | MEDIUM   | P2       | Task 91      |
 | 93                                                      | Update issue #111: Add progress update                                 | 5     | MEDIUM   | P2       | Task 92      |
 | 94                                                      | Update issue #111: New test pass rate                                  | 5     | MEDIUM   | P2       | Task 93      |
-| **DOCUMENTATION**                                       |
+| **DOCUMENTATION**                                       |                                                                        |       |          |          |              |
 | 95                                                      | Document ghost system removal in learnings                             | 5     | LOW      | P3       | Task 94      |
 | 96                                                      | Update CLAUDE.md if needed                                             | 5     | LOW      | P3       | Task 95      |
 | 97                                                      | Verify all docs/ files committed                                       | 5     | LOW      | P3       | Task 96      |
-| **FINAL VERIFICATION**                                  |
+| **FINAL VERIFICATION**                                  |                                                                        |       |          |          |              |
 | 98                                                      | Run full test suite one final time                                     | 5     | HIGH     | P1       | Task 97      |
 | 99                                                      | Verify pass rate maintained                                            | 5     | HIGH     | P1       | Task 98      |
 | 100                                                     | Create final session summary                                           | 5     | MEDIUM   | P2       | Task 99      |

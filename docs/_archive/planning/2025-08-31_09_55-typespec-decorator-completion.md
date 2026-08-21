@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Decorator Completion Plan
 
-**Session**: 2025-08-31_09_55  
-**Project**: TypeSpec AsyncAPI Emitter  
+**Session**: 2025-08-31_09_55\
+**Project**: TypeSpec AsyncAPI Emitter\
 **Focus**: Complete decorator functionality and comprehensive testing
 
 ## 🎯 Executive Summary
@@ -183,6 +183,6 @@ gantt
 
 ---
 
-**Total Effort**: 750 minutes (12.5 hours) across 50 micro-tasks  
-**Expected Completion**: Single focused development session with parallel execution  
+**Total Effort**: 750 minutes (12.5 hours) across 50 micro-tasks\
+**Expected Completion**: Single focused development session with parallel execution\
 **Business Impact**: Complete TypeSpec AsyncAPI emitter with comprehensive functionality

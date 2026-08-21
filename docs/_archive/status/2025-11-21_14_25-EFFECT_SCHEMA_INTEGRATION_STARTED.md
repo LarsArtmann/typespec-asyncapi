@@ -1,6 +1,6 @@
 # Schema Integration Status Report
 
-**Date:** 2025-11-21 14:25:18 CET  
+**Date:** 2025-11-21 14:25:18 CET\
 **Status:** EFFECT.SCHEMA INTEGRATION STARTED - STEP 1/5 COMPLETE ✅
 
 ---
@@ -16,7 +16,7 @@
 
 ### 🔄 STEP 2 IN PROGRESS: Replace Manual Validation in Branded Types
 
-**Current:** Manual validation with Effect.fail() patterns  
+**Current:** Manual validation with Effect.fail() patterns\
 **Target:** @effect/schema branded type validation
 
 ### 📋 REMAINING STEPS

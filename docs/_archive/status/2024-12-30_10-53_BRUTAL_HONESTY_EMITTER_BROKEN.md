@@ -1,8 +1,8 @@
 # TypeSpec AsyncAPI Emitter - BRUTAL HONESTY Status Report
 
-**Report Date:** 2024-12-30  
-**Report Time:** 10:53 UTC  
-**Version:** 0.0.1 (pre-alpha)  
+**Report Date:** 2024-12-30\
+**Report Time:** 10:53 UTC\
+**Version:** 0.0.1 (pre-alpha)\
 **Status:** 🚨 CRITICAL - Emitter Completely Broken
 
 ---
@@ -279,7 +279,10 @@ const channelData = data as { path?: string };
 ```typescript
 // Emitter directly accessing state:
 const rawState = consolidateAsyncAPIState(context.program);
-const channelPaths = getStateMap<ChannelPathData>(program, stateSymbols.channelPaths);
+const channelPaths = getStateMap<ChannelPathData>(
+  program,
+  stateSymbols.channelPaths,
+);
 ```
 
 **Impact:**
@@ -330,8 +333,13 @@ type OperationTypeData = {
 
 ```typescript
 // Should use generics but doesn't:
-export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
-  const channelPaths = getStateMap<ChannelPathData>(program, stateSymbols.channelPaths);
+export function consolidateAsyncAPIState(
+  program: Program,
+): AsyncAPIConsolidatedState {
+  const channelPaths = getStateMap<ChannelPathData>(
+    program,
+    stateSymbols.channelPaths,
+  );
   // Multiple similar lines with hardcoded types
 }
 ```
@@ -550,10 +558,10 @@ interface StateMap<K> extends Map<unknown, K> {
 
 ### Overall Test Suite
 
-**Total Tests:** 606  
-**Passing:** 246 (40.6%)  
-**Failing:** 331 (54.6%)  
-**Skipping:** 29 (4.8%)  
+**Total Tests:** 606\
+**Passing:** 246 (40.6%)\
+**Failing:** 331 (54.6%)\
+**Skipping:** 29 (4.8%)\
 **Errors:** 19
 
 **Status:** UNACCEPTABLE FOR ANY RELEASE
@@ -562,9 +570,9 @@ interface StateMap<K> extends Map<unknown, K> {
 
 ### Documentation Tests
 
-**Total:** 140  
-**Passing:** 140 (100%) ✅  
-**Failing:** 0 (0%)  
+**Total:** 140\
+**Passing:** 140 (100%) ✅\
+**Failing:** 0 (0%)\
 **Status:** EXCELLENT
 
 **Categories Tested:**
@@ -583,7 +591,7 @@ interface StateMap<K> extends Map<unknown, K> {
 
 **Status:** NONE EXISTING ❌
 
-**Coverage:** 0%  
+**Coverage:** 0%\
 **Impact:** Cannot verify end-to-end functionality
 
 **Missing Tests:**
@@ -1134,9 +1142,9 @@ interface StateMap<K> extends Map<unknown, K> {
 
 ### Current Project Status
 
-**Health:** CRITICAL 🚨  
-**Quality:** FAILED ❌  
-**Readiness:** NOT READY ❌  
+**Health:** CRITICAL 🚨\
+**Quality:** FAILED ❌\
+**Readiness:** NOT READY ❌\
 **Value:** ZERO ❌
 
 ### What We Have:
@@ -1190,9 +1198,9 @@ The current state is completely broken:
 
 ---
 
-**Report Author:** TypeSpec AsyncAPI Development Team  
-**Status Accuracy:** BRUTALLY HONEST  
-**Actionability:** HIGH (clear execution plan provided)  
+**Report Author:** TypeSpec AsyncAPI Development Team\
+**Status Accuracy:** BRUTALLY HONEST\
+**Actionability:** HIGH (clear execution plan provided)\
 **Next Steps:** START OVER WITH PROPER ARCHITECTURE (Day 1 of Phase 1)
 
 ---

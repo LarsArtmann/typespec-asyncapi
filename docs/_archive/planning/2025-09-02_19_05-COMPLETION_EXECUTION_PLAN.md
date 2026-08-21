@@ -250,7 +250,7 @@ graph TD
 
 ### 🚀 GROUP 2: ARCHITECTURE & QUALITY (M31-M65)
 
-**Timeline:** 8-10 hours  
+**Timeline:** 8-10 hours\
 **Focus:** Plugin architecture completion, performance testing, advanced features
 **Agent:** micro-kernel-architect + testing-architecture-expert
 **Dependencies:** GROUP 1 TypeScript emitter fixes complete

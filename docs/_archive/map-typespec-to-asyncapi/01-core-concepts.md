@@ -53,9 +53,9 @@ info:
   version: 1.0.0
 channels:
   userEvents:
-    # Events from UserManagement.Events
+  # Events from UserManagement.Events
   userNotifications:
-    # Events from UserManagement.Notifications
+# Events from UserManagement.Notifications
 ```
 
 ### 2. Type System Mapping
@@ -227,7 +227,7 @@ info:
   version: 2.0.0
 channels:
   newFeature:
-    # Available from version 2.0.0
+# Available from version 2.0.0
 ```
 
 ## Best Practices for Mapping

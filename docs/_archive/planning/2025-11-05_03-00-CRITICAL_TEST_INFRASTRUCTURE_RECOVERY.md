@@ -1,7 +1,7 @@
 # 🔧 Critical Test Infrastructure Recovery Plan
 
-**Date:** 2025-11-05  
-**Priority:** CRITICAL INFRASTRUCTURE RECOVERY  
+**Date:** 2025-11-05\
+**Priority:** CRITICAL INFRASTRUCTURE RECOVERY\
 **Target:** Restore test suite from 52% to 85% pass rate
 
 ---
@@ -263,7 +263,7 @@ Change all tests to use the new API correctly
 
 **Next 60 minutes (Expansion):** 4. **1:30-1:50:** Fix AsyncAPI structure generation 5. **1:50-2:10:** Fix TypeSpec integration issues 6. **2:10-2:30:** Update test timeout issues
 
-**Final 60 minutes (Complete):** 7. **2:30-2:50:** Fix protocol binding issues 8. **2:50-3:10:** Fix server decorator issues  
+**Final 60 minutes (Complete):** 7. **2:30-2:50:** Fix protocol binding issues 8. **2:50-3:10:** Fix server decorator issues\
 9. **3:10-3:30:** Comprehensive test validation
 
 ---

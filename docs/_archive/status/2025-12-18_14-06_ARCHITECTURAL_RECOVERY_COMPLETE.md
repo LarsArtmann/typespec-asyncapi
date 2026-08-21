@@ -6,7 +6,7 @@
 
 ## 🎯 EXECUTIVE SUMMARY
 
-**STATUS: ARCHITECTURAL CRISIS RESOLVED**  
+**STATUS: ARCHITECTURAL CRISIS RESOLVED**\
 The TypeSpec AsyncAPI project has successfully recovered from a critical Effect.TS runtime failure that threatened to halt all development. Core infrastructure is now operational with working AsyncAPI generation and validation pipelines.
 
 **Key Achievements:**
@@ -427,8 +427,8 @@ The TypeSpec AsyncAPI project has successfully recovered from the Effect.TS runt
 
 ---
 
-**Report Generated:** 2025-12-18_14:06 CET  
-**Project Status:** RECOVERING → STABILIZING  
+**Report Generated:** 2025-12-18_14:06 CET\
+**Project Status:** RECOVERING → STABILIZING\
 **Next Milestone:** PRODUCTION READY FOUNDATION
 
 ---

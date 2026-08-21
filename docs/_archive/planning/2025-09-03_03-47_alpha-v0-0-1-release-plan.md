@@ -1,8 +1,8 @@
 # Alpha v0.0.1 Release Plan - TypeSpec AsyncAPI Emitter
 
-**Session:** 2025-09-03_03_47-ALPHA_v0_0_1_RELEASE_PLAN  
-**Project:** @lars-artmann/typespec-asyncapi  
-**Target:** Alpha v0.0.1 Release  
+**Session:** 2025-09-03_03_47-ALPHA_v0_0_1_RELEASE_PLAN\
+**Project:** @lars-artmann/typespec-asyncapi\
+**Target:** Alpha v0.0.1 Release\
 **Timeline:** 1-2 days (accelerated from 1-2 weeks due to build system resolution)
 
 ## 🎯 Executive Summary
@@ -107,7 +107,7 @@ graph TD
 
 | Priority             | Task                                     | Time   | Impact      | Category       |
 | -------------------- | ---------------------------------------- | ------ | ----------- | -------------- |
-| **CRITICAL PATH**    |
+| **CRITICAL PATH**    |                                          |        |             |                |
 | 1                    | Create and test basic TypeSpec example   | 45min  | 🔴 Critical | Validation     |
 | 2                    | Validate AsyncAPI output quality         | 30min  | 🔴 Critical | Validation     |
 | 3                    | Test NPM package integration             | 30min  | 🔴 Critical | Integration    |
@@ -115,7 +115,7 @@ graph TD
 | 21                   | Final NPM package validation             | 30min  | 🔴 Critical | Publishing     |
 | 22                   | Create GitHub release                    | 30min  | 🔴 Critical | Publishing     |
 | 23                   | Publish to NPM registry                  | 30min  | 🔴 Critical | Publishing     |
-| **HIGH VALUE TASKS** |
+| **HIGH VALUE TASKS** |                                          |        |             |                |
 | 5                    | Create release notes and changelog       | 45min  | 🟡 High     | Documentation  |
 | 6                    | Prepare example gallery (3 examples)     | 90min  | 🟡 High     | Examples       |
 | 7                    | Test publishing pipeline                 | 30min  | 🟡 High     | Publishing     |
@@ -127,7 +127,7 @@ graph TD
 | 14                   | Create getting started guide             | 60min  | 🟡 High     | Documentation  |
 | 15                   | Document known limitations               | 30min  | 🟡 High     | Documentation  |
 | 24                   | Update package documentation             | 45min  | 🟡 High     | Publishing     |
-| **POLISH TASKS**     |
+| **POLISH TASKS**     |                                          |        |             |                |
 | 12                   | Performance benchmarking                 | 60min  | 🟢 Medium   | Performance    |
 | 16                   | Create API reference                     | 90min  | 🟢 Medium   | Documentation  |
 | 17                   | Remove over-engineered plugin components | 120min | 🟢 Medium   | Cleanup        |
@@ -136,7 +136,7 @@ graph TD
 | 20                   | Validate TypeScript strict mode          | 30min  | 🟢 Medium   | Code Quality   |
 | 25                   | Buffer time for unexpected issues        | 60min  | 🟢 Medium   | Contingency    |
 
-**Total: 19.25 hours**  
+**Total: 19.25 hours**\
 **Critical Path: 2.75 hours**
 
 ## 📝 Micro-Tasks Breakdown (100 tasks, 15min each)

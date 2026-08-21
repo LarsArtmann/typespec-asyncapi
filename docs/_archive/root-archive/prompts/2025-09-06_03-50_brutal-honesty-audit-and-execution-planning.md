@@ -1,7 +1,7 @@
 # Brutal Honesty Audit and Execution Planning Prompt
 
-**Name**: `brutal-honesty-audit-and-execution-planning`  
-**Use Case**: When you need honest assessment, ghost system detection, and actionable execution plans  
+**Name**: `brutal-honesty-audit-and-execution-planning`\
+**Use Case**: When you need honest assessment, ghost system detection, and actionable execution plans\
 **Session Source**: Duplication elimination and documentation organization session
 
 ## The Prompt
@@ -139,7 +139,6 @@ Provide me with a mermaid.js graph on how you think the App is architected. Do N
 Now provide me with a mermaid.js graph on how you think the App SHOULD BE architected! Do NOT do anything else! JUST THE mermaid.js graph RIGHT NOW! Write it to docs/architecture-understanding/<YYYY-MM-DD_HH_MM-SESSION_NAME-improved>.mmd
 
 ```
-
 ## When to Use This Prompt
 
 ### ✅ Good Situations:

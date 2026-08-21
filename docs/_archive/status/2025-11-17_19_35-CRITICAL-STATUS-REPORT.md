@@ -1,7 +1,7 @@
 # 🚨 CRITICAL STATUS REPORT - 2025-11-17_19_35-ASYNCAPI-EMITTER
 
-**Generated:** 2025-11-17 19:35:30 CET  
-**Status:** **CRITICAL ISSUES** - Architecture Working, Test Framework Broken  
+**Generated:** 2025-11-17 19:35:30 CET\
+**Status:** **CRITICAL ISSUES** - Architecture Working, Test Framework Broken\
 **Test Pass Rate:** **52%** (377/736) - **PRODUCTION DEPLOYMENT IMPOSSIBLE**
 
 ---
@@ -127,37 +127,37 @@ Received: undefined
 
 ### **1. Test Framework Bridging** (P0 - IMMEDIATE)
 
-**Problem:** 330/736 tests failing due to AsyncAPI parsing issues  
-**Impact:** Production deployment IMPOSSIBLE  
-**Estimate:** 2-4 hours  
+**Problem:** 330/736 tests failing due to AsyncAPI parsing issues\
+**Impact:** Production deployment IMPOSSIBLE\
+**Estimate:** 2-4 hours\
 **Solution:** Fix `compileAndGetAsyncAPI()` virtual filesystem integration
 
 ### **2. Complete Branded Types Application** (P0 - IMMEDIATE)
 
-**Problem:** 80% of branded types unused - massive type safety waste  
-**Impact:** Runtime string mixing bugs inevitable  
-**Estimate:** 2 hours  
+**Problem:** 80% of branded types unused - massive type safety waste\
+**Impact:** Runtime string mixing bugs inevitable\
+**Estimate:** 2 hours\
 **Solution:** Apply MessageName, SchemaName, ServerName, SecuritySchemeName
 
 ### **3. Split Monster Files** (P0 - IMMEDIATE)
 
-**Problem:** test-helpers.ts 571 lines violates SRP  
-**Impact:** Cognitive overload, maintenance nightmare  
-**Estimate:** 3 hours  
+**Problem:** test-helpers.ts 571 lines violates SRP\
+**Impact:** Cognitive overload, maintenance nightmare\
+**Estimate:** 3 hours\
 **Solution:** Split into TestCompilation.ts, TestValidation.ts, TestSources.ts, TestAssertions.ts
 
 ### **4. Eliminate Split Brains** (P0 - IMMEDIATE)
 
-**Problem:** State contradictions cause runtime errors  
-**Impact:** Invalid states representable throughout codebase  
-**Estimate:** 2 hours  
+**Problem:** State contradictions cause runtime errors\
+**Impact:** Invalid states representable throughout codebase\
+**Estimate:** 2 hours\
 **Solution:** Discriminated unions for ValidationResult, DocumentState
 
 ### **5. Test Failure Triage** (P0 - IMMEDIATE)
 
-**Problem:** 45% test failure rate blocks all development  
-**Impact:** Cannot validate any changes  
-**Estimate:** 4 hours  
+**Problem:** 45% test failure rate blocks all development\
+**Impact:** Cannot validate any changes\
+**Estimate:** 4 hours\
 **Solution:** Categorize and fix top failure patterns (expected: 52% → 70%)
 
 ---
@@ -316,6 +316,6 @@ Despite critical issues, significant progress made:
 
 ---
 
-**Report Generated:** 2025-11-17 19:35:30 CET  
-**Next Status Update:** Recommended 2025-11-18 19:35 CET (24-hour cycle)  
+**Report Generated:** 2025-11-17 19:35:30 CET\
+**Next Status Update:** Recommended 2025-11-18 19:35 CET (24-hour cycle)\
 **Urgency:** **HIGH** - Critical blockers prevent production deployment

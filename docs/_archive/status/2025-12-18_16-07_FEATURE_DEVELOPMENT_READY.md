@@ -496,8 +496,8 @@ The TypeSpec AsyncAPI project has successfully transitioned from architectural c
 
 ---
 
-**Report Generated:** 2025-12-18_16:07 CET  
-**Project Status:** CRISIS RESOLVED → FEATURE DEVELOPMENT READY  
+**Report Generated:** 2025-12-18_16:07 CET\
+**Project Status:** CRISIS RESOLVED → FEATURE DEVELOPMENT READY\
 **Next Milestone:** CORE ASYNCAPI 3.0 FEATURES IMPLEMENTED
 
 ---

@@ -1,7 +1,7 @@
 # Complete Execution Roadmap - TypeSpec AsyncAPI Emitter
 
-**Date:** 2025-08-31 13:19  
-**Session:** Complete Execution Planning with GitHub Issues + Internal TODOs  
+**Date:** 2025-08-31 13:19\
+**Session:** Complete Execution Planning with GitHub Issues + Internal TODOs\
 **Current State:** 77.5% Value Delivered, Build System Issues
 
 ## Executive Summary
@@ -315,7 +315,7 @@ graph TB
 
 ---
 
-**Generated:** 2025-08-31 13:19 CEST  
-**Total Issues:** 16 Open GitHub + 7 Internal TODOs  
-**Estimated Time to v1.0.0:** 3-4 days focused work  
+**Generated:** 2025-08-31 13:19 CEST\
+**Total Issues:** 16 Open GitHub + 7 Internal TODOs\
+**Estimated Time to v1.0.0:** 3-4 days focused work\
 **Current Blockers:** Build system (#46)

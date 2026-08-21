@@ -1,6 +1,6 @@
 # Sorted Issue List - TypeSpec AsyncAPI Emitter
 
-**Generated:** 2025-08-31 13:30 CEST  
+**Generated:** 2025-08-31 13:30 CEST\
 **Total Issues:** 250 max (currently 87 identified)
 
 ## Priority Levels

@@ -161,6 +161,6 @@ _These tasks unlock 371 failing tests_
 
 ---
 
-_Total Tasks: 40_  
-_Total Time: 564 minutes (9.4 hours)_  
+_Total Tasks: 40_\
+_Total Time: 564 minutes (9.4 hours)_\
 _Parallel Execution: ~5-6 hours with 3 threads_

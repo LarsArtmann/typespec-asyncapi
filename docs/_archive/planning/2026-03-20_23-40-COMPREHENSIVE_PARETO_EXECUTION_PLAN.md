@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter - Comprehensive Pareto Execution Plan
 
-**Date:** 2026-03-20 23:40  
-**Status:** Infrastructure Recovery → Full Feature Implementation  
+**Date:** 2026-03-20 23:40\
+**Status:** Infrastructure Recovery → Full Feature Implementation\
 **Goal:** Complete ALL TODO items using Pareto-optimized execution
 
 ---
@@ -22,14 +22,14 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ## Phase 1: The 1% (Critical Fixes - 51% of Value)
 
-**Duration:** ~3 hours total  
+**Duration:** ~3 hours total\
 **Impact:** Fixes broken features, enables core AsyncAPI spec compliance
 
 ### Task 1: Fix Broken $security Decorator [CRITICAL] ⏱️ 45min
 
-**Status:** 🔴 BLOCKING  
-**Impact:** HIGH - Security is completely broken  
-**Effort:** MEDIUM  
+**Status:** 🔴 BLOCKING\
+**Impact:** HIGH - Security is completely broken\
+**Effort:** MEDIUM\
 **Customer Value:** CRITICAL
 
 **Problem:** `$security` decorator validates but **never stores data** (line 278-295 in `minimal-decorators.ts`).
@@ -57,9 +57,9 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Task 2: Add Tags Output to Messages [HIGH VALUE] ⏱️ 30min
 
-**Status:** 🟡 MISSING OUTPUT  
-**Impact:** MEDIUM - Tags already stored, just not output  
-**Effort:** LOW  
+**Status:** 🟡 MISSING OUTPUT\
+**Impact:** MEDIUM - Tags already stored, just not output\
+**Effort:** LOW\
 **Customer Value:** HIGH
 
 **Problem:** `@tags` decorator stores data in `state.tags` but emitter never outputs it.
@@ -83,9 +83,9 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Task 3: Add CorrelationId Output to Messages [HIGH VALUE] ⏱️ 35min
 
-**Status:** 🟡 MISSING OUTPUT  
-**Impact:** MEDIUM - CorrelationId stored, not output  
-**Effort:** LOW  
+**Status:** 🟡 MISSING OUTPUT\
+**Impact:** MEDIUM - CorrelationId stored, not output\
+**Effort:** LOW\
 **Customer Value:** HIGH
 
 **Problem:** `@correlationId` decorator stores data in `state.correlationIds` but never output.
@@ -109,8 +109,8 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Task 4: Add Protocol Bindings to Channels [HIGH VALUE] ⏱️ 40min
 
-**Status:** 🟡 MISSING OUTPUT  
-**Impact:** MEDIUM - Protocol configs stored, not output  
+**Status:** 🟡 MISSING OUTPUT\
+**Impact:** MEDIUM - Protocol configs stored, not output\
 **Effort:** MEDIUM **Customer Value:** HIGH
 
 **Problem:** `@protocol` decorator stores configs in `state.protocolConfigs` but channels don't use them.
@@ -135,14 +135,14 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ## Phase 2: The 4% (Foundation Features - 64% of Value)
 
-**Duration:** ~8 hours total  
+**Duration:** ~8 hours total\
 **Impact:** Enables full AsyncAPI 3.0 compliance
 
 ### Task 5: Add Security Schemes to Components [HIGH] ⏱️ 50min
 
-**Status:** 🔴 NOT IMPLEMENTED  
-**Impact:** HIGH - Security schemes need output section  
-**Effort:** MEDIUM  
+**Status:** 🔴 NOT IMPLEMENTED\
+**Impact:** HIGH - Security schemes need output section\
+**Effort:** MEDIUM\
 **Customer Value:** CRITICAL
 
 **Implementation:**
@@ -159,9 +159,9 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Task 6: Reference Security in Operations [HIGH] ⏱️ 40min
 
-**Status:** 🔴 NOT IMPLEMENTED  
-**Impact:** HIGH - Operations need security references  
-**Effort:** MEDIUM  
+**Status:** 🔴 NOT IMPLEMENTED\
+**Impact:** HIGH - Operations need security references\
+**Effort:** MEDIUM\
 **Customer Value:** HIGH
 
 **Implementation:**
@@ -178,9 +178,9 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Task 7: Add Protocol Bindings Output [MEDIUM] ⏱️ 45min
 
-**Status:** 🟡 STORED BUT NOT FORMATTED  
-**Impact:** MEDIUM - Need proper AsyncAPI binding format  
-**Effort:** MEDIUM  
+**Status:** 🟡 STORED BUT NOT FORMATTED\
+**Impact:** MEDIUM - Need proper AsyncAPI binding format\
+**Effort:** MEDIUM\
 **Customer Value:** MEDIUM
 
 **Implementation:**
@@ -197,9 +197,9 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Task 8: Add Message Headers Output [MEDIUM] ⏱️ 50min
 
-**Status:** 🟡 STORED BUT NOT OUTPUT  
-**Impact:** MEDIUM - Headers stored, need AsyncAPI format  
-**Effort:** MEDIUM  
+**Status:** 🟡 STORED BUT NOT OUTPUT\
+**Impact:** MEDIUM - Headers stored, need AsyncAPI format\
+**Effort:** MEDIUM\
 **Customer Value:** MEDIUM
 
 **Implementation:**
@@ -216,9 +216,9 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Task 9: Create AsyncAPI 3.0 Types [MEDIUM] ⏱️ 60min
 
-**Status:** 🔴 USING `Record<string, unknown>`  
-**Impact:** MEDIUM - Type safety improvements  
-**Effort:** MEDIUM  
+**Status:** 🔴 USING `Record<string, unknown>`\
+**Impact:** MEDIUM - Type safety improvements\
+**Effort:** MEDIUM\
 **Customer Value:** MEDIUM
 
 **Implementation:**
@@ -236,9 +236,9 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Task 10: Implement JSON Schema Converter [HIGH] ⏱️ 90min
 
-**Status:** 🔴 BASIC IMPLEMENTATION  
-**Impact:** HIGH - Current schema conversion is minimal  
-**Effort:** HIGH  
+**Status:** 🔴 BASIC IMPLEMENTATION\
+**Impact:** HIGH - Current schema conversion is minimal\
+**Effort:** HIGH\
 **Customer Value:** HIGH
 
 **Implementation:**
@@ -258,9 +258,9 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Task 11: Add HTTP Protocol Binding [MEDIUM] ⏱️ 45min
 
-**Status:** 🟡 MENTIONED BUT NOT FULLY IMPLEMENTED  
-**Impact:** MEDIUM - HTTP is common protocol  
-**Effort:** MEDIUM  
+**Status:** 🟡 MENTIONED BUT NOT FULLY IMPLEMENTED\
+**Impact:** MEDIUM - HTTP is common protocol\
+**Effort:** MEDIUM\
 **Customer Value:** MEDIUM
 
 **Implementation:**
@@ -278,9 +278,9 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Task 12: Fix Effect.TS Service Injection [MEDIUM] ⏱️ 60min
 
-**Status:** 🟡 PARTIALLY BROKEN  
-**Impact:** MEDIUM - Service layer needs fixes  
-**Effort:** MEDIUM  
+**Status:** 🟡 PARTIALLY BROKEN\
+**Impact:** MEDIUM - Service layer needs fixes\
+**Effort:** MEDIUM\
 **Customer Value:** LOW (internal)
 
 **Implementation:**
@@ -297,7 +297,7 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ## Phase 3: The 20% (Complete Feature Set - 80% of Value)
 
-**Duration:** ~40 hours total  
+**Duration:** ~40 hours total\
 **Impact:** Full AsyncAPI 3.0 compliance + Type safety
 
 ### Tasks 13-20: Type Safety & Code Quality
@@ -418,6 +418,6 @@ graph LR
 
 ---
 
-_Generated: 2026-03-20 23:40_  
-_Plan Version: 1.0_  
+_Generated: 2026-03-20 23:40_\
+_Plan Version: 1.0_\
 _Pareto Analysis: Applied_

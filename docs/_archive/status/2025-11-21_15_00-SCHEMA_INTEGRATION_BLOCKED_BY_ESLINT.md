@@ -1,6 +1,6 @@
 # Schema Integration Status Report
 
-**Date:** 2025-11-21 15:00:49 CET  
+**Date:** 2025-11-21 15:00:49 CET\
 **Status:** EFFECT.SCHEMA INTEGRATION STEP 2 COMPLETE - ESLINT COMPLIANCE ISSUES ⚠️
 
 ---
@@ -46,7 +46,8 @@ export const createChannelPath = (
   Effect.gen(function* () {
     return yield* Effect.try({
       try: () => Schema.decodeSync(channelPathSchema)(path),
-      catch: (error) => new Error(`Channel path validation failed: ${String(error)}`),
+      catch: (error) =>
+        new Error(`Channel path validation failed: ${String(error)}`),
     });
   });
 ```
@@ -116,8 +117,8 @@ export const serverUrlSchema = Schema.String.pipe(
 
 ### Issue 1: ESLint Try/Catch Restriction
 
-**Description:** `no-restricted-syntax` rule bans try/catch blocks globally  
-**Impact:** Pre-commit hook blocks commit completion  
+**Description:** `no-restricted-syntax` rule bans try/catch blocks globally\
+**Impact:** Pre-commit hook blocks commit completion\
 **Complexity:** LOW - requires URL validation alternative
 
 ### Potential Solutions:

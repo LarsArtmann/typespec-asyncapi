@@ -248,7 +248,15 @@ components:
           $ref: "#/components/schemas/UserData"
         registrationContext:
           $ref: "#/components/schemas/RegistrationContext"
-      required: [eventId, eventType, eventVersion, occurredAt, user, registrationContext]
+      required:
+        [
+          eventId,
+          eventType,
+          eventVersion,
+          occurredAt,
+          user,
+          registrationContext,
+        ]
 ```
 
 ### Command Message Structure
@@ -358,7 +366,15 @@ components:
           items:
             $ref: "#/components/schemas/ValidationRule"
       required:
-        [commandId, commandType, commandVersion, requestedAt, requestedBy, idempotencyKey, order]
+        [
+          commandId,
+          commandType,
+          commandVersion,
+          requestedAt,
+          requestedBy,
+          idempotencyKey,
+          order,
+        ]
 ```
 
 ## Schema Evolution Patterns

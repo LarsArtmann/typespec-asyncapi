@@ -1,6 +1,6 @@
 # 📋 DETAILED TASK BREAKDOWN (15-minute tasks)
 
-**Total Tasks:** 20 tasks × 15 minutes = 300 minutes (5 hours)  
+**Total Tasks:** 20 tasks × 15 minutes = 300 minutes (5 hours)\
 **Priority:** Critical Infrastructure Recovery
 
 ---
@@ -9,7 +9,7 @@
 
 ### **Task 1: Test Infrastructure API Mismatch - Analysis** (15 min)
 
-**Impact:** 🚨 CRITICAL - Fixes 80% of validation failures  
+**Impact:** 🚨 CRITICAL - Fixes 80% of validation failures\
 **Files:** `test/utils/test-helpers.ts`, `test/validation/automated-spec-validation.test.ts`
 
 **Sub-tasks:**
@@ -26,7 +26,7 @@
 
 ### **Task 2: Test Infrastructure API Mismatch - Implementation** (15 min)
 
-**Impact:** 🚨 CRITICAL - Resolves major test failures  
+**Impact:** 🚨 CRITICAL - Resolves major test failures\
 **Files:** `test/utils/test-helpers.ts`
 
 **Sub-tasks:**
@@ -43,7 +43,7 @@
 
 ### **Task 3: Update Critical Validation Tests** (15 min)
 
-**Impact:** 🚨 CRITICAL - Makes validation tests pass  
+**Impact:** 🚨 CRITICAL - Makes validation tests pass\
 **Files:** `test/validation/automated-spec-validation.test.ts`
 
 **Sub-tasks:**
@@ -60,7 +60,7 @@
 
 ### **Task 4: Document Builder Core Logic - Analysis** (15 min)
 
-**Impact:** 🔴 HIGH - Core AsyncAPI document generation  
+**Impact:** 🔴 HIGH - Core AsyncAPI document generation\
 **Files:** `src/domain/emitter/DocumentBuilder.ts`
 
 **Sub-tasks:**
@@ -77,7 +77,7 @@
 
 ### **Task 5: Document Builder Core Logic - Fix createInitialDocument** (15 min)
 
-**Impact:** 🔴 HIGH - Base document creation  
+**Impact:** 🔴 HIGH - Base document creation\
 **Files:** `src/domain/emitter/DocumentBuilder.ts`
 
 **Sub-tasks:**
@@ -94,7 +94,7 @@
 
 ### **Task 6: Document Builder Core Logic - Fix updateDocumentInfo** (15 min)
 
-**Impact:** 🔴 HIGH - Document merging logic  
+**Impact:** 🔴 HIGH - Document merging logic\
 **Files:** `src/domain/emitter/DocumentBuilder.ts`
 
 **Sub-tasks:**
@@ -113,7 +113,7 @@
 
 ### **Task 7: Validation Service - Analysis** (15 min)
 
-**Impact:** 🔴 HIGH - AsyncAPI validation pipeline  
+**Impact:** 🔴 HIGH - AsyncAPI validation pipeline\
 **Files:** `src/domain/validation/ValidationService.ts`
 
 **Sub-tasks:**
@@ -130,7 +130,7 @@
 
 ### **Task 8: Validation Service - Fix JSON Content Handling** (15 min)
 
-**Impact:** 🔴 HIGH - Error resilience  
+**Impact:** 🔴 HIGH - Error resilience\
 **Files:** `src/domain/validation/ValidationService.ts`
 
 **Sub-tasks:**
@@ -147,7 +147,7 @@
 
 ### **Task 9: Validation Service - Fix Empty Content Handling** (15 min)
 
-**Impact:** 🔴 HIGH - Edge case handling  
+**Impact:** 🔴 HIGH - Edge case handling\
 **Files:** `src/domain/validation/ValidationService.ts`
 
 **Sub-tasks:**
@@ -164,7 +164,7 @@
 
 ### **Task 10: Update More Validation Tests** (15 min)
 
-**Impact:** 🔴 HIGH - Complete validation test suite  
+**Impact:** 🔴 HIGH - Complete validation test suite\
 **Files:** Multiple test files in `test/validation/`
 
 **Sub-tasks:**
@@ -183,7 +183,7 @@
 
 ### **Task 11: AsyncAPI Structure Generation - Analysis** (15 min)
 
-**Impact:** 🟡 MEDIUM-HIGH - Specification compliance  
+**Impact:** 🟡 MEDIUM-HIGH - Specification compliance\
 **Files:** `src/asyncapi-emitter.ts`
 
 **Sub-tasks:**
@@ -200,7 +200,7 @@
 
 ### **Task 12: AsyncAPI Structure Generation - Fix Core Structure** (15 min)
 
-**Impact:** 🟡 MEDIUM-HIGH - Basic spec compliance  
+**Impact:** 🟡 MEDIUM-HIGH - Basic spec compliance\
 **Files:** `src/asyncapi-emitter.ts`
 
 **Sub-tasks:**
@@ -217,7 +217,7 @@
 
 ### **Task 13: AsyncAPI Structure Generation - Fix Component References** (15 min)
 
-**Impact:** 🟡 MEDIUM-HIGH - Schema references  
+**Impact:** 🟡 MEDIUM-HIGH - Schema references\
 **Files:** `src/asyncapi-emitter.ts`
 
 **Sub-tasks:**
@@ -234,7 +234,7 @@
 
 ### **Task 14: TypeSpec Integration - Analysis** (15 min)
 
-**Impact:** 🟡 MEDIUM - TypeSpec AST processing  
+**Impact:** 🟡 MEDIUM - TypeSpec AST processing\
 **Files:** `src/typespec-integration/`
 
 **Sub-tasks:**
@@ -253,7 +253,7 @@
 
 ### **Task 15: TypeSpec Integration - Fix Decorator Extraction** (15 min)
 
-**Impact:** 🟡 MEDIUM - Decorator functionality  
+**Impact:** 🟡 MEDIUM - Decorator functionality\
 **Files:** `src/typespec-integration/`
 
 **Sub-tasks:**
@@ -270,7 +270,7 @@
 
 ### **Task 16: Protocol Binding Issues** (15 min)
 
-**Impact:** 🟡 MEDIUM - Protocol-specific features  
+**Impact:** 🟡 MEDIUM - Protocol-specific features\
 **Files:** Protocol binding related files
 
 **Sub-tasks:**
@@ -304,7 +304,7 @@
 
 ### **Task 18: Test Timeout Optimizations** (15 min)
 
-**Impact:** 🟢 LOW-MEDIUM - Test performance  
+**Impact:** 🟢 LOW-MEDIUM - Test performance\
 **Files:** Various test files
 
 **Sub-tasks:**
@@ -321,7 +321,7 @@
 
 ### **Task 19: Comprehensive Test Validation** (15 min)
 
-**Impact:** 🟢 LOW - Quality assurance  
+**Impact:** 🟢 LOW - Quality assurance\
 **Files:** All test files
 
 **Sub-tasks:**
@@ -338,7 +338,7 @@
 
 ### **Task 20: Final Documentation and Cleanup** (15 min)
 
-**Impact:** 🟢 LOW - Documentation and maintenance  
+**Impact:** 🟢 LOW - Documentation and maintenance\
 **Files:** Documentation files
 
 **Sub-tasks:**

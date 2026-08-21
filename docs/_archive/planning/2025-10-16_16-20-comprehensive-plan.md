@@ -333,14 +333,14 @@
 
 #### **T3.1.3 | Implement Extension Support** (10min)
 
-- \*\*File`: `src/typespec/features/ExtensionSupport.ts`
+- \*\*File`:`src/typespec/features/ExtensionSupport.ts`
 - \*\*Task | Support custom TypeSpec extensions
 - \*\*TODO | ENHANCE | Add extension validation
 - \*\*TODO | ENHANCE | Add extension management
 
 #### **T3.1.4 | Implement Advanced Patterns** (10min)
 
-- \*\*File`: `src/typespec/features/AdvancedPatterns.ts`
+- \*\*File`:`src/typespec/features/AdvancedPatterns.ts`
 - \*\*Task | Implement advanced TypeSpec patterns
 - \*\*TODO | ENHANCE | Add pattern detection
 - \*\*TODO | ENHANCE | Add pattern validation
@@ -361,7 +361,7 @@
 
 #### **T3.2.3 | Create Multi-Protocol Examples** (5min)
 
-- \*\*File`: `src/examples/multi-protocol/MultiProtocolExamples.ts`
+- \*\*File`:`src/examples/multi-protocol/MultiProtocolExamples.ts`
 - \*\*Task | Create multi-protocol examples
 - \*\*TODO | ENHANCE | Add protocol combinations
 - \*\*TODO | ENHANCE | Add interaction patterns
@@ -410,7 +410,7 @@
 
 #### **T3.4.2 | Implement Plugin Registry** (10min)
 
-- \*\*File`: `src/plugins/core/PluginRegistry.ts`
+- \*\*File`:`src/plugins/core/PluginRegistry.ts`
 - \*\*Task | Implement plugin registration and discovery
 - \*\*TODO | ENHANCE | Add plugin management
 - \*\*TODO | ENHANCE | Add plugin security

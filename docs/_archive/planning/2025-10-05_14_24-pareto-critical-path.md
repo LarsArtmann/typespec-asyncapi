@@ -241,7 +241,7 @@ cat coverage/coverage-summary.json
 
 - < 40%: Many tests are ghosts → DELETE approach likely
 - 40-60%: Mixed quality → Selective RETROFIT
-- > 60%: Tests are good → RETROFIT all
+- 60%: Tests are good → RETROFIT all
 
 ### Step 2: THE 4% (2 hours) - 64% Value
 

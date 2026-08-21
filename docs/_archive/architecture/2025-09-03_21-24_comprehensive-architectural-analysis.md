@@ -1,8 +1,8 @@
 # 🏗️ COMPREHENSIVE ARCHITECTURAL ANALYSIS - TypeSpec AsyncAPI Emitter
 
-**Date:** September 3, 2025  
-**Analyst:** Senior Software Architect & Product Owner Analysis  
-**Scope:** Complete codebase review focusing on type safety, architecture, and technical debt  
+**Date:** September 3, 2025\
+**Analyst:** Senior Software Architect & Product Owner Analysis\
+**Scope:** Complete codebase review focusing on type safety, architecture, and technical debt\
 **Status:** CRITICAL ISSUES IDENTIFIED - IMMEDIATE ATTENTION REQUIRED
 
 ---
@@ -112,14 +112,17 @@ type ChannelPath = string & { readonly _brand: "ChannelPath" };
 const fileType = options["file-type"] || DEFAULT_SERIALIZATION_FORMAT;
 
 // SHOULD BE (TYPE-SAFE):
-const fileType: FileType = validateFileType(options?.fileType) ?? DEFAULT_SERIALIZATION_FORMAT;
+const fileType: FileType =
+  validateFileType(options?.fileType) ?? DEFAULT_SERIALIZATION_FORMAT;
 ```
 
 #### Missing Null Safety
 
 ```typescript
 // CURRENT (UNSAFE):
-this.asyncApiDoc = this.documentBuilder.createInitialDocument(emitter.getProgram());
+this.asyncApiDoc = this.documentBuilder.createInitialDocument(
+  emitter.getProgram(),
+);
 
 // SHOULD BE (NULL-SAFE):
 const program = emitter.getProgram();

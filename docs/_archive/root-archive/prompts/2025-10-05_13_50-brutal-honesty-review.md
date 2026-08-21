@@ -139,7 +139,6 @@ Reminder: Don't forget to check your internal todo list.
 NOTE: Use the cli to get the current date.
 
 ````
-
 ---
 
 ## When to Use This Prompt

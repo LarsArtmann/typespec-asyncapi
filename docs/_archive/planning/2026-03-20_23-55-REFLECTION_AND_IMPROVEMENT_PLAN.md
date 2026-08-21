@@ -1,7 +1,7 @@
 # Reflection & Improvement Plan
 
-**Date:** 2026-03-20 23:55  
-**Phase:** Post-Phase-1 Reflection  
+**Date:** 2026-03-20 23:55\
+**Phase:** Post-Phase-1 Reflection\
 **Objective:** Analyze what was missed and create optimized execution plan
 
 ---
@@ -118,7 +118,7 @@ export type SecurityScheme =
 | S4  | Create usage examples                   | 9      | 2      | **4.5** | Document new decorators                  |
 | S5  | Validate AsyncAPI output                | 9      | 3      | **3.0** | Use official JSON schema                 |
 
-**Total Time:** ~60 minutes  
+**Total Time:** ~60 minutes\
 **Value:** Critical verification + documentation
 
 ---
@@ -249,7 +249,10 @@ export type ApiKeySecurityScheme = {
 };
 
 export type SecurityScheme =
-  HttpSecurityScheme | ApiKeySecurityScheme | OAuth2SecurityScheme | OpenIdConnectSecurityScheme;
+  | HttpSecurityScheme
+  | ApiKeySecurityScheme
+  | OAuth2SecurityScheme
+  | OpenIdConnectSecurityScheme;
 ```
 
 ---
@@ -290,7 +293,7 @@ export type SecurityScheme =
 4. **Fix any issues found**
 5. **Commit with detailed messages**
 
-**Estimated Time:** 60 minutes  
+**Estimated Time:** 60 minutes\
 **Expected Value:** Complete verification of Phase 1
 
 ---
@@ -335,6 +338,6 @@ export type SecurityScheme =
 
 ---
 
-_Generated: 2026-03-20 23:55_  
-_Phase: Reflection Complete_  
+_Generated: 2026-03-20 23:55_\
+_Phase: Reflection Complete_\
 _Next: Sprint 1 - Verification_

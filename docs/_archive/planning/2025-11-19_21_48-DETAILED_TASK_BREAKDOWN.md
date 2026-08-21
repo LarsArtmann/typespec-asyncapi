@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter - Detailed Task Breakdown
 
-**Created:** 2025-11-19 21:48  
-**Total Tasks:** 125 × 15min = 31.25 hours  
+**Created:** 2025-11-19 21:48\
+**Total Tasks:** 125 × 15min = 31.25 hours\
 **Scope:** Complete production-ready AsyncAPI emitter implementation
 
 ---
@@ -186,9 +186,9 @@
 
 | Phase                     | Tasks  | Duration           | Total Hours                 | Success Criteria |
 | ------------------------- | ------ | ------------------ | --------------------------- | ---------------- |
-| **Critical Breakthrough** | 1-25   | 15min × 25 = 6.25h | End-to-end pipeline working |
-| **Professional Polish**   | 26-65  | 15min × 40 = 10h   | Production-ready features   |
-| **Complete Production**   | 66-125 | 15min × 60 = 15h   | Enterprise-ready system     |
+| **Critical Breakthrough** | 1-25   | 15min × 25 = 6.25h | End-to-end pipeline working |                  |
+| **Professional Polish**   | 26-65  | 15min × 40 = 10h   | Production-ready features   |                  |
+| **Complete Production**   | 66-125 | 15min × 60 = 15h   | Enterprise-ready system     |                  |
 
 ---
 

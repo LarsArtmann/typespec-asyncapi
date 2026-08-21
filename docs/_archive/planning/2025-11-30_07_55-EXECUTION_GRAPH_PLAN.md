@@ -1,7 +1,7 @@
 # EXECUTION GRAPH PLAN - TypeSpec AsyncAPI Emitter
 
-**Date:** 2025-11-30  
-**Format:** Mermaid.js Execution Graph  
+**Date:** 2025-11-30\
+**Format:** Mermaid.js Execution Graph\
 **Total Duration:** ~31 hours (125 tasks × 15min)
 
 ---

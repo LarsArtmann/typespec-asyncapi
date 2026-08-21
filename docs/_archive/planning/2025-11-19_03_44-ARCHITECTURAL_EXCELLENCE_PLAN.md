@@ -177,17 +177,17 @@ graph LR
 
 | ID                                         | Task                                               | Time  | Priority | Value | Dependencies |
 | ------------------------------------------ | -------------------------------------------------- | ----- | -------- | ----- | ------------ |
-| **PHASE 1: CRITICAL PATH (1% → 51%)**      |
+| **PHASE 1: CRITICAL PATH (1% → 51%)**      |                                                    |       |          |       |              |
 | T1.1                                       | Split ValidationService.ts (650→3×220 lines)       | 45min | P0       | 20%   | None         |
 | T1.2                                       | Split effect-helpers.ts (536→2×268 lines)          | 30min | P0       | 16%   | None         |
 | T1.3                                       | Fix TypeSpec library import resolution             | 30min | P0       | 15%   | None         |
-| **PHASE 2: HIGH PRIORITY (4% → 64%)**      |
+| **PHASE 2: HIGH PRIORITY (4% → 64%)**      |                                                    |       |          |       |              |
 | T2.1                                       | Split PluginRegistry.ts (512→2×256 lines)          | 40min | P0       | 5%    | None         |
 | T2.2                                       | Split standardized-errors.ts (473→2×237 lines)     | 35min | P0       | 4%    | None         |
 | T2.3                                       | Split lib.ts (455→2×228 lines)                     | 40min | P0       | 3%    | None         |
 | T2.4                                       | Fix channel/path integration tests                 | 35min | P1       | 2%    | None         |
 | T2.5                                       | Clean up debug test files (not proper Bun tests)   | 30min | P1       | 1%    | None         |
-| **PHASE 3: COMPREHENSIVE (20% → 80%)**     |
+| **PHASE 3: COMPREHENSIVE (20% → 80%)**     |                                                    |       |          |       |              |
 | T3.1                                       | Split schemas.ts (452→2×226 lines)                 | 40min | P1       | 3%    | None         |
 | T3.2                                       | Split DocumentGenerator.ts (443→2×222 lines)       | 40min | P1       | 3%    | None         |
 | T3.3                                       | Split schema-conversion.ts (408→2×204 lines)       | 40min | P1       | 2%    | None         |
@@ -200,7 +200,7 @@ graph LR
 | T3.10                                      | Fix emitter integration tests                      | 40min | P1       | 1%    | T1.3         |
 | T3.11                                      | Fix path template validation tests                 | 30min | P2       | 0.5%  | T2.4         |
 | T3.12                                      | Fix schema generation tests                        | 30min | P2       | 0.5%  | T3.3         |
-| **PHASE 4: EXCELLENCE (Final 20% → 95%+)** |
+| **PHASE 4: EXCELLENCE (Final 20% → 95%+)** |                                                    |       |          |       |              |
 | T4.1                                       | Boolean → Enum audit: Review 41 occurrences        | 30min | P2       | 2%    | None         |
 | T4.2                                       | Boolean → Enum refactor: Convert candidates        | 30min | P2       | 2%    | T4.1         |
 | T4.3                                       | Split brain pattern audit                          | 25min | P2       | 1.5%  | None         |

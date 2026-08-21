@@ -1,6 +1,6 @@
 # Alpha v0.0.1 Release Checklist & QA Validation
 
-**Release Version**: 0.0.1-alpha.1  
+**Release Version**: 0.0.1-alpha.1\
 **Target Date**: September 2025
 
 ## 🚀 Pre-Release Checklist

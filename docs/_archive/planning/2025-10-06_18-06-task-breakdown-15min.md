@@ -10,13 +10,13 @@
 
 | #                                              | Task                                                          | Parent     | Est.  | Impact     | ROI | Status |
 | ---------------------------------------------- | ------------------------------------------------------------- | ---------- | ----- | ---------- | --- | ------ |
-| **PHASE 1: THE 1% - CRITICAL PATH (45min)**    |
+| **PHASE 1: THE 1% - CRITICAL PATH (45min)**    |                                                               |            |       |            |     |        |
 | 1                                              | Read test/utils/test-helpers.ts lines 936-957                 | Fix Helper | 5min  | 🔥🔥🔥🔥🔥 | 5.0 | ⏳     |
 | 2                                              | Identify file matching bug in compileAndGetAsyncAPI           | Fix Helper | 10min | 🔥🔥🔥🔥🔥 | 5.0 | ⏳     |
 | 3                                              | Fix file path matching to find tsp-output AsyncAPI files      | Fix Helper | 10min | 🔥🔥🔥🔥🔥 | 5.0 | ⏳     |
 | 4                                              | Test helper fix with single security test                     | Fix Helper | 5min  | 🔥🔥🔥🔥🔥 | 5.0 | ⏳     |
 | 5                                              | Run full test suite to measure helper fix impact              | Verify     | 15min | 🔥🔥🔥🔥🔥 | 5.0 | ⏳     |
-| **PHASE 2: THE 4% - QUICK WINS (3h 45min)**    |
+| **PHASE 2: THE 4% - QUICK WINS (3h 45min)**    |                                                               |            |       |            |     |        |
 | 6                                              | Read test/e2e/debug-emitter.test.ts                           | Fix Import | 3min  | 🔥🔥🔥     | 3.0 | ⏳     |
 | 7                                              | Fix Effect.log import in debug-emitter.test.ts                | Fix Import | 7min  | 🔥🔥🔥     | 3.0 | ⏳     |
 | 8                                              | Read test/e2e/direct-emitter.test.ts                          | Fix Import | 3min  | 🔥🔥🔥     | 3.0 | ⏳     |
@@ -58,7 +58,7 @@
 | 44                                             | Mark unsupported WebSocket tests as .skip() (20 tests)        | Cleanup    | 15min | 🔥🔥       | 2.0 | ⏳     |
 | 45                                             | Mark unsupported MQTT tests as .skip() (15 tests)             | Cleanup    | 15min | 🔥🔥       | 2.0 | ⏳     |
 | 46                                             | Run test suite after cleanup                                  | Verify     | 15min | 🔥🔥🔥     | 3.0 | ⏳     |
-| **PHASE 3: THE 20% - STRATEGIC (12h 30min)**   |
+| **PHASE 3: THE 20% - STRATEGIC (12h 30min)**   |                                                               |            |       |            |     |        |
 | 47                                             | Analyze all 347 failing tests output                          | Analysis   | 15min | 🔥🔥🔥🔥   | 2.7 | ⏳     |
 | 48                                             | Categorize failures: Helper bugs (group 1)                    | Analysis   | 15min | 🔥🔥🔥🔥   | 2.7 | ⏳     |
 | 49                                             | Categorize failures: TypeSpec syntax (group 2)                | Analysis   | 15min | 🔥🔥🔥🔥   | 2.7 | ⏳     |
@@ -103,7 +103,7 @@
 | 88                                             | Improve AsyncAPI file glob pattern matching                   | Utility    | 15min | 🔥🔥       | 1.3 | ⏳     |
 | 89                                             | Add error messages for missing AsyncAPI files                 | Utility    | 15min | 🔥🔥       | 1.3 | ⏳     |
 | 90                                             | Add debug logging to helper function                          | Utility    | 15min | 🔥🔥       | 1.3 | ⏳     |
-| **PHASE 4: POLISH & DOCUMENTATION (2h 10min)** |
+| **PHASE 4: POLISH & DOCUMENTATION (2h 10min)** |                                                               |            |       |            |     |        |
 | 91                                             | Update CLAUDE.md with feature matrix section                  | Docs       | 15min | 🔥🔥🔥     | 3.0 | ⏳     |
 | 92                                             | Update CLAUDE.md with known limitations                       | Docs       | 15min | 🔥🔥🔥     | 3.0 | ⏳     |
 | 93                                             | Update README.md with test coverage badge                     | Docs       | 10min | 🔥🔥       | 2.0 | ⏳     |

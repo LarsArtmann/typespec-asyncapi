@@ -89,7 +89,7 @@
 
 | ID                            | Task                                          | Priority | Impact | Effort | Customer Value | Duration |
 | ----------------------------- | --------------------------------------------- | -------- | ------ | ------ | -------------- | -------- |
-| **Test Fixes**                |
+| **Test Fixes**                |                                               |          |        |        |                |          |
 | T3.1                          | Fix emitter integration tests (40 failures)   | P1       | Medium | 60min  | 2%             | 60min    |
 | T3.2                          | Fix schema conversion tests (35 failures)     | P1       | Medium | 60min  | 2%             | 60min    |
 | T3.3                          | Fix performance benchmark tests (30 failures) | P2       | Medium | 45min  | 1%             | 45min    |
@@ -98,16 +98,16 @@
 | T3.6                          | Fix document generator tests (18 failures)    | P2       | Medium | 40min  | 1%             | 40min    |
 | T3.7                          | Fix effect pattern tests (15 failures)        | P2       | Low    | 35min  | 0.5%           | 35min    |
 | T3.8                          | Fix remaining test suites (98 failures)       | P2       | Low    | 90min  | 2%             | 90min    |
-| **Architecture Improvements** |
+| **Architecture Improvements** |                                               |          |        |        |                |          |
 | T3.9                          | Split PluginRegistry.ts (600+ lines)          | P2       | Low    | 40min  | 0.5%           | 40min    |
 | T3.10                         | Split ValidationService.ts (500+ lines)       | P2       | Low    | 35min  | 0.5%           | 35min    |
 | T3.11                         | Split DocumentGenerator.ts (450+ lines)       | P2       | Low    | 35min  | 0.4%           | 35min    |
 | T3.12                         | Split ProcessingService.ts (400+ lines)       | P2       | Low    | 30min  | 0.3%           | 30min    |
 | T3.13                         | Split schemas.ts (380+ lines)                 | P2       | Low    | 30min  | 0.3%           | 30min    |
-| **Test Coverage**             |
+| **Test Coverage**             |                                               |          |        |        |                |          |
 | T3.14                         | Add tests for performance-utils.ts            | P2       | Low    | 30min  | 0.3%           | 30min    |
 | T3.15                         | Add tests for effect-error-utils.ts           | P2       | Low    | 30min  | 0.3%           | 30min    |
-| **Documentation**             |
+| **Documentation**             |                                               |          |        |        |                |          |
 | T3.16                         | Document test patterns & best practices       | P2       | Low    | 30min  | 0.3%           | 30min    |
 
 ### Phase 4: Nice-to-Have (Remaining 20%) - Optional

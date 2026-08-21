@@ -1,7 +1,7 @@
 # ADR-001: Emitter Architecture (Effect.TS + AssetEmitter)
 
-**Status:** Accepted  
-**Date:** 2025-09-01  
+**Status:** Accepted\
+**Date:** 2025-09-01\
 **Deciders:** TypeSpec AsyncAPI Team
 
 ## Context
@@ -36,13 +36,18 @@ We adopted a **dual-architecture approach** combining:
 
 ```typescript
 // Entry point: src/index.ts
-export async function $onEmit(context: EmitContext<AsyncAPIEmitterOptions>): Promise<void> {
-  const { generateAsyncAPIWithEffect } = await import("./emitter-with-effect.js");
+export async function $onEmit(
+  context: EmitContext<AsyncAPIEmitterOptions>,
+): Promise<void> {
+  const { generateAsyncAPIWithEffect } =
+    await import("./emitter-with-effect.js");
   await generateAsyncAPIWithEffect(context);
 }
 
 // Core processor: src/emitter-with-effect.ts
-export const generateAsyncAPIWithEffect = (context: EmitContext<AsyncAPIEmitterOptions>) =>
+export const generateAsyncAPIWithEffect = (
+  context: EmitContext<AsyncAPIEmitterOptions>,
+) =>
   Effect.gen(function* () {
     // Effect.TS pipeline for processing TypeSpec AST
     const emitter = yield* initializeEmitter(context);

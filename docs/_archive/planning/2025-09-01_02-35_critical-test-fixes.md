@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter: Critical Test Fixes Session
 
-**Date**: 2025-09-01 02:35  
-**Session**: CRITICAL_TEST_FIXES  
+**Date**: 2025-09-01 02:35\
+**Session**: CRITICAL_TEST_FIXES\
 **Status**: Test Suite Broken - Multiple Critical Failures
 
 ## 🚨 SITUATION ANALYSIS

@@ -96,7 +96,7 @@ Transform working proof-of-concept into production-ready TypeSpec AsyncAPI emitt
 ### Group 1: Security Fix (Serial Execution)
 
 1.1. Research TypeSpec JSON Schema validation patterns - 15min
-1.2. Create proper AsyncAPIEmitterOptions schema definition - 15min  
+1.2. Create proper AsyncAPIEmitterOptions schema definition - 15min\
 1.3. Replace `{} as any` placeholder with real validation - 12min
 1.4. Test options validation with valid/invalid inputs - 15min
 
@@ -148,7 +148,7 @@ Transform working proof-of-concept into production-ready TypeSpec AsyncAPI emitt
 ### Group 8: Package Structure (Parallel with Group 7)
 
 8.1. Analyze current file sizes and complexity - 12min
-8.2. Design modular package structure - 15min  
+8.2. Design modular package structure - 15min\
 8.3. Split simple-emitter.ts into focused modules - 15min
 8.4. Optimize import statements and dependencies - 12min
 

@@ -192,7 +192,7 @@ operations:
     channel:
       $ref: "#/channels/user-notifications"
     bindings:
-      # Channel parameter values from operation parameters
+  # Channel parameter values from operation parameters
 
   handleOrderUpdate:
     action: receive

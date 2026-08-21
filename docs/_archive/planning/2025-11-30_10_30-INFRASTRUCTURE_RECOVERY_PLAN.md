@@ -1,8 +1,8 @@
 # TypeSpec AsyncAPI Infrastructure Recovery Plan
 
-**Date:** 2025-11-30  
-**Status:** 🟡 IN PROGRESS  
-**Author:** Claude Opus 4.5 via Crush  
+**Date:** 2025-11-30\
+**Status:** 🟡 IN PROGRESS\
+**Author:** Claude Opus 4.5 via Crush\
 **Last Updated:** 2025-11-30 10:30 CET
 
 ---

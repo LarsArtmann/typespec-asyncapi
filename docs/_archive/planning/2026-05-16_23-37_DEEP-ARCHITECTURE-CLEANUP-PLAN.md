@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter — Deep Architecture Cleanup & Type Safety Plan
 
-**Date:** 2026-05-16 23:37  
-**Scope:** Delete 40% of src/, fix every split brain, make illegal states unrepresentable  
+**Date:** 2026-05-16 23:37\
+**Scope:** Delete 40% of src/, fix every split brain, make illegal states unrepresentable\
 **Current State:** 255 pass / 120 fail | 3,726 LOC src | 2,249 LOC test helpers
 
 ---
@@ -101,13 +101,13 @@ graph TD
 
 ## Task Breakdown — Phase 3: TYPE SAFETY (Est. 3h total)
 
-| # | Task | Description | Est. | Impact |
+| #   | Task                                  | Description                                                                                                                                                                                                                               | Est.                                                 | Impact                               |
 | --- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------ | ---------------------------- | ------------------------------------------------------------------------------------------------------ | --- | ------------ |
-| T20 | **AsyncAPI document branded types** | Create `src/types/asyncapi-document.ts` with proper types for `AsyncAPIDocument`, `ChannelObject`, `OperationObject`, `SchemaObject`, `ServerObject`, `SecuritySchemeObject`. Replace all `Record<string, unknown>` in emitter and state. | 45m | Makes illegal states unrepresentable |
-| T21 | **Decorator config tagged unions** | Replace `unknown` params in `$message`, `$protocol`, `$security`, `$bindings` with proper discriminated unions: `{ source: "model", model: Model }                                                                                        | { source: "value", value: Record<string, string> }`. | 30m | Type-safe decorator handling |
+| T20 | **AsyncAPI document branded types**   | Create `src/types/asyncapi-document.ts` with proper types for `AsyncAPIDocument`, `ChannelObject`, `OperationObject`, `SchemaObject`, `ServerObject`, `SecuritySchemeObject`. Replace all `Record<string, unknown>` in emitter and state. | 45m                                                  | Makes illegal states unrepresentable |
+| T21 | **Decorator config tagged unions**    | Replace `unknown` params in `$message`, `$protocol`, `$security`, `$bindings` with proper discriminated unions: `{ source: "model", model: Model }                                                                                        | { source: "value", value: Record<string, string> }`. | 30m                                  | Type-safe decorator handling |
 | T22 | **Fix `AsyncAPIEmitterOptions` type** | Remove `extends EmitFileOptions` (unused). Remove duplicate `version` / `asyncapi-version` keys. Replace booleans with enums: `debug?: "none"                                                                                             | "basic"                                              | "verbose"`, `validation?: "off"      | "warn"                       | "strict"`. Remove `"omit-unreachable-types"`, `"include-source-info"`, `"validate-spec"` (all unused). | 25m | Honest types |
-| T23 | **Fix `state.ts` types** | Replace `[key: string]: unknown` on `ProtocolConfigData` with proper typed fields. Replace `Record<string, unknown>` on `SecurityConfigData.scheme` with `SecuritySchemeObject`. Remove `unwrapStateMap` (duplicate of `getStateMap`). | 25m | Type-safe state |
-| T24 | **Fix `emitter.ts` type safety** | Replace all `as` casts with proper type guards. Add try/catch in `$onEmit`. Use `ASYNCAPI_VERSION` constant instead of hardcoded `"3.0.0"`. Use proper YAML library for output instead of template literals. | 30m | No more runtime crashes |
+| T23 | **Fix `state.ts` types**              | Replace `[key: string]: unknown` on `ProtocolConfigData` with proper typed fields. Replace `Record<string, unknown>` on `SecurityConfigData.scheme` with `SecuritySchemeObject`. Remove `unwrapStateMap` (duplicate of `getStateMap`).    | 25m                                                  | Type-safe state                      |
+| T24 | **Fix `emitter.ts` type safety**      | Replace all `as` casts with proper type guards. Add try/catch in `$onEmit`. Use `ASYNCAPI_VERSION` constant instead of hardcoded `"3.0.0"`. Use proper YAML library for output instead of template literals.                              | 30m                                                  | No more runtime crashes              |
 
 **Phase 3 Total: ~5 tasks, ~3h**
 

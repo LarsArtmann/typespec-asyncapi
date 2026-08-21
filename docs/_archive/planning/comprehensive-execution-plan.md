@@ -1,8 +1,8 @@
 # TypeSpec AsyncAPI Emitter - Comprehensive Execution Plan (125 Tasks)
 
-**Plan Date:** 2024-12-30  
-**Total Tasks:** 125  
-**Total Estimated Effort:** 125 hours (16 working days)  
+**Plan Date:** 2024-12-30\
+**Total Tasks:** 125\
+**Total Estimated Effort:** 125 hours (16 working days)\
 **Planning Methodology:** Pareto-Optimal Execution
 
 ---
@@ -61,8 +61,8 @@ graph TD
 
 | Task                   | ID  | Priority       | Time                       | Deliverable |
 | ---------------------- | --- | -------------- | -------------------------- | ----------- |
-| Fix State Extraction   | T1  | CRITICAL 75min | Decorator data accessible  |
-| Verify State Lifecycle | T2  | CRITICAL 60min | State lifecycle documented |
+| Fix State Extraction   | T1  | CRITICAL 75min | Decorator data accessible  |             |
+| Verify State Lifecycle | T2  | CRITICAL 60min | State lifecycle documented |             |
 
 **Detailed Steps:** See `docs/planning/pareto-optimal-task-analysis.md` for full breakdown
 
@@ -74,10 +74,10 @@ graph TD
 
 | Task                           | ID  | Priority   | Time                   | Deliverable |
 | ------------------------------ | --- | ---------- | ---------------------- | ----------- |
-| Use emitFile API Correctly     | T3  | HIGH 60min | Proper file output     |
-| Fix Output Directory Structure | T4  | HIGH 30min | Correct file placement |
-| Add Basic Output Validation    | T5  | HIGH 45min | Quality gate           |
-| End-to-End Smoke Test          | T6  | HIGH 60min | Pipeline verified      |
+| Use emitFile API Correctly     | T3  | HIGH 60min | Proper file output     |             |
+| Fix Output Directory Structure | T4  | HIGH 30min | Correct file placement |             |
+| Add Basic Output Validation    | T5  | HIGH 45min | Quality gate           |             |
+| End-to-End Smoke Test          | T6  | HIGH 60min | Pipeline verified      |             |
 
 **Detailed Steps:** See `docs/planning/pareto-optimal-task-analysis.md` for full breakdown
 
@@ -91,42 +91,42 @@ graph TD
 
 | Task                             | ID  | Priority    | Time                     | Deliverable |
 | -------------------------------- | --- | ----------- | ------------------------ | ----------- |
-| Define AsyncAPI Domain Model     | T7  | HIGH 180min | Type-safe AsyncAPI types |
-| Create Type-Safe Program Wrapper | T8  | HIGH 120min | No type casts needed     |
-| Replace All Type Casts           | T9  | HIGH 90min  | Zero type assertions     |
-| Implement Type Safety Utilities  | T10 | HIGH 60min  | Type guard functions     |
+| Define AsyncAPI Domain Model     | T7  | HIGH 180min | Type-safe AsyncAPI types |             |
+| Create Type-Safe Program Wrapper | T8  | HIGH 120min | No type casts needed     |             |
+| Replace All Type Casts           | T9  | HIGH 90min  | Zero type assertions     |             |
+| Implement Type Safety Utilities  | T10 | HIGH 60min  | Type guard functions     |             |
 
 #### Generators (8 hours, 6 tasks)
 
 | Task                           | ID  | Priority    | Time                  | Deliverable |
 | ------------------------------ | --- | ----------- | --------------------- | ----------- |
-| Implement Channel Generation   | T11 | HIGH 90min  | Channels from state   |
-| Implement Message Generation   | T12 | HIGH 90min  | Messages from state   |
-| Implement Schema Generation    | T13 | HIGH 120min | Schemas from models   |
-| Implement Operation Generation | T14 | HIGH 75min  | Operations from state |
-| Implement YAML Generation      | T15 | HIGH 60min  | YAML serialization    |
-| Implement JSON Generation      | T16 | MED 45min   | JSON serialization    |
+| Implement Channel Generation   | T11 | HIGH 90min  | Channels from state   |             |
+| Implement Message Generation   | T12 | HIGH 90min  | Messages from state   |             |
+| Implement Schema Generation    | T13 | HIGH 120min | Schemas from models   |             |
+| Implement Operation Generation | T14 | HIGH 75min  | Operations from state |             |
+| Implement YAML Generation      | T15 | HIGH 60min  | YAML serialization    |             |
+| Implement JSON Generation      | T16 | MED 45min   | JSON serialization    |             |
 
 #### Validation & Testing (6 hours, 4 tasks)
 
 | Task                      | ID  | Priority    | Time                 | Deliverable |
 | ------------------------- | --- | ----------- | -------------------- | ----------- |
-| Add Integration Tests     | T17 | HIGH 240min | End-to-end tests     |
-| Add Validation Layer      | T18 | HIGH 120min | Spec validation      |
-| Add Error Handling        | T19 | MED 120min  | Comprehensive errors |
-| Add Spec Compliance Tests | T20 | MED 60min   | AsyncAPI compliance  |
+| Add Integration Tests     | T17 | HIGH 240min | End-to-end tests     |             |
+| Add Validation Layer      | T18 | HIGH 120min | Spec validation      |             |
+| Add Error Handling        | T19 | MED 120min  | Comprehensive errors |             |
+| Add Spec Compliance Tests | T20 | MED 60min   | AsyncAPI compliance  |             |
 
 #### Code Quality (6 hours, 7 tasks)
 
 | Task                  | ID  | Priority  | Time               | Deliverable |
 | --------------------- | --- | --------- | ------------------ | ----------- |
-| Split Large Files     | T21 | MED 60min | Files <350 lines   |
-| Remove Duplicate Code | T22 | MED 60min | No duplication     |
-| Extract Adapters      | T23 | MED 90min | Clean API wrappers |
-| Centralize Errors     | T24 | MED 90min | Error type system  |
-| Add Logging Layer     | T25 | LOW 60min | Structured logging |
-| Improve Naming        | T26 | LOW 60min | Descriptive names  |
-| Add Inline Docs       | T27 | LOW 60min | Complex logic docs |
+| Split Large Files     | T21 | MED 60min | Files <350 lines   |             |
+| Remove Duplicate Code | T22 | MED 60min | No duplication     |             |
+| Extract Adapters      | T23 | MED 90min | Clean API wrappers |             |
+| Centralize Errors     | T24 | MED 90min | Error type system  |             |
+| Add Logging Layer     | T25 | LOW 60min | Structured logging |             |
+| Improve Naming        | T26 | LOW 60min | Descriptive names  |             |
+| Add Inline Docs       | T27 | LOW 60min | Complex logic docs |             |
 
 ---
 
@@ -138,33 +138,33 @@ graph TD
 
 | Task                         | ID     | Priority | Time               | Deliverable |
 | ---------------------------- | ------ | -------- | ------------------ | ----------- |
-| Implement Kafka Bindings     | T28-35 | MED 8hrs | Kafka protocol     |
-| Implement WebSocket Bindings | T36-42 | MED 6hrs | WebSocket protocol |
-| Implement MQTT Bindings      | T43-49 | MED 6hrs | MQTT protocol      |
-| Implement AMQP Bindings      | T50-56 | MED 6hrs | AMQP protocol      |
-| Implement HTTP Bindings      | T57-63 | MED 6hrs | HTTP protocol      |
-| Add Message Headers          | T64-67 | MED 4hrs | Header support     |
+| Implement Kafka Bindings     | T28-35 | MED 8hrs | Kafka protocol     |             |
+| Implement WebSocket Bindings | T36-42 | MED 6hrs | WebSocket protocol |             |
+| Implement MQTT Bindings      | T43-49 | MED 6hrs | MQTT protocol      |             |
+| Implement AMQP Bindings      | T50-56 | MED 6hrs | AMQP protocol      |             |
+| Implement HTTP Bindings      | T57-63 | MED 6hrs | HTTP protocol      |             |
+| Add Message Headers          | T64-67 | MED 4hrs | Header support     |             |
 
 #### Enterprise Features (20 hours, 30 tasks)
 
 | Task                   | ID     | Priority | Time                | Deliverable |
 | ---------------------- | ------ | -------- | ------------------- | ----------- |
-| Add Correlation IDs    | T68-71 | MED 4hrs | Correlation support |
-| Add Tag System         | T72-75 | LOW 3hrs | Tagging             |
-| Add Trait Definitions  | T76-79 | LOW 3hrs | Traits              |
-| Add Operation Bindings | T80-85 | LOW 5hrs | Bindings            |
-| Add Security Schemes   | T86-90 | MED 4hrs | Security            |
-| Add Server Definitions | T91-97 | MED 5hrs | Servers             |
+| Add Correlation IDs    | T68-71 | MED 4hrs | Correlation support |             |
+| Add Tag System         | T72-75 | LOW 3hrs | Tagging             |             |
+| Add Trait Definitions  | T76-79 | LOW 3hrs | Traits              |             |
+| Add Operation Bindings | T80-85 | LOW 5hrs | Bindings            |             |
+| Add Security Schemes   | T86-90 | MED 4hrs | Security            |             |
+| Add Server Definitions | T91-97 | MED 5hrs | Servers             |             |
 
 #### Testing & Quality Assurance (20 hours, 28 tasks)
 
 | Task                  | ID       | Priority  | Time             | Deliverable |
 | --------------------- | -------- | --------- | ---------------- | ----------- |
-| Add BDD Tests         | T98-105  | HIGH 7hrs | BDD test suite   |
-| Add Edge Case Tests   | T106-110 | MED 4hrs  | Edge cases       |
-| Add Performance Tests | T111-115 | MED 4hrs  | Performance      |
-| Add Stress Tests      | T116-120 | MED 4hrs  | Stress testing   |
-| Cross-Platform Tests  | T121-125 | MED 4hrs  | Platform testing |
+| Add BDD Tests         | T98-105  | HIGH 7hrs | BDD test suite   |             |
+| Add Edge Case Tests   | T106-110 | MED 4hrs  | Edge cases       |             |
+| Add Performance Tests | T111-115 | MED 4hrs  | Performance      |             |
+| Add Stress Tests      | T116-120 | MED 4hrs  | Stress testing   |             |
+| Cross-Platform Tests  | T121-125 | MED 4hrs  | Platform testing |             |
 
 ---
 
@@ -174,10 +174,10 @@ graph TD
 
 | Phase                  | Tasks | Hours  | Cumulative Hours | Value | Cumulative Value |
 | ---------------------- | ----- | ------ | ---------------- | ----- | ---------------- |
-| 1: Critical State Fix  | 2     | 2.25   | 51%              | 51%   |
-| 2: Emitter Integration | 4     | 6.00   | 13%              | 64%   |
-| 3: Working MVP         | 21    | 31.00  | 16%              | 80%   |
-| 4: Production Ready    | 98    | 125.00 | 20%              | 100%  |
+| 1: Critical State Fix  | 2     | 2.25   | 51%              | 51%   |                  |
+| 2: Emitter Integration | 4     | 6.00   | 13%              | 64%   |                  |
+| 3: Working MVP         | 21    | 31.00  | 16%              | 80%   |                  |
+| 4: Production Ready    | 98    | 125.00 | 20%              | 100%  |                  |
 
 ### By Priority
 
@@ -279,26 +279,26 @@ graph TD
 
 ### Risk 1: State Management Not Fixable
 
-**Likelihood:** Low (10%)  
-**Impact:** Critical (blocks everything)  
+**Likelihood:** Low (10%)\
+**Impact:** Critical (blocks everything)\
 **Mitigation:** Deep TypeSpec compiler research, consider alternative approaches
 
 ### Risk 2: Timeline Overrun
 
-**Likelihood:** Medium (40%)  
-**Impact:** High (delays release)  
+**Likelihood:** Medium (40%)\
+**Impact:** High (delays release)\
 **Mitigation:** Prioritize critical tasks, defer non-essential features
 
 ### Risk 3: TypeSpec API Changes
 
-**Likelihood:** Low (15%)  
-**Impact:** Medium (requires rework)  
+**Likelihood:** Low (15%)\
+**Impact:** Medium (requires rework)\
 **Mitigation:** Follow TypeSpec emitter conventions, use stable APIs
 
 ### Risk 4: Resource Constraints
 
-**Likelihood:** Medium (30%)  
-**Impact:** Medium (delays completion)  
+**Likelihood:** Medium (30%)\
+**Impact:** Medium (delays completion)\
 **Mitigation:** Flexible task ordering, adapt to constraints
 
 ---
@@ -376,9 +376,9 @@ All tasks follow standard structure:
 
 **END OF COMPREHENSIVE EXECUTION PLAN**
 
-**Total Pages:** This document  
-**Total Tasks Defined:** 125  
-**Total Effort Estimated:** 125 hours  
+**Total Pages:** This document\
+**Total Tasks Defined:** 125\
+**Total Effort Estimated:** 125 hours\
 **Execution Strategy:** Pareto-Optimal (Critical → Major → MVP → Complete)
 
 **Status:** READY FOR EXECUTION ✅

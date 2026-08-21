@@ -13,7 +13,6 @@ pnpm run build       # Build TypeScript → JavaScript (0 errors)
 pnpm run lint        # Run ESLint (0 errors, 0 warnings)
 pnpm run test        # Run tests via vitest (1286 pass across 101 files, 0 fail)
 pnpm run verify      # Full gate: build + lint + test + coverage:gate + duplicate
-
 ```
 
 **Important:** Use `pnpm` for package management and scripts. Tests run via **vitest** (Node.js/V8). Coverage runs via `bun test --coverage` (Bun's native coverage is the only tool that captures dynamically-loaded `dist/*.js` files — see Coverage section below). Run all commands inside `nix develop .#default` to get the right toolchain.

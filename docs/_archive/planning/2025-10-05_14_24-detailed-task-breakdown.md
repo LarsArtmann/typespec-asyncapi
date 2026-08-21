@@ -17,14 +17,14 @@
 
 | #                                                | Task                                                    | Time   | Impact      | Effort  | Value     | Priority          | Phase       |
 | ------------------------------------------------ | ------------------------------------------------------- | ------ | ----------- | ------- | --------- | ----------------- | ----------- |
-| **THE 1% (51% VALUE)**                           |
+| **THE 1% (51% VALUE)**                           |                                                         |        |             |         |           |                   |             |
 | 1                                                | Add code coverage reporting to package.json             | 30min  | 🔴 CRITICAL | Low     | 51%       | P0                | Foundation  |
-| **THE 4% (13% MORE VALUE = 64% TOTAL)**          |
+| **THE 4% (13% MORE VALUE = 64% TOTAL)**          |                                                         |        |             |         |           |                   |             |
 | 2                                                | Analyze baseline coverage report                        | 30min  | 🔴 CRITICAL | Low     | 5%        | P0                | Analysis    |
 | 3                                                | Identify and document top 5 blocking test errors        | 30min  | 🔴 CRITICAL | Medium  | 3%        | P0                | Analysis    |
 | 4                                                | Fix top 5 blocking test errors                          | 60min  | 🟠 HIGH     | High    | 8%        | P0                | Stability   |
 | 5                                                | Retrofit 10 ghost tests as proof of concept             | 45min  | 🟠 HIGH     | Medium  | 5%        | P0                | POC         |
-| **THE 20% (16% MORE VALUE = 80% TOTAL)**         |
+| **THE 20% (16% MORE VALUE = 80% TOTAL)**         |                                                         |        |             |         |           |                   |             |
 | 6                                                | Execute retrofit/delete decision on remaining 190 tests | 120min | 🟠 HIGH     | High    | 10%       | P1                | Cleanup     |
 | 7                                                | Fix remaining test errors (16 errors)                   | 120min | 🟠 HIGH     | High    | 8%        | P1                | Stability   |
 | 8                                                | Add ESLint rule against trivial assertions              | 20min  | 🟡 MEDIUM   | Low     | 2%        | P1                | Gates       |
@@ -35,8 +35,8 @@
 | 13                                               | Create reference test template                          | 45min  | 🟡 MEDIUM   | Medium  | 2%        | P1                | Docs        |
 | 14                                               | Add pre-commit hook for test quality                    | 30min  | 🟡 MEDIUM   | Low     | 1%        | P1                | Gates       |
 | 15                                               | Update test README with quality guidelines              | 30min  | 🟡 MEDIUM   | Low     | 1%        | P1                | Docs        |
-| **SUBTOTAL: PRODUCTION READY**                   | **~13 hours**                                           |        |             | **80%** | **P0-P1** | **Critical Path** |
-| **THE 80% POLISH (20% MORE VALUE = 100% TOTAL)** |
+| **SUBTOTAL: PRODUCTION READY**                   | **~13 hours**                                           |        |             | **80%** | **P0-P1** | **Critical Path** |             |
+| **THE 80% POLISH (20% MORE VALUE = 100% TOTAL)** |                                                         |        |             |         |           |                   |             |
 | 16                                               | Optimize test parallel execution                        | 60min  | 🟢 LOW      | Medium  | 3%        | P2                | Performance |
 | 17                                               | Add TypeSpec compilation caching                        | 90min  | 🟢 LOW      | High    | 4%        | P2                | Performance |
 | 18                                               | Implement mutation testing framework                    | 120min | 🟢 LOW      | High    | 3%        | P2                | Quality     |

@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Modular Emitter Extraction Plan
 
-**Session:** 2025-09-02_05_14  
-**Goal:** Extract 1,800-line monolithic emitter into proper modular architecture  
+**Session:** 2025-09-02_05_14\
+**Goal:** Extract 1,800-line monolithic emitter into proper modular architecture\
 **Strategy:** Replace thin wrapper with ACTUALLY BETTER modular implementation
 
 ---

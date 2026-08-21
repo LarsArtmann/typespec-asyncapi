@@ -68,7 +68,8 @@ function createChannelDefinition(
 ```typescript
 // FIX ALL UNSAFE ASSIGNMENTS WITH ASSERTIONS
 const channelPath = getChannelPath(op, program);
-const channelName: ChannelName = (channelPath ?? `/${op.name.toLowerCase()}`) as ChannelName;
+const channelName: ChannelName = (channelPath ??
+  `/${op.name.toLowerCase()}`) as ChannelName;
 
 const operationName: OperationName = op.name as OperationName;
 
@@ -157,6 +158,6 @@ git add . && git commit -m "fix: restore compilation stability with branded type
 
 ---
 
-_Infrastructure Crisis Analysis - 2025-11-17 20:00 CET_  
-_Status: Critical Failure - Backtrack Required_  
+_Infrastructure Crisis Analysis - 2025-11-17 20:00 CET_\
+_Status: Critical Failure - Backtrack Required_\
 _Next: Restore compilation stability immediately_

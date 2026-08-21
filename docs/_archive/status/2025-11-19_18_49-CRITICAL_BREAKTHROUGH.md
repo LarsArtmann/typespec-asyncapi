@@ -2,7 +2,7 @@
 
 ## TypeSpec AsyncAPI Emitter - Architecture Crisis Resolution
 
-**Date:** 2025-11-19 18:49 CET  
+**Date:** 2025-11-19 18:49 CET\
 **Status:** 98% FUNCTIONAL - EMERGENCY RESOLUTION COMPLETE
 
 ---
@@ -403,6 +403,6 @@ This architectural decision will determine to success of the final integration p
 
 ---
 
-**Status Report Generated: 2025-11-19 18:49 CET**  
-**Next Review: After completion of critical path tasks**  
+**Status Report Generated: 2025-11-19 18:49 CET**\
+**Next Review: After completion of critical path tasks**\
 **Contact: Architecture Team for state management decision**

@@ -75,22 +75,22 @@ graph TD
 
 | Time       | Task                                         | Impact                 | Dependencies |
 | ---------- | -------------------------------------------- | ---------------------- | ------------ |
-| **0-15**   | Create test harness for TypeSpec compilation | Prevents regressions   |
-| **15-30**  | Build AsyncAPI comparison framework          | Quality assurance      |
-| **30-45**  | Implement pipeline validation tests          | Integration confidence |
-| **45-60**  | Document working emitter examples            | User adoption          |
-| **60-75**  | Fix security scheme state map processing     | Completes ecosystem    |
-| **75-90**  | Implement MQTT protocol plugin               | IoT coverage           |
-| **90-105** | Create performance monitoring dashboard      | User confidence        |
+| **0-15**   | Create test harness for TypeSpec compilation | Prevents regressions   |              |
+| **15-30**  | Build AsyncAPI comparison framework          | Quality assurance      |              |
+| **30-45**  | Implement pipeline validation tests          | Integration confidence |              |
+| **45-60**  | Document working emitter examples            | User adoption          |              |
+| **60-75**  | Fix security scheme state map processing     | Completes ecosystem    |              |
+| **75-90**  | Implement MQTT protocol plugin               | IoT coverage           |              |
+| **90-105** | Create performance monitoring dashboard      | User confidence        |              |
 
 ### **🎯 SECONDARY MICRO-TASKS (Next 50 minutes)**
 
 | Time        | Task                                | Impact                 | Dependencies |
 | ----------- | ----------------------------------- | ---------------------- | ------------ |
-| **105-120** | Eliminate critical code duplication | Maintenance reduction  |
-| **120-130** | Enhance CLI user experience         | Developer productivity |
-| **130-145** | Add protocol binding examples       | Advanced adoption      |
-| **145-155** | Implement type caching system       | Performance boost      |
+| **105-120** | Eliminate critical code duplication | Maintenance reduction  |              |
+| **120-130** | Enhance CLI user experience         | Developer productivity |              |
+| **130-145** | Add protocol binding examples       | Advanced adoption      |              |
+| **145-155** | Implement type caching system       | Performance boost      |              |
 
 ---
 
@@ -104,7 +104,9 @@ graph TD
 // Create: test/integration/harness.ts
 export class IntegrationTestHarness {
   async compileTypeSpec(source: string): Promise<CompilationResult>;
-  async generateAsyncAPI(compilation: CompilationResult): Promise<AsyncAPIObject>;
+  async generateAsyncAPI(
+    compilation: CompilationResult,
+  ): Promise<AsyncAPIObject>;
   async validateOutput(
     actual: AsyncAPIObject,
     expected: Partial<AsyncAPIObject>,
@@ -118,7 +120,10 @@ export class IntegrationTestHarness {
 // Create: test/integration/comparison.ts
 export class AsyncAPIComparator {
   compareChannels(actual: Channel[], expected: Channel[]): ComparisonResult;
-  compareOperations(actual: Operation[], expected: Operation[]): ComparisonResult;
+  compareOperations(
+    actual: Operation[],
+    expected: Operation[],
+  ): ComparisonResult;
   compareSchemas(actual: Schema[], expected: Schema[]): ComparisonResult;
 }
 ```
@@ -160,7 +165,9 @@ export class PipelineValidator {
 // Enhance: src/domain/decorators/security.ts
 export const $security = (context, target, config) => {
   // Access TypeSpec state map for security configs
-  const securityConfigs = context.program.stateMap($lib.stateKeys.securityConfigs);
+  const securityConfigs = context.program.stateMap(
+    $lib.stateKeys.securityConfigs,
+  );
 
   // Process into AsyncAPI document
   if (securityConfigs.has(target)) {

@@ -1,6 +1,6 @@
 # TypeSpec AsyncAPI Decorator Integration Completion Plan
 
-**Date**: August 31, 2025 10:32 AM CEST  
+**Date**: August 31, 2025 10:32 AM CEST\
 **Session**: Final Decorator Integration & End-to-End Validation
 
 ## 🎯 PARETO ANALYSIS SUMMARY

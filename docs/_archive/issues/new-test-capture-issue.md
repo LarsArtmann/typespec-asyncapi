@@ -42,7 +42,9 @@ const outputFile = Object.keys(result.outputs).find(
 ```typescript
 // 🔥 WORKAROUND: TypeSpec 1.4.0 test framework output capture issue
 if (!result.outputs || Object.keys(result.outputs).length === 0) {
-  const fallback = findGeneratedFilesOnFilesystem(options["output-file"] || "asyncapi");
+  const fallback = findGeneratedFilesOnFilesystem(
+    options["output-file"] || "asyncapi",
+  );
   if (fallback) {
     return {
       asyncApiDoc: doc,
@@ -142,6 +144,6 @@ export async function createAsyncAPIEmitterTester(options = {}) {
 
 ---
 
-_Issue Analysis Date: 2025-11-18_  
-_Status: CRITICAL but RESOLVED with workaround_  
+_Issue Analysis Date: 2025-11-18_\
+_Status: CRITICAL but RESOLVED with workaround_\
 _Impact: TypeSpec ecosystem-wide_

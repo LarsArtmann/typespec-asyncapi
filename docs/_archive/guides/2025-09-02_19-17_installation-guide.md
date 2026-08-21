@@ -666,5 +666,5 @@ After successful installation:
 
 ---
 
-_Installation Guide Last Updated: September 2, 2025_  
+_Installation Guide Last Updated: September 2, 2025_\
 _For the latest installation instructions, visit: https://github.com/LarsArtmann/typespec-asyncapi_

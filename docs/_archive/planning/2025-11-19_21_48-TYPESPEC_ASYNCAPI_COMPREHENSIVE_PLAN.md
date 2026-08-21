@@ -1,7 +1,7 @@
 # TypeSpec AsyncAPI Emitter - Comprehensive Development Plan
 
-**Created:** 2025-11-19 21:48  
-**Status:** 95% Infrastructure Complete, 5% Final Integration Remaining  
+**Created:** 2025-11-19 21:48\
+**Status:** 95% Infrastructure Complete, 5% Final Integration Remaining\
 **Timeline:** 1-3 days to full production release
 
 ---
@@ -65,7 +65,7 @@ graph TD
 
 ### Task 1: Fix Emitter State Integration (Priority: CRITICAL)
 
-**Duration:** 15 minutes  
+**Duration:** 15 minutes\
 **Impact:** Enables end-to-end data flow
 **Description:** Update `generateChannels()` and `generateMessages()` to use consolidated state instead of placeholder logic
 **Files:** `src/emitter.ts`
@@ -77,7 +77,7 @@ graph TD
 
 ### Task 2: Complete Basic AsyncAPI Generation (Priority: CRITICAL)
 
-**Duration:** 30 minutes  
+**Duration:** 30 minutes\
 **Impact:** Production-ready AsyncAPI output
 **Description:** Implement real YAML/JSON generation using stored decorator state data
 **Files:** `src/emitter.ts`
@@ -89,7 +89,7 @@ graph TD
 
 ### Task 3: Test Core End-to-End Pipeline (Priority: CRITICAL)
 
-**Duration:** 15 minutes  
+**Duration:** 15 minutes\
 **Impact:** Validates complete system functionality
 **Description:** Run TypeSpec compilation on test-simple.tsp and verify output
 **Files:** `test-simple.tsp`
@@ -101,7 +101,7 @@ graph TD
 
 ### Task 4: Fix Test Infrastructure Dependencies (Priority: HIGH)
 
-**Duration:** 30 minutes  
+**Duration:** 30 minutes\
 **Impact:** Enables test-driven development
 **Description:** Restore missing utility modules referenced by test files
 **Files:** Multiple test utility files
@@ -114,7 +114,7 @@ graph TD
 
 ### Task 5: Validate Build System (Priority: HIGH)
 
-**Duration:** 15 minutes  
+**Duration:** 15 minutes\
 **Impact:** Ensures reliable development workflow
 **Description:** Test all justfile commands and CI pipeline
 **Files:** `justfile`, `package.json`
@@ -131,7 +131,7 @@ graph TD
 
 ### Task 6: Complete Message Schema Generation (Priority: HIGH)
 
-**Duration:** 45 minutes  
+**Duration:** 45 minutes\
 **Impact:** Proper JSON Schema generation from TypeSpec models
 **Description:** Generate accurate JSON schemas from TypeSpec model properties
 **Files:** `src/emitter.ts` (generateSchemas function)
@@ -144,7 +144,7 @@ graph TD
 
 ### Task 7: Implement Real YAML Generation (Priority: HIGH)
 
-**Duration:** 30 minutes  
+**Duration:** 30 minutes\
 **Impact:** Professional AsyncAPI YAML output format
 **Description:** Replace template literal YAML with proper YAML serialization
 **Files:** `src/emitter.ts` (file output section)
@@ -157,7 +157,7 @@ graph TD
 
 ### Task 8: Add Error Handling (Priority: MEDIUM)
 
-**Duration:** 30 minutes  
+**Duration:** 30 minutes\
 **Impact:** Robust error handling and user feedback
 **Description:** Implement comprehensive error handling throughout pipeline
 **Files:** `src/emitter.ts`, `src/minimal-decorators.ts`
@@ -170,7 +170,7 @@ graph TD
 
 ### Task 9: Performance Optimization (Priority: MEDIUM)
 
-**Duration:** 30 minutes  
+**Duration:** 30 minutes\
 **Impact:** Sub-second compilation times
 **Description:** Optimize state access and file generation performance
 **Files:** `src/emitter.ts`, `src/state.ts`
@@ -183,7 +183,7 @@ graph TD
 
 ### Task 10: Complete Basic Decorator Set (Priority: MEDIUM)
 
-**Duration:** 60 minutes  
+**Duration:** 60 minutes\
 **Impact:** Core AsyncAPI features fully implemented
 **Description:** Implement missing core decorators (@server, @protocol, @security)
 **Files:** `src/minimal-decorators.ts`, `src/decorators/`
@@ -200,7 +200,7 @@ graph TD
 
 ### Task 11: Advanced Decorator Implementation (Priority: MEDIUM)
 
-**Duration:** 90 minutes  
+**Duration:** 90 minutes\
 **Impact:** Advanced AsyncAPI feature support
 **Description:** Implement advanced decorators (@tags, @correlationId, @bindings, @header)
 **Files:** New decorator files
@@ -213,7 +213,7 @@ graph TD
 
 ### Task 12: Protocol Binding Support (Priority: MEDIUM)
 
-**Duration:** 60 minutes  
+**Duration:** 60 minutes\
 **Impact:** Multi-protocol AsyncAPI generation
 **Description:** Add support for Kafka, WebSocket, MQTT, HTTP protocol bindings
 **Files:** Protocol binding modules
@@ -226,7 +226,7 @@ graph TD
 
 ### Task 13: Security Scheme Implementation (Priority: LOW)
 
-**Duration:** 45 minutes  
+**Duration:** 45 minutes\
 **Impact:** Security features for enterprise use
 **Description:** Implement OAuth2, API Keys, JWT security schemes
 **Files:** Security modules
@@ -239,7 +239,7 @@ graph TD
 
 ### Task 14: Complete Test Suite (Priority: MEDIUM)
 
-**Duration:** 120 minutes  
+**Duration:** 120 minutes\
 **Impact:** Comprehensive test coverage and reliability
 **Description:** Complete unit, integration, and E2E test suites
 **Files:** All test files
@@ -252,7 +252,7 @@ graph TD
 
 ### Task 15: Documentation and Examples (Priority: LOW)
 
-**Duration:** 90 minutes  
+**Duration:** 90 minutes\
 **Impact:** User adoption and developer experience
 **Description:** Create comprehensive documentation and examples
 **Files:** `docs/`, `examples/`, README files
@@ -269,21 +269,21 @@ graph TD
 
 | Priority     | Task                                 | Duration | Impact              | Dependencies |
 | ------------ | ------------------------------------ | -------- | ------------------- | ------------ |
-| **CRITICAL** | Fix Emitter State Integration        | 15min    | Foundation          |
-| **CRITICAL** | Complete Basic AsyncAPI Generation   | 30min    | State Integration   |
-| **CRITICAL** | Test Core End-to-End Pipeline        | 15min    | Basic Generation    |
-| **HIGH**     | Fix Test Infrastructure Dependencies | 30min    | Build System        |
-| **HIGH**     | Validate Build System                | 15min    | Test Dependencies   |
-| **HIGH**     | Complete Message Schema Generation   | 45min    | Basic Generation    |
-| **HIGH**     | Implement Real YAML Generation       | 30min    | Schema Generation   |
-| **MEDIUM**   | Add Error Handling                   | 30min    | YAML Generation     |
-| **MEDIUM**   | Performance Optimization             | 30min    | Error Handling      |
-| **MEDIUM**   | Complete Basic Decorator Set         | 60min    | Performance         |
-| **MEDIUM**   | Advanced Decorator Implementation    | 90min    | Basic Decorators    |
-| **MEDIUM**   | Protocol Binding Support             | 60min    | Advanced Decorators |
-| **MEDIUM**   | Complete Test Suite                  | 120min   | Protocol Bindings   |
-| **LOW**      | Security Scheme Implementation       | 45min    | Test Suite          |
-| **LOW**      | Documentation and Examples           | 90min    | All Features        |
+| **CRITICAL** | Fix Emitter State Integration        | 15min    | Foundation          |              |
+| **CRITICAL** | Complete Basic AsyncAPI Generation   | 30min    | State Integration   |              |
+| **CRITICAL** | Test Core End-to-End Pipeline        | 15min    | Basic Generation    |              |
+| **HIGH**     | Fix Test Infrastructure Dependencies | 30min    | Build System        |              |
+| **HIGH**     | Validate Build System                | 15min    | Test Dependencies   |              |
+| **HIGH**     | Complete Message Schema Generation   | 45min    | Basic Generation    |              |
+| **HIGH**     | Implement Real YAML Generation       | 30min    | Schema Generation   |              |
+| **MEDIUM**   | Add Error Handling                   | 30min    | YAML Generation     |              |
+| **MEDIUM**   | Performance Optimization             | 30min    | Error Handling      |              |
+| **MEDIUM**   | Complete Basic Decorator Set         | 60min    | Performance         |              |
+| **MEDIUM**   | Advanced Decorator Implementation    | 90min    | Basic Decorators    |              |
+| **MEDIUM**   | Protocol Binding Support             | 60min    | Advanced Decorators |              |
+| **MEDIUM**   | Complete Test Suite                  | 120min   | Protocol Bindings   |              |
+| **LOW**      | Security Scheme Implementation       | 45min    | Test Suite          |              |
+| **LOW**      | Documentation and Examples           | 90min    | All Features        |              |
 
 ---
 
