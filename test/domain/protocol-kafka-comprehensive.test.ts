@@ -5,17 +5,10 @@
  * via the @protocol decorator.
  */
 
-import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers";
-import { parse as parseYAML } from "yaml";
+import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 
 async function compileAndGetDoc(source: string) {
-  const result = await compileAsyncAPISpecWithoutErrors(source);
-  for (const [, content] of result.outputFiles) {
-    if (typeof content === "string" && content.startsWith("asyncapi")) {
-      return parseYAML(content);
-    }
-  }
-  throw new Error("No AsyncAPI output found");
+  return compileAndValidateOrThrow(source);
 }
 
 describe("kafka Protocol", () => {

@@ -11,7 +11,7 @@
  * 5. Operations have actions (determine template selection)
  */
 
-import { compileAsyncAPI } from "../utils/test-helpers.js";
+import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { collectRefs, resolveRef } from "../utils/ref-utils.js";
 
 type AsyncApiDoc = Record<string, unknown> | null;
@@ -19,11 +19,7 @@ type AsyncApiDoc = Record<string, unknown> | null;
 async function compileAndGetDoc(
   source: string,
 ): Promise<NonNullable<AsyncApiDoc>> {
-  const result = await compileAsyncAPI(source);
-  if (!result.asyncApiDoc) {
-    throw new Error("No output document produced");
-  }
-  return result.asyncApiDoc as NonNullable<AsyncApiDoc>;
+  return (await compileAndValidateOrThrow(source)) as NonNullable<AsyncApiDoc>;
 }
 
 describe("document structure constraints", () => {
