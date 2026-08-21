@@ -93,8 +93,8 @@ export const BINDING_PLACEMENT = buildPlacement() as Readonly<
 export type BindingTargetKind = "channel" | "operation" | "message" | "server";
 
 export function normalizeBindingProtocol(protocol: string): string {
-  if (protocol === "wss") {
-    return "ws";
+  if (protocol === "wss" || protocol === "mqtt5") {
+    return protocol === "wss" ? "ws" : "mqtt";
   }
   return normalizeProtocol(protocol);
 }

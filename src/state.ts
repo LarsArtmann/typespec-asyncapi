@@ -93,49 +93,37 @@ interface ProtocolConfigBase {
 
 export type WebSocketConfigData = ProtocolConfigBase & {
   protocol: "ws" | "wss";
-  subprotocol?: string;
   queryParams?: Record<string, string>;
   headers?: Record<string, string>;
 };
 
 /**
- * MQTT last-will-and-testament configuration.
- */
-export interface MqttLastWillConfig {
-  topic: string;
-  message: string;
-  qos: 0 | 1 | 2;
-  retain: boolean;
-}
-
-/**
- * Kafka SASL authentication configuration.
- */
-export interface KafkaSaslConfig {
-  mechanism: string;
-  username: string;
-  password: string;
-}
-
-/**
  * Kafka Configuration State Data
+ *
+ * Only fields that map onto AsyncAPI 3.1 Kafka binding placements:
+ * `partitions`/`replicationFactor` are channel-binding fields (emitted as
+ * `partitions`/`replicas`), `consumerGroup` is the operation-binding
+ * `groupId`. Authentication belongs to `@security`, not bindings.
  */
 export type KafkaConfigData = ProtocolConfigBase & {
   protocol: "kafka";
   partitions?: number;
   replicationFactor?: number;
   consumerGroup?: string;
-  sasl?: KafkaSaslConfig;
 };
 
 /**
  * MQTT Configuration State Data
+ *
+ * `qos`/`retain` map onto the AsyncAPI 3.1 MQTT operation binding.
+ * Server-binding-only fields (lastWill, clientId, keepAlive) are not
+ * reachable from `@protocol` (Operation | Model targets) and are therefore
+ * not stored.
  */
 export type MqttConfigData = ProtocolConfigBase & {
   protocol: "mqtt" | "mqtt5";
   qos?: 0 | 1 | 2;
   retain?: boolean;
-  lastWill?: MqttLastWillConfig;
 };
 
 export type GenericProtocolConfigData = ProtocolConfigBase & {

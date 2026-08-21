@@ -7,11 +7,31 @@ import type { Model, Operation, Program } from "@typespec/compiler";
 import { getStateMap } from "./state-compatibility.js";
 import { stateSymbols } from "./lib.js";
 import { normalizeProtocol } from "./constants/protocols.js";
-import type {
-  KafkaSaslConfig,
-  MqttLastWillConfig,
-  ProtocolConfigData,
-} from "./state.js";
+import type { ProtocolConfigData } from "./state.js";
+
+/** Config keys with dedicated meaning in `@protocol`; all others are binding passthrough. */
+const RESERVED_CONFIG_KEYS: ReadonlySet<string> = new Set([
+  "protocol",
+  "binding",
+  "version",
+  "partitions",
+  "replicationFactor",
+  "consumerGroup",
+  "qos",
+  "retain",
+  "headers",
+  "queryParams",
+]);
+
+/** Collect non-reserved config keys as raw binding passthrough fields. */
+function topLevelPassthrough(
+  config: Record<string, unknown>,
+): Record<string, unknown> | undefined {
+  const entries = Object.entries(config).filter(
+    ([key]) => !RESERVED_CONFIG_KEYS.has(key),
+  );
+  return entries.length > 0 ? Object.fromEntries(entries) : undefined;
+}
 
 export const storeProtocolConfig = (
   program: Program,
@@ -26,7 +46,10 @@ export const storeProtocolConfig = (
   const protocolType = normalizeProtocol(rawProtocol);
 
   const base = {
-    binding: config.binding as Record<string, unknown> | undefined,
+    binding: {
+      ...topLevelPassthrough(config),
+      ...(config.binding as Record<string, unknown> | undefined),
+    },
     version: config.version as string | undefined,
   };
 
@@ -36,17 +59,10 @@ export const storeProtocolConfig = (
     case "kafka": {
       protocolConfig = {
         ...base,
-        consumerGroup:
-          (config.consumerGroup as string | undefined) ?? "default",
-        partitions: (config.partitions as number | undefined) ?? 1,
         protocol: "kafka",
-        replicationFactor:
-          (config.replicationFactor as number | undefined) ?? 1,
-        sasl: (config.sasl as KafkaSaslConfig | undefined) ?? {
-          mechanism: "plain",
-          password: "",
-          username: "",
-        },
+        partitions: config.partitions as number | undefined,
+        replicationFactor: config.replicationFactor as number | undefined,
+        consumerGroup: config.consumerGroup as string | undefined,
       };
       break;
     }
@@ -54,11 +70,10 @@ export const storeProtocolConfig = (
     case "wss": {
       protocolConfig = {
         ...base,
-        headers: (config.headers as Record<string, string> | undefined) ?? {},
         protocol: protocolType,
+        headers: config.headers as Record<string, string> | undefined,
         queryParams:
-          (config.queryParams as Record<string, string> | undefined) ?? {},
-        subprotocol: (config.subprotocol as string | undefined) ?? "asyncapi",
+          config.queryParams as Record<string, string> | undefined,
       };
       break;
     }
@@ -66,15 +81,9 @@ export const storeProtocolConfig = (
     case "mqtt5": {
       protocolConfig = {
         ...base,
-        lastWill: (config.lastWill as MqttLastWillConfig | undefined) ?? {
-          message: "",
-          qos: 1,
-          retain: false,
-          topic: "",
-        },
         protocol: protocolType,
-        qos: (config.qos as 0 | 1 | 2 | undefined) ?? 1,
-        retain: (config.retain as boolean | undefined) ?? false,
+        qos: config.qos as 0 | 1 | 2 | undefined,
+        retain: config.retain as boolean | undefined,
       };
       break;
     }

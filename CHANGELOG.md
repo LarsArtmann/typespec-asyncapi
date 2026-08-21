@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **`@protocol` config fields now emitted at spec-correct placements** — `partitions`/`replicationFactor` (kafka channel binding, as `partitions`/`replicas`), `consumerGroup` (kafka operation binding `groupId`, emitted as a schema `{ type: "string", const: ... }` per AsyncAPI 3.1), `qos`/`retain` (mqtt operation binding), and `headers`/`queryParams` (ws channel binding, as `headers`/`query`) were previously stored but never emitted. The emitter no longer fabricates default values (partitions=1, consumerGroup="default", sasl credentials) that users never wrote, no longer emits version-only binding shells, and no longer emits bindings at placements the protocol does not define (mqtt/http channel bindings). Raw `binding:` passthrough and unknown top-level config keys route to the operation binding when the protocol has no channel binding (e.g. HTTP). `mqtt5` now normalizes to the `mqtt` binding key.
+
+### Added
+
+- **`asyncapi-id` emitter option** — sets the AsyncAPI 3.1 root `id` identifier (typically a URN) from tspconfig.yaml; omitted when unset.
+
 ## [0.2.1-beta] - 2026-08-21
 
 ### Added

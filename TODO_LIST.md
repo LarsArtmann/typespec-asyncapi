@@ -54,11 +54,15 @@ openapi3 EFv2-migration watch procedure. See plan Phases 4-5.
 
 ## Emitter Correctness
 
-- [ ] **Kafka `@protocol` fields never emitted** — `partitions`,
-      `replicationFactor`, `consumerGroup` are stored by
-      `src/store-protocol-config.ts:32` but `buildProtocolBinding`
-      (`src/builders/shared-utils.ts:181`) only emits the nested `binding:` map
-      and `bindingVersion`. Either emit them or stop storing them.
+- [x] **Kafka `@protocol` fields never emitted** — FIXED (2026-08-21):
+      `@protocol` config fields now emit at their spec-correct placements
+      (kafka `partitions`/`replicationFactor` → channel binding
+      `partitions`/`replicas`; `consumerGroup` → operation-binding
+      `groupId` schema; mqtt `qos`/`retain` → operation binding; ws
+      `headers`/`queryParams` → channel binding `headers`/`query`).
+      Fabricated defaults removed; version-only binding shells no longer
+      emitted; raw `binding:` passthrough routes to the operation binding
+      when the protocol has no channel binding (http).
 - [ ] O(n²) operation-type lookup in `src/builders/operation-builder.ts:37` —
       builds a fresh array scan per operation; precompute a Set/Map.
 - [ ] Unify `registerMessage` vs `mergeExplicitMessages` construction paths in

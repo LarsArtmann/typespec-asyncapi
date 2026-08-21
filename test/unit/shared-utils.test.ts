@@ -12,7 +12,7 @@ import {
   operationAction,
   extractChannelParameters,
   normalizeOAuth2Scopes,
-  buildProtocolBinding,
+  buildProtocolBindings,
 } from "../../src/builders/shared-utils.js";
 import {
   escapeRefToken,
@@ -180,41 +180,127 @@ describe("normalizeOAuth2Scopes", () => {
   });
 });
 
-describe("buildProtocolBinding", () => {
-  it("builds kafka binding with auto-injected bindingVersion", () => {
-    const result = buildProtocolBinding({
+describe("buildProtocolBindings", () => {
+  it("builds kafka channel binding with auto-injected bindingVersion", () => {
+    const { channel } = buildProtocolBindings({
       protocol: "kafka",
       binding: { topic: "events" },
     });
-    expect(result.kafka).toBeDefined();
-    expect(result.kafka.topic).toBe("events");
-    expect(result.kafka.bindingVersion).toBeDefined();
+    expect(channel?.kafka).toBeDefined();
+    expect(channel?.kafka.topic).toBe("events");
+    expect(channel?.kafka.bindingVersion).toBeDefined();
+  });
+
+  it("maps kafka partitions and replicationFactor to channel binding fields", () => {
+    const { channel } = buildProtocolBindings({
+      protocol: "kafka",
+      partitions: 3,
+      replicationFactor: 2,
+    });
+    expect(channel?.kafka.partitions).toBe(3);
+    expect(channel?.kafka.replicas).toBe(2);
+    expect(channel?.kafka.bindingVersion).toBeDefined();
+  });
+
+  it("maps ws headers and queryParams to channel binding fields", () => {
+    const { channel } = buildProtocolBindings({
+      protocol: "wss",
+      headers: { authorization: "Bearer" },
+      queryParams: { room: "general" },
+    });
+    expect(channel?.ws.headers).toStrictEqual({ authorization: "Bearer" });
+    expect(channel?.ws.query).toStrictEqual({ room: "general" });
   });
 
   it("preserves explicit bindingVersion", () => {
-    const result = buildProtocolBinding({
+    const { channel } = buildProtocolBindings({
       protocol: "kafka",
       binding: { bindingVersion: "0.4.0" },
     });
-    expect(result.kafka.bindingVersion).toBe("0.4.0");
+    expect(channel?.kafka.bindingVersion).toBe("0.4.0");
   });
 
   it("normalizes wss to ws binding key", () => {
-    const result = buildProtocolBinding({
+    const { channel } = buildProtocolBindings({
+      protocol: "wss",
+      headers: { authorization: "Bearer" },
+    });
+    expect(channel?.ws).toBeDefined();
+    expect(channel?.wss).toBeUndefined();
+  });
+
+  it("omits bindings with no content fields (no version-only shells)", () => {
+    const { channel } = buildProtocolBindings({
       protocol: "wss",
       binding: {},
     });
-    expect(result.ws).toBeDefined();
-    expect(result.wss).toBeUndefined();
+    expect(channel).toBeUndefined();
   });
 
-  it("builds http binding", () => {
-    const result = buildProtocolBinding({
+  it("omits channel binding when the protocol has no channel placement (mqtt)", () => {
+    const { channel } = buildProtocolBindings({
+      protocol: "mqtt",
+      qos: 1,
+      retain: true,
+    });
+    expect(channel).toBeUndefined();
+  });
+
+  it("omits http channel binding (http has no channel placement)", () => {
+    const { channel } = buildProtocolBindings({
       protocol: "http",
       binding: { method: "GET" },
     });
-    expect(result.http).toBeDefined();
-    expect(result.http.method).toBe("GET");
+    expect(channel).toBeUndefined();
+  });
+
+  it("routes http passthrough to the operation binding", () => {
+    const { operation } = buildProtocolBindings({
+      protocol: "http",
+      binding: { method: "GET" },
+    });
+    expect(operation?.http.method).toBe("GET");
+    expect(operation?.http.bindingVersion).toBeDefined();
+  });
+
+  it("maps kafka consumerGroup to operation groupId schema", () => {
+    const { operation } = buildProtocolBindings({
+      protocol: "kafka",
+      consumerGroup: "order-service",
+    });
+    expect(operation?.kafka.groupId).toStrictEqual({
+      type: "string",
+      const: "order-service",
+    });
+    expect(operation?.kafka.bindingVersion).toBeDefined();
+  });
+
+  it("maps mqtt qos and retain to operation binding fields", () => {
+    const { operation } = buildProtocolBindings({
+      protocol: "mqtt",
+      qos: 2,
+      retain: true,
+    });
+    expect(operation?.mqtt.qos).toBe(2);
+    expect(operation?.mqtt.retain).toBe(true);
+    expect(operation?.mqtt.bindingVersion).toBeDefined();
+  });
+
+  it("normalizes mqtt5 to mqtt binding key", () => {
+    const { operation } = buildProtocolBindings({
+      protocol: "mqtt5",
+      qos: 1,
+    });
+    expect(operation?.mqtt).toBeDefined();
+    expect(operation?.mqtt5).toBeUndefined();
+  });
+
+  it("omits operation binding when no fields apply (ws)", () => {
+    const { operation } = buildProtocolBindings({
+      protocol: "ws",
+      headers: { authorization: "Bearer" },
+    });
+    expect(operation).toBeUndefined();
   });
 });
 

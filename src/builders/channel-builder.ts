@@ -5,7 +5,11 @@
  * applies @doc descriptions, and attaches protocol bindings.
  */
 
-import type { ChannelObject, Ref } from "../domain/models/asyncapi-document.js";
+import type {
+  ChannelObject,
+  ProtocolBindings,
+  Ref,
+} from "../domain/models/asyncapi-document.js";
 import {
   escapeRefToken,
   ref,
@@ -14,7 +18,7 @@ import {
 } from "../domain/models/asyncapi-document.js";
 import type { BuilderFn, DocumentBuildContext } from "./_imports.js";
 import {
-  buildProtocolBinding,
+  buildProtocolBindings,
   channelForName,
   extractChannelParameters,
   iterNamedTypes,
@@ -92,15 +96,51 @@ export function applyChannelDocs(ctx: DocumentBuildContext): void {
   }
 }
 
-/** Attach protocol bindings to channels from protocolConfigs state. */
+/** Attach protocol bindings to channels and operations from protocolConfigs state. */
 export const attachChannelBindings: BuilderFn = (state, ctx) => {
   for (const { name, data } of iterNamedTypes(state.protocolConfigs)) {
+    const { channel: channelBinding, operation: operationBinding } =
+      buildProtocolBindings(data);
     const channel = channelForName(ctx, name);
-    if (channel) {
-      channel.bindings = buildProtocolBinding(data);
+    if (channel && channelBinding) {
+      channel.bindings = channelBinding;
+    }
+    const operation = ctx.operations[name];
+    if (operation && operationBinding && !isRef(operation.bindings)) {
+      operation.bindings = mergeProtocolBindings(
+        operation.bindings,
+        operationBinding,
+      );
     }
   }
 };
+
+function isRef(value: unknown): value is Ref {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    "$ref" in value &&
+    Object.keys(value).length === 1
+  );
+}
+
+/**
+ * Merge `@protocol`-derived operation bindings into existing `@bindings`
+ * output. Existing (explicit) binding fields win per protocol key.
+ */
+function mergeProtocolBindings(
+  existing: ProtocolBindings | undefined,
+  incoming: ProtocolBindings,
+): ProtocolBindings {
+  if (existing === undefined) {
+    return incoming;
+  }
+  const merged: ProtocolBindings = { ...existing };
+  for (const [key, value] of Object.entries(incoming)) {
+    merged[key] = { ...value, ...existing[key] };
+  }
+  return merged;
+}
 
 /** Apply @useChannelServer refs: attach server $refs to each channel's `servers` field. */
 export const attachChannelServerRefs: BuilderFn = (state, ctx) => {

@@ -71,7 +71,7 @@ describe("kafka Protocol", () => {
       @channel("ws-stream")
       @protocol(#{
         protocol: "ws",
-        subprotocol: "asyncapi"
+        binding: #{ method: "GET" }
       })
       @subscribe
       op subscribeWs(): Event;
@@ -79,11 +79,11 @@ describe("kafka Protocol", () => {
       model Event { id: string; }
     `);
 
-    expect(doc.channels?.["kafka-stream"]?.bindings?.kafka).toBeDefined();
-    expect(doc.channels?.["ws-stream"]?.bindings?.ws).toBeDefined();
+    expect(doc.channels?.["kafka-stream"]?.bindings?.kafka.partitions).toBe(5);
+    expect(doc.channels?.["ws-stream"]?.bindings?.ws.method).toBe("GET");
   });
 
-  it("should apply Kafka protocol defaults when fields are omitted", async () => {
+  it("should not fabricate bindings when no fields are written", async () => {
     const doc = await compileAndGetDoc(`
       @channel("default-kafka")
       @protocol(#{
@@ -96,6 +96,6 @@ describe("kafka Protocol", () => {
     `);
 
     const channel = doc.channels?.["default-kafka"];
-    expect(channel.bindings?.kafka).toBeDefined();
+    expect(channel.bindings).toBeUndefined();
   });
 });

@@ -253,7 +253,6 @@ describe("e2E: Real-World E-Commerce System", () => {
 			@protocol(#{
 				protocol: "http",
 				binding: #{
-					type: "request",
 					method: "POST"
 				}
 			})
@@ -338,8 +337,10 @@ describe("e2E: Real-World E-Commerce System", () => {
     expect(Object.keys(securitySchemes).length).toBeGreaterThanOrEqual(3);
 
     // Validate protocol diversity (Kafka, WebSocket, HTTP)
-    const channelValues = Object.values(channels);
-    const serialized = JSON.stringify(channelValues);
+    const serialized = JSON.stringify({
+      channels: Object.values(channels),
+      operations: Object.values(operations),
+    });
     const hasKafka = serialized.includes("kafka");
     const hasWebSocket = serialized.includes("ws");
     const hasHTTP = serialized.includes("http");

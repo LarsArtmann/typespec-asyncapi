@@ -396,6 +396,111 @@ describe("spec Compliance: HTTP Bindings", () => {
 });
 
 // ============================================================================
+// @protocol Config Field Placement
+// ============================================================================
+
+describe("spec Compliance: @protocol Field Placement", () => {
+  it("emits kafka config fields across channel and operation placements", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @protocol(#{
+        protocol: "kafka",
+        partitions: 3,
+        replicationFactor: 2,
+        consumerGroup: "order-service"
+      })
+      op publish(): Event;
+    `);
+
+    const channelBinding = doc.channels!["events"].bindings!;
+    expect(channelBinding.kafka.partitions).toBe(3);
+    expect(channelBinding.kafka.replicas).toBe(2);
+    expect(channelBinding.kafka.bindingVersion).toBe("0.5.0");
+
+    const opBinding = getOp(doc).bindings!;
+    expect(opBinding.kafka.groupId).toStrictEqual({
+      type: "string",
+      const: "order-service",
+    });
+    expect(opBinding.kafka.bindingVersion).toBe("0.5.0");
+  });
+
+  it("does not fabricate binding fields the user did not write", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @protocol(#{ protocol: "kafka" })
+      op publish(): Event;
+    `);
+
+    expect(doc.channels!["events"].bindings).toBeUndefined();
+  });
+
+  it("emits mqtt qos/retain on the operation binding, not the channel", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @protocol(#{ protocol: "mqtt", qos: 2, retain: true })
+      op publish(): Event;
+    `);
+
+    expect(doc.channels!["events"].bindings).toBeUndefined();
+    const opBinding = getOp(doc).bindings!;
+    expect(opBinding.mqtt.qos).toBe(2);
+    expect(opBinding.mqtt.retain).toBe(true);
+    expect(opBinding.mqtt.bindingVersion).toBeDefined();
+  });
+
+  it("maps ws headers and queryParams onto the channel binding", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @protocol(#{
+        protocol: "websocket",
+        headers: #{ authorization: "Bearer" },
+        queryParams: #{ room: "general" }
+      })
+      op publish(): Event;
+    `);
+
+    const channelBinding = doc.channels!["events"].bindings!;
+    expect(channelBinding.ws).toBeDefined();
+    expect(channelBinding.ws.headers).toStrictEqual({
+      authorization: "Bearer",
+    });
+    expect(channelBinding.ws.query).toStrictEqual({ room: "general" });
+  });
+
+  it("merges @protocol operation binding with @bindings without clobbering", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Test;
+      model Event { id: string; }
+      @channel("events")
+      @protocol(#{ protocol: "kafka", consumerGroup: "order-service" })
+      @bindings(#{
+        kafka: #{
+          clientId: #{ type: "string" },
+          bindingVersion: "0.5.0"
+        }
+      })
+      op publish(): Event;
+    `);
+
+    const opBinding = getOp(doc).bindings!;
+    expect(opBinding.kafka.groupId).toStrictEqual({
+      type: "string",
+      const: "order-service",
+    });
+    expect(opBinding.kafka.clientId).toStrictEqual({ type: "string" });
+  });
+});
+
+// ============================================================================
 // Multi-Protocol Binding Integration
 // ============================================================================
 

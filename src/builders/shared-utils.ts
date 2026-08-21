@@ -19,6 +19,7 @@ import {
   getLatestBindingVersion,
   hasProtocolBindings,
   normalizeBindingProtocol,
+  supportsBindingPlacement,
 } from "../constants/binding-versions.js";
 import { nameOfType } from "./types.js";
 import type { DocumentBuildContext } from "./types.js";
@@ -192,17 +193,116 @@ export function extractChannelParameters(
   return params;
 }
 
-/** Build protocol-specific channel bindings from a ProtocolConfigData entry. */
-export function buildProtocolBinding(
-  data: ProtocolConfigData,
-): ProtocolBindings {
-  const bindingKey = normalizeBindingProtocol(data.protocol);
-  const bindingData: Record<string, unknown> = { ...data.binding };
-  if (
-    hasProtocolBindings(bindingKey) &&
-    bindingData.bindingVersion === undefined
-  ) {
-    bindingData.bindingVersion = getLatestBindingVersion(bindingKey);
+/** Drop `undefined` values from a field map, keeping only written config. */
+function definedFields(
+  entries: Record<string, unknown>,
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(entries)) {
+    if (value !== undefined) {
+      result[key] = value;
+    }
   }
-  return { [bindingKey]: bindingData };
+  return result;
+}
+
+/** Spec-derived binding fields for one protocol, keyed by placement. */
+interface PlacementFields {
+  channel?: Record<string, unknown>;
+  operation?: Record<string, unknown>;
+}
+
+type ProtocolFieldPicker = (data: ProtocolConfigData) => PlacementFields;
+
+const kafkaFields: ProtocolFieldPicker = (d) => {
+  if (d.protocol !== "kafka") {
+    return {};
+  }
+  return {
+    channel: definedFields({
+      partitions: d.partitions,
+      replicas: d.replicationFactor,
+    }),
+    operation: definedFields({
+      groupId:
+        d.consumerGroup === undefined
+          ? undefined
+          : { type: "string", const: d.consumerGroup },
+    }),
+  };
+};
+
+const wsFields: ProtocolFieldPicker = (d) => {
+  if (d.protocol !== "ws" && d.protocol !== "wss") {
+    return {};
+  }
+  return {
+    channel: definedFields({ headers: d.headers, query: d.queryParams }),
+  };
+};
+
+const mqttFields: ProtocolFieldPicker = (d) => {
+  if (d.protocol !== "mqtt" && d.protocol !== "mqtt5") {
+    return {};
+  }
+  return {
+    operation: definedFields({ qos: d.qos, retain: d.retain }),
+  };
+};
+
+/** Field pickers keyed by the `@protocol` config discriminant. */
+const FIELD_PICKERS: Readonly<Record<string, ProtocolFieldPicker>> = {
+  kafka: kafkaFields,
+  ws: wsFields,
+  wss: wsFields,
+  mqtt: mqttFields,
+  mqtt5: mqttFields,
+};
+
+/** Protocol bindings derived from one `@protocol` config, keyed by placement. */
+export interface ProtocolBindingPlacements {
+  channel?: ProtocolBindings;
+  operation?: ProtocolBindings;
+}
+
+/**
+ * Build the channel and operation bindings from a `@protocol` config entry,
+ * honoring the spec-derived placement matrix:
+ *
+ * - Fields map to the placement the AsyncAPI 3.1 binding spec defines them
+ *   at (e.g. kafka `partitions` → channel, `consumerGroup` → operation).
+ * - The raw `binding:` passthrough routes to the channel binding when the
+ *   protocol defines one, otherwise the operation binding (e.g. HTTP).
+ * - Bindings without content fields are omitted entirely (no version-only
+ *   shells); `bindingVersion` is auto-injected from the binding specs.
+ */
+export function buildProtocolBindings(
+  data: ProtocolConfigData,
+): ProtocolBindingPlacements {
+  const bindingKey = normalizeBindingProtocol(data.protocol);
+  const passthroughTarget: "channel" | "operation" =
+    supportsBindingPlacement(bindingKey, "channel") ? "channel" : "operation";
+  const fields = FIELD_PICKERS[data.protocol]?.(data) ?? {};
+
+  const result: ProtocolBindingPlacements = {};
+  for (const placement of ["channel", "operation"] as const) {
+    if (!supportsBindingPlacement(bindingKey, placement)) {
+      continue;
+    }
+    const bindingFields: Record<string, unknown> = {
+      ...fields[placement],
+      ...(placement === passthroughTarget ? data.binding : undefined),
+    };
+    if (Object.keys(bindingFields).length === 0) {
+      continue;
+    }
+    if (
+      hasProtocolBindings(bindingKey) &&
+      bindingFields.bindingVersion === undefined
+    ) {
+      bindingFields.bindingVersion = getLatestBindingVersion(bindingKey);
+    }
+    result[placement] = { [bindingKey]: bindingFields };
+  }
+  return result;
 }
