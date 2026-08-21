@@ -15,10 +15,11 @@ pnpm run test        # Run tests via vitest
 pnpm run verify      # Full gate: build + lint + test + coverage:gate + duplicate
 ```
 
-**Important:** Use `pnpm` for package management and scripts — never `npm`/`npx` or raw `bun`. Tests run via **vitest** (Node.js/V8, stable GC under heavy compilation). Coverage runs via `bun test --coverage` (see Critical Constraints). TypeScript scripts run via `bun run` (NOT `tsx` — `tsx` needs real Node.js, unavailable on NixOS where `node` is a Bun wrapper). Run all commands inside `nix develop .#default`.
+**Important:** Use `pnpm` for everything — never `npm`/`npx` or raw `bun` (details in Critical Constraints). Run commands inside `nix develop .#default`.
 
 ## Critical Constraints
 
+- **Toolchain:** `pnpm` for package management and scripts. Tests via **vitest** (Node.js/V8, stable GC under heavy compilation). `.ts` scripts via `bun run` (NOT `tsx` — needs real Node.js, unavailable on NixOS where `node` is a Bun wrapper).
 - **Build-before-test policy:** Tests won't run if TypeScript compilation fails. The compiler loads the emitter from `dist/` via a virtual filesystem — always build before testing emitter changes.
 - **Coverage runs via `bun test --coverage`** (NOT vitest or c8). The TypeSpec compiler loads the emitter from `dist/` through a virtual filesystem, bypassing vitest's module transform. Only Bun's native runtime-level coverage captures these dynamically-loaded `dist/*.js` files — vitest V8, istanbul, and c8 all fail to see them. The gate script (`scripts/coverage-gate.ts`) remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. **Bun is kept in `flake.nix` solely for this purpose** and banned everywhere else. Gate: 75% per-file minimum.
 - **git commit --no-verify:** The pre-commit hook (`.husky/pre-commit`, `#!/bin/sh`) runs the FULL verify gate (~2 min). The established convention: commit with `--no-verify` and run `pnpm run verify` manually before committing. Always run the full gate — "tests" ≠ "gate" (lint/duplication/coverage catch what vitest can't).
@@ -110,12 +111,10 @@ Tests use **vitest** with the TypeSpec compiler testing API (`createTester`). Al
 
 ## Decorator Signatures
 
-Decorators accept BOTH `{}` (Model expression types) AND `#{}` (value literals):
+Decorators accept BOTH `{}` (Model expression types) AND `#{}` (value literals); targets vary per decorator:
 
 ```typescript
 extern dec security(target: Operation | Namespace, config: {} | valueof Record<unknown>);
-extern dec message(target: Model, config: {} | valueof Record<unknown>);
-extern dec protocol(target: Operation | Model, config: {} | valueof Record<unknown>);
 extern dec bindings(target: Operation | Model | Namespace, value: {} | valueof Record<unknown>);
 ```
 
