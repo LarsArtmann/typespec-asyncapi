@@ -91,6 +91,7 @@ describe("schemaMap type", () => {
 
 describe("extractValue", () => {
   it("returns empty object for missing entity", () => {
+    // eslint-disable-next-line unicorn/no-useless-undefined -- undefined input is the behavior under test
     expect(extractValue(undefined)).toStrictEqual({});
   });
 

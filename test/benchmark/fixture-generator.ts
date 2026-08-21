@@ -7,14 +7,12 @@
 
 export interface FixtureOptions {
   channelCount: number;
-  modelsPerChannel: number;
   propertiesPerModel: number;
   sharedModelCount: number;
 }
 
 export const DEFAULT_OPTIONS: FixtureOptions = {
   channelCount: 100,
-  modelsPerChannel: 1,
   propertiesPerModel: 6,
   sharedModelCount: 10,
 };

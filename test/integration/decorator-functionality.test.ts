@@ -160,7 +160,7 @@ describe("real Decorator Functionality Tests", () => {
       const protobufSchema = asyncapiDoc.components.schemas.ProtobufMessage;
       expect(protobufSchema.properties?.messageType?.type).toBe("string");
 
-      // per-message contentTypes propagate to the emitted messages
+      // Per-message contentTypes propagate to the emitted messages
       const avroMessage = inlineObject(
         asyncapiDoc.components!.messages!.AvroMessage,
         "avro message",
@@ -273,8 +273,8 @@ describe("real Decorator Functionality Tests", () => {
       expect(operation.action).toBe("send");
 
       // Kafka binding fields land at their spec-correct placements:
-      // topic/partitions on the channel binding, groupId/clientId (schemas)
-      // on the operation binding, key/schemaIdLocation on the message binding.
+      // Topic/partitions on the channel binding, groupId/clientId (schemas)
+      // On the operation binding, key/schemaIdLocation on the message binding.
       const channelBinding = inlineObject(
         asyncapiDoc.channels!["kafka.user.events"].bindings,
         "channel bindings",

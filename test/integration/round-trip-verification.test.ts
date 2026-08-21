@@ -97,6 +97,7 @@ const COMPREHENSIVE_SPEC = `
 describe("round-Trip Verification", () => {
   let doc: ParsedAsyncAPIDocument;
 
+  // eslint-disable-next-line vitest/no-hooks -- compile the comprehensive spec once for all assertions
   beforeAll(async () => {
     doc = await compileAndValidateOrThrow(COMPREHENSIVE_SPEC);
   });

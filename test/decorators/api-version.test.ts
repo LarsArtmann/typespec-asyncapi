@@ -51,20 +51,26 @@ describe("apiVersion decorator", () => {
 
   it("warns and keeps the first value when namespaces conflict", async () => {
     const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      namespace Root;
+
       @apiVersion("1.0.0")
-      namespace First;
-      model EventA { id: string; }
-      @channel("events-a")
-      op publishA(): EventA;
+      namespace First {
+        model EventA { id: string; }
+        @channel("events-a")
+        op publishA(): EventA;
+      }
 
       @apiVersion("2.0.0")
-      namespace Second;
-      model EventB { id: string; }
-      @channel("events-b")
-      op publishB(): EventB;
+      namespace Second {
+        model EventB { id: string; }
+        @channel("events-b")
+        op publishB(): EventB;
+      }
     `);
 
-    const warning = diagnostics.find((d) => d.code === "conflicting-api-version");
+    const warning = diagnostics.find((d) =>
+      d.code?.endsWith("conflicting-api-version"),
+    );
     expect(warning).toBeDefined();
     expect(warning!.severity).toBe("warning");
     // The document must use exactly the value the warning says is kept
@@ -76,21 +82,25 @@ describe("apiVersion decorator", () => {
 
   it("emits no warning when namespaces agree on the version", async () => {
     const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
-      @apiVersion("2.0.0")
-      namespace First;
-      model EventA { id: string; }
-      @channel("events-a")
-      op publishA(): EventA;
+      namespace Root;
 
       @apiVersion("2.0.0")
-      namespace Second;
-      model EventB { id: string; }
-      @channel("events-b")
-      op publishB(): EventB;
+      namespace First {
+        model EventA { id: string; }
+        @channel("events-a")
+        op publishA(): EventA;
+      }
+
+      @apiVersion("2.0.0")
+      namespace Second {
+        model EventB { id: string; }
+        @channel("events-b")
+        op publishB(): EventB;
+      }
     `);
 
     expect(
-      diagnostics.some((d) => d.code === "conflicting-api-version"),
+      diagnostics.some((d) => d.code?.endsWith("conflicting-api-version")),
     ).toBeFalsy();
     expect(asyncApiDoc!.info.version).toBe("2.0.0");
   });

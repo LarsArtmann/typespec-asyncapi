@@ -120,6 +120,7 @@ describe("normalizeTagItem: invalid inputs", () => {
   });
 
   it("returns null for undefined", () => {
+    // eslint-disable-next-line unicorn/no-useless-undefined -- undefined input is the behavior under test
     expect(normalizeTagItem(undefined)).toBeNull();
   });
 

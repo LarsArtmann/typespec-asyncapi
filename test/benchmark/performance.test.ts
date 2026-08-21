@@ -23,7 +23,6 @@ const SIZES: { label: string; options: FixtureOptions }[] = [
     label: "10 channels",
     options: {
       channelCount: 10,
-      modelsPerChannel: 1,
       propertiesPerModel: 5,
       sharedModelCount: 3,
     },
@@ -32,7 +31,6 @@ const SIZES: { label: string; options: FixtureOptions }[] = [
     label: "50 channels",
     options: {
       channelCount: 50,
-      modelsPerChannel: 1,
       propertiesPerModel: 6,
       sharedModelCount: 5,
     },
@@ -41,7 +39,6 @@ const SIZES: { label: string; options: FixtureOptions }[] = [
     label: "100 channels",
     options: {
       channelCount: 100,
-      modelsPerChannel: 1,
       propertiesPerModel: 6,
       sharedModelCount: 10,
     },
@@ -50,7 +47,6 @@ const SIZES: { label: string; options: FixtureOptions }[] = [
     label: "200 channels",
     options: {
       channelCount: 200,
-      modelsPerChannel: 1,
       propertiesPerModel: 8,
       sharedModelCount: 15,
     },

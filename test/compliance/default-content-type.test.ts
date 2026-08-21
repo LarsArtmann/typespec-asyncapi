@@ -34,21 +34,25 @@ describe("spec Compliance: defaultContentType", () => {
 
   it("warns and keeps the first value when namespaces conflict", async () => {
     const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      namespace Root;
+
       @defaultContentType("application/json")
-      namespace First;
-      model EventA { id: string; }
-      @channel("events-a")
-      op publishA(): EventA;
+      namespace First {
+        model EventA { id: string; }
+        @channel("events-a")
+        op publishA(): EventA;
+      }
 
       @defaultContentType("application/avro")
-      namespace Second;
-      model EventB { id: string; }
-      @channel("events-b")
-      op publishB(): EventB;
+      namespace Second {
+        model EventB { id: string; }
+        @channel("events-b")
+        op publishB(): EventB;
+      }
     `);
 
-    const warning = diagnostics.find(
-      (d) => d.code === "conflicting-default-content-type",
+    const warning = diagnostics.find((d) =>
+      d.code?.endsWith("conflicting-default-content-type"),
     );
     expect(warning).toBeDefined();
     expect(warning!.severity).toBe("warning");
@@ -61,21 +65,26 @@ describe("spec Compliance: defaultContentType", () => {
 
   it("emits no warning when namespaces agree on the value", async () => {
     const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
-      @defaultContentType("application/json")
-      namespace First;
-      model EventA { id: string; }
-      @channel("events-a")
-      op publishA(): EventA;
+      namespace Root;
 
       @defaultContentType("application/json")
-      namespace Second;
-      model EventB { id: string; }
-      @channel("events-b")
-      op publishB(): EventB;
+      namespace First {
+        model EventA { id: string; }
+        @channel("events-a")
+        op publishA(): EventA;
+      }
+
+      @defaultContentType("application/json")
+      namespace Second {
+        model EventB { id: string; }
+        @channel("events-b")
+        op publishB(): EventB;
+      }
     `);
 
     expect(
-      diagnostics.some((d) => d.code === "conflicting-default-content-type"),
+      diagnostics.some((d) =>
+        d.code?.endsWith("conflicting-default-content-type")),
     ).toBeFalsy();
     expect(asyncApiDoc!.defaultContentType).toBe("application/json");
   });

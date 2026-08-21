@@ -12,7 +12,7 @@ pnpm install         # Install dependencies
 pnpm run build       # Build TypeScript → JavaScript (0 errors)
 pnpm run lint        # ESLint + oxlint (0 errors, 0 warnings)
 pnpm run test        # Run tests via vitest
-pnpm run verify      # Full gate: build + lint + test + coverage:gate + duplicate
+pnpm run verify      # Full gate: build + lint + typecheck:test + test + coverage:gate + duplicate
 ```
 
 **Important:** Use `pnpm` for everything — never `npm`/`npx` or raw `bun` (details in Critical Constraints). Run commands inside `nix develop .#default`.
@@ -21,6 +21,7 @@ pnpm run verify      # Full gate: build + lint + test + coverage:gate + duplicat
 
 - **Toolchain:** `pnpm` for package management and scripts. Tests via **vitest** (Node.js/V8, stable GC under heavy compilation). `.ts` scripts via `bun run` (NOT `tsx` — needs real Node.js, unavailable on NixOS where `node` is a Bun wrapper).
 - **Build-before-test policy:** Tests won't run if TypeScript compilation fails. The compiler loads the emitter from `dist/` via a virtual filesystem — always build before testing emitter changes.
+- **Test suite typechecked via `tsconfig.test.json`** (`pnpm run typecheck:test`, a `verify` stage): relaxed (`strict:false`, `noUncheckedIndexedAccess:false`, `types:["node","vitest/globals"]`). Keep it at 0 errors. vtsls/LSP diagnostics in `test/` are stale/unreliable — trust `tsc -p tsconfig.test.json` and vitest output instead.
 - **Coverage runs via `bun test --coverage`** (NOT vitest or c8). The TypeSpec compiler loads the emitter from `dist/` through a virtual filesystem, bypassing vitest's module transform. Only Bun's native runtime-level coverage captures these dynamically-loaded `dist/*.js` files — vitest V8, istanbul, and c8 all fail to see them. The gate script (`scripts/coverage-gate.ts`) remaps `dist/src/*.js` back to `src/*.ts` paths and merges coverage, preferring the higher-coverage entry. **Bun is kept in `flake.nix` solely for this purpose** and banned everywhere else. Gate: 75% per-file minimum.
 - **git commit --no-verify:** The pre-commit hook (`.husky/pre-commit`, `#!/bin/sh`) runs the FULL verify gate (~2 min). The established convention: commit with `--no-verify` and run `pnpm run verify` manually before committing. Always run the full gate — "tests" ≠ "gate" (lint/duplication/coverage catch what vitest can't).
 - **Lint/duplication tools are pinned devDependencies** (`oxlint`, `jscpd` in package.json), resolving from `node_modules/.bin` — NOT from system/Nix packages. Unpinned binaries broke GitHub CI (`command not found` on ubuntu-latest) and local gates on host drift.
@@ -95,10 +96,13 @@ Tests use **vitest** with the TypeSpec compiler testing API (`createTester`). Al
 
 ### Test Helpers
 
-- `test/utils/test-helpers.ts` — `compileAsyncAPI`, `compileAsyncAPISpecRaw`, `compileAsyncAPISpecWithoutErrors`
+- `test/utils/test-helpers.ts` — `compileAsyncAPI`, `compileAsyncAPISpecRaw`, `compileAsyncAPISpecWithoutErrors` (all return `diagnostics`)
 - `test/utils/cli-test-helpers.ts` — CLI-compatible wrapper
-- `test/utils/type-guards.ts` — type assertion utilities
-- `test/utils/schema-validator.ts` — reusable AJV harness: `compileAndValidate()`, `compileAndValidateOrThrow()`, `formatValidationErrors()`
+- `test/utils/type-guards.ts` — `inlineObject<T>(value, label?)` (narrows `Ref | T`, throws on surprise `$ref`) and `asJsonSchema(value, label?)` (narrows `items`/`additionalProperties` unions) — prefer these over `as` casts so a surprise `$ref` fails loudly
+- `test/utils/schema-validator.ts` — reusable AJV harness: `compileAndValidate()`, `compileAndValidateOrThrow()`, `validateAsyncAPIDocument(doc)` (validates an already-parsed document, throws with formatted errors), `formatValidationErrors()`
+- **Emitter diagnostic codes are library-prefixed** in test assertions: filter with `d.code?.endsWith("<code>")` or the full `"@lars-artmann/typespec-asyncapi/<code>"` string — a bare `d.code === "<code>"` never matches.
+- **Two blockless namespaces in one file are invalid** (`asyncApiDoc` becomes null). For multi-namespace tests use nested `namespace Root;` + `namespace First { ... }` blocks (see `test/integration/multi-namespace-isolation.test.ts`).
+- **AsyncAPI 3.1 root schema is `additionalProperties: false`** — never AJV-validate a document object decorated with test extras (`compileAsyncAPISpec` returns the doc with `diagnostics`/`outputFiles` merged in); parse from `outputFiles` or strip extras first.
 
 ### Key Tests
 
@@ -124,6 +128,9 @@ extern dec bindings(target: Operation | Model | Namespace, value: {} | valueof R
 
 ## Gotchas
 
+- **Intrinsic mappings:** `unknown`/`void`/`never` → `{}` (unconstrained schema, NOT `{type:"string"}`); `null` → `{type:"null"}` (so `string | null` → `anyOf: [{type:"string"},{type:"null"}]`). Locked by `test/compliance/type-mapping-completeness.test.ts` "intrinsic types".
+- **Framework-interned schema values must not be mutated:** the asset-emitter treats intrinsics as declarations and shares ONE value object across every usage of that type. `applyConstraints`/`applyMetadata` mutate in place — mutating a shared value leaks metadata onto unrelated usages (e.g. stdlib `OperationExample`'s doc appearing on every `unknown`). `propertyToSchema` clones (`{ ...schema }`) before applying constraints; keep that clone when touching the property path.
+- **Diagnostic severity enums differ by library:** TypeSpec's `DiagnosticSeverity` is a string union (`"error" | "warning"` — `String(d.severity) === "error"` works). Spectral's `@stoplight/types` `DiagnosticSeverity` is a NUMERIC enum (`Error = 0`) — comparing `d.severity === "error"` is a silent no-op; import `DiagnosticSeverity` from `@asyncapi/parser` and compare `DiagnosticSeverity.Error`.
 - **Root config is `tspconfig.yaml` only.** TypeSpec resolves the yaml first; a `tspconfig.json` alongside it is a split-brain. Do not recreate the json.
 - Use `#{ url: "...", protocol: "..." }` syntax for `@server` (comma-separated, not semicolons)
 - `SERIALIZATION_FORMAT_OPTION_JSON` is an object `{format, pretty, indent}`, not a string

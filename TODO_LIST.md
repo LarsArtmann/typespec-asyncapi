@@ -129,10 +129,10 @@ still-present 2026-08-21:
       instead.
 - [ ] Replace `require("yaml")` CJS calls with ESM imports — 7 sites across
       4 `test/e2e/` files.
-- [ ] `test/decorators/server.test.ts` — hardcoded protocol list; import
+- [x] `test/decorators/server.test.ts` — hardcoded protocol list; import
       `PROTOCOL_LIST`.
-- [ ] `test/benchmark/fixture-generator.ts` — dead `modelsPerChannel` option
-      (declared, defaulted, never used); remove or implement.
+- [x] `test/benchmark/fixture-generator.ts` — dead `modelsPerChannel` option
+      (declared, defaulted, never used); removed.
 
 ## Tooling / Environment
 

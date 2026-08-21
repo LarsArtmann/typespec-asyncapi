@@ -2,7 +2,8 @@
  * Unit tests for @server decorator in TypeSpec AsyncAPI emitter
  */
 
-import { compileAsyncAPISpecRaw } from "../utils/test-helpers";
+import { compileAsyncAPI, compileAsyncAPISpecRaw } from "../utils/test-helpers";
+import { PROTOCOL_LIST } from "../../src/constants/protocols.js";
 
 describe("@server decorator", () => {
   describe("basic functionality", () => {
@@ -123,42 +124,63 @@ describe("@server decorator", () => {
   });
 
   describe("protocol validation", () => {
-    it("should accept supported protocols", async () => {
-      const supportedProtocols = [
-        { name: "kafka", url: "kafka://broker:9092" },
-        { name: "amqp", url: "amqp://rabbit:5672" },
-        { name: "websocket", url: "ws://localhost:3000" },
-        { name: "http", url: "http://api.example.com" },
-        { name: "https", url: "https://api.example.com" },
-        { name: "ws", url: "ws://localhost:3000" },
-        { name: "wss", url: "wss://secure.example.com" },
-      ];
+    it("should accept every protocol in PROTOCOL_LIST", async () => {
+      // Sanity: the canonical list must stay comprehensive (22 today)
+      expect(PROTOCOL_LIST.length).toBeGreaterThanOrEqual(22);
 
-      for (const protocol of supportedProtocols) {
+      for (const protocol of PROTOCOL_LIST) {
         const source = `
-          @server("test-${protocol.name}", #{
-            url: "${protocol.url}",
-            protocol: "${protocol.name}",
-            description: "Test ${protocol.name} server"
+          @server("test-server", #{
+            url: "${protocol}://example.com",
+            protocol: "${protocol}",
+            description: "Test ${protocol} server"
           })
-          namespace Protocol${protocol.name.charAt(0).toUpperCase() + protocol.name.slice(1)}Test;
-          
+          namespace ProtocolTest;
+
           model Event { id: string; }
-          
+
           @channel("events")
           op publishEvent(): Event;
         `;
 
         const { diagnostics } = await compileAsyncAPISpecRaw(source, {
           "file-type": "json",
-          "output-file": `protocol-${protocol.name}`,
+          "output-file": `protocol-${protocol}`,
         });
 
         const errors = diagnostics.filter((d) => d.severity === "error");
         expect(
           errors,
-          `Protocol ${protocol.name} should be supported`,
+          `Protocol ${protocol} should be supported`,
         ).toHaveLength(0);
+      }
+    });
+
+    it("should normalize protocol aliases to canonical names", async () => {
+      const aliasCases = [
+        { input: "websocket", normalized: "ws" },
+        { input: "websockets", normalized: "wss" },
+        { input: "Kafka", normalized: "kafka" },
+      ];
+
+      for (const { input, normalized } of aliasCases) {
+        const { asyncApiDoc } = await compileAsyncAPI(`
+          @server("alias-server", #{
+            url: "${normalized}://example.com",
+            protocol: "${input}"
+          })
+          namespace AliasTest;
+
+          model Event { id: string; }
+
+          @channel("events")
+          op publishEvent(): Event;
+        `);
+
+        expect(
+          asyncApiDoc?.servers?.["alias-server"]?.protocol,
+          `Alias ${input} should normalize to ${normalized}`,
+        ).toBe(normalized);
       }
     });
 
