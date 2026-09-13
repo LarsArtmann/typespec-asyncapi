@@ -161,7 +161,7 @@
 | External spec tests   | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                                                                                              |
 | Real-world fixtures   | FULLY_FUNCTIONAL | `test/realworld/` — 10 `.tsp` fixtures from GitHub repos + canonical AsyncAPI specs (146 tests)                                                      |
 | Studio compatibility  | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — parses via `@asyncapi/parser` (runs under Node/vitest; NOT Bun)                                     |
-| Examples gate         | FULLY_FUNCTIONAL | `pnpm run check-examples` — compiles all 13 `examples/` with 0 diagnostics + AJV-validates each; enforced in CI                                      |
+| Examples gate         | FULLY_FUNCTIONAL | `pnpm run check-examples` — compiles all 14 `examples/` with 0 diagnostics + AJV-validates each; enforced in CI                                      |
 | Performance benchmark | FULLY_FUNCTIONAL | `test/benchmark/` — measures compilation time + scaling metrics, 15s/30s time budget                                                                 |
 | Deduplication gate    | FULLY_FUNCTIONAL | `jscpd src scripts` — 0% threshold, 0 clones                                                                                                         |
 | Negative tests        | FULLY_FUNCTIONAL | `test/integration/negative-tests.test.ts` — error handling                                                                                           |
