@@ -6,9 +6,7 @@
     "cdpAnimations": 11,
     "canvases": 0
   },
-  "namedAnimations": [
-    "fade-in"
-  ],
+  "namedAnimations": ["fade-in"],
   "scrollTriggeredElements": 7,
   "representativeAnimations": [
     {

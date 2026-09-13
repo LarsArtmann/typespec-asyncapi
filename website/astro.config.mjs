@@ -53,7 +53,8 @@ export default defineConfig({
       customCss: ["./src/styles/starlight.css"],
       lastUpdated: true,
       editLink: {
-        baseUrl: "https://github.com/LarsArtmann/typespec-asyncapi/edit/master/website",
+        baseUrl:
+          "https://github.com/LarsArtmann/typespec-asyncapi/edit/master/website",
       },
       expressiveCode: {
         themes: ["github-light", "dracula"],
@@ -76,7 +77,10 @@ export default defineConfig({
             { label: "Protocol Bindings", slug: "guides/bindings" },
             { label: "Schema Generation", slug: "guides/schemas" },
             { label: "Security", slug: "guides/security" },
-            { label: "Reusable Components", slug: "guides/reusable-components" },
+            {
+              label: "Reusable Components",
+              slug: "guides/reusable-components",
+            },
             { label: "Multi-File Output", slug: "guides/split-schemas" },
             { label: "Versioning", slug: "guides/versioning" },
           ],

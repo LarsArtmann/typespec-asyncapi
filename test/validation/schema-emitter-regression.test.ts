@@ -37,7 +37,12 @@ describe("refForNamedType: arrays of named models", () => {
       result.asyncApiDoc?.components?.schemas?.Matrix?.properties?.grid;
     expect(grid?.type).toBe("array");
     expect(asJsonSchema(grid?.items, "grid.items").type).toBe("array");
-    expect(asJsonSchema(asJsonSchema(grid?.items, "grid.items").items, "grid.items.items").$ref).toBe("#/components/schemas/Item");
+    expect(
+      asJsonSchema(
+        asJsonSchema(grid?.items, "grid.items").items,
+        "grid.items.items",
+      ).$ref,
+    ).toBe("#/components/schemas/Item");
   });
 
   it("named model property emits $ref, not inline schema", async () => {
@@ -74,7 +79,10 @@ describe("record<string> mapping", () => {
     const data =
       result.asyncApiDoc?.components?.schemas?.Counts?.properties?.data;
     expect(data?.type).toBe("object");
-    expect(asJsonSchema(data?.additionalProperties, "data.additionalProperties").type).toBe("integer");
+    expect(
+      asJsonSchema(data?.additionalProperties, "data.additionalProperties")
+        .type,
+    ).toBe("integer");
   });
 
   it("record of named model emits $ref in additionalProperties", async () => {
@@ -86,7 +94,9 @@ describe("record<string> mapping", () => {
     const inv =
       result.asyncApiDoc?.components?.schemas?.Store?.properties?.inventory;
     expect(inv?.type).toBe("object");
-    expect(asJsonSchema(inv?.additionalProperties, "inv.additionalProperties").$ref).toBe("#/components/schemas/Item");
+    expect(
+      asJsonSchema(inv?.additionalProperties, "inv.additionalProperties").$ref,
+    ).toBe("#/components/schemas/Item");
   });
 });
 
@@ -157,7 +167,9 @@ describe("typeToSchema: every branch", () => {
       result.asyncApiDoc?.components?.schemas?.Outer?.properties?.items;
     expect(items?.type).toBe("array");
     expect(asJsonSchema(items?.items, "items.items").type).toBe("object");
-    expect(asJsonSchema(items?.items, "items.items").properties?.sku?.type).toBe("string");
+    expect(
+      asJsonSchema(items?.items, "items.items").properties?.sku?.type,
+    ).toBe("string");
   });
 
   it("array of scalar (string[]) → { type: array, items: { type: string } }", async () => {

@@ -5,11 +5,24 @@
  * messages. Applies correlation IDs, headers, bindings, tags, and @doc.
  */
 
-import type { JsonSchema, MessageObject } from "../domain/models/asyncapi-document.js";
+import type {
+  JsonSchema,
+  MessageObject,
+} from "../domain/models/asyncapi-document.js";
 import type { Model, Program, Type } from "@typespec/compiler";
-import { getDoc, getExamples, nameOfType, serializeValueAsJson, withMessage } from "./_imports.js";
+import {
+  getDoc,
+  getExamples,
+  nameOfType,
+  serializeValueAsJson,
+  withMessage,
+} from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
-import { buildMessageObject, iterNamedTypes, resolveMessageKey } from "./shared-utils.js";
+import {
+  buildMessageObject,
+  iterNamedTypes,
+  resolveMessageKey,
+} from "./shared-utils.js";
 
 /** Merge explicit @message decorator data into the messages map. */
 export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
@@ -197,7 +210,11 @@ const applyMessageBindings = messageDecorator("bindings", (s, t) => {
  * Populate `MessageObject.examples` from `@example` on the message model.
  * Each example value is serialized to JSON and wrapped as `{ payload: value }`.
  */
-function applyMessageExamples(program: Program, type: Model, msg: MessageObject): void {
+function applyMessageExamples(
+  program: Program,
+  type: Model,
+  msg: MessageObject,
+): void {
   const examples = getExamples(program, type);
   if (examples.length === 0) {
     return;

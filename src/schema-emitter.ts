@@ -21,7 +21,11 @@ import type {
   Type,
   Union,
 } from "@typespec/compiler";
-import { getDiscriminator, isTemplateInstance, resolveEncodedName } from "@typespec/compiler";
+import {
+  getDiscriminator,
+  isTemplateInstance,
+  resolveEncodedName,
+} from "@typespec/compiler";
 import { TypeEmitter } from "@typespec/asset-emitter";
 import type {
   Context,
@@ -258,9 +262,7 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     if (ref && !isTemplateInstance(elementType)) {
       return ref;
     }
-    const extracted = extractValue(
-      this.emitter.emitTypeReference(elementType),
-    );
+    const extracted = extractValue(this.emitter.emitTypeReference(elementType));
     if (Object.keys(extracted).length > 0) {
       return extracted;
     }
@@ -327,7 +329,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
 
   /** Wire-format property name: `@encodedName("application/json", ...)` if set. */
   private wireNameOf(prop: ModelProperty): string {
-    return resolveEncodedName(this.emitter.getProgram(), prop, "application/json");
+    return resolveEncodedName(
+      this.emitter.getProgram(),
+      prop,
+      "application/json",
+    );
   }
 
   private propertyToSchema(prop: ModelProperty): JsonSchema {

@@ -84,9 +84,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
     const diagnostics = await host.diagnose("./main.tsp");
 
     // Should compile (might have warnings but not errors)
-    expect(
-      diagnostics.filter((d) => d.severity === "error"),
-    ).toHaveLength(0);
+    expect(diagnostics.filter((d) => d.severity === "error")).toHaveLength(0);
   });
 
   it("should handle edge case data types", async () => {
@@ -180,7 +178,9 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     // Validate arrays
     expect(schema.properties.numbers.type).toBe("array");
-    expect(asJsonSchema(schema.properties.numbers.items, "items").type).toBe("integer");
+    expect(asJsonSchema(schema.properties.numbers.items, "items").type).toBe(
+      "integer",
+    );
 
     // Validate unions become enums
     expect(schema.properties.status.enum).toStrictEqual([
@@ -223,9 +223,7 @@ describe("e2E: Error Handling and Edge Cases", () => {
     const diagnostics = await host.diagnose("./main.tsp");
 
     // Should handle recursion without infinite loops
-    expect(
-      diagnostics.filter((d) => d.severity === "error"),
-    ).toHaveLength(0);
+    expect(diagnostics.filter((d) => d.severity === "error")).toHaveLength(0);
   });
 
   it("should validate required vs optional fields correctly", async () => {

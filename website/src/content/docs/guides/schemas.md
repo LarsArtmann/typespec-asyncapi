@@ -19,18 +19,18 @@ Notable cases:
 
 All standard constraints map to validation keywords:
 
-| TypeSpec | JSON Schema |
-| --- | --- |
-| `@minValue` / `@maxValue` | `minimum` / `maximum` |
+| TypeSpec                                    | JSON Schema                             |
+| ------------------------------------------- | --------------------------------------- |
+| `@minValue` / `@maxValue`                   | `minimum` / `maximum`                   |
 | `@minValueExclusive` / `@maxValueExclusive` | `exclusiveMinimum` / `exclusiveMaximum` |
-| `@minLength` / `@maxLength` | `minLength` / `maxLength` |
-| `@pattern` | `pattern` |
-| `@minItems` / `@maxItems` | `minItems` / `maxItems` |
-| `#deprecated` | `deprecated: true` |
-| `@summary` | `title` |
-| `@example` | `examples` |
-| `@visibility` | `readOnly` / `writeOnly` |
-| `prop: Type = value` | `default` |
+| `@minLength` / `@maxLength`                 | `minLength` / `maxLength`               |
+| `@pattern`                                  | `pattern`                               |
+| `@minItems` / `@maxItems`                   | `minItems` / `maxItems`                 |
+| `#deprecated`                               | `deprecated: true`                      |
+| `@summary`                                  | `title`                                 |
+| `@example`                                  | `examples`                              |
+| `@visibility`                               | `readOnly` / `writeOnly`                |
+| `prop: Type = value`                        | `default`                               |
 
 Validation keywords are skipped on `$ref` schemas (Draft-07 ignores siblings); metadata keywords (`description`, `title`, `examples`, `deprecated`, `default`) are valid `$ref` siblings and are applied.
 

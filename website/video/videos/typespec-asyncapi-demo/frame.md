@@ -100,7 +100,6 @@ This is the **broadside** preset remixed onto the captured brand. The YAML front
 - **Weights** — the brand font ships `{400, 500, 600, 700}` only; every weight is clamped to these — ignore higher preset weights (e.g. 600/700) in prose.
 - **Colors** — use the frontmatter hex; preset color NAMES in prose (e.g. "cobalt", "cream") mean the remapped brand values.
 
-
 ## Overview
 
 Broadside at frame scale is a **protest-poster system where type is so large it stops reading as

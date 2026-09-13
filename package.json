@@ -109,37 +109,37 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "yaml": "^2.9.0"
+    "yaml": "^2.9.1"
   },
   "devDependencies": {
     "@asyncapi/parser": "^3.6.3",
     "@asyncapi/specs": "6.11.1",
     "@eslint/js": "^10.0.1",
-    "@types/node": "^26.2.0",
-    "@typescript-eslint/eslint-plugin": "^8.67.0",
-    "@typescript-eslint/parser": "^8.67.0",
-    "@typespec/asset-emitter": "^0.79.1",
-    "@typespec/compiler": "^1.15.0",
-    "@typespec/http": "^1.15.0",
-    "@typespec/json-schema": "^1.15.0",
-    "@typespec/openapi3": "^1.15.0",
-    "@typespec/rest": "^0.85.0",
-    "@typespec/versioning": "^0.85.0",
+    "@types/node": "^26.5.1",
+    "@typescript-eslint/eslint-plugin": "^8.70.0",
+    "@typescript-eslint/parser": "^8.70.0",
+    "@typespec/asset-emitter": "^0.79.2",
+    "@typespec/compiler": "^1.16.0",
+    "@typespec/http": "^1.16.0",
+    "@typespec/json-schema": "^1.16.0",
+    "@typespec/openapi3": "^1.16.0",
+    "@typespec/rest": "^0.86.0",
+    "@typespec/versioning": "^0.86.0",
     "ajv": "^8.20.0",
-    "eslint": "^10.8.1",
-    "fast-check": "^4.9.0",
+    "eslint": "^10.10.0",
+    "fast-check": "^4.10.0",
     "husky": "^9.1.7",
-    "jscpd": "4.0.9",
-    "oxlint": "1.79.0",
-    "tsx": "^4.23.12",
-    "typescript": "^6.0.3",
-    "typescript-eslint": "^8.67.0",
-    "vitest": "^4.1.11"
+    "jscpd": "5.2.0",
+    "oxlint": "1.82.0",
+    "tsx": "^4.23.13",
+    "typescript": "^7.0.2",
+    "typescript-eslint": "^8.70.0",
+    "vitest": "^5.0.0"
   },
   "peerDependencies": {
-    "@typespec/asset-emitter": "^0.79.1",
-    "@typespec/compiler": "^1.15.0",
-    "@typespec/versioning": "^0.85.0"
+    "@typespec/asset-emitter": "^0.79.2",
+    "@typespec/compiler": "^1.16.0",
+    "@typespec/versioning": "^0.86.0"
   },
   "overrides": {
     "@asyncapi/specs": "6.11.1",

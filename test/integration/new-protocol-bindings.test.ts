@@ -69,7 +69,9 @@ describe("integration: new protocol bindings end-to-end", () => {
     expect(server).toBeDefined();
     expect(server.bindings).toBeDefined();
     expect(inlineObject(server.bindings, "bindings").solace).toBeDefined();
-    expect(inlineObject(server.bindings, "bindings").solace.bindingVersion).toBe(LATEST_BINDING_VERSIONS.solace);
+    expect(
+      inlineObject(server.bindings, "bindings").solace.bindingVersion,
+    ).toBe(LATEST_BINDING_VERSIONS.solace);
   });
 
   it("anypointmq bindings compile through emitter without errors", async () => {

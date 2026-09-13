@@ -8,7 +8,10 @@
  * policy — AJV accepts unknown keywords in AsyncAPI 3.1 schema objects).
  */
 
-import { compileAndValidate, compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import {
+  compileAndValidate,
+  compileAndValidateOrThrow,
+} from "../utils/schema-validator.js";
 
 describe("spec Compliance: @jsonSchemaExtension", () => {
   it("applies extensions to a model declaration", async () => {

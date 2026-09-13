@@ -139,7 +139,9 @@ describe("external Spec Compilation — Branded Types & Scalar Inheritance", () 
     const idProp = schemas.TypedEvent.properties.id;
     expect(idProp.properties["__brand"]).toStrictEqual({ const: "event" });
     expect(idProp.required).toStrictEqual(["value", "__brand"]);
-    expect(schemas.TypedEvent.properties.name).toStrictEqual({ type: "string" });
+    expect(schemas.TypedEvent.properties.name).toStrictEqual({
+      type: "string",
+    });
   });
 });
 

@@ -193,7 +193,9 @@ describe("e2E: Complex Nested Schemas", () => {
     expect(schemas.Address).toBeDefined();
 
     // Validate arrays
-    expect(asJsonSchema(schemas.Order.properties.items, "items").type).toBe("array");
+    expect(asJsonSchema(schemas.Order.properties.items, "items").type).toBe(
+      "array",
+    );
     expect(schemas.Order.properties.items.items.type).toBe("object");
     expect(schemas.ProductVariant.properties.attributes.type).toBe("array");
 

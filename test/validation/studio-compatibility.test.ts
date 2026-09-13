@@ -28,9 +28,7 @@ async function parseWithAsyncAPIParser(source: string): Promise<ParserOutput> {
   return parser.parse(JSON.stringify(result.asyncApiDoc));
 }
 
-function expectZeroErrors(
-  diagnostics: ParserOutput["diagnostics"],
-) {
+function expectZeroErrors(diagnostics: ParserOutput["diagnostics"]) {
   const errors =
     diagnostics?.filter((d) => d.severity === DiagnosticSeverity.Error) ?? [];
   if (errors.length > 0) {
@@ -174,7 +172,9 @@ describe("asyncAPI Studio compatibility (@asyncapi/parser)", () => {
     `);
     expectZeroErrors(diagnostics);
 
-    const doc = document as unknown as { _json?: ParsedAsyncAPIDocument } | null;
+    const doc = document as unknown as {
+      _json?: ParsedAsyncAPIDocument;
+    } | null;
     expect(doc).toBeDefined();
   });
 

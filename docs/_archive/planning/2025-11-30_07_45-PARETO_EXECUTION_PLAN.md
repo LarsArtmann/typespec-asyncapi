@@ -20,13 +20,13 @@
 
 ### **1% EFFORT → 51% IMPACT (CRITICAL 15-MIN TASKS)**
 
-| Task                                              | Time (min) | Impact               | Priority    | Status         | Dependencies |
+| Task | Time (min) | Impact | Priority | Status | Dependencies |
 | ------------------------------------------------- | ---------- | -------------------- | ----------- | -------------- | ------------ | -------------- |
-| Fix 11 ESLint errors in validation services       | 15         | BLOCKS ALL COMMITS   | 🚨 CRITICAL | 🔴 NOT STARTED |
-| Prefix 20 unused variables with underscore        | 15         | CODE QUALITY         | 🚨 CRITICAL | 🔴 NOT STARTED |
-| Replace throw with Effect.fail() (5 instances)    | 15         | EFFECT.TS COMPLIANCE | 🚨 CRITICAL | 🔴 NOT STARTED |
-| Replace try/catch with Effect.gen() in validation | 15         | EFFECT.TS COMPLIANCE | 🚨 CRITICAL | 🔴 NOT STARTED |
-| Fix nullish coalescing operator (                 |            | → ??)                | 15          | CODE QUALITY   | 🚨 CRITICAL  | 🔴 NOT STARTED |
+| Fix 11 ESLint errors in validation services | 15 | BLOCKS ALL COMMITS | 🚨 CRITICAL | 🔴 NOT STARTED |
+| Prefix 20 unused variables with underscore | 15 | CODE QUALITY | 🚨 CRITICAL | 🔴 NOT STARTED |
+| Replace throw with Effect.fail() (5 instances) | 15 | EFFECT.TS COMPLIANCE | 🚨 CRITICAL | 🔴 NOT STARTED |
+| Replace try/catch with Effect.gen() in validation | 15 | EFFECT.TS COMPLIANCE | 🚨 CRITICAL | 🔴 NOT STARTED |
+| Fix nullish coalescing operator ( | | → ??) | 15 | CODE QUALITY | 🚨 CRITICAL | 🔴 NOT STARTED |
 
 **SUBTOTAL: 75 MINUTES → 51% VALUE DELIVERY**
 

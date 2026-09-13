@@ -8,13 +8,13 @@
 
 ## TL;DR
 
-| Question | Answer |
-| --- | --- |
-| Is it technically feasible? | Yes, straightforwardly. Our architecture (asset-emitter based, vitest, oxlint) matches the monorepo's own emitter conventions. |
-| Active engineering effort | ~8 to 15 focused days solo (mechanical migration + review cycles). |
-| The real gate | Maintainer buy-in. Issue [#2463](https://github.com/microsoft/typespec/issues/2463) has asked for AsyncAPI support since Sep 2023 with strong demand and **no first-party commitment in ~3 years**. |
-| Wall-clock time | Weeks to months, dominated by the maintainer decision and review cycles, not code. |
-| Recommendation | Ask the gate question on #2463 first (1 day of work) before investing in any migration. |
+| Question                    | Answer                                                                                                                                                                                              |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Is it technically feasible? | Yes, straightforwardly. Our architecture (asset-emitter based, vitest, oxlint) matches the monorepo's own emitter conventions.                                                                      |
+| Active engineering effort   | ~8 to 15 focused days solo (mechanical migration + review cycles).                                                                                                                                  |
+| The real gate               | Maintainer buy-in. Issue [#2463](https://github.com/microsoft/typespec/issues/2463) has asked for AsyncAPI support since Sep 2023 with strong demand and **no first-party commitment in ~3 years**. |
+| Wall-clock time             | Weeks to months, dominated by the maintainer decision and review cycles, not code.                                                                                                                  |
+| Recommendation              | Ask the gate question on #2463 first (1 day of work) before investing in any migration.                                                                                                             |
 
 ---
 
@@ -40,16 +40,16 @@ What the evidence shows:
 
 Current state of this repo (measured 2026-09-13):
 
-| Metric | Value |
-| --- | --- |
-| Version | 0.3.0-beta.1 (`@lars-artmann/typespec-asyncapi`) |
-| Source | 45 files, ~7,100 LOC |
-| Tests | 106 files, ~23,500 LOC, ~1,031 test cases (compliance, golden, property-based, realworld) |
-| Decorators | 30 declared in `lib/main.tsp` |
-| Protocol coverage | 22 protocols, 19 binding validators auto-generated from `@asyncapi/specs` |
+| Metric               | Value                                                                                               |
+| -------------------- | --------------------------------------------------------------------------------------------------- |
+| Version              | 0.3.0-beta.1 (`@lars-artmann/typespec-asyncapi`)                                                    |
+| Source               | 45 files, ~7,100 LOC                                                                                |
+| Tests                | 106 files, ~23,500 LOC, ~1,031 test cases (compliance, golden, property-based, realworld)           |
+| Decorators           | 30 declared in `lib/main.tsp`                                                                       |
+| Protocol coverage    | 22 protocols, 19 binding validators auto-generated from `@asyncapi/specs`                           |
 | Runtime dependencies | `yaml` only (binding validation is codegen'd at build time from `@asyncapi/specs`, a devDependency) |
-| Test runner | vitest (same as monorepo) |
-| Node engines | >=20.11 (monorepo requires >=22) |
+| Test runner          | vitest (same as monorepo)                                                                           |
+| Node engines         | >=20.11 (monorepo requires >=22)                                                                    |
 
 Architectural fit with the monorepo (verified from `packages/json-schema`, the closest sibling emitter):
 
@@ -84,20 +84,20 @@ From `packages/json-schema/package.json` and the repo developer guide:
 
 Estimates assume solo work by someone who knows this codebase (i.e., us). "Days" = focused engineering days.
 
-| # | Work item | Effort | Risk |
-| --- | --- | --- | --- |
-| 1 | Workspace plumbing: new `packages/asyncapi`, rename to `@typespec/asyncapi`, catalog versions, engines bump to Node 22, workspace registration | 0.5 to 1 d | Low |
-| 2 | Build pipeline swap: `gen-extern-signature` over 30 decorators, `tsconfig.build.json`, api-extractor, `.tspd` config | 1 to 2 d | Low |
-| 3 | Fix whatever `@typespec/library-linter` flags across `lib/main.tsp` (unknown until first run; decorator naming/declaration conventions) | 0.5 to 2 d | Medium |
-| 4 | Port binding-spec codegen off bun (node-compatible script, keep output byte-identical) | 0.5 to 1 d | Low |
-| 5 | Lint consolidation: keep oxlint house config; retire or externalize the ESLint strict layer and jscpd gate | 0.5 d | Low |
-| 6 | Test alignment: vitest config convergence, junit reporters, Node 22, fast-check + ajv into catalog; decide coverage story (see risk R3) | 1 to 3 d | Medium |
-| 7 | Docs: house-style README, `regen-docs` target, website sidebar entry | 0.5 to 1 d | Low |
-| 8 | Examples: trim 13 workspace examples to a canonical few under `samples/` conventions | 0.5 d | Low |
-| 9 | Release conversion: delete husky/postversion flow, adopt chronus change files | 0.5 d | Low |
-| 10 | Maintainer review cycles and fixes | 2 to 5 d | **High variance** |
-| 11 | Optional: playground integration for a live AsyncAPI preview | 1 to 2 d | Medium |
-| | **Total (active engineering)** | **~8 to 15 d** | |
+| #   | Work item                                                                                                                                      | Effort         | Risk              |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ----------------- |
+| 1   | Workspace plumbing: new `packages/asyncapi`, rename to `@typespec/asyncapi`, catalog versions, engines bump to Node 22, workspace registration | 0.5 to 1 d     | Low               |
+| 2   | Build pipeline swap: `gen-extern-signature` over 30 decorators, `tsconfig.build.json`, api-extractor, `.tspd` config                           | 1 to 2 d       | Low               |
+| 3   | Fix whatever `@typespec/library-linter` flags across `lib/main.tsp` (unknown until first run; decorator naming/declaration conventions)        | 0.5 to 2 d     | Medium            |
+| 4   | Port binding-spec codegen off bun (node-compatible script, keep output byte-identical)                                                         | 0.5 to 1 d     | Low               |
+| 5   | Lint consolidation: keep oxlint house config; retire or externalize the ESLint strict layer and jscpd gate                                     | 0.5 d          | Low               |
+| 6   | Test alignment: vitest config convergence, junit reporters, Node 22, fast-check + ajv into catalog; decide coverage story (see risk R3)        | 1 to 3 d       | Medium            |
+| 7   | Docs: house-style README, `regen-docs` target, website sidebar entry                                                                           | 0.5 to 1 d     | Low               |
+| 8   | Examples: trim 13 workspace examples to a canonical few under `samples/` conventions                                                           | 0.5 d          | Low               |
+| 9   | Release conversion: delete husky/postversion flow, adopt chronus change files                                                                  | 0.5 d          | Low               |
+| 10  | Maintainer review cycles and fixes                                                                                                             | 2 to 5 d       | **High variance** |
+| 11  | Optional: playground integration for a live AsyncAPI preview                                                                                   | 1 to 2 d       | Medium            |
+|     | **Total (active engineering)**                                                                                                                 | **~8 to 15 d** |                   |
 
 Not included: the wall-clock cost of the maintainer decision itself (historically: unbounded, see Section 1) and ongoing first-party maintenance duties (see R5).
 
@@ -118,12 +118,12 @@ Out of scope / not done: git history is **not** merged. The package lands as a n
 
 ## 6. Alternatives to a full merge
 
-| Option | Description | Tradeoff |
-| --- | --- | --- |
-| Third-party listing | Request inclusion in the official third-party emitters docs; stay independent | Zero migration cost; no lockstep release burden; keeps 0.x agility |
-| AsyncAPI org home | Propose the emitter under the asyncapi GitHub org (alongside generator/bindings tooling) | Spec-community legitimacy; still independent releases |
-| Pre-alignment | Adopt house build conventions (build pipeline, chronus-style changes, node 22) locally *now* so a future merge is cheap | Small ongoing cost; keeps the merge door open |
-| Status quo | Stay as is, keep engaging on #2463 | Zero cost; risk that `tsp-asyncapi` wins mindshare on the canonical issue thread |
+| Option              | Description                                                                                                             | Tradeoff                                                                         |
+| ------------------- | ----------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------- |
+| Third-party listing | Request inclusion in the official third-party emitters docs; stay independent                                           | Zero migration cost; no lockstep release burden; keeps 0.x agility               |
+| AsyncAPI org home   | Propose the emitter under the asyncapi GitHub org (alongside generator/bindings tooling)                                | Spec-community legitimacy; still independent releases                            |
+| Pre-alignment       | Adopt house build conventions (build pipeline, chronus-style changes, node 22) locally _now_ so a future merge is cheap | Small ongoing cost; keeps the merge door open                                    |
+| Status quo          | Stay as is, keep engaging on #2463                                                                                      | Zero cost; risk that `tsp-asyncapi` wins mindshare on the canonical issue thread |
 
 ---
 

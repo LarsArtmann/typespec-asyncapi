@@ -20,11 +20,11 @@ description: The ecosystem around typespec-asyncapi — TypeSpec, AsyncAPI tooli
 
 ## Alternative emitters
 
-| Tool | Approach | AsyncAPI version |
-| --- | --- | --- |
-| typespec-asyncapi (this) | TypeSpec emitter, output AJV-validated | 3.1.0 |
-| [tsp-asyncapi](https://www.npmjs.com/package/tsp-asyncapi) | TypeSpec emitter, direct-AST | 3.0.0 |
-| Hand-written YAML | none | any |
+| Tool                                                       | Approach                               | AsyncAPI version |
+| ---------------------------------------------------------- | -------------------------------------- | ---------------- |
+| typespec-asyncapi (this)                                   | TypeSpec emitter, output AJV-validated | 3.1.0            |
+| [tsp-asyncapi](https://www.npmjs.com/package/tsp-asyncapi) | TypeSpec emitter, direct-AST           | 3.0.0            |
+| Hand-written YAML                                          | none                                   | any              |
 
 The [comparison table on the landing page](/) covers capability differences in detail.
 

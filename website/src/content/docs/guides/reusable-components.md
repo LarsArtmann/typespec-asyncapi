@@ -70,15 +70,15 @@ op publishOrder(): Order;
 
 ## The 7 slots
 
-| Slot | Definition decorator | Reference decorator |
-| --- | --- | --- |
-| `components.operationTraits` | `@operationTrait` (Namespace) | `@useOperationTrait` (Operation) |
-| `components.messageTraits` | `@messageTrait` (Namespace) | `@useMessageTrait` (Model) |
-| `components.parameters` | `@parameter` (Namespace) | channel address `{param}` |
-| `components.correlationIds` | `@reusableCorrelationId` (Namespace) | `@useCorrelationId` (Model) |
-| `components.operationBindings` | `@reusableBinding` (Namespace) | `@useBinding` (Operation/Model/Namespace) |
-| `components.messageBindings` | `@reusableBinding` (Namespace) | `@useBinding` |
-| `components.channelBindings` | `@reusableBinding` (Namespace) | `@useChannelBinding` (Operation) |
+| Slot                           | Definition decorator                 | Reference decorator                       |
+| ------------------------------ | ------------------------------------ | ----------------------------------------- |
+| `components.operationTraits`   | `@operationTrait` (Namespace)        | `@useOperationTrait` (Operation)          |
+| `components.messageTraits`     | `@messageTrait` (Namespace)          | `@useMessageTrait` (Model)                |
+| `components.parameters`        | `@parameter` (Namespace)             | channel address `{param}`                 |
+| `components.correlationIds`    | `@reusableCorrelationId` (Namespace) | `@useCorrelationId` (Model)               |
+| `components.operationBindings` | `@reusableBinding` (Namespace)       | `@useBinding` (Operation/Model/Namespace) |
+| `components.messageBindings`   | `@reusableBinding` (Namespace)       | `@useBinding`                             |
+| `components.channelBindings`   | `@reusableBinding` (Namespace)       | `@useChannelBinding` (Operation)          |
 
 ## Where to go next
 

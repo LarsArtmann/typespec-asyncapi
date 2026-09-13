@@ -7,13 +7,13 @@ All options live under `options."@lars-artmann/typespec-asyncapi"` in `tspconfig
 
 ## Options
 
-| Option | Type | Default | Purpose |
-| --- | --- | --- | --- |
-| `output-file` | `string` | `asyncapi` | Base filename (without extension) |
-| `file-type` | `string` or object | `yaml` | `"json"`, `"yaml"`, `"yml"`, or `{ format: "json", pretty: true, indent: 2 }` |
-| `split-schemas` | `boolean` | `false` | Split schemas into individual files under `schemas/` |
-| `asyncapi-id` | `string` | unset | Root document `id` (e.g. `"urn:com:example:api"`); omitted when unset |
-| `version` | `string` | unset | Overrides `info.version` (highest precedence) |
+| Option          | Type               | Default    | Purpose                                                                       |
+| --------------- | ------------------ | ---------- | ----------------------------------------------------------------------------- |
+| `output-file`   | `string`           | `asyncapi` | Base filename (without extension)                                             |
+| `file-type`     | `string` or object | `yaml`     | `"json"`, `"yaml"`, `"yml"`, or `{ format: "json", pretty: true, indent: 2 }` |
+| `split-schemas` | `boolean`          | `false`    | Split schemas into individual files under `schemas/`                          |
+| `asyncapi-id`   | `string`           | unset      | Root document `id` (e.g. `"urn:com:example:api"`); omitted when unset         |
+| `version`       | `string`           | unset      | Overrides `info.version` (highest precedence)                                 |
 
 ## Examples
 

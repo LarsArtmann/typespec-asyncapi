@@ -243,7 +243,9 @@ describe("binding field validation", () => {
       const solaceIssues = issues.filter((i) => i.format.protocol === "solace");
       expect(solaceIssues).toHaveLength(0);
       expect(bindings.solace).toBeDefined();
-      expect(bindings.solace.bindingVersion).toBe(LATEST_BINDING_VERSIONS.solace);
+      expect(bindings.solace.bindingVersion).toBe(
+        LATEST_BINDING_VERSIONS.solace,
+      );
     });
 
     it("catches solace priority exceeding max (255)", () => {
@@ -292,7 +294,9 @@ describe("binding field validation", () => {
       );
       expect(issues).toHaveLength(0);
       expect(bindings.anypointmq).toBeDefined();
-      expect(bindings.anypointmq.bindingVersion).toBe(LATEST_BINDING_VERSIONS.anypointmq);
+      expect(bindings.anypointmq.bindingVersion).toBe(
+        LATEST_BINDING_VERSIONS.anypointmq,
+      );
     });
 
     it("normalizes and auto-injects bindingVersion for ros2", () => {

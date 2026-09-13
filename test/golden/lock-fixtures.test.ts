@@ -20,7 +20,9 @@ function goldenPath(name: string): string {
 }
 
 /** Compile a fixture, assert zero errors, and parse the main YAML output. */
-async function compileAndParse(source: string): Promise<Record<string, unknown>> {
+async function compileAndParse(
+  source: string,
+): Promise<Record<string, unknown>> {
   const raw = await compileAsyncAPISpecRaw(source);
   const errors = raw.diagnostics.filter((d) => d.severity === "error");
   expect(errors).toHaveLength(0);

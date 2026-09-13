@@ -296,7 +296,9 @@ describe("e2E: Real-World E-Commerce System", () => {
 
     // Orders
     expect(schemas.OrderPlaced).toBeDefined();
-    expect(asJsonSchema(schemas.OrderPlaced.properties.items, "items").type).toBe("array");
+    expect(
+      asJsonSchema(schemas.OrderPlaced.properties.items, "items").type,
+    ).toBe("array");
     expect(schemas.OrderPlaced.properties.shippingAddress.type).toBe("object");
 
     // Payments

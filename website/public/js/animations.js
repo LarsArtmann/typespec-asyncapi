@@ -10,7 +10,11 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     },
     { threshold: 0.1 },
   );
-  document.querySelectorAll("[data-animate]").forEach((el) => observer.observe(el));
+  document
+    .querySelectorAll("[data-animate]")
+    .forEach((el) => observer.observe(el));
 } else {
-  document.querySelectorAll("[data-animate]").forEach((el) => el.classList.add("animate-fade-in"));
+  document
+    .querySelectorAll("[data-animate]")
+    .forEach((el) => el.classList.add("animate-fade-in"));
 }

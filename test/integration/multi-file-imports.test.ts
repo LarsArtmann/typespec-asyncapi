@@ -164,7 +164,9 @@ describe("multi-file imports", () => {
     expect(batchSchema).toBeTruthy();
     const itemsArray = batchSchema?.properties?.items;
     expect(itemsArray?.type).toBe("array");
-    expect(asJsonSchema(itemsArray?.items, "batch items").$ref).toBe("#/components/schemas/Item");
+    expect(asJsonSchema(itemsArray?.items, "batch items").$ref).toBe(
+      "#/components/schemas/Item",
+    );
   });
 
   it("handles @doc on imported models", async () => {

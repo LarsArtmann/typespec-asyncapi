@@ -210,9 +210,7 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
       "user-service",
     );
 
-    expect(
-      channels["notifications.{userId}.live"]?.bindings?.ws,
-    ).toBeDefined();
+    expect(channels["notifications.{userId}.live"]?.bindings?.ws).toBeDefined();
     expect(channels["notifications.{userId}.live"].bindings.ws.method).toBe(
       "GET",
     );

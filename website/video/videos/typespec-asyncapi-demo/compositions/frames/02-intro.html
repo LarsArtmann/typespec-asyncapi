@@ -5,21 +5,24 @@
       font-weight: 500;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/space-grotesk-latin-500-normal.woff2) format("woff2");
+      src: url(assets/fonts/space-grotesk-latin-500-normal.woff2)
+        format("woff2");
     }
     @font-face {
       font-family: "Space Grotesk";
       font-weight: 700;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/space-grotesk-latin-700-normal.woff2) format("woff2");
+      src: url(assets/fonts/space-grotesk-latin-700-normal.woff2)
+        format("woff2");
     }
     @font-face {
       font-family: "JetBrains Mono";
       font-weight: 500;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2");
+      src: url(assets/fonts/jetbrains-mono-latin-500-normal.woff2)
+        format("woff2");
     }
     #root {
       position: absolute;
@@ -40,7 +43,11 @@
       height: 420px;
       margin-left: -550px;
       border-radius: 9999px;
-      background: radial-gradient(closest-side, rgba(20, 184, 166, 0.07), rgba(20, 184, 166, 0));
+      background: radial-gradient(
+        closest-side,
+        rgba(20, 184, 166, 0.07),
+        rgba(20, 184, 166, 0)
+      );
     }
     .f2-stage {
       position: absolute;
@@ -93,15 +100,41 @@
     }
   </style>
 
-  <div id="root" data-composition-id="02-intro" data-width="1920" data-height="1080">
-    <div class="f2-bg clip" data-start="0" data-duration="5" data-track-index="0"></div>
-    <div class="f2-stage clip" data-start="0" data-duration="5" data-track-index="1">
+  <div
+    id="root"
+    data-composition-id="02-intro"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div
+      class="f2-bg clip"
+      data-start="0"
+      data-duration="5"
+      data-track-index="0"
+    ></div>
+    <div
+      class="f2-stage clip"
+      data-start="0"
+      data-duration="5"
+      data-track-index="1"
+    >
       <div class="f2-label-row">
-        <svg class="f2-mark" id="02-intro-mark" width="46" height="46" viewBox="0 0 28 28" aria-hidden="true">
-          <path d="M5 8.5h12l-3.5 3H5v-3zm0 5.5h8.5l-3.5 3H5v-3zm0 5.5h5l-3.5 3H5v-3z" />
+        <svg
+          class="f2-mark"
+          id="02-intro-mark"
+          width="46"
+          height="46"
+          viewBox="0 0 28 28"
+          aria-hidden="true"
+        >
+          <path
+            d="M5 8.5h12l-3.5 3H5v-3zm0 5.5h8.5l-3.5 3H5v-3zm0 5.5h5l-3.5 3H5v-3z"
+          />
           <path d="M19.5 10.5l4 4-4 4" />
         </svg>
-        <div class="f2-label" id="02-intro-label">@lars-artmann/typespec-asyncapi</div>
+        <div class="f2-label" id="02-intro-label">
+          @lars-artmann/typespec-asyncapi
+        </div>
       </div>
       <div class="f2-headline">
         <span class="f2-word" id="02-intro-w1">typed</span>
@@ -109,7 +142,9 @@
         <span class="f2-word f2-accent" id="02-intro-w3">validated</span>
         <span class="f2-word" id="02-intro-w4">out.</span>
       </div>
-      <div class="f2-sub" id="02-intro-sub">asyncapi 3.1 &middot; from typespec</div>
+      <div class="f2-sub" id="02-intro-sub">
+        asyncapi 3.1 &middot; from typespec
+      </div>
     </div>
   </div>
 
@@ -122,7 +157,7 @@
       "#02-intro-label",
       { opacity: 0, y: 18 },
       { opacity: 1, y: 0, duration: 0.7, ease: "power3.out" },
-      0.1
+      0.1,
     );
 
     (function () {
@@ -138,7 +173,7 @@
           tl.to(
             p,
             { strokeDashoffset: 0, duration: 0.9, ease: "power2.inOut" },
-            0.3 + i * 0.35
+            0.3 + i * 0.35,
           );
         });
       }
@@ -148,31 +183,31 @@
       "#02-intro-w1",
       { opacity: 0, y: 46 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-      1.5
+      1.5,
     );
     tl.fromTo(
       "#02-intro-w2",
       { opacity: 0, y: 46 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-      1.85
+      1.85,
     );
     tl.fromTo(
       "#02-intro-w3",
       { opacity: 0, y: 46 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-      2.35
+      2.35,
     );
     tl.fromTo(
       "#02-intro-w4",
       { opacity: 0, y: 46 },
       { opacity: 1, y: 0, duration: 0.6, ease: "power3.out" },
-      2.8
+      2.8,
     );
     tl.fromTo(
       "#02-intro-sub",
       { opacity: 0 },
       { opacity: 1, duration: 0.8, ease: "power2.out" },
-      3.3
+      3.3,
     );
 
     window.__timelines["02-intro"] = tl;

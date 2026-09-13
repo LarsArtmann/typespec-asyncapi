@@ -30,7 +30,13 @@ export interface ComparisonRow {
   handwritten: string;
 }
 
-export const useCaseIconKeys = ["cog", "chart", "refresh", "bolt", "check"] as const;
+export const useCaseIconKeys = [
+  "cog",
+  "chart",
+  "refresh",
+  "bolt",
+  "check",
+] as const;
 export type UseCaseIcon = (typeof useCaseIconKeys)[number];
 
 export interface UseCase {

@@ -36,11 +36,11 @@ This plan applies the Pareto Principle (80/20 rule) recursively to identify the 
 
 ### Tasks (30 minutes total):
 
-| #   | Task                                                    | Time  | Impact | Cumulative Value |
-| --- | ------------------------------------------------------- | ----- | ------ | ---------------- |
-| 1   | Create Kafka events example (examples/kafka-events.tsp) | 15min | 30%    | 30%              |
-| 2   | Update README with "Quick Start" using Kafka example    | 10min | 15%    | 45%              |
-| 3   | Add one-liner install + usage in README                 | 5min  | 6%     | 51%              |
+| # | Task                                                    | Time  | Impact | Cumulative Value |
+| - | ------------------------------------------------------- | ----- | ------ | ---------------- |
+| 1 | Create Kafka events example (examples/kafka-events.tsp) | 15min | 30%    | 30%              |
+| 2 | Update README with "Quick Start" using Kafka example    | 10min | 15%    | 45%              |
+| 3 | Add one-liner install + usage in README                 | 5min  | 6%     | 51%              |
 
 **Deliverable:** Users can `bun add`, copy example, run `tsp compile`, get AsyncAPI 3.0
 
@@ -61,12 +61,12 @@ This plan applies the Pareto Principle (80/20 rule) recursively to identify the 
 
 ### Additional Tasks (60 minutes after 1%):
 
-| #   | Task                                                         | Time  | Impact | Cumulative Value |
-| --- | ------------------------------------------------------------ | ----- | ------ | ---------------- |
-| 4   | Create WebSocket chat example                                | 15min | 5%     | 56%              |
-| 5   | Create HTTP webhooks example                                 | 10min | 3%     | 59%              |
-| 6   | Security audit (bun audit + fixes)                           | 30min | 4%     | 63%              |
-| 7   | Update GitHub Issue #157 with decision to keep branded types | 5min  | 1%     | 64%              |
+| # | Task                                                         | Time  | Impact | Cumulative Value |
+| - | ------------------------------------------------------------ | ----- | ------ | ---------------- |
+| 4 | Create WebSocket chat example                                | 15min | 5%     | 56%              |
+| 5 | Create HTTP webhooks example                                 | 10min | 3%     | 59%              |
+| 6 | Security audit (bun audit + fixes)                           | 30min | 4%     | 63%              |
+| 7 | Update GitHub Issue #157 with decision to keep branded types | 5min  | 1%     | 64%              |
 
 **Deliverable:** Production-ready emitter with diverse protocol examples, no vulnerabilities
 
@@ -89,38 +89,38 @@ This plan applies the Pareto Principle (80/20 rule) recursively to identify the 
 
 #### Phase 3A: Type System Architecture (2 hours)
 
-| #   | Task                                         | Time  | Impact |
-| --- | -------------------------------------------- | ----- | ------ |
-| 8   | Document type system architecture (3 layers) | 30min | 2%     |
-| 9   | Create type conversion helpers               | 45min | 2%     |
-| 10  | Add branded type assertions to test utils    | 20min | 1%     |
-| 11  | Export branded types from main types module  | 15min | 1%     |
-| 12  | Update DocumentBuilder to use branded types  | 60min | 3%     |
+| #  | Task                                         | Time  | Impact |
+| -- | -------------------------------------------- | ----- | ------ |
+| 8  | Document type system architecture (3 layers) | 30min | 2%     |
+| 9  | Create type conversion helpers               | 45min | 2%     |
+| 10 | Add branded type assertions to test utils    | 20min | 1%     |
+| 11 | Export branded types from main types module  | 15min | 1%     |
+| 12 | Update DocumentBuilder to use branded types  | 60min | 3%     |
 
 #### Phase 3B: Test Infrastructure (2 hours)
 
-| #   | Task                                            | Time  | Impact |
-| --- | ----------------------------------------------- | ----- | ------ |
-| 13  | Apply Bun matcher fix to options.test.ts        | 30min | 1%     |
-| 14  | Apply Bun matcher fix to remaining test files   | 45min | 1%     |
-| 15  | Create custom Bun matchers (toHaveChannel, etc) | 60min | 2%     |
-| 16  | Add property-based tests with fast-check        | 90min | 2%     |
+| #  | Task                                            | Time  | Impact |
+| -- | ----------------------------------------------- | ----- | ------ |
+| 13 | Apply Bun matcher fix to options.test.ts        | 30min | 1%     |
+| 14 | Apply Bun matcher fix to remaining test files   | 45min | 1%     |
+| 15 | Create custom Bun matchers (toHaveChannel, etc) | 60min | 2%     |
+| 16 | Add property-based tests with fast-check        | 90min | 2%     |
 
 #### Phase 3C: Code Quality (2 hours)
 
-| #   | Task                                      | Time  | Impact |
-| --- | ----------------------------------------- | ----- | ------ |
-| 17  | Fix ESLint errors in type-cache.ts        | 30min | 1%     |
-| 18  | Fix ESLint errors in schema-conversion.ts | 30min | 1%     |
-| 19  | Fix high-priority ESLint warnings         | 60min | 1%     |
+| #  | Task                                      | Time  | Impact |
+| -- | ----------------------------------------- | ----- | ------ |
+| 17 | Fix ESLint errors in type-cache.ts        | 30min | 1%     |
+| 18 | Fix ESLint errors in schema-conversion.ts | 30min | 1%     |
+| 19 | Fix high-priority ESLint warnings         | 60min | 1%     |
 
 #### Phase 3D: Advanced Features (2 hours)
 
-| #   | Task                                          | Time  | Impact |
-| --- | --------------------------------------------- | ----- | ------ |
-| 20  | Add ts-pattern for type-safe pattern matching | 60min | 1%     |
-| 21  | Create microservices example                  | 45min | 1%     |
-| 22  | Create OAuth2 security example                | 45min | 1%     |
+| #  | Task                                          | Time  | Impact |
+| -- | --------------------------------------------- | ----- | ------ |
+| 20 | Add ts-pattern for type-safe pattern matching | 60min | 1%     |
+| 21 | Create microservices example                  | 45min | 1%     |
+| 22 | Create OAuth2 security example                | 45min | 1%     |
 
 **Deliverable:** Enterprise-grade emitter with comprehensive type safety and testing
 
@@ -130,16 +130,16 @@ This plan applies the Pareto Principle (80/20 rule) recursively to identify the 
 
 These are nice-to-haves that don't significantly impact user adoption:
 
-| #   | Task                                        | Time   | Impact |
-| --- | ------------------------------------------- | ------ | ------ |
-| 23  | Performance benchmarking suite              | 60min  | 1%     |
-| 24  | Bundle size optimization                    | 45min  | 1%     |
-| 25  | Memory profiling and optimization           | 60min  | 1%     |
-| 26  | Create example repository                   | 120min | 2%     |
-| 27  | Advanced AsyncAPI 3.0 features              | 180min | 3%     |
-| 28  | CLI improvements (colored output, progress) | 90min  | 2%     |
-| 29  | Automated release pipeline                  | 120min | 2%     |
-| 30  | TypeSpec versioning support                 | 300min | 8%     |
+| #  | Task                                        | Time   | Impact |
+| -- | ------------------------------------------- | ------ | ------ |
+| 23 | Performance benchmarking suite              | 60min  | 1%     |
+| 24 | Bundle size optimization                    | 45min  | 1%     |
+| 25 | Memory profiling and optimization           | 60min  | 1%     |
+| 26 | Create example repository                   | 120min | 2%     |
+| 27 | Advanced AsyncAPI 3.0 features              | 180min | 3%     |
+| 28 | CLI improvements (colored output, progress) | 90min  | 2%     |
+| 29 | Automated release pipeline                  | 120min | 2%     |
+| 30 | TypeSpec versioning support                 | 300min | 8%     |
 
 ---
 
@@ -147,38 +147,38 @@ These are nice-to-haves that don't significantly impact user adoption:
 
 ### Tasks 1-30 Sorted by Impact/Effort Ratio:
 
-| #   | Task                        | Impact | Effort | Score | Time   | Phase | Value |
-| --- | --------------------------- | ------ | ------ | ----- | ------ | ----- | ----- |
-| 1   | Kafka example               | 10     | 15min  | 40.0  | 15min  | 1%    | 30%   |
-| 2   | README Quick Start          | 9      | 10min  | 54.0  | 10min  | 1%    | 15%   |
-| 3   | One-liner install           | 8      | 5min   | 96.0  | 5min   | 1%    | 6%    |
-| 4   | WebSocket example           | 9      | 15min  | 36.0  | 15min  | 4%    | 5%    |
-| 5   | HTTP webhooks example       | 8      | 10min  | 48.0  | 10min  | 4%    | 3%    |
-| 6   | Security audit              | 10     | 30min  | 20.0  | 30min  | 4%    | 4%    |
-| 7   | Update Issue #157           | 5      | 5min   | 60.0  | 5min   | 4%    | 1%    |
-| 8   | Type architecture doc       | 7      | 30min  | 14.0  | 30min  | 20%   | 2%    |
-| 9   | Type conversion helpers     | 8      | 45min  | 10.7  | 45min  | 20%   | 2%    |
-| 10  | Branded type test utils     | 6      | 20min  | 18.0  | 20min  | 20%   | 1%    |
-| 11  | Export branded types        | 5      | 15min  | 20.0  | 15min  | 20%   | 1%    |
-| 12  | DocumentBuilder integration | 9      | 60min  | 9.0   | 60min  | 20%   | 3%    |
-| 13  | Bun fix: options.test       | 5      | 30min  | 10.0  | 30min  | 20%   | 1%    |
-| 14  | Bun fix: remaining tests    | 6      | 45min  | 8.0   | 45min  | 20%   | 1%    |
-| 15  | Custom Bun matchers         | 7      | 60min  | 7.0   | 60min  | 20%   | 2%    |
-| 16  | Property-based testing      | 8      | 90min  | 5.3   | 90min  | 20%   | 2%    |
-| 17  | ESLint: type-cache.ts       | 4      | 30min  | 8.0   | 30min  | 20%   | 1%    |
-| 18  | ESLint: schema-conversion   | 4      | 30min  | 8.0   | 30min  | 20%   | 1%    |
-| 19  | ESLint: warnings            | 5      | 60min  | 5.0   | 60min  | 20%   | 1%    |
-| 20  | ts-pattern integration      | 6      | 60min  | 6.0   | 60min  | 20%   | 1%    |
-| 21  | Microservices example       | 6      | 45min  | 8.0   | 45min  | 20%   | 1%    |
-| 22  | OAuth2 security example     | 6      | 45min  | 8.0   | 45min  | 20%   | 1%    |
-| 23  | Performance benchmarks      | 5      | 60min  | 5.0   | 60min  | Opt   | 1%    |
-| 24  | Bundle size optimization    | 4      | 45min  | 5.3   | 45min  | Opt   | 1%    |
-| 25  | Memory profiling            | 5      | 60min  | 5.0   | 60min  | Opt   | 1%    |
-| 26  | Example repository          | 7      | 120min | 3.5   | 120min | Opt   | 2%    |
-| 27  | Advanced AsyncAPI           | 8      | 180min | 2.7   | 180min | Opt   | 3%    |
-| 28  | CLI improvements            | 6      | 90min  | 4.0   | 90min  | Opt   | 2%    |
-| 29  | Automated releases          | 7      | 120min | 3.5   | 120min | Opt   | 2%    |
-| 30  | Versioning support          | 10     | 300min | 2.0   | 300min | Opt   | 8%    |
+| #  | Task                        | Impact | Effort | Score | Time   | Phase | Value |
+| -- | --------------------------- | ------ | ------ | ----- | ------ | ----- | ----- |
+| 1  | Kafka example               | 10     | 15min  | 40.0  | 15min  | 1%    | 30%   |
+| 2  | README Quick Start          | 9      | 10min  | 54.0  | 10min  | 1%    | 15%   |
+| 3  | One-liner install           | 8      | 5min   | 96.0  | 5min   | 1%    | 6%    |
+| 4  | WebSocket example           | 9      | 15min  | 36.0  | 15min  | 4%    | 5%    |
+| 5  | HTTP webhooks example       | 8      | 10min  | 48.0  | 10min  | 4%    | 3%    |
+| 6  | Security audit              | 10     | 30min  | 20.0  | 30min  | 4%    | 4%    |
+| 7  | Update Issue #157           | 5      | 5min   | 60.0  | 5min   | 4%    | 1%    |
+| 8  | Type architecture doc       | 7      | 30min  | 14.0  | 30min  | 20%   | 2%    |
+| 9  | Type conversion helpers     | 8      | 45min  | 10.7  | 45min  | 20%   | 2%    |
+| 10 | Branded type test utils     | 6      | 20min  | 18.0  | 20min  | 20%   | 1%    |
+| 11 | Export branded types        | 5      | 15min  | 20.0  | 15min  | 20%   | 1%    |
+| 12 | DocumentBuilder integration | 9      | 60min  | 9.0   | 60min  | 20%   | 3%    |
+| 13 | Bun fix: options.test       | 5      | 30min  | 10.0  | 30min  | 20%   | 1%    |
+| 14 | Bun fix: remaining tests    | 6      | 45min  | 8.0   | 45min  | 20%   | 1%    |
+| 15 | Custom Bun matchers         | 7      | 60min  | 7.0   | 60min  | 20%   | 2%    |
+| 16 | Property-based testing      | 8      | 90min  | 5.3   | 90min  | 20%   | 2%    |
+| 17 | ESLint: type-cache.ts       | 4      | 30min  | 8.0   | 30min  | 20%   | 1%    |
+| 18 | ESLint: schema-conversion   | 4      | 30min  | 8.0   | 30min  | 20%   | 1%    |
+| 19 | ESLint: warnings            | 5      | 60min  | 5.0   | 60min  | 20%   | 1%    |
+| 20 | ts-pattern integration      | 6      | 60min  | 6.0   | 60min  | 20%   | 1%    |
+| 21 | Microservices example       | 6      | 45min  | 8.0   | 45min  | 20%   | 1%    |
+| 22 | OAuth2 security example     | 6      | 45min  | 8.0   | 45min  | 20%   | 1%    |
+| 23 | Performance benchmarks      | 5      | 60min  | 5.0   | 60min  | Opt   | 1%    |
+| 24 | Bundle size optimization    | 4      | 45min  | 5.3   | 45min  | Opt   | 1%    |
+| 25 | Memory profiling            | 5      | 60min  | 5.0   | 60min  | Opt   | 1%    |
+| 26 | Example repository          | 7      | 120min | 3.5   | 120min | Opt   | 2%    |
+| 27 | Advanced AsyncAPI           | 8      | 180min | 2.7   | 180min | Opt   | 3%    |
+| 28 | CLI improvements            | 6      | 90min  | 4.0   | 90min  | Opt   | 2%    |
+| 29 | Automated releases          | 7      | 120min | 3.5   | 120min | Opt   | 2%    |
+| 30 | Versioning support          | 10     | 300min | 2.0   | 300min | Opt   | 8%    |
 
 **Total Effort:** 1995 minutes (33.25 hours)
 **Total Value:** 100%

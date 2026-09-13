@@ -37,7 +37,7 @@
 | 4        | 🚨 Fix TypeSpec Library Registration     | 25%    | 30min  | Task 3       |
 | 5        | 📝 Document Import Resolution Solution   | 15%    | 30min  | Task 4       |
 | 6        | 🔍 Analyze Test Failure Patterns         | 20%    | 30min  | Task 5       |
-| 7        | 🏗️ Create Missing Test Modules           | 25%    | 30min  | Task 6       |
+| 7        | 🏗️ Create Missing Test Modules            | 25%    | 30min  | Task 6       |
 | 8        | ✅ Validate Core Test Suite              | 30%    | 30min  | Task 7       |
 | 9        | 📊 Import Resolution Performance Testing | 10%    | 30min  | Task 8       |
 | 10       | 🔧 Fix Critical Path Dependencies        | 20%    | 30min  | Task 9       |
@@ -51,7 +51,7 @@
 | Priority | Task                                            | Impact | Effort | Dependencies |
 | -------- | ----------------------------------------------- | ------ | ------ | ------------ |
 | 11       | 🔄 Replace Effect.TS Anti-Patterns              | 30%    | 30min  | Task 10      |
-| 12       | 🏛️ Implement Strong Type Foundation             | 25%    | 30min  | Task 11      |
+| 12       | 🏛️ Implement Strong Type Foundation              | 25%    | 30min  | Task 11      |
 | 13       | 🧠 Create Centralized Error Architecture        | 20%    | 30min  | Task 12      |
 | 14       | 📦 Design Domain-Driven Structure               | 25%    | 30min  | Task 13      |
 | 15       | 🔧 Refactor lib.ts Monolith (507→300 lines)     | 20%    | 30min  | Task 14      |

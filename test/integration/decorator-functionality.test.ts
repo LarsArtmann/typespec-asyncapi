@@ -286,7 +286,9 @@ describe("real Decorator Functionality Tests", () => {
       );
       expect(
         inlineObject(operation.bindings, "operation bindings").kafka.groupId,
-      ).toMatchObject({ type: "string" });
+      ).toMatchObject({
+        type: "string",
+      });
       const message = inlineObject(
         asyncapiDoc.components!.messages!.KafkaMessage,
         "message",
@@ -407,7 +409,10 @@ describe("real Decorator Functionality Tests", () => {
 
       // AMQP defines a channel binding, so the passthrough lands there
       const amqpChannel = asyncapiDoc.channels?.["amqp.user.events"];
-      const amqpBindings = inlineObject(amqpChannel?.bindings, "amqp channel bindings");
+      const amqpBindings = inlineObject(
+        amqpChannel?.bindings,
+        "amqp channel bindings",
+      );
       const amqp = inlineObject(amqpBindings.amqp, "amqp binding");
       expect(amqp.exchange).toBe("events");
       expect(amqp.routingKey).toBe("user.created");
@@ -416,7 +421,10 @@ describe("real Decorator Functionality Tests", () => {
 
       // MQTT has no channel binding, so the passthrough lands on the operation
       const mqttOp = asyncapiDoc.operations?.publishMQTTSensorData;
-      const mqttBindings = inlineObject(mqttOp?.bindings, "mqtt operation bindings");
+      const mqttBindings = inlineObject(
+        mqttOp?.bindings,
+        "mqtt operation bindings",
+      );
       const mqtt = inlineObject(mqttBindings.mqtt, "mqtt binding");
       expect(mqtt.topic).toBe("sensors/temperature");
       expect(mqtt.qos).toBe(2);
@@ -766,7 +774,9 @@ describe("real Decorator Functionality Tests", () => {
       expect(channelBinding.kafka.partitions).toBe(6);
       expect(
         inlineObject(publishOp.bindings, "operation bindings").kafka.groupId,
-      ).toMatchObject({ type: "string" });
+      ).toMatchObject({
+        type: "string",
+      });
 
       // Full AsyncAPI 3.1.0 schema compliance
       validateAsyncAPIDocument(asyncapiDoc);

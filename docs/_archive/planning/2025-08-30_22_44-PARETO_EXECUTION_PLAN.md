@@ -102,28 +102,28 @@ graph TD
 
 ### TIER 2: Micro Tasks (12-15 min)
 
-| #   | Task                                   | Parent | Duration | Status  |
-| --- | -------------------------------------- | ------ | -------- | ------- |
-| 1   | Remove mock from asyncapi-validator.ts | T1     | 12 min   | Pending |
-| 2   | Import @asyncapi/parser                | T1     | 12 min   | Pending |
-| 3   | Implement validateAsyncAPIString       | T1     | 15 min   | Pending |
-| 4   | Implement validateAsyncAPIFile         | T1     | 15 min   | Pending |
-| 5   | Create AsyncAPIValidator class         | T2     | 12 min   | Pending |
-| 6   | Add initialize() method                | T2     | 12 min   | Pending |
-| 7   | Add validate() method                  | T2     | 15 min   | Pending |
-| 8   | Add validateFile() method              | T2     | 15 min   | Pending |
-| 9   | Add getValidationStats()               | T2     | 12 min   | Pending |
-| 10  | Fix stateKeys import                   | T3     | 12 min   | Pending |
-| 11  | Test stateKeys access                  | T3     | 12 min   | Pending |
-| 12  | Connect validateDocumentEffect         | T4     | 15 min   | Pending |
-| 13  | Add Effect.TS error handling           | T4     | 15 min   | Pending |
-| 14  | Update generateAsyncAPIWithEffect      | T4     | 15 min   | Pending |
-| 15  | Fail on validation errors              | T4     | 15 min   | Pending |
-| 16  | Change default to Effect.TS            | T5     | 12 min   | Pending |
-| 17  | Update console messages                | T5     | 12 min   | Pending |
-| 18  | Fix critical-validation.test.ts        | T6     | 15 min   | Pending |
-| 19  | Fix automated-spec-validation.test.ts  | T6     | 15 min   | Pending |
-| 20  | Update test helpers                    | T6     | 15 min   | Pending |
+| #  | Task                                   | Parent | Duration | Status  |
+| -- | -------------------------------------- | ------ | -------- | ------- |
+| 1  | Remove mock from asyncapi-validator.ts | T1     | 12 min   | Pending |
+| 2  | Import @asyncapi/parser                | T1     | 12 min   | Pending |
+| 3  | Implement validateAsyncAPIString       | T1     | 15 min   | Pending |
+| 4  | Implement validateAsyncAPIFile         | T1     | 15 min   | Pending |
+| 5  | Create AsyncAPIValidator class         | T2     | 12 min   | Pending |
+| 6  | Add initialize() method                | T2     | 12 min   | Pending |
+| 7  | Add validate() method                  | T2     | 15 min   | Pending |
+| 8  | Add validateFile() method              | T2     | 15 min   | Pending |
+| 9  | Add getValidationStats()               | T2     | 12 min   | Pending |
+| 10 | Fix stateKeys import                   | T3     | 12 min   | Pending |
+| 11 | Test stateKeys access                  | T3     | 12 min   | Pending |
+| 12 | Connect validateDocumentEffect         | T4     | 15 min   | Pending |
+| 13 | Add Effect.TS error handling           | T4     | 15 min   | Pending |
+| 14 | Update generateAsyncAPIWithEffect      | T4     | 15 min   | Pending |
+| 15 | Fail on validation errors              | T4     | 15 min   | Pending |
+| 16 | Change default to Effect.TS            | T5     | 12 min   | Pending |
+| 17 | Update console messages                | T5     | 12 min   | Pending |
+| 18 | Fix critical-validation.test.ts        | T6     | 15 min   | Pending |
+| 19 | Fix automated-spec-validation.test.ts  | T6     | 15 min   | Pending |
+| 20 | Update test helpers                    | T6     | 15 min   | Pending |
 
 ## Parallel Execution Groups
 

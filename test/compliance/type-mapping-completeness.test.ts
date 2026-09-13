@@ -207,7 +207,9 @@ describe("comprehensive type mapping through compilation", () => {
     it("maps Record<unknown> values to the unconstrained schema", async () => {
       const s = await compileField("val", "Record<unknown>");
       expect(s.type).toBe("object");
-      expect(asJsonSchema(s.additionalProperties, "additionalProperties")).toStrictEqual({});
+      expect(
+        asJsonSchema(s.additionalProperties, "additionalProperties"),
+      ).toStrictEqual({});
     });
 
     it("does not leak doc metadata across usages of unknown", async () => {
@@ -406,7 +408,10 @@ describe("comprehensive type mapping through compilation", () => {
       const schema = getSchema(doc, "Order");
       const props = schema.properties!;
       expect(asJsonSchema(props.items, "items").type).toBe("array");
-      expect(asJsonSchema(asJsonSchema(props.items, "items").items, "items.items").$ref).toBe("#/components/schemas/Item");
+      expect(
+        asJsonSchema(asJsonSchema(props.items, "items").items, "items.items")
+          .$ref,
+      ).toBe("#/components/schemas/Item");
     });
   });
 

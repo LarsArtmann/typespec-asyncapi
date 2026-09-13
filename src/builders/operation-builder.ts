@@ -25,7 +25,9 @@ import {
 } from "./channel-builder.js";
 
 /** Build a name → Type lookup for operations and channels. */
-function buildTypeNameLookup(state: AsyncAPIConsolidatedState): Map<string, Type> {
+function buildTypeNameLookup(
+  state: AsyncAPIConsolidatedState,
+): Map<string, Type> {
   const lookup = new Map<string, Type>();
   for (const type of state.operations.keys()) {
     const name = nameOfType(type);

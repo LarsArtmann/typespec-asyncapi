@@ -9,7 +9,10 @@
  */
 
 import { inlineObject } from "../utils/type-guards.js";
-import { compileAndValidate, compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import {
+  compileAndValidate,
+  compileAndValidateOrThrow,
+} from "../utils/schema-validator.js";
 
 describe("spec Compliance: @extension", () => {
   it("extends the document root from a namespace target", async () => {
@@ -22,7 +25,10 @@ describe("spec Compliance: @extension", () => {
       op publish(): Event;
     `);
 
-    expect(doc["x-organization"]).toStrictEqual({ name: "Platform", team: "Events" });
+    expect(doc["x-organization"]).toStrictEqual({
+      name: "Platform",
+      team: "Events",
+    });
     expect(doc["x-internal-id"]).toBe("DOC-42");
   });
 
@@ -37,7 +43,10 @@ describe("spec Compliance: @extension", () => {
     `);
 
     const op = doc.operations!.publish;
-    expect(op["x-retry-policy"]).toStrictEqual({ maxAttempts: 3, backoffMs: 500 });
+    expect(op["x-retry-policy"]).toStrictEqual({
+      maxAttempts: 3,
+      backoffMs: 500,
+    });
     expect(op["x-owner"]).toBe("payments");
   });
 

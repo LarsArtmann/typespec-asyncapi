@@ -5,21 +5,24 @@
       font-weight: 500;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/space-grotesk-latin-500-normal.woff2) format("woff2");
+      src: url(assets/fonts/space-grotesk-latin-500-normal.woff2)
+        format("woff2");
     }
     @font-face {
       font-family: "JetBrains Mono";
       font-weight: 400;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2");
+      src: url(assets/fonts/jetbrains-mono-latin-400-normal.woff2)
+        format("woff2");
     }
     @font-face {
       font-family: "JetBrains Mono";
       font-weight: 500;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2");
+      src: url(assets/fonts/jetbrains-mono-latin-500-normal.woff2)
+        format("woff2");
     }
     #root {
       position: absolute;
@@ -139,36 +142,76 @@
     }
   </style>
 
-  <div id="root" data-composition-id="03-compile" data-width="1920" data-height="1080">
-    <div class="f3-bg clip" data-start="0" data-duration="8" data-track-index="0"></div>
-    <div class="f3-stage clip" data-start="0" data-duration="8" data-track-index="1">
+  <div
+    id="root"
+    data-composition-id="03-compile"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div
+      class="f3-bg clip"
+      data-start="0"
+      data-duration="8"
+      data-track-index="0"
+    ></div>
+    <div
+      class="f3-stage clip"
+      data-start="0"
+      data-duration="8"
+      data-track-index="1"
+    >
       <div class="f3-card f3-editor" id="03-compile-editor">
         <div class="f3-cardbar">
-          <span class="f3-dot"></span><span class="f3-dot"></span><span class="f3-dot"></span>
+          <span class="f3-dot"></span><span class="f3-dot"></span
+          ><span class="f3-dot"></span>
           <span class="f3-cardtitle">api.tsp</span>
         </div>
-        <div class="f3-code"><div class="f3-lg" id="03-compile-lg1"><span class="f3-kw">import</span> <span class="f3-str">"@lars-artmann/typespec-asyncapi"</span>;
-<span class="f3-kw">using</span> <span class="f3-ty">TypeSpec.AsyncAPI</span>;
+        <div class="f3-code">
+          <div class="f3-lg" id="03-compile-lg1">
+            <span class="f3-kw">import</span>
+            <span class="f3-str">"@lars-artmann/typespec-asyncapi"</span>;
+            <span class="f3-kw">using</span>
+            <span class="f3-ty">TypeSpec.AsyncAPI</span>;
 
-<span class="f3-kw">namespace</span> MyAPI;</div><div class="f3-lg" id="03-compile-lg2">
-<span class="f3-kw">model</span> <span class="f3-ty">Event</span> {
-  id: <span class="f3-ty">string</span>;
-  timestamp: <span class="f3-ty">utcDateTime</span>;
-}</div><div class="f3-lg" id="03-compile-lg3">
-<span class="f3-dec">@channel</span>(<span class="f3-str">"events"</span>)
-<span class="f3-kw">op</span> <span class="f3-ty">publishEvent</span>(): <span class="f3-ty">Event</span>;</div></div>
+            <span class="f3-kw">namespace</span> MyAPI;
+          </div>
+          <div class="f3-lg" id="03-compile-lg2">
+            <span class="f3-kw">model</span> <span class="f3-ty">Event</span> {
+            id: <span class="f3-ty">string</span>; timestamp:
+            <span class="f3-ty">utcDateTime</span>; }
+          </div>
+          <div class="f3-lg" id="03-compile-lg3">
+            <span class="f3-dec">@channel</span>(<span class="f3-str"
+              >"events"</span
+            >) <span class="f3-kw">op</span>
+            <span class="f3-ty">publishEvent</span>():
+            <span class="f3-ty">Event</span>;
+          </div>
+        </div>
       </div>
 
       <div class="f3-card f3-term" id="03-compile-term">
         <div class="f3-cardbar">
-          <span class="f3-dot"></span><span class="f3-dot"></span><span class="f3-dot"></span>
+          <span class="f3-dot"></span><span class="f3-dot"></span
+          ><span class="f3-dot"></span>
           <span class="f3-cardtitle">terminal</span>
         </div>
         <div class="f3-termbody">
-          <div class="f3-cmdwrap"><span class="f3-prompt">$ </span><span class="f3-cmd" id="03-compile-cmd"></span><span class="f3-caret" id="03-compile-caret"></span></div>
-          <div class="f3-out" id="03-compile-out1"><span class="f3-check">&#10003;</span> Compiling</div>
-          <div class="f3-out" id="03-compile-out2"><span class="f3-check">&#10003;</span> @lars-artmann/typespec-asyncapi <span class="f3-outline">13ms</span></div>
-          <div class="f3-out" id="03-compile-out3"><span class="f3-ok">Compilation completed successfully.</span></div>
+          <div class="f3-cmdwrap">
+            <span class="f3-prompt">$ </span
+            ><span class="f3-cmd" id="03-compile-cmd"></span
+            ><span class="f3-caret" id="03-compile-caret"></span>
+          </div>
+          <div class="f3-out" id="03-compile-out1">
+            <span class="f3-check">&#10003;</span> Compiling
+          </div>
+          <div class="f3-out" id="03-compile-out2">
+            <span class="f3-check">&#10003;</span>
+            @lars-artmann/typespec-asyncapi <span class="f3-outline">13ms</span>
+          </div>
+          <div class="f3-out" id="03-compile-out3">
+            <span class="f3-ok">Compilation completed successfully.</span>
+          </div>
         </div>
       </div>
     </div>
@@ -183,32 +226,32 @@
       "#03-compile-editor",
       { x: -180, opacity: 0 },
       { x: 0, opacity: 1, duration: 0.85, ease: "power2.out" },
-      0.1
+      0.1,
     );
     tl.fromTo(
       "#03-compile-lg1",
       { opacity: 0, y: 14 },
       { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
-      0.8
+      0.8,
     );
     tl.fromTo(
       "#03-compile-lg2",
       { opacity: 0, y: 14 },
       { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
-      1.25
+      1.25,
     );
     tl.fromTo(
       "#03-compile-lg3",
       { opacity: 0, y: 14 },
       { opacity: 1, y: 0, duration: 0.5, ease: "power3.out" },
-      1.7
+      1.7,
     );
 
     tl.fromTo(
       "#03-compile-term",
       { opacity: 0, scale: 0.94, y: 26 },
       { opacity: 1, scale: 1, y: 0, duration: 0.6, ease: "power3.out" },
-      2.2
+      2.2,
     );
 
     var cmdText = "tsp compile api.tsp";
@@ -224,38 +267,48 @@
           if (el) el.textContent = cmdText.substring(0, Math.floor(cmdState.n));
         },
       },
-      2.55
+      2.55,
     );
 
     tl.fromTo(
       "#03-compile-out1",
       { opacity: 0 },
       { opacity: 1, duration: 0.3, ease: "power2.out" },
-      4.3
+      4.3,
     );
     tl.fromTo(
       "#03-compile-out1 .f3-check",
       { scale: 1.35, textShadow: "0 0 18px rgba(20,184,166,0.9)" },
-      { scale: 1, textShadow: "0 0 0px rgba(20,184,166,0)", duration: 0.6, ease: "power2.out" },
-      4.3
+      {
+        scale: 1,
+        textShadow: "0 0 0px rgba(20,184,166,0)",
+        duration: 0.6,
+        ease: "power2.out",
+      },
+      4.3,
     );
     tl.fromTo(
       "#03-compile-out2",
       { opacity: 0 },
       { opacity: 1, duration: 0.3, ease: "power2.out" },
-      5.0
+      5.0,
     );
     tl.fromTo(
       "#03-compile-out2 .f3-check",
       { scale: 1.35, textShadow: "0 0 18px rgba(20,184,166,0.9)" },
-      { scale: 1, textShadow: "0 0 0px rgba(20,184,166,0)", duration: 0.6, ease: "power2.out" },
-      5.0
+      {
+        scale: 1,
+        textShadow: "0 0 0px rgba(20,184,166,0)",
+        duration: 0.6,
+        ease: "power2.out",
+      },
+      5.0,
     );
     tl.fromTo(
       "#03-compile-out3",
       { opacity: 0, y: 10 },
       { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
-      5.7
+      5.7,
     );
 
     var blink = { p: 0 };
@@ -270,7 +323,7 @@
           if (el) el.style.opacity = Math.sin(blink.p) > 0 ? "1" : "0.15";
         },
       },
-      0
+      0,
     );
 
     window.__timelines["03-compile"] = tl;

@@ -29,7 +29,10 @@ describe("integration: namespace @bindings", () => {
 
     expect(doc.servers!["mqtt-broker"]).toBeDefined();
     expect(doc.servers!["mqtt-broker"].bindings).toBeDefined();
-    const binding = inlineObject(doc.servers!["mqtt-broker"].bindings, "bindings");
+    const binding = inlineObject(
+      doc.servers!["mqtt-broker"].bindings,
+      "bindings",
+    );
     expect(binding.mqtt).toBeDefined();
     expect(binding.mqtt.clientId).toBe("my-client");
     expect(binding.mqtt.bindingVersion).toBe(LATEST_BINDING_VERSIONS.mqtt);
@@ -55,9 +58,13 @@ describe("integration: namespace @bindings", () => {
     `);
 
     expect(doc.servers!.broker1.bindings).toBeDefined();
-    expect(inlineObject(doc.servers!.broker1.bindings, "bindings").mqtt).toBeDefined();
+    expect(
+      inlineObject(doc.servers!.broker1.bindings, "bindings").mqtt,
+    ).toBeDefined();
     expect(doc.servers!.broker2.bindings).toBeDefined();
-    expect(inlineObject(doc.servers!.broker2.bindings, "bindings").mqtt).toBeDefined();
+    expect(
+      inlineObject(doc.servers!.broker2.bindings, "bindings").mqtt,
+    ).toBeDefined();
   });
 
   it("does not affect operations or messages when on namespace", async () => {

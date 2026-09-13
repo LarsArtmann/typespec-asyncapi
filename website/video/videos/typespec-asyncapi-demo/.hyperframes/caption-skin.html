@@ -91,7 +91,11 @@
   .caption-word {
     display: inline-block;
     padding: 0 0.08em;
-    color: color-mix(in srgb, var(--cap-canvas, #f0ece5) 42%, var(--cap-ink, #111111));
+    color: color-mix(
+      in srgb,
+      var(--cap-canvas, #f0ece5) 42%,
+      var(--cap-ink, #111111)
+    );
   }
   /* current word — THE register flip: a hard flat fire-orange block (box-shadow spread =
      a sharp rectangle w/o layout shift; no blur), ink reading on top — the lone accent */
@@ -118,7 +122,11 @@
     font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: color-mix(in srgb, var(--cap-canvas, #f0ece5) 72%, var(--cap-ink, #111111));
+    color: color-mix(
+      in srgb,
+      var(--cap-canvas, #f0ece5) 72%,
+      var(--cap-ink, #111111)
+    );
   }
   /* emphasis — a fire-orange hairline underline (no second hue; the lone accent again) */
   .caption-word.cap-cta {
@@ -191,7 +199,9 @@
       var next = GROUPS[g + 1];
       var isLast = g === GROUPS.length - 1;
       var start = Math.max(0, Number(group.start));
-      var end = isLast ? DURATION : Math.min(Number(next.start), Number(group.end) + 0.3);
+      var end = isLast
+        ? DURATION
+        : Math.min(Number(next.start), Number(group.end) + 0.3);
       if (end <= start) end = start + 0.01;
 
       // group on/off — exactly one group visible at a time
@@ -205,15 +215,25 @@
         var at = Math.max(start, Number(w.start));
         tl.set(el, { className: "caption-word" }, start); // upcoming (also resets on reverse-seek)
         tl.set(el, { className: "caption-word is-active" }, at); // current
-        tl.fromTo(el, { scale: 0.92 }, { scale: 1, duration: 0.1, ease: "power3.out" }, at);
+        tl.fromTo(
+          el,
+          { scale: 0.92 },
+          { scale: 1, duration: 0.1, ease: "power3.out" },
+          at,
+        );
         if (i + 1 < words.length) {
           var nextAt = Math.max(start, Number(words[i + 1].start));
           tl.set(el, { className: "caption-word is-spoken" }, nextAt); // demote when next activates
         }
       });
       if (words.length) {
-        var lastEl = document.getElementById("caption-word-" + g + "-" + (words.length - 1));
-        var lastSpoken = Math.min(end, Number(words[words.length - 1].end) + 0.1);
+        var lastEl = document.getElementById(
+          "caption-word-" + g + "-" + (words.length - 1),
+        );
+        var lastSpoken = Math.min(
+          end,
+          Number(words[words.length - 1].end) + 0.1,
+        );
         tl.set(lastEl, { className: "caption-word is-spoken" }, lastSpoken);
       }
     });

@@ -31,9 +31,9 @@ async function compileAndValidateIntegrationSpec(
   source: string,
 ): Promise<ParsedAsyncAPIDocument> {
   const spec = await compileAsyncAPISpec(source);
-  expect(
-    spec.diagnostics.filter((d) => d.severity === "error"),
-  ).toHaveLength(0);
+  expect(spec.diagnostics.filter((d) => d.severity === "error")).toHaveLength(
+    0,
+  );
   const document = await parseAsyncAPIOutput(spec.outputFiles);
   validateAsyncAPIDocument(document);
   return document;

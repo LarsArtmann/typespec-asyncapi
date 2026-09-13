@@ -3,9 +3,7 @@
   "preferences": {
     "style_preset.product-launch-video": {
       "value": "broadside",
-      "confirmed_in": [
-        "typespec-asyncapi-demo"
-      ],
+      "confirmed_in": ["typespec-asyncapi-demo"],
       "updated_at": "2026-08-21T23:17:06.448Z"
     }
   },

@@ -284,7 +284,10 @@ describe("spec Compliance: WebSocket Bindings", () => {
       op subscribe(): Message;
     `);
 
-    const binding = inlineObject(doc.channels!["ws-channel"].bindings, "bindings");
+    const binding = inlineObject(
+      doc.channels!["ws-channel"].bindings,
+      "bindings",
+    );
     expect(binding.ws).toBeDefined();
     expect(binding.ws.method).toBe("GET");
     expect(binding.ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
@@ -302,7 +305,10 @@ describe("spec Compliance: WebSocket Bindings", () => {
       op subscribe(): Event;
     `);
 
-    const binding = inlineObject(doc.channels!["ws-channel"].bindings, "bindings");
+    const binding = inlineObject(
+      doc.channels!["ws-channel"].bindings,
+      "bindings",
+    );
     expect(binding.ws).toBeDefined();
     expect(binding.websocket).toBeUndefined();
     expect(binding.ws.method).toBe("GET");
@@ -321,7 +327,10 @@ describe("spec Compliance: WebSocket Bindings", () => {
       op subscribe(): Event;
     `);
 
-    const binding = inlineObject(doc.channels!["ws-channel"].bindings, "bindings");
+    const binding = inlineObject(
+      doc.channels!["ws-channel"].bindings,
+      "bindings",
+    );
     expect(binding.ws.method).toBe("POST");
     expect(binding.ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
   });
@@ -416,10 +425,15 @@ describe("spec Compliance: @protocol Field Placement", () => {
       op publish(): Event;
     `);
 
-    const channelBinding = inlineObject(doc.channels!["events"].bindings, "bindings");
+    const channelBinding = inlineObject(
+      doc.channels!["events"].bindings,
+      "bindings",
+    );
     expect(channelBinding.kafka.partitions).toBe(3);
     expect(channelBinding.kafka.replicas).toBe(2);
-    expect(channelBinding.kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
+    expect(channelBinding.kafka.bindingVersion).toBe(
+      LATEST_BINDING_VERSIONS.kafka,
+    );
 
     const opBinding = inlineObject(getOp(doc).bindings, "bindings");
     expect(opBinding.kafka.groupId).toStrictEqual({
@@ -470,7 +484,10 @@ describe("spec Compliance: @protocol Field Placement", () => {
       op publish(): Event;
     `);
 
-    const channelBinding = inlineObject(doc.channels!["events"].bindings, "bindings");
+    const channelBinding = inlineObject(
+      doc.channels!["events"].bindings,
+      "bindings",
+    );
     expect(channelBinding.ws).toBeDefined();
     expect(channelBinding.ws.headers).toStrictEqual({
       authorization: "Bearer",
@@ -540,8 +557,12 @@ describe("spec Compliance: Multi-Protocol Bindings", () => {
     expect(doc.servers!["ws-server"].protocol).toBe("ws");
 
     const channels = doc.channels!;
-    expect(inlineObject(channels["kafka-topic"].bindings, "bindings").kafka).toBeDefined();
-    expect(inlineObject(channels["ws-channel"].bindings, "bindings").ws).toBeDefined();
+    expect(
+      inlineObject(channels["kafka-topic"].bindings, "bindings").kafka,
+    ).toBeDefined();
+    expect(
+      inlineObject(channels["ws-channel"].bindings, "bindings").ws,
+    ).toBeDefined();
   });
 
   it("all binding versions auto-injected correctly per protocol", async () => {

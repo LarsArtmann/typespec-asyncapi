@@ -27,11 +27,12 @@ const SEED = Number(process.env["FC_SEED"] ?? 20_260_821);
 const RUNS = 20;
 
 /** Deterministic property runner with the shared pinned seed. */
-function property<T>(name: string, arb: fc.Arbitrary<T>, check: (t: T) => Promise<void>): Promise<void> {
-  return fc.assert(
-    fc.asyncProperty(arb, check),
-    { seed: SEED, numRuns: RUNS },
-  );
+function property<T>(
+  name: string,
+  arb: fc.Arbitrary<T>,
+  check: (t: T) => Promise<void>,
+): Promise<void> {
+  return fc.assert(fc.asyncProperty(arb, check), { seed: SEED, numRuns: RUNS });
 }
 
 const identifier = fc
@@ -40,9 +41,28 @@ const identifier = fc
 
 /** Lowercase TypeSpec keywords that cannot be used as identifiers. */
 const RESERVED = new Set([
-  "model", "enum", "union", "scalar", "op", "namespace", "interface",
-  "import", "using", "dec", "extern", "void", "never", "unknown", "true", "false",
-  "string", "int32", "int64", "float64", "boolean", "utcDateTime",
+  "model",
+  "enum",
+  "union",
+  "scalar",
+  "op",
+  "namespace",
+  "interface",
+  "import",
+  "using",
+  "dec",
+  "extern",
+  "void",
+  "never",
+  "unknown",
+  "true",
+  "false",
+  "string",
+  "int32",
+  "int64",
+  "float64",
+  "boolean",
+  "utcDateTime",
 ]);
 
 const fieldName = fc
@@ -81,7 +101,11 @@ const fieldSpec = fc.record({
 
 /** Pair constraints are made CONSISTENT by construction (P2): min <= max etc. */
 const consistentFieldSpec: fc.Arbitrary<FieldSpec> = fc
-  .tuple(fieldSpec, fc.integer({ min: 0, max: 9 }), fc.integer({ min: 0, max: 9 }))
+  .tuple(
+    fieldSpec,
+    fc.integer({ min: 0, max: 9 }),
+    fc.integer({ min: 0, max: 9 }),
+  )
   .map(([base, spread, lenSpread]) => ({
     ...base,
     max: base.min + spread,
@@ -90,13 +114,20 @@ const consistentFieldSpec: fc.Arbitrary<FieldSpec> = fc
   }));
 
 function renderField(field: FieldSpec): string {
-  const numeric = field.type === "int32" || field.type === "int64" || field.type === "float64";
+  const numeric =
+    field.type === "int32" ||
+    field.type === "int64" ||
+    field.type === "float64";
   const rawConstraints = [
     numeric && !field.asArray ? `@minValue(${field.min})` : "",
     numeric && !field.asArray ? `@maxValue(${field.max})` : "",
     // Value/string constraints apply to the property itself; arrays carry only min/maxItems.
-    field.type === "string" && !field.asArray ? `@minLength(${field.minLen})` : "",
-    field.type === "string" && !field.asArray ? `@maxLength(${field.maxLen})` : "",
+    field.type === "string" && !field.asArray
+      ? `@minLength(${field.minLen})`
+      : "",
+    field.type === "string" && !field.asArray
+      ? `@maxLength(${field.maxLen})`
+      : "",
     field.asArray ? `@minItems(${field.min})` : "",
     field.asArray ? `@maxItems(${field.max})` : "",
   ];
@@ -169,7 +200,9 @@ function renderSpec(spec: {
   // The payload model references the next model when one exists.
   // Single-model specs stay self-contained; this exercises model→model $refs.
   const payloadModel =
-    rest.length > 0 ? renderModelWithRef(payload, rest[0]!.name) : renderModel(payload);
+    rest.length > 0
+      ? renderModelWithRef(payload, rest[0]!.name)
+      : renderModel(payload);
   const others = rest.map(renderModel).join("\n\n");
   const body = [payloadModel, others].filter(Boolean).join("\n\n");
   return `
@@ -222,7 +255,10 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
         field.name
       ] as JsonSchema | undefined;
       expect(prop).toBeDefined();
-      const numeric = field.type === "int32" || field.type === "int64" || field.type === "float64";
+      const numeric =
+        field.type === "int32" ||
+        field.type === "int64" ||
+        field.type === "float64";
       const wantValue = numeric && !field.asArray;
       const wantLength = field.type === "string" && !field.asArray;
       const wantItems = field.asArray;
@@ -257,9 +293,9 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
         minItems: wantItems ? field.min : undefined,
         maxItems: wantItems ? field.max : undefined,
       });
-      expect(
-        lower === undefined || upper === undefined || lower <= upper,
-      ).toBe(true);
+      expect(lower === undefined || upper === undefined || lower <= upper).toBe(
+        true,
+      );
     });
   });
 

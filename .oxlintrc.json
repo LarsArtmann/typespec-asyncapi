@@ -1,11 +1,5 @@
 {
-  "plugins": [
-    "node",
-    "oxc",
-    "typescript",
-    "unicorn",
-    "vitest"
-  ],
+  "plugins": ["node", "oxc", "typescript", "unicorn", "vitest"],
   "categories": {
     "perf": "warn",
     "style": "warn",
@@ -73,10 +67,7 @@
         "max": 50
       }
     ],
-    "eslint/eqeqeq": [
-      "error",
-      "always"
-    ],
+    "eslint/eqeqeq": ["error", "always"],
     "eslint/one-var": "off"
   },
   "overrides": [
@@ -100,9 +91,7 @@
       }
     },
     {
-      "files": [
-        "test/**"
-      ],
+      "files": ["test/**"],
       "rules": {
         "vitest/require-test-timeout": "off",
         "vitest/prefer-expect-assertions": "off",
@@ -170,7 +159,5 @@
     "node": true,
     "builtin": true
   },
-  "ignorePatterns": [
-    "website/**"
-  ]
+  "ignorePatterns": ["website/**"]
 }

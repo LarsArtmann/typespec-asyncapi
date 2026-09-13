@@ -42,12 +42,18 @@ describe("integration: multi-namespace isolation", () => {
     expect(doc.servers!["broker-b"]).toBeDefined();
 
     // Namespace A server has its own mqtt binding
-    const nsABindings = inlineObject(doc.servers!["broker-a"].bindings, "bindings");
+    const nsABindings = inlineObject(
+      doc.servers!["broker-a"].bindings,
+      "bindings",
+    );
     expect(nsABindings.mqtt).toBeDefined();
     expect(nsABindings.mqtt.clientId).toBe("ns-a-client");
 
     // Namespace B server has its own mqtt binding
-    const nsBBindings = inlineObject(doc.servers!["broker-b"].bindings, "bindings");
+    const nsBBindings = inlineObject(
+      doc.servers!["broker-b"].bindings,
+      "bindings",
+    );
     expect(nsBBindings.mqtt).toBeDefined();
     expect(nsBBindings.mqtt.clientId).toBe("ns-b-client");
   });
@@ -78,12 +84,18 @@ describe("integration: multi-namespace isolation", () => {
     expect(doc.components?.securitySchemes?.["ns-b-auth"]).toBeDefined();
 
     // Correct types
-    expect(inlineObject(doc.components!.securitySchemes!["ns-a-auth"], "security scheme").type).toBe(
-      "userPassword",
-    );
-    expect(inlineObject(doc.components!.securitySchemes!["ns-b-auth"], "security scheme").type).toBe(
-      "scramSha256",
-    );
+    expect(
+      inlineObject(
+        doc.components!.securitySchemes!["ns-a-auth"],
+        "security scheme",
+      ).type,
+    ).toBe("userPassword");
+    expect(
+      inlineObject(
+        doc.components!.securitySchemes!["ns-b-auth"],
+        "security scheme",
+      ).type,
+    ).toBe("scramSha256");
   });
 
   it("keeps operation tags isolated per namespace", async () => {

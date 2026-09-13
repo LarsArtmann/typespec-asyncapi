@@ -84,7 +84,8 @@ describe("spec Compliance: defaultContentType", () => {
 
     expect(
       diagnostics.some((d) =>
-        d.code?.endsWith("conflicting-default-content-type")),
+        d.code?.endsWith("conflicting-default-content-type"),
+      ),
     ).toBeFalsy();
     expect(asyncApiDoc!.defaultContentType).toBe("application/json");
   });

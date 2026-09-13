@@ -11,71 +11,71 @@ Reserved words cannot be keys in `#{}` literals (`model`, `enum`, `default`, ...
 
 ## Core messaging
 
-| Decorator | Target | Purpose |
-| --- | --- | --- |
-| `@channel(address, description?)` | Operation | Defines a channel address |
-| `@publish` / `@subscribe` | Operation | Marks operation as send / receive |
-| `@reply(replyModel, address?)` | Operation | Operation reply with message reference |
+| Decorator                         | Target    | Purpose                                |
+| --------------------------------- | --------- | -------------------------------------- |
+| `@channel(address, description?)` | Operation | Defines a channel address              |
+| `@publish` / `@subscribe`         | Operation | Marks operation as send / receive      |
+| `@reply(replyModel, address?)`    | Operation | Operation reply with message reference |
 
 ## Servers
 
-| Decorator | Target | Purpose |
-| --- | --- | --- |
-| `@server(name, config)` | Namespace | Defines server (url, protocol, description, variables) |
-| `@useChannelServer(name)` | Operation | Binds a channel to a specific server |
+| Decorator                 | Target    | Purpose                                                |
+| ------------------------- | --------- | ------------------------------------------------------ |
+| `@server(name, config)`   | Namespace | Defines server (url, protocol, description, variables) |
+| `@useChannelServer(name)` | Operation | Binds a channel to a specific server                   |
 
 ## Messages
 
-| Decorator | Target | Purpose |
-| --- | --- | --- |
-| `@message(config)` | Model | Message metadata (title, contentType, description, examples) |
-| `@messageId(id)` | Model | Overrides auto-generated message key |
-| `@header(name, value?)` | Model / ModelProperty | Defines message headers |
-| `@correlationId(location)` | Model | Correlation ID runtime expression for message tracing |
+| Decorator                  | Target                | Purpose                                                      |
+| -------------------------- | --------------------- | ------------------------------------------------------------ |
+| `@message(config)`         | Model                 | Message metadata (title, contentType, description, examples) |
+| `@messageId(id)`           | Model                 | Overrides auto-generated message key                         |
+| `@header(name, value?)`    | Model / ModelProperty | Defines message headers                                      |
+| `@correlationId(location)` | Model                 | Correlation ID runtime expression for message tracing        |
 
 ## Protocols and bindings
 
-| Decorator | Target | Purpose |
-| --- | --- | --- |
-| `@protocol(config)` | Operation / Model | Protocol-specific config at spec-correct placements |
-| `@bindings(config)` | Operation / Model / Namespace | Generic protocol bindings (auto-versioned, placement-checked) |
-| `@reusableBinding(name, config)` | Namespace | Declares a reusable binding |
-| `@useBinding(name)` | Operation / Model / Namespace | References a reusable binding |
-| `@useChannelBinding(name)` | Operation | References a reusable channel binding |
+| Decorator                        | Target                        | Purpose                                                       |
+| -------------------------------- | ----------------------------- | ------------------------------------------------------------- |
+| `@protocol(config)`              | Operation / Model             | Protocol-specific config at spec-correct placements           |
+| `@bindings(config)`              | Operation / Model / Namespace | Generic protocol bindings (auto-versioned, placement-checked) |
+| `@reusableBinding(name, config)` | Namespace                     | Declares a reusable binding                                   |
+| `@useBinding(name)`              | Operation / Model / Namespace | References a reusable binding                                 |
+| `@useChannelBinding(name)`       | Operation                     | References a reusable channel binding                         |
 
 See [Protocol Bindings](/guides/bindings/) for per-protocol placement rules.
 
 ## Security
 
-| Decorator | Target | Purpose |
-| --- | --- | --- |
-| `@security(config)` | Operation / Namespace | Declares security schemes (oauth2, httpApiKey, scramSha512, ...) |
-| `@operationSecurity(config)` | Operation | Attaches security requirements to one operation |
+| Decorator                    | Target                | Purpose                                                          |
+| ---------------------------- | --------------------- | ---------------------------------------------------------------- |
+| `@security(config)`          | Operation / Namespace | Declares security schemes (oauth2, httpApiKey, scramSha512, ...) |
+| `@operationSecurity(config)` | Operation             | Attaches security requirements to one operation                  |
 
 See [Security](/guides/security/) for scheme details.
 
 ## Document metadata
 
-| Decorator | Target | Purpose |
-| --- | --- | --- |
-| `@apiVersion(version)` | Namespace | Sets `info.version` |
-| `@defaultContentType(type)` | Namespace | Sets `defaultContentType` on document root |
-| `@operationId(id)` | Operation | Overrides auto-generated operation key |
-| `@jsonSchemaExtension(key, value)` | Model / ModelProperty / Union / Enum / Scalar | Arbitrary JSON Schema keywords, repeatable |
-| `@extension(key, value)` | Namespace / Operation / Model | AsyncAPI `x-` spec extensions (root / operation / message objects) |
-| `@tags(value)` | Model / Operation / Namespace | Tags (strings or rich objects) |
+| Decorator                          | Target                                        | Purpose                                                            |
+| ---------------------------------- | --------------------------------------------- | ------------------------------------------------------------------ |
+| `@apiVersion(version)`             | Namespace                                     | Sets `info.version`                                                |
+| `@defaultContentType(type)`        | Namespace                                     | Sets `defaultContentType` on document root                         |
+| `@operationId(id)`                 | Operation                                     | Overrides auto-generated operation key                             |
+| `@jsonSchemaExtension(key, value)` | Model / ModelProperty / Union / Enum / Scalar | Arbitrary JSON Schema keywords, repeatable                         |
+| `@extension(key, value)`           | Namespace / Operation / Model                 | AsyncAPI `x-` spec extensions (root / operation / message objects) |
+| `@tags(value)`                     | Model / Operation / Namespace                 | Tags (strings or rich objects)                                     |
 
 ## Reusable components
 
-| Decorator | Target | Purpose |
-| --- | --- | --- |
-| `@operationTrait(name, config)` | Namespace | Declares `components.operationTraits` entry |
-| `@useOperationTrait(name)` | Operation | References an operation trait |
-| `@messageTrait(name, config)` | Namespace | Declares `components.messageTraits` entry |
-| `@useMessageTrait(name)` | Model | References a message trait |
-| `@parameter(name, config)` | Namespace | Declares `components.parameters` for channel address templating |
-| `@reusableCorrelationId(name, location)` | Namespace | Declares `components.correlationIds` entry |
-| `@useCorrelationId(name)` | Model | References a reusable correlation ID |
+| Decorator                                | Target    | Purpose                                                         |
+| ---------------------------------------- | --------- | --------------------------------------------------------------- |
+| `@operationTrait(name, config)`          | Namespace | Declares `components.operationTraits` entry                     |
+| `@useOperationTrait(name)`               | Operation | References an operation trait                                   |
+| `@messageTrait(name, config)`            | Namespace | Declares `components.messageTraits` entry                       |
+| `@useMessageTrait(name)`                 | Model     | References a message trait                                      |
+| `@parameter(name, config)`               | Namespace | Declares `components.parameters` for channel address templating |
+| `@reusableCorrelationId(name, location)` | Namespace | Declares `components.correlationIds` entry                      |
+| `@useCorrelationId(name)`                | Model     | References a reusable correlation ID                            |
 
 See [Reusable Components](/guides/reusable-components/) for worked examples.
 

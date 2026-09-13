@@ -11,14 +11,14 @@ All 19 bindings are auto-generated from `@asyncapi/specs/bindings/` — the same
 
 19 have dedicated binding validation (HTTPS, MQTT5, and WSS share binding schemas with their base protocols).
 
-| Protocol | Binding Version | Highlights |
-| --- | --- | --- |
-| Kafka | 0.5.0 | Channel (topic, partitions, replicas), Operation (groupId, clientId), Message (key) |
-| AMQP | 0.3.0 | Channel (exchange, queue), Operation (priority, deliveryMode), Message |
-| MQTT | 0.2.0 | Server (clientId, cleanSession, lastWill), Operation (qos, retain) |
-| HTTP | 0.3.0 | Operation (method, query), Message (headers) |
-| WebSocket | 0.1.0 | Channel (method, query, headers); `ws`/`wss` normalized |
-| AMQP1, AnypointMQ, GooglePubSub, IBMMQ, JMS, Mercure, NATS, Pulsar, Redis, ROS2, SNS, Solace, SQS, STOMP | Per spec | All auto-generated with field-level validation |
+| Protocol                                                                                                 | Binding Version | Highlights                                                                          |
+| -------------------------------------------------------------------------------------------------------- | --------------- | ----------------------------------------------------------------------------------- |
+| Kafka                                                                                                    | 0.5.0           | Channel (topic, partitions, replicas), Operation (groupId, clientId), Message (key) |
+| AMQP                                                                                                     | 0.3.0           | Channel (exchange, queue), Operation (priority, deliveryMode), Message              |
+| MQTT                                                                                                     | 0.2.0           | Server (clientId, cleanSession, lastWill), Operation (qos, retain)                  |
+| HTTP                                                                                                     | 0.3.0           | Operation (method, query), Message (headers)                                        |
+| WebSocket                                                                                                | 0.1.0           | Channel (method, query, headers); `ws`/`wss` normalized                             |
+| AMQP1, AnypointMQ, GooglePubSub, IBMMQ, JMS, Mercure, NATS, Pulsar, Redis, ROS2, SNS, Solace, SQS, STOMP | Per spec        | All auto-generated with field-level validation                                      |
 
 ## How placement works
 

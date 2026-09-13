@@ -132,7 +132,10 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
     `;
     const result = await compileAsyncAPI(source);
     expect(
-      inlineObject(result.asyncApiDoc?.components?.messages?.UserCreated, "message").schemaFormat,
+      inlineObject(
+        result.asyncApiDoc?.components?.messages?.UserCreated,
+        "message",
+      ).schemaFormat,
     ).toBe("application/vnd.apache.avro+json;version=1.9.0");
   });
 
@@ -146,7 +149,10 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
     `;
     const result = await compileAsyncAPI(source);
     expect(
-      inlineObject(result.asyncApiDoc?.components?.messages?.OrderEvent, "message").schemaFormat,
+      inlineObject(
+        result.asyncApiDoc?.components?.messages?.OrderEvent,
+        "message",
+      ).schemaFormat,
     ).toBe("application/vnd.google.protobuf");
   });
 });
@@ -179,7 +185,10 @@ describe("asyncAPI 3.1: message.examples", () => {
       op publish(): OrderPlaced;
     `;
     const result = await compileAsyncAPI(source);
-    const msg = inlineObject(result.asyncApiDoc?.components?.messages?.OrderPlaced, "message");
+    const msg = inlineObject(
+      result.asyncApiDoc?.components?.messages?.OrderPlaced,
+      "message",
+    );
     expect(msg.examples).toHaveLength(2);
     expect(msg.examples?.[0]?.name).toBe("minimal");
     expect(msg.examples?.[0]?.payload).toStrictEqual({

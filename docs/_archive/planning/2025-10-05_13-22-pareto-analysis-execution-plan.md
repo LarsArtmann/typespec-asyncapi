@@ -362,59 +362,59 @@ Start[Start: 522/775 passing 67.4%] --> Phase1{Phase 1: 1% Effort}
 
 ### Priority 1: Critical Path (Must Do)
 
-| #   | Task                                                     | Effort | Impact   | Value | Issue |
-| --- | -------------------------------------------------------- | ------ | -------- | ----- | ----- |
-| 1   | Migrate test/decorators/server.test.ts to TypeSpec 1.4.0 | 120min | CRITICAL | 15%   | #127  |
-| 2   | Migrate test/e2e/ tests to TypeSpec 1.4.0 API            | 120min | CRITICAL | 15%   | #127  |
-| 3   | Migrate test/integration/ tests to TypeSpec 1.4.0        | 90min  | CRITICAL | 10%   | #127  |
-| 4   | Verify 80%+ test pass rate achieved                      | 30min  | CRITICAL | 11%   | #127  |
-| 5   | Delete old test-helpers.ts and update imports            | 60min  | HIGH     | 5%    | #128  |
-| 6   | Document canonical test helper usage                     | 30min  | HIGH     | 3%    | #128  |
-| 7   | Implement type caching Map in AsyncAPIEmitter            | 90min  | HIGH     | 8%    | #136  |
-| 8   | Add cache lifecycle management (clear on emit)           | 30min  | HIGH     | 2%    | #136  |
-| 9   | Create performance benchmark suite                       | 60min  | HIGH     | 4%    | #136  |
-| 10  | Configure Bun code coverage reporting                    | 60min  | HIGH     | 4%    | #132  |
-| 11  | Add coverage to package.json scripts                     | 30min  | MEDIUM   | 2%    | #132  |
-| 12  | Create CI/CD quality gate workflow                       | 60min  | HIGH     | 4%    | #135  |
-| 13  | Add pass rate trend monitoring to CI                     | 30min  | MEDIUM   | 2%    | #135  |
-| 14  | Create test metrics reporting script                     | 30min  | MEDIUM   | 2%    | #134  |
-| 15  | Categorize 252 failing tests by type                     | 90min  | HIGH     | 3%    | #111  |
-| 16  | Create issues for real bugs found in tests               | 60min  | MEDIUM   | 2%    | #111  |
+| #  | Task                                                     | Effort | Impact   | Value | Issue |
+| -- | -------------------------------------------------------- | ------ | -------- | ----- | ----- |
+| 1  | Migrate test/decorators/server.test.ts to TypeSpec 1.4.0 | 120min | CRITICAL | 15%   | #127  |
+| 2  | Migrate test/e2e/ tests to TypeSpec 1.4.0 API            | 120min | CRITICAL | 15%   | #127  |
+| 3  | Migrate test/integration/ tests to TypeSpec 1.4.0        | 90min  | CRITICAL | 10%   | #127  |
+| 4  | Verify 80%+ test pass rate achieved                      | 30min  | CRITICAL | 11%   | #127  |
+| 5  | Delete old test-helpers.ts and update imports            | 60min  | HIGH     | 5%    | #128  |
+| 6  | Document canonical test helper usage                     | 30min  | HIGH     | 3%    | #128  |
+| 7  | Implement type caching Map in AsyncAPIEmitter            | 90min  | HIGH     | 8%    | #136  |
+| 8  | Add cache lifecycle management (clear on emit)           | 30min  | HIGH     | 2%    | #136  |
+| 9  | Create performance benchmark suite                       | 60min  | HIGH     | 4%    | #136  |
+| 10 | Configure Bun code coverage reporting                    | 60min  | HIGH     | 4%    | #132  |
+| 11 | Add coverage to package.json scripts                     | 30min  | MEDIUM   | 2%    | #132  |
+| 12 | Create CI/CD quality gate workflow                       | 60min  | HIGH     | 4%    | #135  |
+| 13 | Add pass rate trend monitoring to CI                     | 30min  | MEDIUM   | 2%    | #135  |
+| 14 | Create test metrics reporting script                     | 30min  | MEDIUM   | 2%    | #134  |
+| 15 | Categorize 252 failing tests by type                     | 90min  | HIGH     | 3%    | #111  |
+| 16 | Create issues for real bugs found in tests               | 60min  | MEDIUM   | 2%    | #111  |
 
 **Subtotal Priority 1**: 16 tasks, 1170min (19.5 hours), **92% of value**
 
 ### Priority 2: Quality Improvements (Should Do)
 
-| #   | Task                                        | Effort | Impact | Value | Issue |
-| --- | ------------------------------------------- | ------ | ------ | ----- | ----- |
-| 17  | Add ESLint rule to block trivial assertions | 45min  | MEDIUM | 1%    | #135  |
-| 18  | Create test quality documentation           | 45min  | MEDIUM | 1%    | #128  |
-| 19  | Optimize test execution performance         | 60min  | MEDIUM | 1%    | #133  |
-| 20  | Add mutation testing POC                    | 90min  | LOW    | 1%    | #34   |
+| #  | Task                                        | Effort | Impact | Value | Issue |
+| -- | ------------------------------------------- | ------ | ------ | ----- | ----- |
+| 17 | Add ESLint rule to block trivial assertions | 45min  | MEDIUM | 1%    | #135  |
+| 18 | Create test quality documentation           | 45min  | MEDIUM | 1%    | #128  |
+| 19 | Optimize test execution performance         | 60min  | MEDIUM | 1%    | #133  |
+| 20 | Add mutation testing POC                    | 90min  | LOW    | 1%    | #34   |
 
 **Subtotal Priority 2**: 4 tasks, 240min (4 hours), **4% of value**
 
 ### Priority 3: Technical Debt (Nice to Have)
 
-| #   | Task                                  | Effort | Impact | Value | Issue |
-| --- | ------------------------------------- | ------ | ------ | ----- | ----- |
-| 21  | Extract all 284 TODO comments to list | 60min  | LOW    | 0.5%  | #131  |
-| 22  | Categorize TODOs by priority          | 45min  | LOW    | 0.5%  | #131  |
-| 23  | Create GitHub issues for P0/P1 TODOs  | 90min  | LOW    | 0.5%  | #131  |
-| 24  | Delete obsolete TODO comments         | 45min  | LOW    | 0.5%  | #131  |
-| 25  | Add ESLint rule to prevent new TODOs  | 30min  | LOW    | 0.5%  | #131  |
+| #  | Task                                  | Effort | Impact | Value | Issue |
+| -- | ------------------------------------- | ------ | ------ | ----- | ----- |
+| 21 | Extract all 284 TODO comments to list | 60min  | LOW    | 0.5%  | #131  |
+| 22 | Categorize TODOs by priority          | 45min  | LOW    | 0.5%  | #131  |
+| 23 | Create GitHub issues for P0/P1 TODOs  | 90min  | LOW    | 0.5%  | #131  |
+| 24 | Delete obsolete TODO comments         | 45min  | LOW    | 0.5%  | #131  |
+| 25 | Add ESLint rule to prevent new TODOs  | 30min  | LOW    | 0.5%  | #131  |
 
 **Subtotal Priority 3**: 5 tasks, 270min (4.5 hours), **2.5% of value**
 
 ### Priority 4: Documentation (Optional)
 
-| #   | Task                                         | Effort | Impact | Value | Issue |
-| --- | -------------------------------------------- | ------ | ------ | ----- | ----- |
-| 26  | Add JSDoc to AsyncAPIEmitter class           | 60min  | LOW    | 0.3%  | #81   |
-| 27  | Document AssetEmitter file emission patterns | 45min  | LOW    | 0.3%  | #57   |
-| 28  | Create architecture decision records         | 60min  | LOW    | 0.3%  | #103  |
-| 29  | Write performance optimization guide         | 45min  | LOW    | 0.3%  | #136  |
-| 30  | Create contributor testing guide             | 45min  | LOW    | 0.3%  | #128  |
+| #  | Task                                         | Effort | Impact | Value | Issue |
+| -- | -------------------------------------------- | ------ | ------ | ----- | ----- |
+| 26 | Add JSDoc to AsyncAPIEmitter class           | 60min  | LOW    | 0.3%  | #81   |
+| 27 | Document AssetEmitter file emission patterns | 45min  | LOW    | 0.3%  | #57   |
+| 28 | Create architecture decision records         | 60min  | LOW    | 0.3%  | #103  |
+| 29 | Write performance optimization guide         | 45min  | LOW    | 0.3%  | #136  |
+| 30 | Create contributor testing guide             | 45min  | LOW    | 0.3%  | #128  |
 
 **Subtotal Priority 4**: 5 tasks, 255min (4.25 hours), **1.5% of value**
 

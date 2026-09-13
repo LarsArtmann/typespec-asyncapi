@@ -14,14 +14,18 @@ import type { SecurityScheme } from "../../src/domain/models/asyncapi-document.j
 
 async function schemeOf(source: string, name: string): Promise<SecurityScheme> {
   const doc = await compileAndValidateOrThrow(source);
-  const scheme = inlineObject(doc.components!.securitySchemes![name], "security scheme");
+  const scheme = inlineObject(
+    doc.components!.securitySchemes![name],
+    "security scheme",
+  );
   expect(scheme).toBeDefined();
   return scheme;
 }
 
 describe("apiKey security schemes", () => {
   it("asserts in=header with name", async () => {
-    const scheme = await schemeOf(`
+    const scheme = await schemeOf(
+      `
       @security(#{
         name: "headerKey",
         scheme: #{ type: "apiKey", in: "user" }
@@ -30,7 +34,9 @@ describe("apiKey security schemes", () => {
       model Msg { id: string; }
       @channel("events")
       op send(): Msg;
-    `, "headerKey");
+    `,
+      "headerKey",
+    );
     expect(scheme.type).toBe("apiKey");
     expect(scheme.in).toBe("user");
   });
@@ -56,7 +62,8 @@ describe("apiKey security schemes", () => {
   });
 
   it("httpApiKey requires in and name (not plain apiKey)", async () => {
-    const scheme = await schemeOf(`
+    const scheme = await schemeOf(
+      `
       @security(#{
         name: "proxyKey",
         scheme: #{ type: "httpApiKey", in: "header", name: "X-Proxy-Key" }
@@ -65,7 +72,9 @@ describe("apiKey security schemes", () => {
       model Msg { id: string; }
       @channel("events")
       op send(): Msg;
-    `, "proxyKey");
+    `,
+      "proxyKey",
+    );
     expect(scheme.type).toBe("httpApiKey");
     expect(scheme.in).toBe("header");
     expect(scheme.name).toBe("X-Proxy-Key");
@@ -105,13 +114,17 @@ describe("http security schemes", () => {
       @channel("events")
       op send(): Msg;
     `);
-    expect(inlineObject(doc.components!.securitySchemes!.digest, "security scheme").scheme).toBe("digest");
+    expect(
+      inlineObject(doc.components!.securitySchemes!.digest, "security scheme")
+        .scheme,
+    ).toBe("digest");
   });
 });
 
 describe("oauth2 security schemes", () => {
   it("asserts availableScopes map (not an array) on clientCredentials", async () => {
-    const scheme = await schemeOf(`
+    const scheme = await schemeOf(
+      `
       @security(#{
         name: "oauth",
         scheme: #{
@@ -131,7 +144,9 @@ describe("oauth2 security schemes", () => {
       model Msg { id: string; }
       @channel("events")
       op send(): Msg;
-    `, "oauth");
+    `,
+      "oauth",
+    );
     expect(scheme.type).toBe("oauth2");
     const flow = scheme.flows!.clientCredentials!;
     expect(flow.tokenUrl).toBe("https://auth.example.com/token");
@@ -142,7 +157,8 @@ describe("oauth2 security schemes", () => {
   });
 
   it("asserts authorizationCode + implicit + password flow shapes", async () => {
-    const scheme = await schemeOf(`
+    const scheme = await schemeOf(
+      `
       @security(#{
         name: "full",
         scheme: #{
@@ -169,16 +185,21 @@ describe("oauth2 security schemes", () => {
       model Msg { id: string; }
       @channel("events")
       op send(): Msg;
-    `, "full");
+    `,
+      "full",
+    );
     const { flows } = scheme;
     expect(flows!.authorizationCode!.authorizationUrl).toContain("/authorize");
     expect(flows!.authorizationCode!.refreshUrl).toContain("/refresh");
-    expect(flows!.implicit!.availableScopes).toStrictEqual({ public: "Public read" });
+    expect(flows!.implicit!.availableScopes).toStrictEqual({
+      public: "Public read",
+    });
     expect(flows!.password!.tokenUrl).toContain("/password");
   });
 
   it("accepts legacy 'scopes' input and outputs 'availableScopes'", async () => {
-    const scheme = await schemeOf(`
+    const scheme = await schemeOf(
+      `
       @security(#{
         name: "legacy",
         scheme: #{
@@ -195,7 +216,9 @@ describe("oauth2 security schemes", () => {
       model Msg { id: string; }
       @channel("events")
       op send(): Msg;
-    `, "legacy");
+    `,
+      "legacy",
+    );
     expect(scheme.flows!.clientCredentials!.availableScopes).toStrictEqual({
       legacy: "Legacy input key",
     });
@@ -204,7 +227,8 @@ describe("oauth2 security schemes", () => {
 
 describe("openIdConnect and asymmetric schemes", () => {
   it("asserts openIdConnectUrl", async () => {
-    const scheme = await schemeOf(`
+    const scheme = await schemeOf(
+      `
       @security(#{
         name: "oidc",
         scheme: #{
@@ -216,7 +240,9 @@ describe("openIdConnect and asymmetric schemes", () => {
       model Msg { id: string; }
       @channel("events")
       op send(): Msg;
-    `, "oidc");
+    `,
+      "oidc",
+    );
     expect(scheme.type).toBe("openIdConnect");
     expect(scheme.openIdConnectUrl).toContain(".well-known");
   });
@@ -242,8 +268,12 @@ describe("openIdConnect and asymmetric schemes", () => {
     `);
     const schemes = doc.components!.securitySchemes!;
     expect(inlineObject(schemes.plain, "plain scheme").type).toBe("plain");
-    expect(inlineObject(schemes.scram256, "scram256 scheme").type).toBe("scramSha256");
-    expect(inlineObject(schemes.scram512, "scram512 scheme").type).toBe("scramSha512");
+    expect(inlineObject(schemes.scram256, "scram256 scheme").type).toBe(
+      "scramSha256",
+    );
+    expect(inlineObject(schemes.scram512, "scram512 scheme").type).toBe(
+      "scramSha512",
+    );
   });
 
   it("asserts X509 and gssapi distinguishing type", async () => {
@@ -261,8 +291,14 @@ describe("openIdConnect and asymmetric schemes", () => {
       @channel("events")
       op send(): Msg;
     `);
-    expect(inlineObject(doc.components!.securitySchemes!.cert, "security scheme").type).toBe("X509");
-    expect(inlineObject(doc.components!.securitySchemes!.gss, "security scheme").type).toBe("gssapi");
+    expect(
+      inlineObject(doc.components!.securitySchemes!.cert, "security scheme")
+        .type,
+    ).toBe("X509");
+    expect(
+      inlineObject(doc.components!.securitySchemes!.gss, "security scheme")
+        .type,
+    ).toBe("gssapi");
   });
 });
 

@@ -5,28 +5,32 @@
       font-weight: 500;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/space-grotesk-latin-500-normal.woff2) format("woff2");
+      src: url(assets/fonts/space-grotesk-latin-500-normal.woff2)
+        format("woff2");
     }
     @font-face {
       font-family: "Space Grotesk";
       font-weight: 700;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/space-grotesk-latin-700-normal.woff2) format("woff2");
+      src: url(assets/fonts/space-grotesk-latin-700-normal.woff2)
+        format("woff2");
     }
     @font-face {
       font-family: "JetBrains Mono";
       font-weight: 400;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2");
+      src: url(assets/fonts/jetbrains-mono-latin-400-normal.woff2)
+        format("woff2");
     }
     @font-face {
       font-family: "JetBrains Mono";
       font-weight: 500;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2");
+      src: url(assets/fonts/jetbrains-mono-latin-500-normal.woff2)
+        format("woff2");
     }
     #root {
       position: absolute;
@@ -152,39 +156,70 @@
     }
   </style>
 
-  <div id="root" data-composition-id="04-receipt" data-width="1920" data-height="1080">
-    <div class="f4-bg clip" data-start="0" data-duration="7" data-track-index="0"></div>
-    <div class="f4-stage clip" data-start="0" data-duration="7" data-track-index="1">
+  <div
+    id="root"
+    data-composition-id="04-receipt"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div
+      class="f4-bg clip"
+      data-start="0"
+      data-duration="7"
+      data-track-index="0"
+    ></div>
+    <div
+      class="f4-stage clip"
+      data-start="0"
+      data-duration="7"
+      data-track-index="1"
+    >
       <div class="f4-card" id="04-receipt-card">
         <div class="f4-cardbar">
-          <span class="f4-dot"></span><span class="f4-dot"></span><span class="f4-dot"></span>
+          <span class="f4-dot"></span><span class="f4-dot"></span
+          ><span class="f4-dot"></span>
           <span class="f4-cardtitle">asyncapi.yaml</span>
         </div>
-        <div class="f4-yaml"><div class="f4-lg" id="04-receipt-lg1"><span class="f4-key">asyncapi:</span> <span class="f4-version">3.1.0</span>
-<span class="f4-key">info:</span>
-  title: MyAPI</div><div class="f4-lg" id="04-receipt-lg2">
-<span class="f4-key">channels:</span>
-  events:
-    address: events
-    messages:
-      Event:
-        <span class="f4-ref">$ref: "#/components/messages/Event"</span></div><div class="f4-lg" id="04-receipt-lg3">
-<span class="f4-key">operations:</span>
-  publishEvent:
-    action: send
-    messages:
-      - <span class="f4-ref">$ref: ".../messages/Event"</span></div></div>
+        <div class="f4-yaml">
+          <div class="f4-lg" id="04-receipt-lg1">
+            <span class="f4-key">asyncapi:</span>
+            <span class="f4-version">3.1.0</span>
+            <span class="f4-key">info:</span>
+            title: MyAPI
+          </div>
+          <div class="f4-lg" id="04-receipt-lg2">
+            <span class="f4-key">channels:</span>
+            events: address: events messages: Event:
+            <span class="f4-ref">$ref: "#/components/messages/Event"</span>
+          </div>
+          <div class="f4-lg" id="04-receipt-lg3">
+            <span class="f4-key">operations:</span>
+            publishEvent: action: send messages: -
+            <span class="f4-ref">$ref: ".../messages/Event"</span>
+          </div>
+        </div>
       </div>
 
       <div class="f4-right">
         <div class="f4-count" id="04-receipt-count">270+</div>
-        <div class="f4-countlabel" id="04-receipt-label"><span class="f4-em">tests</span> against the official AsyncAPI 3.1.0 JSON Schema, on every build</div>
-        <div class="f4-chips">
-          <div class="f4-chip" id="04-receipt-chip1"><span class="f4-num">22</span> protocols</div>
-          <div class="f4-chip" id="04-receipt-chip2"><span class="f4-num">19</span> bindings</div>
-          <div class="f4-chip" id="04-receipt-chip3"><span class="f4-num">30</span> decorators</div>
+        <div class="f4-countlabel" id="04-receipt-label">
+          <span class="f4-em">tests</span> against the official AsyncAPI 3.1.0
+          JSON Schema, on every build
         </div>
-        <div class="f4-stamp" id="04-receipt-stamp">validated on every build</div>
+        <div class="f4-chips">
+          <div class="f4-chip" id="04-receipt-chip1">
+            <span class="f4-num">22</span> protocols
+          </div>
+          <div class="f4-chip" id="04-receipt-chip2">
+            <span class="f4-num">19</span> bindings
+          </div>
+          <div class="f4-chip" id="04-receipt-chip3">
+            <span class="f4-num">30</span> decorators
+          </div>
+        </div>
+        <div class="f4-stamp" id="04-receipt-stamp">
+          validated on every build
+        </div>
       </div>
     </div>
   </div>
@@ -198,31 +233,31 @@
       "#04-receipt-card",
       { opacity: 0, x: 120 },
       { opacity: 1, x: 0, duration: 0.7, ease: "power3.out" },
-      0.1
+      0.1,
     );
     tl.fromTo(
       "#04-receipt-lg1",
       { opacity: 0 },
       { opacity: 1, duration: 0.35, ease: "power2.out" },
-      0.4
+      0.4,
     );
     tl.fromTo(
       "#04-receipt-lg2",
       { opacity: 0 },
       { opacity: 1, duration: 0.35, ease: "power2.out" },
-      0.8
+      0.8,
     );
     tl.fromTo(
       "#04-receipt-lg3",
       { opacity: 0 },
       { opacity: 1, duration: 0.35, ease: "power2.out" },
-      1.2
+      1.2,
     );
 
     tl.to(
       "#04-receipt-card",
       { x: -130, scale: 0.86, duration: 0.75, ease: "power3.inOut" },
-      1.8
+      1.8,
     );
 
     var counter = { v: 0 };
@@ -231,7 +266,7 @@
       "#" + countEl,
       { opacity: 0, scale: 0.7 },
       { opacity: 1, scale: 1, duration: 0.55, ease: "power3.out" },
-      1.95
+      1.95,
     );
     tl.to(
       counter,
@@ -244,39 +279,39 @@
           if (el) el.textContent = Math.floor(counter.v) + "+";
         },
       },
-      1.95
+      1.95,
     );
     tl.fromTo(
       "#04-receipt-label",
       { opacity: 0, y: 16 },
       { opacity: 1, y: 0, duration: 0.55, ease: "power3.out" },
-      2.6
+      2.6,
     );
 
     tl.fromTo(
       "#04-receipt-chip1",
       { opacity: 0, y: 22 },
       { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
-      3.5
+      3.5,
     );
     tl.fromTo(
       "#04-receipt-chip2",
       { opacity: 0, y: 22 },
       { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
-      4.0
+      4.0,
     );
     tl.fromTo(
       "#04-receipt-chip3",
       { opacity: 0, y: 22 },
       { opacity: 1, y: 0, duration: 0.45, ease: "power3.out" },
-      4.5
+      4.5,
     );
 
     tl.fromTo(
       "#04-receipt-stamp",
       { opacity: 0, scaleX: 0 },
       { opacity: 1, scaleX: 1, duration: 0.5, ease: "power4.out" },
-      5.2
+      5.2,
     );
 
     window.__timelines["04-receipt"] = tl;

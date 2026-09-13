@@ -149,10 +149,9 @@ describe("@server decorator", () => {
         });
 
         const errors = diagnostics.filter((d) => d.severity === "error");
-        expect(
-          errors,
-          `Protocol ${protocol} should be supported`,
-        ).toHaveLength(0);
+        expect(errors, `Protocol ${protocol} should be supported`).toHaveLength(
+          0,
+        );
       }
     });
 

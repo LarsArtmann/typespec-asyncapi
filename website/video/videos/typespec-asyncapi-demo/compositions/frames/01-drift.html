@@ -5,21 +5,24 @@
       font-weight: 500;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/space-grotesk-latin-500-normal.woff2) format("woff2");
+      src: url(assets/fonts/space-grotesk-latin-500-normal.woff2)
+        format("woff2");
     }
     @font-face {
       font-family: "Space Grotesk";
       font-weight: 700;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/space-grotesk-latin-700-normal.woff2) format("woff2");
+      src: url(assets/fonts/space-grotesk-latin-700-normal.woff2)
+        format("woff2");
     }
     @font-face {
       font-family: "JetBrains Mono";
       font-weight: 500;
       font-style: normal;
       font-display: block;
-      src: url(assets/fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2");
+      src: url(assets/fonts/jetbrains-mono-latin-500-normal.woff2)
+        format("woff2");
     }
     #root {
       position: absolute;
@@ -40,7 +43,11 @@
       height: 460px;
       margin-left: -450px;
       border-radius: 9999px;
-      background: radial-gradient(closest-side, rgba(20, 184, 166, 0.09), rgba(20, 184, 166, 0));
+      background: radial-gradient(
+        closest-side,
+        rgba(20, 184, 166, 0.09),
+        rgba(20, 184, 166, 0)
+      );
     }
     .f1-stage {
       position: absolute;
@@ -99,9 +106,24 @@
     }
   </style>
 
-  <div id="root" data-composition-id="01-drift" data-width="1920" data-height="1080">
-    <div class="f1-bg clip" data-start="0" data-duration="5" data-track-index="0"></div>
-    <div class="f1-stage clip" data-start="0" data-duration="5" data-track-index="1">
+  <div
+    id="root"
+    data-composition-id="01-drift"
+    data-width="1920"
+    data-height="1080"
+  >
+    <div
+      class="f1-bg clip"
+      data-start="0"
+      data-duration="5"
+      data-track-index="0"
+    ></div>
+    <div
+      class="f1-stage clip"
+      data-start="0"
+      data-duration="5"
+      data-track-index="1"
+    >
       <div class="f1-swap-slot">
         <div class="f1-word" id="01-drift-a">hand-written</div>
         <div class="f1-word" id="01-drift-b">asyncapi yaml.</div>
@@ -122,8 +144,14 @@
     tl.fromTo(
       "#01-drift-a",
       { scale: 1.5, filter: "blur(16px)", opacity: 0 },
-      { scale: 1, filter: "blur(0px)", opacity: 1, duration: 0.5, ease: "power4.out" },
-      0.15
+      {
+        scale: 1,
+        filter: "blur(0px)",
+        opacity: 1,
+        duration: 0.5,
+        ease: "power4.out",
+      },
+      0.15,
     );
 
     tl.set("#01-drift-a", { autoAlpha: 0 }, 1.35);
@@ -131,20 +159,20 @@
       "#01-drift-b",
       { x: -300, opacity: 0 },
       { x: 0, opacity: 1, duration: 0.45, ease: "expo.out" },
-      1.35
+      1.35,
     );
 
     tl.fromTo(
       "#01-drift-punch",
       { y: 90, rotation: 5, opacity: 0 },
       { y: 0, rotation: 0, opacity: 1, duration: 0.55, ease: "circ.out" },
-      2.55
+      2.55,
     );
     tl.fromTo(
       "#01-drift-rule",
       { scaleX: 0, opacity: 0 },
       { scaleX: 1, opacity: 1, duration: 0.5, ease: "power3.out" },
-      3.15
+      3.15,
     );
 
     const jitter = { p: 0 };
@@ -162,7 +190,7 @@
           }
         },
       },
-      3.6
+      3.6,
     );
 
     window.__timelines["01-drift"] = tl;

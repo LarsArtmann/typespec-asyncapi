@@ -100,14 +100,18 @@ describe("extractValue", () => {
       kind: "declaration" as const,
       value: { type: "string" },
     };
-    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({
+    expect(
+      extractValue(entity as unknown as EmitEntity<JsonSchema>),
+    ).toStrictEqual({
       type: "string",
     });
   });
 
   it("returns empty object for none kind", () => {
     const entity = { kind: "none" as const };
-    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({});
+    expect(
+      extractValue(entity as unknown as EmitEntity<JsonSchema>),
+    ).toStrictEqual({});
   });
 
   it("filters out Placeholder values with onValue", () => {
@@ -115,12 +119,16 @@ describe("extractValue", () => {
       kind: "declaration" as const,
       value: { onValue: () => {} },
     };
-    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({});
+    expect(
+      extractValue(entity as unknown as EmitEntity<JsonSchema>),
+    ).toStrictEqual({});
   });
 
   it("returns empty object for circular kind", () => {
     const entity = { kind: "circular" as const };
-    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({});
+    expect(
+      extractValue(entity as unknown as EmitEntity<JsonSchema>),
+    ).toStrictEqual({});
   });
 
   it("extracts value from code kind entity", () => {
@@ -128,7 +136,9 @@ describe("extractValue", () => {
       kind: "code" as const,
       value: { type: "integer" },
     };
-    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({
+    expect(
+      extractValue(entity as unknown as EmitEntity<JsonSchema>),
+    ).toStrictEqual({
       type: "integer",
     });
   });
@@ -138,7 +148,9 @@ describe("extractValue", () => {
       kind: "declaration" as const,
       value: null,
     };
-    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({});
+    expect(
+      extractValue(entity as unknown as EmitEntity<JsonSchema>),
+    ).toStrictEqual({});
   });
 
   it("returns empty object for declaration with non-object value", () => {
@@ -146,7 +158,9 @@ describe("extractValue", () => {
       kind: "declaration" as const,
       value: "not-an-object",
     };
-    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({});
+    expect(
+      extractValue(entity as unknown as EmitEntity<JsonSchema>),
+    ).toStrictEqual({});
   });
 
   it("extracts complex nested schema from declaration", () => {

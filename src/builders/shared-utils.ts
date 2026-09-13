@@ -312,8 +312,12 @@ export function buildProtocolBindings(
   data: ProtocolConfigData,
 ): ProtocolBindingPlacements {
   const bindingKey = normalizeBindingProtocol(data.protocol);
-  const passthroughTarget: "channel" | "operation" =
-    supportsBindingPlacement(bindingKey, "channel") ? "channel" : "operation";
+  const passthroughTarget: "channel" | "operation" = supportsBindingPlacement(
+    bindingKey,
+    "channel",
+  )
+    ? "channel"
+    : "operation";
   const fields = FIELD_PICKERS[data.protocol]?.(data) ?? {};
 
   const result: ProtocolBindingPlacements = {};

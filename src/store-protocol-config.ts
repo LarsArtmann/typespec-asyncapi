@@ -72,8 +72,7 @@ export const storeProtocolConfig = (
         ...base,
         protocol: protocolType,
         headers: config.headers as Record<string, string> | undefined,
-        queryParams:
-          config.queryParams as Record<string, string> | undefined,
+        queryParams: config.queryParams as Record<string, string> | undefined,
       };
       break;
     }

@@ -73,8 +73,13 @@ describe("kafka Protocol", () => {
       model Event { id: string; }
     `);
 
-    expect(inlineObject(doc.channels?.["kafka-stream"]?.bindings, "bindings").kafka.partitions).toBe(5);
-    expect(inlineObject(doc.channels?.["ws-stream"]?.bindings, "bindings").ws.method).toBe("GET");
+    expect(
+      inlineObject(doc.channels?.["kafka-stream"]?.bindings, "bindings").kafka
+        .partitions,
+    ).toBe(5);
+    expect(
+      inlineObject(doc.channels?.["ws-stream"]?.bindings, "bindings").ws.method,
+    ).toBe("GET");
   });
 
   it("should not fabricate bindings when no fields are written", async () => {

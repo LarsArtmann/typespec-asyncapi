@@ -42,21 +42,21 @@ These tasks provide scalability, extensibility, and market coverage.
 
 ### PHASE 1: CRITICAL UNBLOCKING (Tasks 1-4)
 
-| ID  | Task                                        | Effort | Dependencies | Success Criteria                    |
-| --- | ------------------------------------------- | ------ | ------------ | ----------------------------------- |
-| 1   | Fix emitFile API integration & test capture | 60min  | None         | Files appear in result.outputs      |
-| 2   | Resolve virtual filesystem disconnect       | 45min  | #1           | Virtual FS matches actual FS        |
-| 3   | Fix core decorator state persistence        | 60min  | #2           | Decorators consistently store state |
-| 4   | Basic AsyncAPI document generation          | 90min  | #3           | Valid AsyncAPI 3.0 output           |
+| ID | Task                                        | Effort | Dependencies | Success Criteria                    |
+| -- | ------------------------------------------- | ------ | ------------ | ----------------------------------- |
+| 1  | Fix emitFile API integration & test capture | 60min  | None         | Files appear in result.outputs      |
+| 2  | Resolve virtual filesystem disconnect       | 45min  | #1           | Virtual FS matches actual FS        |
+| 3  | Fix core decorator state persistence        | 60min  | #2           | Decorators consistently store state |
+| 4  | Basic AsyncAPI document generation          | 90min  | #3           | Valid AsyncAPI 3.0 output           |
 
 ### PHASE 2: FOUNDATION STABILITY (Tasks 5-8)
 
-| ID  | Task                                       | Effort | Dependencies | Success Criteria             |
-| --- | ------------------------------------------ | ------ | ------------ | ---------------------------- |
-| 5   | Type safety implementation (branded types) | 90min  | #4           | 100% type-safe interfaces    |
-| 6   | Error handling domain creation             | 75min  | #5           | Deterministic error handling |
-| 7   | Document validation system                 | 60min  | #6           | Real-time validation         |
-| 8   | Performance monitoring integration         | 60min  | #7           | Metrics collection working   |
+| ID | Task                                       | Effort | Dependencies | Success Criteria             |
+| -- | ------------------------------------------ | ------ | ------------ | ---------------------------- |
+| 5  | Type safety implementation (branded types) | 90min  | #4           | 100% type-safe interfaces    |
+| 6  | Error handling domain creation             | 75min  | #5           | Deterministic error handling |
+| 7  | Document validation system                 | 60min  | #6           | Real-time validation         |
+| 8  | Performance monitoring integration         | 60min  | #7           | Metrics collection working   |
 
 ### PHASE 3: COMPREHENSIVE IMPLEMENTATION (Tasks 9+)
 

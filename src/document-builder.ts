@@ -25,7 +25,8 @@ import type {
 import type { DocumentBuildContext } from "./builders/types.js";
 import { discoverOperations } from "./builders/operation-discovery.js";
 import { reportProgramDiagnostic } from "./decorator-helpers.js";
-import { applyChannelDocs,
+import {
+  applyChannelDocs,
   attachChannelBindings,
   attachChannelServerRefs,
 } from "./builders/channel-builder.js";
