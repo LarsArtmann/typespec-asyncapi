@@ -487,7 +487,7 @@ describe("spec Compliance: @protocol Field Placement", () => {
       @bindings(#{
         kafka: #{
           clientId: #{ type: "string" },
-          bindingVersion: ${LATEST_BINDING_VERSIONS.kafka}
+          bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}"
         }
       })
       op publish(): Event;

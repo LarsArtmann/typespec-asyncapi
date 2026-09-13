@@ -124,7 +124,7 @@ describe("webSocket & MQTT bindingVersion injection", () => {
       @channel("events")
       @protocol(#{
         protocol: "ws",
-        binding: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.ws}, method: "GET" }
+        binding: #{ bindingVersion: "${LATEST_BINDING_VERSIONS.ws}", method: "GET" }
       })
       op send(): Msg;
     `);

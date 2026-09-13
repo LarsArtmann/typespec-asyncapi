@@ -20,8 +20,8 @@ const SOURCE = `
   description: "Default message trait"
 })
 @reusableCorrelationId("defaultCorrelation", "$message.header#/correlationId")
-@reusableBinding("stdKafka", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
-@reusableBinding("chanKafka", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
+@reusableBinding("stdKafka", #{ kafka: #{ bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}" } })
+@reusableBinding("chanKafka", #{ kafka: #{ bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}" } })
 namespace Test;
 
 model UserEvent {

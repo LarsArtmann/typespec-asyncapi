@@ -132,7 +132,7 @@ describe("negative: reusableCorrelationId", () => {
 describe("negative: reusableBinding", () => {
   it("reports invalid-bindings-config for empty reusableBinding name", async () => {
     const result = await compileAsyncAPISpecRaw(`
-      @reusableBinding("", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
+      @reusableBinding("", #{ kafka: #{ bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}" } })
       namespace Test;
     `);
     expect(hasErrorCode(result.diagnostics, "invalid-bindings-config")).toBe(

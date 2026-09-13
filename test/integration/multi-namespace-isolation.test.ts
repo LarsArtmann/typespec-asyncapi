@@ -17,7 +17,7 @@ describe("integration: multi-namespace isolation", () => {
         protocol: "mqtt"
       })
       @bindings(#{
-        mqtt: #{ clientId: "ns-a-client", bindingVersion: ${LATEST_BINDING_VERSIONS.mqtt} }
+        mqtt: #{ clientId: "ns-a-client", bindingVersion: "${LATEST_BINDING_VERSIONS.mqtt}" }
       })
       namespace NamespaceA {
         model EventA { id: string; }
@@ -29,7 +29,7 @@ describe("integration: multi-namespace isolation", () => {
         protocol: "mqtt"
       })
       @bindings(#{
-        mqtt: #{ clientId: "ns-b-client", bindingVersion: ${LATEST_BINDING_VERSIONS.mqtt} }
+        mqtt: #{ clientId: "ns-b-client", bindingVersion: "${LATEST_BINDING_VERSIONS.mqtt}" }
       })
       namespace NamespaceB {
         model EventB { id: string; }

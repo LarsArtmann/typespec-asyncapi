@@ -404,6 +404,24 @@ describe("real Decorator Functionality Tests", () => {
 
       // Validate schemas
       expect(asyncapiDoc.components?.schemas?.EventMessage).toBeDefined();
+
+      // amqp defines a channel binding, so the passthrough lands there
+      const amqpChannel = asyncapiDoc.channels?.["amqp.user.events"];
+      const amqpBindings = inlineObject(amqpChannel?.bindings, "amqp channel bindings");
+      const amqp = inlineObject(amqpBindings.amqp, "amqp binding");
+      expect(amqp.exchange).toBe("events");
+      expect(amqp.routingKey).toBe("user.created");
+      expect(amqp.deliveryMode).toBe(2);
+      expect(amqp.bindingVersion).toBe(LATEST_BINDING_VERSIONS.amqp);
+
+      // mqtt has no channel binding, so the passthrough lands on the operation
+      const mqttOp = asyncapiDoc.operations?.publishMQTTSensorData;
+      const mqttBindings = inlineObject(mqttOp?.bindings, "mqtt operation bindings");
+      const mqtt = inlineObject(mqttBindings.mqtt, "mqtt binding");
+      expect(mqtt.topic).toBe("sensors/temperature");
+      expect(mqtt.qos).toBe(2);
+      expect(mqtt.retain).toBe(true);
+      expect(mqtt.bindingVersion).toBe(LATEST_BINDING_VERSIONS.mqtt);
     });
   });
 
@@ -451,6 +469,18 @@ describe("real Decorator Functionality Tests", () => {
 
       // Validate operation
       expect(asyncapiDoc.operations?.publishSecureMessage).toBeDefined();
+
+      const scheme = inlineObject(
+        asyncapiDoc.components?.securitySchemes?.jwtAuth,
+        "jwt security scheme",
+      );
+      expect(scheme.type).toBe("http");
+      expect(scheme.scheme).toBe("bearer");
+      expect(scheme.bearerFormat).toBe("JWT");
+      const security = asyncapiDoc.operations?.publishSecureMessage?.security;
+      expect(security).toStrictEqual([
+        { $ref: "#/components/securitySchemes/jwtAuth" },
+      ]);
     });
 
     it("should process @security decorator with OAuth2 flows", async () => {
@@ -511,6 +541,28 @@ describe("real Decorator Functionality Tests", () => {
 
       // Validate operation
       expect(asyncapiDoc.operations?.publishOAuth2SecuredMessage).toBeDefined();
+
+      const scheme = inlineObject(
+        asyncapiDoc.components?.securitySchemes?.oauth2Auth,
+        "oauth2 security scheme",
+      );
+      expect(scheme.type).toBe("oauth2");
+      const flows = inlineObject(scheme.flows, "oauth2 flows");
+      const clientCredentials = inlineObject(
+        flows.clientCredentials,
+        "clientCredentials flow",
+      );
+      expect(clientCredentials.tokenUrl).toBe("https://auth.example.com/token");
+      expect(clientCredentials.availableScopes?.read).toBe("Read access");
+      expect(clientCredentials.availableScopes?.admin).toBe("Admin access");
+      const authorizationCode = inlineObject(
+        flows.authorizationCode,
+        "authorizationCode flow",
+      );
+      expect(authorizationCode.authorizationUrl).toBe(
+        "https://auth.example.com/authorize",
+      );
+      expect(authorizationCode.availableScopes?.write).toBe("Write access");
     });
 
     it("should process @security decorator with SASL authentication for Kafka", async () => {
