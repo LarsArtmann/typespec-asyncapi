@@ -94,8 +94,7 @@ function renderField(field: FieldSpec): string {
   const rawConstraints = [
     numeric && !field.asArray ? `@minValue(${field.min})` : "",
     numeric && !field.asArray ? `@maxValue(${field.max})` : "",
-    // Constraints target the property itself, so value/string constraints only
-    // apply to plain scalars; arrays carry their own min/maxItems pair.
+    // Value/string constraints apply to the property itself; arrays carry only min/maxItems.
     field.type === "string" && !field.asArray ? `@minLength(${field.minLen})` : "",
     field.type === "string" && !field.asArray ? `@maxLength(${field.maxLen})` : "",
     field.asArray ? `@minItems(${field.min})` : "",

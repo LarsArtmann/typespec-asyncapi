@@ -12,6 +12,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Fixed
 
+- **`@protocol` on a Model now routes to the model's message bindings** — the
+  decorator accepts `Operation | Model` targets, but a Model target was
+  silently dropped: `attachChannelBindings` looked the name up in the channel
+  and operation maps (both miss for models). The `binding:` passthrough now
+  becomes the message binding (with `bindingVersion` auto-injected, same
+  merge semantics as `@bindings` — explicit fields win per protocol key), and
+  config that cannot attach to a message emits the new
+  `protocol-model-fields-unplaced` warning instead of disappearing:
+  channel/operation-only fields (e.g. kafka `partitions`), binding fields for
+  protocols without message bindings (e.g. ws), and bindings for models not
+  referenced by any operation (messageId `no-message`). Locked by
+  `test/domain/protocol-model-bindings.test.ts` (5 AJV-validated tests).
+
 - **`unknown` and `null` no longer emit `type: "string"` schemas** — the intrinsic mapping's fallback branch over-narrowed both: `prop: unknown` (and `Record<unknown>` values) emitted `{ type: "string" }` even though `unknown` accepts any value, and `T | null` unions emitted a duplicated `{ type: "string" }` variant that could never validate `null`. Now `unknown`/`void`/`never` emit the unconstrained schema `{}` and `null` emits `{ type: "null" }`, so `string | null` correctly composes `anyOf: [{ type: "string" }, { type: "null" }]`. Locked by `test/compliance/type-mapping-completeness.test.ts` (intrinsic types) and `test/external/external-specs.test.ts`.
 
 - **Constraint metadata no longer leaks across usages of the same type** — the asset-emitter interns one shared schema value per declaration (intrinsics included), and the emitter applied `@doc`/constraints to that shared object in place. A doc on any `unknown`-typed property (e.g. the stdlib's `OperationExample.returnType`, "Example response body.") contaminated every other `unknown` in the document. Property schemas are now cloned before constraints are applied.
@@ -21,6 +34,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **`@protocol` config fields now emitted at spec-correct placements** — `partitions`/`replicationFactor` (kafka channel binding, as `partitions`/`replicas`), `consumerGroup` (kafka operation binding `groupId`, emitted as a schema `{ type: "string", const: ... }` per AsyncAPI 3.1), `qos`/`retain` (mqtt operation binding), and `headers`/`queryParams` (ws channel binding, as `headers`/`query`) were previously stored but never emitted. The emitter no longer fabricates default values (partitions=1, consumerGroup="default", sasl credentials) that users never wrote, no longer emits version-only binding shells, and no longer emits bindings at placements the protocol does not define (mqtt/http channel bindings). Raw `binding:` passthrough and unknown top-level config keys route to the operation binding when the protocol has no channel binding (e.g. HTTP). `mqtt5` now normalizes to the `mqtt` binding key.
 
 ### Added
+
+- **Golden-file locks for named unions, template instantiations, and protocol bindings** — `test/golden/lock-fixtures.test.ts` byte-locks three outputs that previously had no golden: `oneOf` over all-Model union variants (`TextContent | ImageContent`), argument-derived instantiation declarations (`Page<User>` → `PageUser` with `$ref` chain), and `@protocol`-derived channel/operation bindings across kafka (partitions/replicas), http (operation `method` passthrough), and ws (channel `query`). Complements the existing `server-security` golden.
+
+- **`examples/schema-extensions` (14th example)** — runnable showcase for `@jsonSchemaExtension` (pattern/minimum/multipleOf/examples/additionalProperties on models and properties), `@encodedName` (wire-format key `Payment-Id`), and `@extension` at the document root, operation, and message levels. Exercised by `pnpm run check-examples`.
 
 - **`@extension("x-...", value)` decorator (30th) — AsyncAPI spec extensions** — namespaces extend the document root, operations extend the operation object, models extend the message object. Mirrors `@typespec/openapi` syntax; keys must start with `x-` (else `invalid-extension-key` warning); repeatable with merge semantics. The AsyncAPI 3.1 schema ignores `x-` keys, so extended documents still validate. 5 AJV-validated compliance tests.
 
@@ -33,6 +50,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **`asyncapi-id` emitter option** — sets the AsyncAPI 3.1 root `id` identifier (typically a URN) from tspconfig.yaml; omitted when unset.
 
 ### Changed
+
+- **Test suite: remaining hardcoded binding-version strings replaced with `LATEST_BINDING_VERSIONS`** — the ~34 leftover fixture/assertion sites across 9 files (compliance reusable-components and protocol-bindings, integration new-protocol-bindings / multi-namespace-isolation / reusable-components-negative, golden reusable-components, e2e realworld-ecommerce and multi-protocol-comprehensive, unit binding-placement and binding-field-validation) now derive versions from the generated registry, eliminating version-string drift. Deliberate older-than-latest passthrough fixtures (e.g. kafka `0.4.0` explicit-version preservation tests) are kept as literals on purpose.
+
+- **`decorator-functionality.test.ts` now asserts decorator OUTPUT, not just presence** — the multi-`@protocol` test locks amqp channel-binding passthrough (exchange/routingKey/deliveryMode + bindingVersion) and mqtt operation-binding passthrough (topic/qos/retain) with placement routing; the JWT and OAuth2 `@security` tests assert `components.securitySchemes` shape (bearerFormat, per-flow `tokenUrl`/`authorizationUrl`, normalized `availableScopes`) plus the `@operationSecurity` `$ref` on the operation.
+
+- **`protocol-binding-integration.test.ts` headline tests deliver their promise** — the Kafka/WebSocket/HTTP "with bindings" tests now configure `@protocol` on their fixtures and assert the emitted binding objects (spec-correct placements, registry-sourced `bindingVersion`) instead of only checking server/channel presence.
+
+- **Property suite P2/P5 now assert what their names claim** — P2 verifies the exact emitted constraint values and their ordering (minimum/maximum, minLength/maxLength, and — previously generated but never rendered — minItems/maxItems on array fields); P5 verifies the split-schemas rewrite itself: no unrewritten `#/components/schemas/*` refs in the main document, every `schemas/<Name>` ref resolves to an emitted file, and every ref inside a split file resolves within it. Generators now produce model→model `$ref` graphs and array fields, so P1/P3/P5/P6 exercise multi-model documents.
+
+- **Editor tsserver scoping for `test/`** — new `test/tsconfig.json` (extends `tsconfig.test.json`) stops editors from inferring a default project for test files (the source of ~1,400 stale `Cannot find name 'describe'` diagnostics; `one-var` was already off in `.oxlintrc.json`). Removed the unused `test/utils/cli-test-helpers.ts` (its only consumer, the fake-CLI test, was deleted in the previous cleanup).
 
 - **Test suite typechecked and hardened** — new `tsconfig.test.json` + `pnpm run typecheck:test` (now a `verify` gate stage) took the test suite from never-typechecked to 0 errors, surfacing real bugs: a fake `validateAsyncAPIObjectComprehensive` validator (checked only `asyncapi`+`info` presence) replaced by real AJV via `validateAsyncAPIDocument()`; a no-op severity filter in `studio-compatibility.test.ts` (spectral's `DiagnosticSeverity` is a numeric enum — `=== "error"` never matched); spec-invalid kafka/ws binding fixtures repaired to placement-correct shapes. `protocol-binding-integration.test.ts` now zero-error-diagnostics + whole-document-AJV-validates every spec; `external-specs.test.ts` bare `not.toBeNull()` checks replaced with structural assertions (inheritance `allOf` chains, enum values, union `oneOf` refs, defaults, `Record` mappings); `server.test.ts` protocol coverage derived from `PROTOCOL_LIST` (all 22) plus alias-normalization cases; conflict diagnostics (`conflicting-default-content-type`, `conflicting-api-version`) locked by tests; dead `modelsPerChannel` benchmark option removed.
 
