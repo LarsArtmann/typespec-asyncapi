@@ -167,8 +167,8 @@ function renderSpec(spec: {
 }): string {
   const payload = spec.models[0]!;
   const rest = spec.models.slice(1);
-  // Exercise model→model $refs: the payload model references the next model
-  // when one exists (single-model specs stay self-contained).
+  // The payload model references the next model when one exists.
+  // Single-model specs stay self-contained; this exercises model→model $refs.
   const payloadModel =
     rest.length > 0 ? renderModelWithRef(payload, rest[0]!.name) : renderModel(payload);
   const others = rest.map(renderModel).join("\n\n");
@@ -224,22 +224,43 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
       ] as JsonSchema | undefined;
       expect(prop).toBeDefined();
       const numeric = field.type === "int32" || field.type === "int64" || field.type === "float64";
-      if (numeric && !field.asArray) {
-        expect(prop?.minimum).toBe(field.min);
-        expect(prop?.maximum).toBe(field.max);
-        expect(prop?.minimum as number).toBeLessThanOrEqual(prop?.maximum as number);
-      }
-      if (field.type === "string" && !field.asArray) {
-        expect(prop?.minLength).toBe(field.minLen);
-        expect(prop?.maxLength).toBe(field.maxLen);
-        expect(prop?.minLength as number).toBeLessThanOrEqual(prop?.maxLength as number);
-      }
-      if (field.asArray) {
-        expect(prop?.type).toBe("array");
-        expect(prop?.minItems).toBe(field.min);
-        expect(prop?.maxItems).toBe(field.max);
-        expect(prop?.minItems as number).toBeLessThanOrEqual(prop?.maxItems as number);
-      }
+      const wantValue = numeric && !field.asArray;
+      const wantLength = field.type === "string" && !field.asArray;
+      const wantItems = field.asArray;
+      const lower = wantValue
+        ? prop?.minimum
+        : wantLength
+          ? prop?.minLength
+          : wantItems
+            ? prop?.minItems
+            : undefined;
+      const upper = wantValue
+        ? prop?.maximum
+        : wantLength
+          ? prop?.maxLength
+          : wantItems
+            ? prop?.maxItems
+            : undefined;
+      expect({
+        minimum: wantValue ? prop?.minimum : undefined,
+        maximum: wantValue ? prop?.maximum : undefined,
+        minLength: wantLength ? prop?.minLength : undefined,
+        maxLength: wantLength ? prop?.maxLength : undefined,
+        type: wantItems ? prop?.type : undefined,
+        minItems: wantItems ? prop?.minItems : undefined,
+        maxItems: wantItems ? prop?.maxItems : undefined,
+      }).toStrictEqual({
+        minimum: wantValue ? field.min : undefined,
+        maximum: wantValue ? field.max : undefined,
+        minLength: wantLength ? field.minLen : undefined,
+        maxLength: wantLength ? field.maxLen : undefined,
+        type: wantItems ? "array" : undefined,
+        minItems: wantItems ? field.min : undefined,
+        maxItems: wantItems ? field.max : undefined,
+      });
+      expect(
+        lower === undefined || upper === undefined || lower <= upper,
+      ).toBe(true);
     });
   });
 
@@ -288,17 +309,18 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
 
       const mainDoc = asyncApiDoc!;
       // The main document must not retain internal component-schema refs:
-      // every schema ref is rewritten to its external schemas/<Name> path,
-      // while channel/message refs legitimately stay internal.
+      // Every schema ref is rewritten to its external schemas/<Name> path.
+      // Channel and message refs legitimately stay internal.
       const mainRefs = collectRefs(mainDoc);
       for (const ref of mainRefs) {
-        if (ref.startsWith("#/components/schemas/")) {
-          throw new Error(`unrewritten schema ref in main document: ${ref}`);
-        }
+        expect(
+          ref.startsWith("#/components/schemas/"),
+          `unrewritten schema ref in main document: ${ref}`,
+        ).toBeFalsy();
       }
 
       // Every rewritten ref must resolve to an emitted schema file, and every
-      // ref inside a schema file must resolve within that same file.
+      // Ref inside a schema file must resolve within that same file.
       const externalRefs = mainRefs.filter((ref) => ref.startsWith("schemas/"));
       for (const ref of externalRefs) {
         const schemaFile = allOutputFiles.get(ref.replace(/^schemas\//u, ""));
@@ -309,9 +331,10 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
             innerRef.startsWith("#/") || innerRef.startsWith("schemas/"),
             `dangling inner ref ${innerRef} in ${ref}`,
           ).toBe(true);
-          if (innerRef.startsWith("#/")) {
-            expect(pointerExists(schema, innerRef)).toBe(true);
-          }
+          expect(
+            !innerRef.startsWith("#/") || pointerExists(schema, innerRef),
+            `unresolvable pointer ${innerRef} in ${ref}`,
+          ).toBe(true);
         }
       }
     });
