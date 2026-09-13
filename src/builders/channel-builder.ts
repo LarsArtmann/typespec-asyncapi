@@ -5,23 +5,34 @@
  * applies @doc descriptions, and attaches protocol bindings.
  */
 
+import type { Type } from "@typespec/compiler";
 import type {
   ChannelObject,
   ProtocolBindings,
   Ref,
 } from "../domain/models/asyncapi-document.js";
+import type { ProtocolConfigData } from "../state.js";
+import {
+  getLatestBindingVersion,
+  hasProtocolBindings,
+  normalizeBindingProtocol,
+  supportsBindingPlacement,
+} from "../constants/binding-versions.js";
+import { reportProgramDiagnostic } from "../decorator-helpers.js";
 import {
   escapeRefToken,
   ref,
   refMessage,
 } from "../domain/models/asyncapi-document.js";
-import type { BuilderFn, DocumentBuildContext } from "./_imports.js";
+import type { AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext } from "./_imports.js";
+import { withMessage } from "./_imports.js";
 import {
   buildMessageObject,
   buildProtocolBindings,
   channelForName,
   extractChannelParameters,
   iterNamedTypes,
+  resolveMessageKey,
 } from "./shared-utils.js";
 
 /** Get or create a channel in the context. */
@@ -94,9 +105,13 @@ export function applyChannelDocs(ctx: DocumentBuildContext): void {
   }
 }
 
-/** Attach protocol bindings to channels and operations from protocolConfigs state. */
+/** Attach protocol bindings to channels, operations, and models from protocolConfigs state. */
 export const attachChannelBindings: BuilderFn = (state, ctx) => {
-  for (const { name, data } of iterNamedTypes(state.protocolConfigs)) {
+  for (const { type, name, data } of iterNamedTypes(state.protocolConfigs)) {
+    if (type.kind === "Model") {
+      attachModelProtocolBindings(state, ctx, type, name, data);
+      continue;
+    }
     const { channel: channelBinding, operation: operationBinding } =
       buildProtocolBindings(data);
     const channel = channelForName(ctx, name);
@@ -112,6 +127,75 @@ export const attachChannelBindings: BuilderFn = (state, ctx) => {
     }
   }
 };
+
+/**
+ * Route `@protocol` on a Model to the model's message bindings.
+ *
+ * Models map to messages, so only message-placement content applies: the
+ * `binding:` passthrough becomes the message binding (with `bindingVersion`
+ * auto-injected). Channel/operation-only config fields (e.g. kafka
+ * `partitions`) cannot attach to a message and are reported as unplaced.
+ */
+function attachModelProtocolBindings(
+  state: AsyncAPIConsolidatedState,
+  ctx: DocumentBuildContext,
+  modelType: Type,
+  modelName: string,
+  data: ProtocolConfigData,
+): void {
+  const bindingKey = normalizeBindingProtocol(data.protocol);
+  const bindingFields: Record<string, unknown> = { ...data.binding };
+  const unplaced = modelConfigFieldsWithoutMessagePlacement(data);
+  const messageKey = resolveMessageKey(modelType, state.messages);
+  const message = ctx.messages[messageKey];
+  const messagePlaced =
+    message !== undefined &&
+    supportsBindingPlacement(bindingKey, "message") &&
+    Object.keys(bindingFields).length > 0;
+
+  if (messagePlaced) {
+    if (
+      hasProtocolBindings(bindingKey) &&
+      bindingFields.bindingVersion === undefined
+    ) {
+      bindingFields.bindingVersion = getLatestBindingVersion(bindingKey);
+    }
+    withMessage(ctx, messageKey, (msg) => {
+      msg.bindings = mergeProtocolBindings(msg.bindings, {
+        [bindingKey]: bindingFields,
+      });
+    });
+  } else {
+    unplaced.push(...Object.keys(bindingFields));
+  }
+
+  if (unplaced.length > 0) {
+    reportProgramDiagnostic(ctx.program, {
+      code: "protocol-model-fields-unplaced",
+      target: modelType,
+      messageId:
+        message === undefined && Object.keys(bindingFields).length > 0
+          ? "no-message"
+          : undefined,
+      format: { model: modelName, fields: unplaced.join(", ") },
+    });
+  }
+}
+
+/** `@protocol` config fields that can never attach to a message binding. */
+function modelConfigFieldsWithoutMessagePlacement(
+  data: ProtocolConfigData,
+): string[] {
+  return Object.entries(data)
+    .filter(
+      ([key, value]) =>
+        key !== "protocol" &&
+        key !== "version" &&
+        key !== "binding" &&
+        value !== undefined,
+    )
+    .map(([key]) => key);
+}
 
 function isRef(value: unknown): value is Ref {
   return (

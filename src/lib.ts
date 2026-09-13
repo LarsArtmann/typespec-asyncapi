@@ -196,6 +196,13 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "warning",
     },
+    "protocol-model-fields-unplaced": {
+      messages: {
+        default: paramMessage`@protocol on Model '${"model"}': field(s) ${"fields"} only apply to channel or operation bindings and were not attached to the message. For message-level binding fields use @bindings on the model.`,
+        "no-message": paramMessage`@protocol on Model '${"model"}': field(s) ${"fields"} could not be attached because the model is not used by any channel operation (no message was emitted).`,
+      },
+      severity: "warning",
+    },
   },
   name: "@lars-artmann/typespec-asyncapi",
   state: {
