@@ -145,7 +145,7 @@ describe("getValidPlacements", () => {
 describe("processBindings placement validation", () => {
   it("emits misplaced-binding when ws is placed on an operation", () => {
     const { issues } = processBindings(
-      { ws: { bindingVersion: "0.1.0" } },
+      { ws: { bindingVersion: ${LATEST_BINDING_VERSIONS.ws} } },
       "operation",
     );
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
@@ -157,7 +157,7 @@ describe("processBindings placement validation", () => {
 
   it("emits misplaced-binding when ws is placed on a message", () => {
     const { issues } = processBindings(
-      { ws: { bindingVersion: "0.1.0" } },
+      { ws: { bindingVersion: ${LATEST_BINDING_VERSIONS.ws} } },
       "message",
     );
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
@@ -166,7 +166,7 @@ describe("processBindings placement validation", () => {
 
   it("does NOT emit misplaced-binding when kafka is placed on an operation", () => {
     const { issues } = processBindings(
-      { kafka: { bindingVersion: "0.5.0" } },
+      { kafka: { bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } },
       "operation",
     );
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
@@ -175,7 +175,7 @@ describe("processBindings placement validation", () => {
 
   it("does NOT emit misplaced-binding when kafka is placed on a message", () => {
     const { issues } = processBindings(
-      { kafka: { bindingVersion: "0.5.0" } },
+      { kafka: { bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } },
       "message",
     );
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
@@ -184,7 +184,7 @@ describe("processBindings placement validation", () => {
 
   it("does NOT emit misplaced-binding when mqtt is placed on an operation", () => {
     const { issues } = processBindings(
-      { mqtt: { bindingVersion: "0.2.0" } },
+      { mqtt: { bindingVersion: ${LATEST_BINDING_VERSIONS.mqtt} } },
       "operation",
     );
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
@@ -193,7 +193,7 @@ describe("processBindings placement validation", () => {
 
   it("does NOT emit placement issues when targetKind is omitted (backward compat)", () => {
     const { issues } = processBindings({
-      ws: { bindingVersion: "0.1.0" },
+      ws: { bindingVersion: ${LATEST_BINDING_VERSIONS.ws} },
     });
     const misplaced = issues.filter((i) => i.code === "misplaced-binding");
     expect(misplaced).toHaveLength(0);
@@ -201,7 +201,7 @@ describe("processBindings placement validation", () => {
 
   it("still passes through the binding even when misplaced", () => {
     const { bindings } = processBindings(
-      { ws: { bindingVersion: "0.1.0" } },
+      { ws: { bindingVersion: ${LATEST_BINDING_VERSIONS.ws} } },
       "operation",
     );
     expect(bindings.ws).toBeDefined();
@@ -211,8 +211,8 @@ describe("processBindings placement validation", () => {
   it("emits misplaced-binding for multiple misplaced protocols", () => {
     const { issues } = processBindings(
       {
-        kafka: { bindingVersion: "0.5.0" },
-        ws: { bindingVersion: "0.1.0" },
+        kafka: { bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} },
+        ws: { bindingVersion: ${LATEST_BINDING_VERSIONS.ws} },
       },
       "operation",
     );

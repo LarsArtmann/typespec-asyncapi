@@ -167,7 +167,7 @@ describe("binding field validation", () => {
 
   it("normalizes websocket alias to ws binding key", () => {
     const { bindings } = processBindings(
-      { websockets: { bindingVersion: "0.1.0" } },
+      { websockets: { bindingVersion: ${LATEST_BINDING_VERSIONS.ws} } },
       "channel",
     );
     expect(bindings.ws).toBeDefined();
@@ -184,7 +184,7 @@ describe("binding field validation", () => {
 
   it("normalizes wss to ws binding key", () => {
     const { bindings } = processBindings(
-      { wss: { bindingVersion: "0.1.0" } },
+      { wss: { bindingVersion: ${LATEST_BINDING_VERSIONS.ws} } },
       "channel",
     );
     expect(bindings.ws).toBeDefined();

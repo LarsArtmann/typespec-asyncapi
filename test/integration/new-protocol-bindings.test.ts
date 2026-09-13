@@ -39,7 +39,7 @@ describe("integration: new protocol bindings end-to-end", () => {
       @protocol(#{
         protocol: "solace",
         binding: #{
-          bindingVersion: "0.4.0"
+          ${LATEST_BINDING_VERSIONS.solace}
         }
       })
       op publish(): Event;
@@ -57,7 +57,7 @@ describe("integration: new protocol bindings end-to-end", () => {
         protocol: "solace"
       })
       @bindings(#{
-        solace: #{ bindingVersion: "0.4.0" }
+        solace: #{ ${LATEST_BINDING_VERSIONS.solace} }
       })
       namespace Test;
       model Event { id: string; }
@@ -80,7 +80,7 @@ describe("integration: new protocol bindings end-to-end", () => {
       @protocol(#{
         protocol: "anypointmq",
         binding: #{
-          bindingVersion: "0.0.1"
+          ${LATEST_BINDING_VERSIONS.anypointmq}
         }
       })
       op publish(): Event;
@@ -99,7 +99,7 @@ describe("integration: new protocol bindings end-to-end", () => {
       @protocol(#{
         protocol: "ros2",
         binding: #{
-          bindingVersion: "0.1.0"
+          ${LATEST_BINDING_VERSIONS.ros2}
         }
       })
       op publish(): Event;
@@ -118,7 +118,7 @@ describe("integration: new protocol bindings end-to-end", () => {
         @channel("events")
         @protocol(#{
           protocol: "${protocol}",
-          binding: #{ bindingVersion: "0.1.0" }
+          binding: #{ ${LATEST_BINDING_VERSIONS.ros2} }
         })
         op publish(): Event;
       `);

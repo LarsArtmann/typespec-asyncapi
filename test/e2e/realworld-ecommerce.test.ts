@@ -15,6 +15,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import YAML from "yaml";
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 
 const asyncApiSchema = JSON.parse(
   readFileSync(
@@ -70,8 +71,7 @@ describe("e2E: Real-World E-Commerce System", () => {
 				protocol: "kafka",
 				binding: #{
 					topic: "product-events",
-					bindingVersion: "0.5.0"
-				}
+					bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}"				}
 			})
 			@publish
 			op publishProductCreated(): Product;
@@ -79,8 +79,7 @@ describe("e2E: Real-World E-Commerce System", () => {
 			@channel("catalog.product.updated")
 			@protocol(#{
 				protocol: "kafka",
-				binding: #{ topic: "product-events", bindingVersion: "0.5.0" }
-			})
+				binding: #{ topic: "product-events", bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}" }			})
 			@publish
 			op publishProductUpdated(): Product;
 
@@ -100,8 +99,7 @@ describe("e2E: Real-World E-Commerce System", () => {
 				protocol: "kafka",
 				binding: #{
 					topic: "inventory-events",
-					bindingVersion: "0.5.0"
-				}
+					bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}"				}
 			})
 			@publish
 			op publishInventoryUpdate(): InventoryUpdate;
@@ -109,8 +107,7 @@ describe("e2E: Real-World E-Commerce System", () => {
 			@channel("inventory.low-stock.alert")
 			@protocol(#{
 				protocol: "ws",
-				binding: #{ method: "GET", bindingVersion: "0.1.0" }
-			})
+				binding: #{ method: "GET", bindingVersion: "${LATEST_BINDING_VERSIONS.ws}" }			})
 			@subscribe
 			op subscribeLowStockAlerts(): {
 				productId: string;
@@ -146,8 +143,7 @@ describe("e2E: Real-World E-Commerce System", () => {
 				protocol: "kafka",
 				binding: #{
 					topic: "order-events",
-					bindingVersion: "0.5.0"
-				}
+					bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}"				}
 			})
 			@security(#{
 				name: "orderAuth",
@@ -177,8 +173,7 @@ describe("e2E: Real-World E-Commerce System", () => {
 				protocol: "kafka",
 				binding: #{
 					topic: "payment-events",
-					bindingVersion: "0.5.0"
-				}
+					bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}"				}
 			})
 			@security(#{
 				name: "paymentAuth",
@@ -218,8 +213,7 @@ describe("e2E: Real-World E-Commerce System", () => {
 				protocol: "kafka",
 				binding: #{
 					topic: "shipment-events",
-					bindingVersion: "0.5.0"
-				}
+					bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}"				}
 			})
 			@publish
 			op publishShipmentCreated(): ShipmentCreated;
@@ -235,8 +229,7 @@ describe("e2E: Real-World E-Commerce System", () => {
 			@channel("shipping.status.updated")
 			@protocol(#{
 				protocol: "ws",
-				binding: #{ method: "GET", bindingVersion: "0.1.0" }
-			})
+				binding: #{ method: "GET", bindingVersion: "${LATEST_BINDING_VERSIONS.ws}" }			})
 			@subscribe
 			op subscribeShipmentStatus(): ShipmentStatusUpdate;
 

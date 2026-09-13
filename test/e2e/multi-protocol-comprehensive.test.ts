@@ -7,6 +7,7 @@
 
 import { createAsyncAPITestHost } from "../utils/test-helpers.js";
 import YAML from "yaml";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 
 describe("e2E: Multi-Protocol Comprehensive Test", () => {
   it("should generate AsyncAPI 3.1 with all protocols", async () => {
@@ -35,8 +36,7 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
 					topic: "user-events",
 					key: "userId",
 					groupId: "user-service",
-					bindingVersion: "0.5.0"
-				}
+					bindingVersion: "${LATEST_BINDING_VERSIONS.kafka}"				}
 			})
 			@security(#{
 				name: "kafkaAuth",
@@ -69,8 +69,7 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
 							token: #{ type: "string" }
 						}
 					},
-					bindingVersion: "0.1.0"
-				}
+					bindingVersion: "${LATEST_BINDING_VERSIONS.ws}"				}
 			})
 			@security(#{
 				name: "bearerAuth",
@@ -100,8 +99,7 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
 				binding: #{
 					type: "request",
 					method: "POST",
-					bindingVersion: "0.3.0"
-				}
+					bindingVersion: "${LATEST_BINDING_VERSIONS.http}"				}
 			})
 			@security(#{
 				name: "apiKeyAuth",
@@ -133,8 +131,7 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
 				binding: #{
 					qos: 1,
 					retain: true,
-					bindingVersion: "0.2.0"
-				}
+					bindingVersion: "${LATEST_BINDING_VERSIONS.mqtt}"				}
 			})
 			@publish
 			op publishDeviceStatus(): DeviceStatus;

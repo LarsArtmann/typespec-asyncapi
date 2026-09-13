@@ -3,6 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import YAML from "yaml";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 
 const GOLDEN_FILE = join(
   import.meta.dirname,
@@ -19,8 +20,8 @@ const SOURCE = `
   description: "Default message trait"
 })
 @reusableCorrelationId("defaultCorrelation", "$message.header#/correlationId")
-@reusableBinding("stdKafka", #{ kafka: #{ bindingVersion: "0.5.0" } })
-@reusableBinding("chanKafka", #{ kafka: #{ bindingVersion: "0.5.0" } })
+@reusableBinding("stdKafka", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
+@reusableBinding("chanKafka", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
 namespace Test;
 
 model UserEvent {

@@ -7,6 +7,7 @@
 
 import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 
 describe("integration: multi-namespace isolation", () => {
   it("keeps server bindings isolated per namespace", async () => {
@@ -16,7 +17,7 @@ describe("integration: multi-namespace isolation", () => {
         protocol: "mqtt"
       })
       @bindings(#{
-        mqtt: #{ clientId: "ns-a-client", bindingVersion: "0.2.0" }
+        mqtt: #{ clientId: "ns-a-client", bindingVersion: ${LATEST_BINDING_VERSIONS.mqtt} }
       })
       namespace NamespaceA {
         model EventA { id: string; }
@@ -28,7 +29,7 @@ describe("integration: multi-namespace isolation", () => {
         protocol: "mqtt"
       })
       @bindings(#{
-        mqtt: #{ clientId: "ns-b-client", bindingVersion: "0.2.0" }
+        mqtt: #{ clientId: "ns-b-client", bindingVersion: ${LATEST_BINDING_VERSIONS.mqtt} }
       })
       namespace NamespaceB {
         model EventB { id: string; }

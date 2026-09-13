@@ -12,6 +12,7 @@
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type {
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
   ChannelObject,
   CorrelationIdObject,
   MessageObject,
@@ -238,7 +239,7 @@ describe("components.correlationIds compliance (reusable)", () => {
 describe("reusable bindings compliance", () => {
   it("populates components.operationBindings from @reusableBinding + @useBinding", async () => {
     const doc = await compileAndValidateOrThrow(`
-      @reusableBinding("kafkaStd", #{ kafka: #{ clientId: #{ type: "string" }, bindingVersion: "0.5.0" } })
+      @reusableBinding("kafkaStd", #{ kafka: #{ clientId: #{ type: "string" }, bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
       namespace Test;
       model Event { id: string; }
       @channel("events")
@@ -265,7 +266,7 @@ describe("reusable bindings compliance", () => {
 
   it("populates components.messageBindings from @useBinding on model", async () => {
     const doc = await compileAndValidateOrThrow(`
-      @reusableBinding("msgKafka", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      @reusableBinding("msgKafka", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
       namespace Test;
       @useBinding("msgKafka")
       model Event { id: string; }
@@ -295,7 +296,7 @@ describe("reusable bindings compliance", () => {
 
   it("populates components.serverBindings from @useBinding on namespace", async () => {
     const doc = await compileAndValidateOrThrow(`
-      @reusableBinding("srvKafka", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      @reusableBinding("srvKafka", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
       @server("prod", #{ url: "kafka://broker:9092", protocol: "kafka" })
       @useBinding("srvKafka")
       namespace Test;
@@ -312,7 +313,7 @@ describe("reusable bindings compliance", () => {
 
   it("does not crash when @useBinding targets namespace with no servers", async () => {
     const doc = await compileAndValidateOrThrow(`
-      @reusableBinding("orphan", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      @reusableBinding("orphan", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
       @useBinding("orphan")
       namespace Test;
       model Event { id: string; }
@@ -349,7 +350,7 @@ describe("operation trait richer fields", () => {
       @operationTrait("rich", #{
         summary: "Rich trait",
         tags: #[#{ name: "production" }],
-        bindings: #{ kafka: #{ bindingVersion: "0.5.0" } }
+        bindings: #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } }
       })
       namespace Test;
       model Event { id: string; }
@@ -427,7 +428,7 @@ describe("message trait richer fields", () => {
 describe("components.channelBindings compliance", () => {
   it("populates components.channelBindings from @useChannelBinding", async () => {
     const doc = await compileAndValidateOrThrow(`
-      @reusableBinding("kafkaChan", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      @reusableBinding("kafkaChan", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
       namespace Test;
       model Event { id: string; }
       @channel("events")
@@ -461,8 +462,8 @@ describe("components.channelBindings compliance", () => {
 
   it("applies different channel bindings to different channels", async () => {
     const doc = await compileAndValidateOrThrow(`
-      @reusableBinding("eventsBinding", #{ kafka: #{ bindingVersion: "0.5.0" } })
-      @reusableBinding("ordersBinding", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      @reusableBinding("eventsBinding", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
+      @reusableBinding("ordersBinding", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
       namespace Test;
       model Event { id: string; }
       model Order { orderId: string; }
@@ -487,7 +488,7 @@ describe("components.channelBindings compliance", () => {
 
   it("works with explicit @publish decorator", async () => {
     const doc = await compileAndValidateOrThrow(`
-      @reusableBinding("pubBinding", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      @reusableBinding("pubBinding", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
       namespace Test;
       model Event { id: string; }
       @channel("events")
@@ -504,7 +505,7 @@ describe("components.channelBindings compliance", () => {
 
   it("does not cross-contaminate bindings across channels", async () => {
     const doc = await compileAndValidateOrThrow(`
-      @reusableBinding("kafkaBinding", #{ kafka: #{ bindingVersion: "0.5.0" } })
+      @reusableBinding("kafkaBinding", #{ kafka: #{ bindingVersion: ${LATEST_BINDING_VERSIONS.kafka} } })
       namespace Test;
       model Event { id: string; }
       model Order { orderId: string; }
