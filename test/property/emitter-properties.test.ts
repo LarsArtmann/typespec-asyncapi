@@ -20,6 +20,7 @@ import { collectRefs } from "../utils/ref-utils.js";
 import { compileAndValidate } from "../utils/schema-validator.js";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/asyncAPIEmitterOptions.js";
+import type { JsonSchema } from "../../src/domain/models/asyncapi-document.js";
 
 // eslint-disable-next-line node/no-process-env -- FC_SEED is the documented reproduction override
 const SEED = Number(process.env["FC_SEED"] ?? 20_260_821);
@@ -65,6 +66,7 @@ interface FieldSpec {
   max: number;
   minLen: number;
   maxLen: number;
+  asArray: boolean;
 }
 
 const fieldSpec = fc.record({
@@ -74,6 +76,7 @@ const fieldSpec = fc.record({
   min: fc.integer({ min: 0, max: 90 }),
   maxLen: fc.integer({ min: 1, max: 80 }),
   minItems: fc.integer({ min: 0, max: 5 }),
+  asArray: fc.boolean(),
 });
 
 /** Pair constraints are made CONSISTENT by construction (P2): min <= max etc. */
@@ -91,12 +94,17 @@ function renderField(field: FieldSpec): string {
   const rawConstraints = [
     numeric ? `@minValue(${field.min})` : "",
     numeric ? `@maxValue(${field.max})` : "",
-    field.type === "string" ? `@minLength(${field.minLen})` : "",
-    field.type === "string" ? `@maxLength(${field.maxLen})` : "",
+    // String constraints target the property itself, so they only apply when
+    // the property is a plain string (not an array of strings).
+    field.type === "string" && !field.asArray ? `@minLength(${field.minLen})` : "",
+    field.type === "string" && !field.asArray ? `@maxLength(${field.maxLen})` : "",
+    field.asArray ? `@minItems(${field.min})` : "",
+    field.asArray ? `@maxItems(${field.max})` : "",
   ];
   const constraints = rawConstraints.filter(Boolean).join(" ");
   const prefix = constraints.length > 0 ? `${constraints}\n  ` : "";
-  return `${prefix}${field.name}${field.optional ? "?" : ""}: ${field.type};`;
+  const type = field.asArray ? `${field.type}[]` : field.type;
+  return `${prefix}${field.name}${field.optional ? "?" : ""}: ${type};`;
 }
 
 interface ModelSpec {
@@ -139,18 +147,37 @@ const specArbitrary = fc.record({
   channelName: fc.stringMatching(/^[a-z]{3,10}\/[a-z]{3,10}$/u),
 });
 
+/** Render a model with one extra property referencing another named model. */
+function renderModelWithRef(model: ModelSpec, refTarget: string): string {
+  const enumBlock =
+    model.withEnum === null
+      ? ""
+      : `enum ${model.name}Status { ${model.withEnum.join(", ")} }\n\n`;
+  const fields = [
+    ...model.fields.map(renderField),
+    `related: ${refTarget};`,
+  ].join("\n  ");
+  return `${enumBlock}model ${model.name} {\n  ${fields}\n}`;
+}
+
 function renderSpec(spec: {
   models: ModelSpec[];
   opName: string;
   channelName: string;
 }): string {
-  const models = spec.models.map(renderModel).join("\n\n");
-  const payload = spec.models[0]!.name;
+  const payload = spec.models[0]!;
+  const rest = spec.models.slice(1);
+  // Exercise model→model $refs: the payload model references the next model
+  // when one exists (single-model specs stay self-contained).
+  const payloadModel =
+    rest.length > 0 ? renderModelWithRef(payload, rest[0]!.name) : renderModel(payload);
+  const others = rest.map(renderModel).join("\n\n");
+  const body = [payloadModel, others].filter(Boolean).join("\n\n");
   return `
     namespace Test;
-    ${models}
+    ${body}
     @channel("${spec.channelName}")
-    op ${spec.opName}(): ${payload};
+    op ${spec.opName}(): ${payload.name};
   `;
 }
 
@@ -192,6 +219,27 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
       `;
       const result = await compileAndValidate(source);
       expect(result.valid).toBe(true);
+      const prop = result.document.components?.schemas?.Holder?.properties?.[
+        field.name
+      ] as JsonSchema | undefined;
+      expect(prop).toBeDefined();
+      const numeric = field.type === "int32" || field.type === "int64" || field.type === "float64";
+      if (numeric) {
+        expect(prop?.minimum).toBe(field.min);
+        expect(prop?.maximum).toBe(field.max);
+        expect(prop?.minimum as number).toBeLessThanOrEqual(prop?.maximum as number);
+      }
+      if (field.type === "string") {
+        expect(prop?.minLength).toBe(field.minLen);
+        expect(prop?.maxLength).toBe(field.maxLen);
+        expect(prop?.minLength as number).toBeLessThanOrEqual(prop?.maxLength as number);
+      }
+      if (field.asArray) {
+        expect(prop?.type).toBe("array");
+        expect(prop?.minItems).toBe(field.min);
+        expect(prop?.maxItems).toBe(field.max);
+        expect(prop?.minItems as number).toBeLessThanOrEqual(prop?.maxItems as number);
+      }
     });
   });
 
@@ -229,6 +277,39 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
   it("property 5: split-schemas rewriting preserves every internal ref", async () => {
     await property("spec", specArbitrary, async (spec) => {
       const options: AsyncAPIEmitterOptions = { "split-schemas": true };
+      const { asyncApiDoc, allOutputFiles } = await compileAsyncAPI(
+        renderSpec(spec),
+        options,
+      );
+      expect(asyncApiDoc).not.toBeNull();
+
+      const mainDoc = asyncApiDoc!;
+      // The main document must not retain internal component-schema refs:
+      // every schema ref is rewritten to its external schemas/<Name> path.
+      const mainRefs = collectRefs(mainDoc);
+      for (const ref of mainRefs) {
+        expect(ref.startsWith("schemas/")).toBe(true);
+      }
+
+      // Every rewritten ref must resolve to an emitted schema file, and every
+      // ref inside a schema file must resolve within that same file.
+      for (const ref of mainRefs) {
+        const fileName = `${ref}.json`;
+        const schemaFile = allOutputFiles.get(fileName);
+        expect(schemaFile, `missing split output ${fileName}`).toBeDefined();
+        const schema = JSON.parse(schemaFile!) as Record<string, unknown>;
+        for (const innerRef of collectRefs(schema)) {
+          expect(
+            innerRef.startsWith("#/") || innerRef.startsWith("schemas/"),
+            `dangling inner ref ${innerRef} in ${fileName}`,
+          ).toBe(true);
+          if (innerRef.startsWith("#/")) {
+            expect(pointerExists(schema, innerRef)).toBe(true);
+          }
+        }
+      }
+
+      // AJV validation of the inlined view still holds
       const result = await compileAndValidate(renderSpec(spec), options);
       expect(result.valid).toBe(true);
     });

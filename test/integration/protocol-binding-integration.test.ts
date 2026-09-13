@@ -135,7 +135,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
         @channel("chat-room")
         @protocol(#{
           protocol: "ws",
-          headers: #{ "x-room-id": "room-1" },
+          headers: #{ xRoomId: "room-1" },
         })
         @subscribe
         op receiveMessage(): ChatMessage;
@@ -159,7 +159,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
         "ws channel bindings",
       );
       const ws = inlineObject(bindings.ws, "ws binding");
-      expect(ws.headers).toStrictEqual({ "x-room-id": "room-1" });
+      expect(ws.headers).toStrictEqual({ xRoomId: "room-1" });
       expect(ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
     });
 
