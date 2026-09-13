@@ -161,6 +161,9 @@ function attachModelProtocolBindings(
       bindingFields.bindingVersion = getLatestBindingVersion(bindingKey);
     }
     withMessage(ctx, messageKey, (msg) => {
+      if (isRef(msg.bindings)) {
+        return;
+      }
       msg.bindings = mergeProtocolBindings(msg.bindings, {
         [bindingKey]: bindingFields,
       });
