@@ -12,18 +12,16 @@ import type {
   Ref,
 } from "../domain/models/asyncapi-document.js";
 import type { ProtocolConfigData } from "../state.js";
-import {
-  getLatestBindingVersion,
-  hasProtocolBindings,
-  normalizeBindingProtocol,
-  supportsBindingPlacement,
-} from "../constants/binding-versions.js";
 import { reportProgramDiagnostic } from "../decorator-helpers.js";
 import {
   escapeRefToken,
   ref,
   refMessage,
 } from "../domain/models/asyncapi-document.js";
+import {
+  normalizeBindingProtocol,
+  supportsBindingPlacement,
+} from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn, DocumentBuildContext } from "./_imports.js";
 import { withMessage } from "./_imports.js";
 import {
@@ -31,6 +29,7 @@ import {
   buildProtocolBindings,
   channelForName,
   extractChannelParameters,
+  injectLatestBindingVersion,
   iterNamedTypes,
   resolveMessageKey,
 } from "./shared-utils.js";
@@ -154,12 +153,7 @@ function attachModelProtocolBindings(
     Object.keys(bindingFields).length > 0;
 
   if (messagePlaced) {
-    if (
-      hasProtocolBindings(bindingKey) &&
-      bindingFields.bindingVersion === undefined
-    ) {
-      bindingFields.bindingVersion = getLatestBindingVersion(bindingKey);
-    }
+    injectLatestBindingVersion(bindingKey, bindingFields);
     withMessage(ctx, messageKey, (msg) => {
       if (isRef(msg.bindings)) {
         return;

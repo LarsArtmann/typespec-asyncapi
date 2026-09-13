@@ -13,3 +13,9 @@ export type { AsyncAPIConsolidatedState } from "../state.js";
 export type { BuilderFn, DocumentBuildContext } from "./types.js";
 export { nameOfType, withMessage } from "./types.js";
 export { iterNamedTypes } from "./shared-utils.js";
+export {
+  getLatestBindingVersion,
+  hasProtocolBindings,
+  normalizeBindingProtocol,
+  supportsBindingPlacement,
+} from "../constants/binding-versions.js";

@@ -328,13 +328,26 @@ export function buildProtocolBindings(
     if (Object.keys(bindingFields).length === 0) {
       continue;
     }
-    if (
-      hasProtocolBindings(bindingKey) &&
-      bindingFields.bindingVersion === undefined
-    ) {
-      bindingFields.bindingVersion = getLatestBindingVersion(bindingKey);
-    }
+    injectLatestBindingVersion(bindingKey, bindingFields);
     result[placement] = { [bindingKey]: bindingFields };
   }
   return result;
+}
+
+/**
+ * Auto-inject the latest `bindingVersion` into a binding-field map when the
+ * protocol defines binding schemas and the user did not pin a version.
+ * Shared by `buildProtocolBindings` (channel/operation placements) and the
+ * `@protocol`-on-Model message routing.
+ */
+export function injectLatestBindingVersion(
+  bindingKey: string,
+  bindingFields: Record<string, unknown>,
+): void {
+  if (
+    hasProtocolBindings(bindingKey) &&
+    bindingFields.bindingVersion === undefined
+  ) {
+    bindingFields.bindingVersion = getLatestBindingVersion(bindingKey);
+  }
 }
