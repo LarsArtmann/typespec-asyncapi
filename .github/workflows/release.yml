@@ -60,15 +60,25 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           printf 'registry=https://registry.npmjs.org/\n//registry.npmjs.org/:_authToken=%s\n' "$NODE_AUTH_TOKEN" > "$HOME/.npmrc"
+          # npm >= 11 refuses to put a prerelease on the default `latest` tag;
+          # this project's convention is that `latest` tracks the newest beta
+          # (all published versions so far are prereleases), so opt in
+          # explicitly whenever the version has a prerelease suffix.
+          VERSION=$(node -p "require('./package.json').version")
+          if [[ "$VERSION" == *-* ]]; then
+            TAG_ARGS=(--tag latest)
+          else
+            TAG_ARGS=()
+          fi
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
             if [[ "${{ inputs.dry_run }}" == "true" ]]; then
               echo "Dry-run requested: npm publish --dry-run (no registry write)"
-              npm publish --dry-run --ignore-scripts --access public
+              npm publish --dry-run --ignore-scripts --access public "${TAG_ARGS[@]}"
             else
               echo "Manual dispatch with dry_run=false"
-              npm publish --provenance --ignore-scripts --access public
+              npm publish --provenance --ignore-scripts --access public "${TAG_ARGS[@]}"
             fi
           else
             echo "Tag push: publishing with provenance"
-            npm publish --provenance --ignore-scripts --access public
+            npm publish --provenance --ignore-scripts --access public "${TAG_ARGS[@]}"
           fi
