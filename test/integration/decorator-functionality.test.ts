@@ -405,7 +405,7 @@ describe("real Decorator Functionality Tests", () => {
       // Validate schemas
       expect(asyncapiDoc.components?.schemas?.EventMessage).toBeDefined();
 
-      // amqp defines a channel binding, so the passthrough lands there
+      // AMQP defines a channel binding, so the passthrough lands there
       const amqpChannel = asyncapiDoc.channels?.["amqp.user.events"];
       const amqpBindings = inlineObject(amqpChannel?.bindings, "amqp channel bindings");
       const amqp = inlineObject(amqpBindings.amqp, "amqp binding");
@@ -414,7 +414,7 @@ describe("real Decorator Functionality Tests", () => {
       expect(amqp.deliveryMode).toBe(2);
       expect(amqp.bindingVersion).toBe(LATEST_BINDING_VERSIONS.amqp);
 
-      // mqtt has no channel binding, so the passthrough lands on the operation
+      // MQTT has no channel binding, so the passthrough lands on the operation
       const mqttOp = asyncapiDoc.operations?.publishMQTTSensorData;
       const mqttBindings = inlineObject(mqttOp?.bindings, "mqtt operation bindings");
       const mqtt = inlineObject(mqttBindings.mqtt, "mqtt binding");
@@ -444,6 +444,7 @@ describe("real Decorator Functionality Tests", () => {
             bearerFormat: "JWT"
           }
         })
+        @operationSecurity(#{ name: "jwtAuth" })
         @channel("secure.messages")
         @publish
         op publishSecureMessage(): SecureMessage;

@@ -17,6 +17,8 @@ import {
   PROTOCOL_LIST,
   isSupportedProtocol,
 } from "../../src/constants/protocols.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
+import { inlineObject } from "../utils/type-guards.js";
 
 /**
  * Compile TypeSpec source, assert zero error diagnostics, and validate the
@@ -56,6 +58,11 @@ describe("asyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("user-events")
+        @protocol(#{
+          protocol: "kafka",
+          partitions: 6,
+          replicationFactor: 3,
+        })
         @subscribe
         op handleUserEvent(): UserEvent;
       `;
@@ -68,6 +75,16 @@ describe("asyncAPI Protocol Binding Integration", () => {
       expect(spec.servers!["kafka-cluster"].protocol).toBe("kafka");
       expect(spec.channels).toBeDefined();
       expect(spec.channels!["user-events"]).toBeDefined();
+
+      // The @protocol config maps to the spec-correct kafka channel binding
+      const bindings = inlineObject(
+        spec.channels!["user-events"].bindings,
+        "kafka channel bindings",
+      );
+      const kafka = inlineObject(bindings.kafka, "kafka binding");
+      expect(kafka.partitions).toBe(6);
+      expect(kafka.replicas).toBe(3);
+      expect(kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
     });
 
     it("should validate generated spec follows AsyncAPI 3.1 standard", async () => {
@@ -116,9 +133,13 @@ describe("asyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("chat-room")
+        @protocol(#{
+          protocol: "ws",
+          headers: #{ "x-room-id": "room-1" },
+        })
         @subscribe
         op receiveMessage(): ChatMessage;
-        
+
         @channel("chat-room")
         @publish
         op sendMessage(): ChatMessage;
@@ -132,6 +153,14 @@ describe("asyncAPI Protocol Binding Integration", () => {
       expect(spec.servers!["websocket-server"].protocol).toBe("ws");
       expect(spec.channels).toBeDefined();
       expect(spec.channels!["chat-room"]).toBeDefined();
+
+      const bindings = inlineObject(
+        spec.channels!["chat-room"].bindings,
+        "ws channel bindings",
+      );
+      const ws = inlineObject(bindings.ws, "ws binding");
+      expect(ws.headers).toStrictEqual({ "x-room-id": "room-1" });
+      expect(ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
     });
 
     it("should handle bidirectional WebSocket communication", async () => {
@@ -148,6 +177,10 @@ describe("asyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("messages")
+        @protocol(#{
+          protocol: "ws",
+          queryParams: #{ debug: "1" },
+        })
         @subscribe
         op receiveMessage(): Message;
         
@@ -160,6 +193,14 @@ describe("asyncAPI Protocol Binding Integration", () => {
 
       expect(spec.servers!["ws-api"].protocol).toBe("wss");
       expect(spec.channels!["messages"]).toBeDefined();
+
+      const bindings = inlineObject(
+        spec.channels!["messages"].bindings,
+        "ws channel bindings",
+      );
+      const ws = inlineObject(bindings.ws, "ws binding");
+      expect(ws.query).toStrictEqual({ debug: "1" });
+      expect(ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
     });
   });
 
@@ -181,6 +222,10 @@ describe("asyncAPI Protocol Binding Integration", () => {
         }
 
         @channel("webhook-notifications")
+        @protocol(#{
+          protocol: "http",
+          binding: #{ method: "POST" },
+        })
         @publish
         op sendWebhookEvent(): WebhookEvent;
       `;
@@ -193,6 +238,13 @@ describe("asyncAPI Protocol Binding Integration", () => {
       expect(spec.servers!["http-api"].protocol).toBe("https");
       expect(spec.channels).toBeDefined();
       expect(spec.channels!["webhook-notifications"]).toBeDefined();
+
+      // HTTP defines no channel binding, so the passthrough lands on the operation
+      const op = spec.operations?.sendWebhookEvent;
+      const bindings = inlineObject(op?.bindings, "http operation bindings");
+      const http = inlineObject(bindings.http, "http binding");
+      expect(http.method).toBe("POST");
+      expect(http.bindingVersion).toBe(LATEST_BINDING_VERSIONS.http);
     });
 
     it("should support HTTP webhook patterns", async () => {
