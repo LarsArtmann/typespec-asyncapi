@@ -1,0 +1,48 @@
+asyncapi: 3.1.0
+info:
+  title: Generated API
+  version: 1.0.0
+channels:
+  users.page:
+    address: users.page
+    messages:
+      PageUser:
+        $ref: "#/components/messages/PageUser"
+operations:
+  publishUsers:
+    action: send
+    channel:
+      $ref: "#/channels/users.page"
+    messages:
+      - $ref: "#/channels/users.page/messages/PageUser"
+components:
+  messages:
+    PageUser:
+      name: PageUser
+      contentType: application/json
+      title: PageUser
+      payload:
+        $ref: "#/components/schemas/PageUser"
+  schemas:
+    User:
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+      type: object
+      required:
+        - id
+        - name
+    PageUser:
+      properties:
+        items:
+          items:
+            $ref: "#/components/schemas/User"
+          type: array
+        nextLink:
+          type: string
+      type: object
+      required:
+        - items
+        - nextLink

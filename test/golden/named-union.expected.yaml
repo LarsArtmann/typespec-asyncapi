@@ -1,0 +1,53 @@
+asyncapi: 3.1.0
+info:
+  title: Generated API
+  version: 1.0.0
+channels:
+  messages:
+    address: messages
+    messages:
+      Message:
+        $ref: "#/components/messages/Message"
+operations:
+  publish:
+    action: send
+    channel:
+      $ref: "#/channels/messages"
+    messages:
+      - $ref: "#/channels/messages/messages/Message"
+components:
+  messages:
+    Message:
+      name: Message
+      contentType: application/json
+      title: Message
+      payload:
+        $ref: "#/components/schemas/Message"
+  schemas:
+    TextContent:
+      properties:
+        body:
+          type: string
+      type: object
+      required:
+        - body
+    ImageContent:
+      properties:
+        url:
+          type: string
+        width:
+          format: int32
+          type: integer
+      type: object
+      required:
+        - url
+        - width
+    Message:
+      properties:
+        content:
+          oneOf:
+            - $ref: "#/components/schemas/TextContent"
+            - $ref: "#/components/schemas/ImageContent"
+      type: object
+      required:
+        - content

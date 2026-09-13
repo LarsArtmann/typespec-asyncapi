@@ -1,0 +1,74 @@
+asyncapi: 3.1.0
+info:
+  title: Generated API
+  version: 1.0.0
+servers:
+  kafka-prod:
+    description: Server for Test
+    host: kafka://broker:9092
+    protocol: kafka
+channels:
+  orders.created:
+    address: orders.created
+    messages:
+      OrderEvent:
+        $ref: "#/components/messages/OrderEvent"
+    bindings:
+      kafka:
+        partitions: 3
+        replicas: 2
+        bindingVersion: 0.5.0
+  orders.status:
+    address: orders.status
+    messages:
+      OrderEvent:
+        $ref: "#/components/messages/OrderEvent"
+  orders.live:
+    address: orders.live
+    messages:
+      OrderEvent:
+        $ref: "#/components/messages/OrderEvent"
+    bindings:
+      ws:
+        query:
+          trace: "1"
+        bindingVersion: 0.1.0
+operations:
+  publishOrder:
+    action: send
+    channel:
+      $ref: "#/channels/orders.created"
+    messages:
+      - $ref: "#/channels/orders.created/messages/OrderEvent"
+  publishStatus:
+    action: send
+    channel:
+      $ref: "#/channels/orders.status"
+    messages:
+      - $ref: "#/channels/orders.status/messages/OrderEvent"
+    bindings:
+      http:
+        method: POST
+        bindingVersion: 0.3.0
+  publishLive:
+    action: send
+    channel:
+      $ref: "#/channels/orders.live"
+    messages:
+      - $ref: "#/channels/orders.live/messages/OrderEvent"
+components:
+  messages:
+    OrderEvent:
+      name: OrderEvent
+      contentType: application/json
+      title: OrderEvent
+      payload:
+        $ref: "#/components/schemas/OrderEvent"
+  schemas:
+    OrderEvent:
+      properties:
+        orderId:
+          type: string
+      type: object
+      required:
+        - orderId
