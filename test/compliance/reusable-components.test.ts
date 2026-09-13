@@ -12,7 +12,6 @@
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type {
-import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
   ChannelObject,
   CorrelationIdObject,
   MessageObject,
@@ -21,6 +20,7 @@ import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js
   OperationTraitObject,
   ParameterObject,
 } from "../../src/domain/models/asyncapi-document.js";
+import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 
 describe("components.operationTraits compliance", () => {
   it("populates components.operationTraits from @operationTrait", async () => {
