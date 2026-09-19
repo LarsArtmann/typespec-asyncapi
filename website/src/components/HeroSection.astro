@@ -75,7 +75,7 @@ const highlightedCode = `<span class="text-[#bd93f9]">import</span> <span class=
           ))}
           <span class="ml-3 text-xs text-text-muted font-mono">api.tsp</span>
         </div>
-        <pre class="p-4 text-left text-sm font-mono leading-relaxed overflow-x-auto relative"><code id="hero-code" set:html={highlightedCode} /></pre>
+        <pre tabindex="0" class="p-4 text-left text-sm font-mono leading-relaxed overflow-x-auto relative"><code id="hero-code" set:html={highlightedCode} /></pre>
         <button class="absolute top-2 right-2 bg-code-inline-bg/80 border border-border rounded-md text-text-muted px-1.5 py-1.5 cursor-pointer text-xs font-mono hover:text-text-primary hover:border-border-hover transition-all duration-150 opacity-0 [.code-preview:hover_&]:opacity-100" id="copy-btn" data-code={heroCode} aria-label="Copy code to clipboard">Copy</button>
       </div>
     </div>
