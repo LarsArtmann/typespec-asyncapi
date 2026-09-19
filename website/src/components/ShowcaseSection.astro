@@ -1,5 +1,36 @@
 ---
 import SectionHeader from './SectionHeader.astro';
+
+const tspCode = `<span class="text-text-muted">import</span> <span class="text-amber">"@lars-artmann/typespec-asyncapi"</span>;
+<span class="text-text-muted">using</span> TypeSpec.AsyncAPI;
+
+<span class="text-text-muted">@channel</span>(<span class="text-amber">"user.registered"</span>)
+<span class="text-text-muted">@kafka</span>(<span class="text-amber">#{ topic: "user.registrations" }</span>)
+<span class="text-text-muted">op</span> <span class="text-accent">publishUserRegistered</span>():
+  UserRegistration;
+
+<span class="text-text-muted">model</span> <span class="text-accent">UserRegistration</span> <span class="text-text-muted">{</span>
+  userId: <span class="text-accent-light">string</span>;
+  email: <span class="text-accent-light">string</span>;
+  timestamp: <span class="text-accent-light">utcDateTime</span>;
+<span class="text-text-muted">}</span>`;
+
+const yamlCode = `<span class="text-text-muted">asyncapi:</span> <span class="text-amber">3.1.0</span>
+<span class="text-text-muted">channels:</span>
+  <span class="text-accent">user.registered</span>:
+    <span class="text-text-muted">address:</span> user.registered
+    <span class="text-text-muted">messages:</span>
+      UserRegistration:
+        <span class="text-text-muted">$ref:</span> <span class="text-amber">"#/components/messages/…"</span>
+    <span class="text-text-muted">bindings:</span>
+      <span class="text-accent">kafka:</span>
+        <span class="text-text-muted">topic:</span> user.registrations
+        <span class="text-text-muted">partitions:</span> <span class="text-amber">6</span>
+
+<span class="text-text-muted">components:</span>
+  <span class="text-text-muted">messages:</span>
+    UserRegistration:
+      <span class="text-text-muted">payload:</span> <span class="text-text-muted">{</span> $ref: … <span class="text-text-muted">}</span>`;
 ---
 
 <div id="demo">
@@ -14,19 +45,7 @@ import SectionHeader from './SectionHeader.astro';
       ))}
       <span class="ml-3 text-xs text-text-muted font-mono">api.tsp — TypeSpec input</span>
     </div>
-    <pre class="p-4 text-left text-[13px] sm:text-sm font-mono leading-relaxed overflow-x-auto"><code><span class="text-text-muted">import</span> <span class="text-amber">"@lars-artmann/typespec-asyncapi"</span>;
-<span class="text-text-muted">using</span> TypeSpec.AsyncAPI;
-
-<span class="text-text-muted">@channel</span>(<span class="text-amber">"user.registered"</span>)
-<span class="text-text-muted">@kafka</span>(#{ topic: <span class="text-amber">"user.registrations"</span> })
-<span class="text-text-muted">op</span> <span class="text-accent">publishUserRegistered</span>():
-  UserRegistration;
-
-<span class="text-text-muted">model</span> <span class="text-accent">UserRegistration</span> {
-  userId: <span class="text-accent-light">string</span>;
-  email: <span class="text-accent-light">string</span>;
-  timestamp: <span class="text-accent-light">utcDateTime</span>;
-}</code></pre>
+    <pre class="p-4 text-left text-[13px] sm:text-sm font-mono leading-relaxed overflow-x-auto"><code set:html={tspCode} /></pre>
   </div>
 
   <div class="flex items-center justify-center py-2 md:py-0">
@@ -43,22 +62,7 @@ import SectionHeader from './SectionHeader.astro';
       ))}
       <span class="ml-3 text-xs text-text-muted font-mono">asyncapi.yaml — validated ✓</span>
     </div>
-    <pre class="p-4 text-left text-[13px] sm:text-sm font-mono leading-relaxed overflow-x-auto"><code><span class="text-text-muted">asyncapi:</span> <span class="text-amber">3.1.0</span>
-<span class="text-text-muted">channels:</span>
-  <span class="text-accent">user.registered</span>:
-    <span class="text-text-muted">address:</span> user.registered
-    <span class="text-text-muted">messages:</span>
-      UserRegistration:
-        <span class="text-text-muted">$ref:</span> <span class="text-amber">"#/components/messages/…"</span>
-    <span class="text-text-muted">bindings:</span>
-      <span class="text-accent">kafka:</span>
-        <span class="text-text-muted">topic:</span> user.registrations
-        <span class="text-text-muted">partitions:</span> <span class="text-amber">6</span>
-
-<span class="text-text-muted">components:</span>
-  <span class="text-text-muted">messages:</span>
-    UserRegistration:
-      <span class="text-text-muted">payload:</span> { $ref: … }</code></pre>
+    <pre class="p-4 text-left text-[13px] sm:text-sm font-mono leading-relaxed overflow-x-auto"><code set:html={yamlCode} /></pre>
   </div>
 </div>
 
