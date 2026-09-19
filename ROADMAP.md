@@ -116,6 +116,17 @@ Raw ideas:
 - `@asyncapi/generator` actual CLI testing — structural tests exist but the real generator has never been run against emitter output (Bun incompatibility with `@asyncapi/parser`'s Spectral ruleset)
 - `--version` projection support — emitter currently always emits the latest version, ignoring TypeSpec's version projection flag
 
+### 5. Demo video (epic seed, storyboarded 2026-09-19)
+
+- **30-second demo.mp4** for the website hero. Storyboard: (1) 0–5 s
+  terminal `npm i -D @larsartmann/typespec-asyncapi`; (2) 5–15 s a `.tsp`
+  file with an AsyncAPI spec on the left, emitted AsyncAPI YAML appearing
+  live on the right; (3) 15–25 s the emitted spec validated against a real
+  broker config; (4) 25–30 s site + repo card. Production is multi-hour
+  creative work (HyperFrames pipeline; see emeet-pixyd
+  `website/emeet-pixy-demo/` for the pattern) — the storyboard above is the
+  whole near-term commitment.
+
 ---
 
 ## Non-Goals
