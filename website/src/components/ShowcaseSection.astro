@@ -3,22 +3,63 @@ import SectionHeader from './SectionHeader.astro';
 ---
 
 <div id="demo">
-  <SectionHeader eyebrow="See it work" title="From TypeSpec to AsyncAPI in 30 seconds" subtitle="One compile: a typed TypeSpec definition becomes a validated AsyncAPI 3.1 document with channels, operations, messages, and schemas." />
+  <SectionHeader eyebrow="See it work" title="From TypeSpec to AsyncAPI in one compile" subtitle="A typed TypeSpec definition becomes a validated AsyncAPI 3.1 document with channels, operations, messages, and schemas." />
 </div>
 
-<div class="max-w-3xl mx-auto mb-6">
-  <div class="relative rounded-xl border border-border bg-bg-card-solid shadow-2xl overflow-hidden">
-    <div class="flex items-center gap-1.5 px-4 py-3 border-b border-border bg-bg-card-solid/50">
+<div class="max-w-5xl mx-auto mb-6 grid gap-4 md:grid-cols-[1fr_auto_1fr] items-stretch">
+  <div class="rounded-xl border border-border bg-bg-code shadow-xl overflow-hidden">
+    <div class="flex items-center gap-1.5 px-4 py-3 border-b border-border">
       {Array(3).fill(null).map(() => (
         <span class="w-2.5 h-2.5 rounded-full bg-code-dot"></span>
       ))}
-      <span class="ml-3 text-xs text-text-muted font-mono">demo.mp4 — 30s product tour</span>
+      <span class="ml-3 text-xs text-text-muted font-mono">api.tsp — TypeSpec input</span>
     </div>
-    <video controls preload="metadata" poster="/screenshots/demo-poster.png" class="w-full block">
-      <source src="/demo.mp4" type="video/mp4" />
-      Your browser does not support the video tag.
-    </video>
+    <pre class="p-4 text-left text-[13px] sm:text-sm font-mono leading-relaxed overflow-x-auto"><code><span class="text-text-muted">import</span> <span class="text-amber">"@lars-artmann/typespec-asyncapi"</span>;
+<span class="text-text-muted">using</span> TypeSpec.AsyncAPI;
+
+<span class="text-text-muted">@channel</span>(<span class="text-amber">"user.registered"</span>)
+<span class="text-text-muted">@kafka</span>(#{ topic: <span class="text-amber">"user.registrations"</span> })
+<span class="text-text-muted">op</span> <span class="text-accent">publishUserRegistered</span>():
+  UserRegistration;
+
+<span class="text-text-muted">model</span> <span class="text-accent">UserRegistration</span> {
+  userId: <span class="text-accent-light">string</span>;
+  email: <span class="text-accent-light">string</span>;
+  timestamp: <span class="text-accent-light">utcDateTime</span>;
+}</code></pre>
+  </div>
+
+  <div class="flex items-center justify-center py-2 md:py-0">
+    <div class="flex flex-col items-center gap-1 text-accent">
+      <span class="text-2xl" aria-hidden="true">→</span>
+      <span class="text-xs font-mono text-text-muted">tsp compile .</span>
+    </div>
+  </div>
+
+  <div class="rounded-xl border border-border bg-bg-code shadow-xl overflow-hidden">
+    <div class="flex items-center gap-1.5 px-4 py-3 border-b border-border">
+      {Array(3).fill(null).map(() => (
+        <span class="w-2.5 h-2.5 rounded-full bg-code-dot"></span>
+      ))}
+      <span class="ml-3 text-xs text-text-muted font-mono">asyncapi.yaml — validated ✓</span>
+    </div>
+    <pre class="p-4 text-left text-[13px] sm:text-sm font-mono leading-relaxed overflow-x-auto"><code><span class="text-text-muted">asyncapi:</span> <span class="text-amber">3.1.0</span>
+<span class="text-text-muted">channels:</span>
+  <span class="text-accent">user.registered</span>:
+    <span class="text-text-muted">address:</span> user.registered
+    <span class="text-text-muted">messages:</span>
+      UserRegistration:
+        <span class="text-text-muted">$ref:</span> <span class="text-amber">"#/components/messages/…"</span>
+    <span class="text-text-muted">bindings:</span>
+      <span class="text-accent">kafka:</span>
+        <span class="text-text-muted">topic:</span> user.registrations
+        <span class="text-text-muted">partitions:</span> <span class="text-amber">6</span>
+
+<span class="text-text-muted">components:</span>
+  <span class="text-text-muted">messages:</span>
+    UserRegistration:
+      <span class="text-text-muted">payload:</span> { $ref: … }</code></pre>
   </div>
 </div>
 
-<p class="text-center text-sm text-text-muted">See it work end-to-end — 30 seconds, no audio required.</p>
+<p class="text-center text-sm text-text-muted">Real example output — every emitted document is checked against the official AsyncAPI 3.1.0 JSON Schema.</p>

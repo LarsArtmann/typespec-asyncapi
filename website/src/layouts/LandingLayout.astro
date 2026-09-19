@@ -25,13 +25,12 @@ const ogDesc = siteConfig.ogDescription;
     <meta property="og:description" content={ogDesc} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={siteConfig.siteUrl} />
-    <meta property="og:image" content={`${siteConfig.siteUrl}/screenshots/demo-poster.png`} />
+    <meta property="og:image" content={`${siteConfig.siteUrl}/og.png`} />
     <meta property="og:image:alt" content="typespec-asyncapi — TypeSpec in, validated AsyncAPI 3.1 out" />
-    <meta property="og:video" content={`${siteConfig.siteUrl}/demo.mp4`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={siteConfig.name} />
     <meta name="twitter:description" content={ogDesc} />
-    <meta name="twitter:image" content={`${siteConfig.siteUrl}/screenshots/demo-poster.png`} />
+    <meta name="twitter:image" content={`${siteConfig.siteUrl}/og.png`} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="canonical" href={siteConfig.siteUrl} />
     <link rel="manifest" href="/manifest.json" />
@@ -61,16 +60,6 @@ const ogDesc = siteConfig.ogDescription;
         "price": "0",
         "priceCurrency": "USD"
       }
-    })} />
-    <script type="application/ld+json" is:inline set:html={JSON.stringify({
-      "@context": "https://schema.org",
-      "@type": "VideoObject",
-      "name": "typespec-asyncapi — From TypeSpec to AsyncAPI 3.1 in 30 seconds",
-      "description": "A typed TypeSpec definition compiles to an AsyncAPI 3.1 document that validates against the official JSON Schema.",
-      "thumbnailUrl": [`${siteConfig.siteUrl}/screenshots/demo-poster.png`],
-      "uploadDate": "2026-08-22",
-      "contentUrl": `${siteConfig.siteUrl}/demo.mp4`,
-      "embedUrl": `${siteConfig.siteUrl}/#demo`
     })} />
     <Header />
     <main id="main-content">
