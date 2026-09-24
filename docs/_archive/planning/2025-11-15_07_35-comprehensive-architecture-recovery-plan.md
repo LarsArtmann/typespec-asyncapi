@@ -34,10 +34,10 @@ This plan transforms the TypeSpec AsyncAPI Emitter from "basic features working"
 **Investment:** 8 hours
 **Return:** Foundational type safety, prevents security issues
 
-| # | Task                                          | Hours | Impact         |
-| - | --------------------------------------------- | ----- | -------------- |
-| 1 | Fix `any` types in security-ENHANCED.ts       | 2-3h  | 🔥 SECURITY    |
-| 2 | Create core value objects (ChannelPath, etc.) | 4-6h  | 🔥 TYPE SAFETY |
+| #   | Task                                          | Hours | Impact         |
+| --- | --------------------------------------------- | ----- | -------------- |
+| 1   | Fix `any` types in security-ENHANCED.ts       | 2-3h  | 🔥 SECURITY    |
+| 2   | Create core value objects (ChannelPath, etc.) | 4-6h  | 🔥 TYPE SAFETY |
 
 **Why This Matters:**
 
@@ -52,12 +52,12 @@ This plan transforms the TypeSpec AsyncAPI Emitter from "basic features working"
 **Investment:** 10 hours
 **Return:** Eliminates critical architectural flaws
 
-| # | Task                             | Hours | Impact             |
-| - | -------------------------------- | ----- | ------------------ |
-| 3 | Fix circular dependencies        | 2h    | 🔥 BUILD STABILITY |
-| 4 | Add PipelineContext immutability | 1h    | 🔥 SAFETY          |
-| 5 | Fix split brain patterns         | 3-4h  | 🔥 CORRECTNESS     |
-| 6 | Complete quick wins #6-10        | 1h    | ⚡ CLEANUP         |
+| #   | Task                             | Hours | Impact             |
+| --- | -------------------------------- | ----- | ------------------ |
+| 3   | Fix circular dependencies        | 2h    | 🔥 BUILD STABILITY |
+| 4   | Add PipelineContext immutability | 1h    | 🔥 SAFETY          |
+| 5   | Fix split brain patterns         | 3-4h  | 🔥 CORRECTNESS     |
+| 6   | Complete quick wins #6-10        | 1h    | ⚡ CLEANUP         |
 
 **Why This Matters:**
 
@@ -73,14 +73,14 @@ This plan transforms the TypeSpec AsyncAPI Emitter from "basic features working"
 **Investment:** 22 hours
 **Return:** Maintainable, extensible architecture
 
-| #  | Task                                      | Hours | Impact             |
-| -- | ----------------------------------------- | ----- | ------------------ |
-| 7  | Split ValidationService (537→3 modules)   | 4h    | 📈 MAINTAINABILITY |
-| 8  | Split effect-helpers (536→3 modules)      | 4h    | 📈 MAINTAINABILITY |
-| 9  | Split PluginRegistry (509→3 modules)      | 4h    | 📈 MAINTAINABILITY |
-| 10 | Eliminate document validation duplication | 1h    | 🔄 DRY             |
-| 11 | Add global error boundary                 | 2h    | 🛡️ RELIABILITY      |
-| 12 | Repository pattern for documents          | 4-6h  | 🏛️ CLEAN ARCH       |
+| #   | Task                                      | Hours | Impact             |
+| --- | ----------------------------------------- | ----- | ------------------ |
+| 7   | Split ValidationService (537→3 modules)   | 4h    | 📈 MAINTAINABILITY |
+| 8   | Split effect-helpers (536→3 modules)      | 4h    | 📈 MAINTAINABILITY |
+| 9   | Split PluginRegistry (509→3 modules)      | 4h    | 📈 MAINTAINABILITY |
+| 10  | Eliminate document validation duplication | 1h    | 🔄 DRY             |
+| 11  | Add global error boundary                 | 2h    | 🛡️ RELIABILITY     |
+| 12  | Repository pattern for documents          | 4-6h  | 🏛️ CLEAN ARCH      |
 
 **Why This Matters:**
 

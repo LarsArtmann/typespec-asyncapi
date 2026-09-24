@@ -325,7 +325,7 @@ type SecuritySchemeId = Brand<string, "SecuritySchemeId">;
 | ------------- | ------ | ---- | ------ | -------------- |
 | 🚨 CRITICAL   | 1-25   | 10h  | 51%    | READY TO START |
 | 🔧 HIGH       | 26-50  | 8h   | 13%    | WAITING        |
-| 🏗️ MEDIUM      | 51-75  | 10h  | 16%    | WAITING        |
+| 🏗️ MEDIUM     | 51-75  | 10h  | 16%    | WAITING        |
 | 📚 COMPLETION | 76-125 | 20h  | 20%    | WAITING        |
 
 ---

@@ -335,8 +335,7 @@ describe("e2E: Real-World E-Commerce System", () => {
     const allProtos = new Set<string>();
     for (const ch of Object.values(channels)) {
       const bindings = (ch as Record<string, unknown>).bindings as
-        | Record<string, unknown>
-        | undefined;
+        Record<string, unknown> | undefined;
       if (bindings) {
         for (const proto of Object.keys(bindings)) {
           allProtos.add(proto);
@@ -345,8 +344,7 @@ describe("e2E: Real-World E-Commerce System", () => {
     }
     for (const op of Object.values(operations)) {
       const bindings = (op as Record<string, unknown>).bindings as
-        | Record<string, unknown>
-        | undefined;
+        Record<string, unknown> | undefined;
       if (bindings) {
         for (const proto of Object.keys(bindings)) {
           allProtos.add(proto);

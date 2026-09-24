@@ -95,6 +95,8 @@
     --text-lg--line-height: calc(1.75 / 1.125);
     --text-xl: 1.25rem;
     --text-xl--line-height: calc(1.75 / 1.25);
+    --text-2xl: 1.5rem;
+    --text-2xl--line-height: calc(2 / 1.5);
     --font-weight-medium: 500;
     --font-weight-semibold: 600;
     --font-weight-bold: 700;
@@ -124,6 +126,7 @@
     --color-accent: #14b8a6;
     --color-accent-hover: #2dd4bf;
     --color-accent-light: #5eead4;
+    --color-accent-text: #14b8a6;
     --color-on-accent: #0a0908;
     --color-amber: #fbbf24;
     --color-code-inline-bg: #1c1917;
@@ -643,11 +646,17 @@
   .items-center {
     align-items: center;
   }
+  .items-stretch {
+    align-items: stretch;
+  }
   .justify-between {
     justify-content: space-between;
   }
   .justify-center {
     justify-content: center;
+  }
+  .gap-1 {
+    gap: var(--spacing);
   }
   .gap-1\.5 {
     gap: calc(var(--spacing) * 1.5);
@@ -926,6 +935,9 @@
   .py-1\.5 {
     padding-block: calc(var(--spacing) * 1.5);
   }
+  .py-2 {
+    padding-block: calc(var(--spacing) * 2);
+  }
   .py-2\.5 {
     padding-block: calc(var(--spacing) * 2.5);
   }
@@ -958,6 +970,10 @@
   }
   .font-sans {
     font-family: var(--font-sans);
+  }
+  .text-2xl {
+    font-size: var(--text-2xl);
+    line-height: var(--tw-leading, var(--text-2xl--line-height));
   }
   .text-base {
     font-size: var(--text-base);
@@ -1038,6 +1054,15 @@
   .text-accent {
     color: var(--color-accent);
   }
+  .text-accent-light {
+    color: var(--color-accent-light);
+  }
+  .text-accent-text {
+    color: var(--color-accent-text);
+  }
+  .text-amber {
+    color: var(--color-amber);
+  }
   .text-on-accent {
     color: var(--color-on-accent);
   }
@@ -1088,6 +1113,14 @@
   }
   .shadow-2xl {
     --tw-shadow: 0 25px 50px -12px var(--tw-shadow-color, #00000040);
+    box-shadow:
+      var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
+      var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
+  }
+  .shadow-xl {
+    --tw-shadow:
+      0 20px 25px -5px var(--tw-shadow-color, #0000001a),
+      0 8px 10px -6px var(--tw-shadow-color, #0000001a);
     box-shadow:
       var(--tw-inset-shadow), var(--tw-inset-ring-shadow),
       var(--tw-ring-offset-shadow), var(--tw-ring-shadow), var(--tw-shadow);
@@ -1334,8 +1367,14 @@
     .md\:grid-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+    .md\:grid-cols-\[1fr_auto_1fr\] {
+      grid-template-columns: 1fr auto 1fr;
+    }
     .md\:flex-row {
       flex-direction: row;
+    }
+    .md\:py-0 {
+      padding-block: 0;
     }
     .md\:text-xl {
       font-size: var(--text-xl);
@@ -1382,14 +1421,15 @@
   --color-text-primary: #1c1917;
   --color-text-secondary: #57534e;
   --color-text-muted: #66605a;
-  --color-accent: #0d9488;
-  --color-accent-hover: #0f766e;
+  --color-accent: #14b8a6;
+  --color-accent-hover: #0d9488;
   --color-accent-dim: #0d94881a;
   --color-accent-light: #2dd4bf;
-  --color-on-accent: #fff;
+  --color-accent-text: #0f766e;
+  --color-on-accent: #0a0908;
   --color-code-inline-bg: #e7e5e4;
   --color-code-dot: #a8a29e;
-  --color-amber: #b45309;
+  --color-amber: #92400e;
   --color-success: #15803d;
 }
 @keyframes fade-in {

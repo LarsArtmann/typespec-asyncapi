@@ -120,34 +120,34 @@
 
 ### Backlog (P3)
 
-| #   | Task                                                                                                          | Impact   | Effort                                               |
+| # | Task | Impact | Effort |
 | --- | ------------------------------------------------------------------------------------------------------------- | -------- | ---------------------------------------------------- | --- | --- |
-| 25  | Investigate TypeSpec compiler `createTester` source to understand exactly how it loads `dist/` via virtual FS | Research | Medium                                               |
-| 26  | File upstream issue with TypeSpec team about coverage tooling compatibility                                   | Medium   | Low                                                  |
-| 27  | Evaluate `mocha` + `nyc` as alternative test runner for coverage (istanbul instruments at compile time)       | Low      | High                                                 |
-| 28  | Add `CODEOWNERS` file                                                                                         | Low      | Low                                                  |
-| 29  | Create CONTRIBUTING.md with pnpm setup instructions                                                           | Low      | Low                                                  |
-| 30  | Add `LICENSE` check to verify it's included in `pnpm pack` output                                             | Low      | Low                                                  |
-| 31  | Consider monorepo setup if shared module grows (`pnpm-workspace.yaml` already exists)                         | Low      | Medium                                               |
-| 32  | Evaluate `pnpm deploy` for production-like package publishing                                                 | Low      | Medium                                               |
-| 33  | Add Renovate bot config for automated dependency updates                                                      | Low      | Medium                                               |
-| 34  | Consider adding `tsx watch` as a proper dev server with hot reload documentation                              | Low      | Low                                                  |
-| 35  | Review whether `@typespec/compiler/testing` could be patched to support V8 coverage natively                  | Low      | High                                                 |
-| 36  | Add a `Makefile` alias or `just` target for `nix develop .#default --command pnpm run verify` for convenience | Low      | Low                                                  |
-| 37  | Evaluate whether the `ci` devShell needs `pkgs.typescript`                                                    | Low      | Low                                                  |
-| 38  | Consider adding `node-version` matrix testing (Node 20, 22, 24)                                               | Low      | Medium                                               |
-| 39  | Add a `prepare:ci` script that mirrors what CI would run                                                      | Low      | Low                                                  |
-| 40  | Document the `.gitignore` `.npmrc` exclusion — is it intentional?                                             | Low      | Low                                                  |
-| 41  | Consider whether `bun.lock` should be in `.gitignore` as a safety net                                         | Low      | Low                                                  |
-| 42  | Review `packageManager` field in `package.json` (pnpm supports `packageManager: "pnpm@11.18.0"`)              | Low      | Low                                                  |
-| 43  | Add `bin` field to `package.json` if the emitter should be CLI-callable                                       | Low      | Low                                                  |
-| 44  | Evaluate pnpm catalog feature for centralized version management                                              | Low      | Medium                                               |
-| 45  | Consider adding `overrides` documentation — pnpm supports `overrides` same as pnpm                            | Low      | Low                                                  |
-| 46  | Review whether `husky` hooks need updating for pnpm                                                           | Low      | Low                                                  |
-| 47  | Add a `doctor` or `diagnose` script that checks toolchain health                                              | Low      | Low                                                  |
-| 48  | Consider whether the `effect-reports/` gitignore entry is still needed                                        | Low      | Low                                                  |
-| 49  | Review all `2>/dev/null                                                                                       |          | true` patterns in scripts for correctness under pnpm | Low | Low |
-| 50  | Add a `RELEASING.md` document with pnpm-based release steps                                                   | Low      | Low                                                  |
+| 25 | Investigate TypeSpec compiler `createTester` source to understand exactly how it loads `dist/` via virtual FS | Research | Medium |
+| 26 | File upstream issue with TypeSpec team about coverage tooling compatibility | Medium | Low |
+| 27 | Evaluate `mocha` + `nyc` as alternative test runner for coverage (istanbul instruments at compile time) | Low | High |
+| 28 | Add `CODEOWNERS` file | Low | Low |
+| 29 | Create CONTRIBUTING.md with pnpm setup instructions | Low | Low |
+| 30 | Add `LICENSE` check to verify it's included in `pnpm pack` output | Low | Low |
+| 31 | Consider monorepo setup if shared module grows (`pnpm-workspace.yaml` already exists) | Low | Medium |
+| 32 | Evaluate `pnpm deploy` for production-like package publishing | Low | Medium |
+| 33 | Add Renovate bot config for automated dependency updates | Low | Medium |
+| 34 | Consider adding `tsx watch` as a proper dev server with hot reload documentation | Low | Low |
+| 35 | Review whether `@typespec/compiler/testing` could be patched to support V8 coverage natively | Low | High |
+| 36 | Add a `Makefile` alias or `just` target for `nix develop .#default --command pnpm run verify` for convenience | Low | Low |
+| 37 | Evaluate whether the `ci` devShell needs `pkgs.typescript` | Low | Low |
+| 38 | Consider adding `node-version` matrix testing (Node 20, 22, 24) | Low | Medium |
+| 39 | Add a `prepare:ci` script that mirrors what CI would run | Low | Low |
+| 40 | Document the `.gitignore` `.npmrc` exclusion — is it intentional? | Low | Low |
+| 41 | Consider whether `bun.lock` should be in `.gitignore` as a safety net | Low | Low |
+| 42 | Review `packageManager` field in `package.json` (pnpm supports `packageManager: "pnpm@11.18.0"`) | Low | Low |
+| 43 | Add `bin` field to `package.json` if the emitter should be CLI-callable | Low | Low |
+| 44 | Evaluate pnpm catalog feature for centralized version management | Low | Medium |
+| 45 | Consider adding `overrides` documentation — pnpm supports `overrides` same as pnpm | Low | Low |
+| 46 | Review whether `husky` hooks need updating for pnpm | Low | Low |
+| 47 | Add a `doctor` or `diagnose` script that checks toolchain health | Low | Low |
+| 48 | Consider whether the `effect-reports/` gitignore entry is still needed | Low | Low |
+| 49 | Review all `2>/dev/null                                                                                       |          | true` patterns in scripts for correctness under pnpm | Low | Low |
+| 50 | Add a `RELEASING.md` document with pnpm-based release steps | Low | Low |
 
 ---
 

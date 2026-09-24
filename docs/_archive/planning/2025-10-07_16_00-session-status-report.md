@@ -225,15 +225,15 @@ const keys = getPropertyKeys(testResult.asyncapiDoc.channels);
 
 ### High Priority Tasks (Remaining)
 
-| Task                        | Impact | Effort | Score | Status    |
-| --------------------------- | ------ | ------ | ----- | --------- |
+| Task                        | Impact | Effort | Score | Status     |
+| --------------------------- | ------ | ------ | ----- | ---------- |
 | Task 4: Effect Schema       | 9      | 2h     | 45    | ⏭️ NEXT    |
 | Task 5: Custom Bun Matchers | 7      | 2h     | 35    | ⏭️ Pending |
 
 ### Medium Priority Tasks
 
-| Task                           | Impact | Effort | Score | Status    |
-| ------------------------------ | ------ | ------ | ----- | --------- |
+| Task                           | Impact | Effort | Score | Status     |
+| ------------------------------ | ------ | ------ | ----- | ---------- |
 | Task 6: ts-pattern Integration | 6      | 2h     | 30    | ⏭️ Pending |
 | Task 7: Property-Based Testing | 8      | 3h     | 27    | ⏭️ Pending |
 

@@ -781,16 +781,16 @@ function convertType(type: Type): JSONSchema {
 
 ## 📊 PRIORITIZED EXECUTION PLAN (Sorted by Priority Score)
 
-| # | Task                        | Impact | Effort | Score | Est. Time |
-| - | --------------------------- | ------ | ------ | ----- | --------- |
-| 1 | Test Pattern Documentation  | 9      | 0.5h   | 180   | 30min     |
-| 2 | Type Guards in Test Helpers | 8      | 1h     | 80    | 60min     |
-| 3 | Migrate All toHaveProperty  | 7      | 1h     | 70    | 60min     |
-| 4 | Effect Schema for AsyncAPI  | 9      | 2h     | 45    | 120min    |
-| 5 | Custom Bun Test Matchers    | 7      | 2h     | 35    | 120min    |
-| 6 | ts-pattern Integration      | 6      | 2h     | 30    | 120min    |
-| 7 | Property-Based Testing      | 8      | 3h     | 27    | 180min    |
-| 8 | Bundle Size Analysis        | 4      | 2h     | 20    | 120min    |
+| #   | Task                        | Impact | Effort | Score | Est. Time |
+| --- | --------------------------- | ------ | ------ | ----- | --------- |
+| 1   | Test Pattern Documentation  | 9      | 0.5h   | 180   | 30min     |
+| 2   | Type Guards in Test Helpers | 8      | 1h     | 80    | 60min     |
+| 3   | Migrate All toHaveProperty  | 7      | 1h     | 70    | 60min     |
+| 4   | Effect Schema for AsyncAPI  | 9      | 2h     | 45    | 120min    |
+| 5   | Custom Bun Test Matchers    | 7      | 2h     | 35    | 120min    |
+| 6   | ts-pattern Integration      | 6      | 2h     | 30    | 120min    |
+| 7   | Property-Based Testing      | 8      | 3h     | 27    | 180min    |
+| 8   | Bundle Size Analysis        | 4      | 2h     | 20    | 120min    |
 
 **Total High Priority Time:** 270 minutes (4.5 hours)
 **Total Medium Priority Time:** 420 minutes (7 hours)

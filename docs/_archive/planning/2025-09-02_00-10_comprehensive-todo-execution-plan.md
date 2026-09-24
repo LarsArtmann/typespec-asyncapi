@@ -60,60 +60,60 @@ TypeScript compilation fails with errors in plugin files:
 
 ## 📋 PHASE 1: 25 Large Tasks (30-100min each)
 
-| #  | Task                                         | Size   | Priority | Impact | Dependencies |
-| -- | -------------------------------------------- | ------ | -------- | ------ | ------------ |
-| 1  | Fix TS compilation in plugins                | 30min  | P0       | 🔴     | None         |
-| 2  | Configure test fail-fast on TS errors        | 45min  | P0       | 🔴     | Task 1       |
-| 3  | Split emitter: Extract DocumentBuilder       | 90min  | P0       | 🔴     | Task 1       |
-| 4  | Split emitter: Extract ValidationService     | 75min  | P0       | 🔴     | Task 3       |
-| 5  | Split emitter: Extract SerializationService  | 60min  | P0       | 🔴     | Task 3       |
-| 6  | Remove UNUSED methods from emitter           | 45min  | P1       | 🟠     | Task 3       |
-| 7  | Fix all console.log → Effect.log             | 30min  | P1       | 🟠     | Task 1       |
-| 8  | Create typed error hierarchy                 | 60min  | P1       | 🟠     | Task 3       |
-| 9  | Complete GitHub issue #8 (Multiple files)    | 30min  | P1       | 🟠     | None         |
-| 10 | Complete GitHub issue #9 (SQLite cache)      | 30min  | P1       | 🟠     | None         |
-| 11 | Complete GitHub issue #10 (Fail on warnings) | 30min  | P1       | 🟠     | None         |
-| 12 | Remove 'any' types from index.ts             | 45min  | P2       | 🟡     | Task 1       |
-| 13 | Add return types to all functions            | 75min  | P2       | 🟡     | Task 1       |
-| 14 | Extract magic strings to constants           | 60min  | P2       | 🟡     | Task 3       |
-| 15 | Add input validation layer                   | 90min  | P2       | 🟡     | Task 8       |
-| 16 | Fix nested loop performance issues           | 75min  | P2       | 🟡     | Task 3       |
-| 17 | Add JSDoc to all public functions            | 85min  | P2       | 🟡     | Task 3       |
-| 18 | Standardize Effect.TS patterns               | 100min | P2       | 🟡     | Task 1       |
-| 19 | Review all decorator files                   | 90min  | P2       | 🟡     | Task 1       |
-| 20 | Add comprehensive test coverage              | 100min | P2       | 🟡     | Task 2       |
-| 21 | Review core module files                     | 75min  | P2       | 🟡     | Task 3       |
-| 22 | Review utility files                         | 60min  | P2       | 🟡     | None         |
-| 23 | Review validation files                      | 70min  | P2       | 🟡     | None         |
-| 24 | Review performance files                     | 80min  | P2       | 🟡     | None         |
-| 25 | Create TODO tracking dashboard               | 45min  | P2       | 🟡     | Task 1       |
+| #   | Task                                         | Size   | Priority | Impact | Dependencies |
+| --- | -------------------------------------------- | ------ | -------- | ------ | ------------ |
+| 1   | Fix TS compilation in plugins                | 30min  | P0       | 🔴     | None         |
+| 2   | Configure test fail-fast on TS errors        | 45min  | P0       | 🔴     | Task 1       |
+| 3   | Split emitter: Extract DocumentBuilder       | 90min  | P0       | 🔴     | Task 1       |
+| 4   | Split emitter: Extract ValidationService     | 75min  | P0       | 🔴     | Task 3       |
+| 5   | Split emitter: Extract SerializationService  | 60min  | P0       | 🔴     | Task 3       |
+| 6   | Remove UNUSED methods from emitter           | 45min  | P1       | 🟠     | Task 3       |
+| 7   | Fix all console.log → Effect.log             | 30min  | P1       | 🟠     | Task 1       |
+| 8   | Create typed error hierarchy                 | 60min  | P1       | 🟠     | Task 3       |
+| 9   | Complete GitHub issue #8 (Multiple files)    | 30min  | P1       | 🟠     | None         |
+| 10  | Complete GitHub issue #9 (SQLite cache)      | 30min  | P1       | 🟠     | None         |
+| 11  | Complete GitHub issue #10 (Fail on warnings) | 30min  | P1       | 🟠     | None         |
+| 12  | Remove 'any' types from index.ts             | 45min  | P2       | 🟡     | Task 1       |
+| 13  | Add return types to all functions            | 75min  | P2       | 🟡     | Task 1       |
+| 14  | Extract magic strings to constants           | 60min  | P2       | 🟡     | Task 3       |
+| 15  | Add input validation layer                   | 90min  | P2       | 🟡     | Task 8       |
+| 16  | Fix nested loop performance issues           | 75min  | P2       | 🟡     | Task 3       |
+| 17  | Add JSDoc to all public functions            | 85min  | P2       | 🟡     | Task 3       |
+| 18  | Standardize Effect.TS patterns               | 100min | P2       | 🟡     | Task 1       |
+| 19  | Review all decorator files                   | 90min  | P2       | 🟡     | Task 1       |
+| 20  | Add comprehensive test coverage              | 100min | P2       | 🟡     | Task 2       |
+| 21  | Review core module files                     | 75min  | P2       | 🟡     | Task 3       |
+| 22  | Review utility files                         | 60min  | P2       | 🟡     | None         |
+| 23  | Review validation files                      | 70min  | P2       | 🟡     | None         |
+| 24  | Review performance files                     | 80min  | P2       | 🟡     | None         |
+| 25  | Create TODO tracking dashboard               | 45min  | P2       | 🟡     | Task 1       |
 
 ## 📋 PHASE 2: 100 Micro Tasks (15min each)
 
 ### Critical Fixes (1-20)
 
-| #  | Task                                       | Time  | Group        | Dependencies |
-| -- | ------------------------------------------ | ----- | ------------ | ------------ |
-| 1  | Fix MonitoringType export error            | 15min | Build        | None         |
-| 2  | Fix auth plugin type imports               | 15min | Build        | Task 1       |
-| 3  | Add proper this typing in apikey-plugin    | 15min | Build        | Task 2       |
-| 4  | Fix jwt-plugin type errors                 | 15min | Build        | Task 2       |
-| 5  | Fix oauth2-plugin compilation              | 15min | Build        | Task 2       |
-| 6  | Verify all plugins compile                 | 15min | Build        | Tasks 1-5    |
-| 7  | Update test runner to check TS compilation | 15min | Test         | Task 6       |
-| 8  | Add fail-fast on TS errors in package.json | 15min | Test         | Task 7       |
-| 9  | Test the test failure mechanism            | 15min | Test         | Task 8       |
-| 10 | Document test configuration changes        | 15min | Test         | Task 9       |
-| 11 | Create DocumentBuilder interface           | 15min | Architecture | Task 6       |
-| 12 | Extract basic document creation            | 15min | Architecture | Task 11      |
-| 13 | Extract channel processing                 | 15min | Architecture | Task 12      |
-| 14 | Extract operation processing               | 15min | Architecture | Task 13      |
-| 15 | Extract message processing                 | 15min | Architecture | Task 14      |
-| 16 | Create ValidationService interface         | 15min | Architecture | Task 15      |
-| 17 | Extract document validation                | 15min | Architecture | Task 16      |
-| 18 | Extract schema validation                  | 15min | Architecture | Task 17      |
-| 19 | Create SerializationService interface      | 15min | Architecture | Task 18      |
-| 20 | Extract JSON/YAML serialization            | 15min | Architecture | Task 19      |
+| #   | Task                                       | Time  | Group        | Dependencies |
+| --- | ------------------------------------------ | ----- | ------------ | ------------ |
+| 1   | Fix MonitoringType export error            | 15min | Build        | None         |
+| 2   | Fix auth plugin type imports               | 15min | Build        | Task 1       |
+| 3   | Add proper this typing in apikey-plugin    | 15min | Build        | Task 2       |
+| 4   | Fix jwt-plugin type errors                 | 15min | Build        | Task 2       |
+| 5   | Fix oauth2-plugin compilation              | 15min | Build        | Task 2       |
+| 6   | Verify all plugins compile                 | 15min | Build        | Tasks 1-5    |
+| 7   | Update test runner to check TS compilation | 15min | Test         | Task 6       |
+| 8   | Add fail-fast on TS errors in package.json | 15min | Test         | Task 7       |
+| 9   | Test the test failure mechanism            | 15min | Test         | Task 8       |
+| 10  | Document test configuration changes        | 15min | Test         | Task 9       |
+| 11  | Create DocumentBuilder interface           | 15min | Architecture | Task 6       |
+| 12  | Extract basic document creation            | 15min | Architecture | Task 11      |
+| 13  | Extract channel processing                 | 15min | Architecture | Task 12      |
+| 14  | Extract operation processing               | 15min | Architecture | Task 13      |
+| 15  | Extract message processing                 | 15min | Architecture | Task 14      |
+| 16  | Create ValidationService interface         | 15min | Architecture | Task 15      |
+| 17  | Extract document validation                | 15min | Architecture | Task 16      |
+| 18  | Extract schema validation                  | 15min | Architecture | Task 17      |
+| 19  | Create SerializationService interface      | 15min | Architecture | Task 18      |
+| 20  | Extract JSON/YAML serialization            | 15min | Architecture | Task 19      |
 
 ### Infrastructure Cleanup (21-60)
 

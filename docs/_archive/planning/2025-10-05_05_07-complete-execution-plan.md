@@ -67,31 +67,31 @@
 
 ## 📋 COMPREHENSIVE TASK LIST (30-100min tasks)
 
-| #  | Task                                               | Time  | Impact   | Value% | Priority |
-| -- | -------------------------------------------------- | ----- | -------- | ------ | -------- |
-| 1  | ✅ Git push commits                                | 2min  | Critical | 0%     | P0       |
-| 2  | **Update README.md**                               | 20min | HIGHEST  | 51%    | **P0**   |
-| 3  | **Remove Alpha fallback logic**                    | 15min | High     | 58%    | **P0**   |
-| 4  | **Fix options passing in tests**                   | 45min | High     | 64%    | **P0**   |
-| 5  | Fix 10 critical unit tests                         | 60min | High     | 70%    | P1       |
-| 6  | Add integration test to CI                         | 30min | High     | 75%    | P1       |
-| 7  | Split test-helpers.ts into 4 files                 | 45min | Medium   | 80%    | P1       |
-| 8  | Fix ESLint warnings: no-explicit-any               | 60min | Medium   | 83%    | P2       |
-| 9  | Fix ESLint warnings: prefer-nullish-coalescing     | 45min | Medium   | 85%    | P2       |
-| 10 | Fix ESLint warnings: explicit-function-return-type | 60min | Medium   | 87%    | P2       |
-| 11 | Add branded types (FilePath, DocumentId)           | 45min | Medium   | 89%    | P2       |
-| 12 | Improve error messages                             | 30min | Medium   | 90%    | P2       |
-| 13 | Add JSDoc to public APIs                           | 60min | Low      | 91%    | P3       |
-| 14 | Optimize test performance (cache test host)        | 45min | Low      | 92%    | P3       |
-| 15 | Create migration guide                             | 60min | Low      | 93%    | P3       |
-| 16 | Implement @correlationId decorator                 | 90min | Low      | 94%    | P3       |
-| 17 | Implement @header decorator                        | 60min | Low      | 95%    | P3       |
-| 18 | Implement @tags decorator                          | 45min | Low      | 96%    | P3       |
-| 19 | Add message examples support                       | 60min | Low      | 97%    | P3       |
-| 20 | Create advanced examples                           | 90min | Low      | 98%    | P3       |
-| 21 | Performance profiling                              | 60min | Low      | 99%    | P3       |
-| 22 | Security audit                                     | 45min | Low      | 99.5%  | P3       |
-| 23 | Accessibility review                               | 30min | Low      | 100%   | P3       |
+| #   | Task                                               | Time  | Impact   | Value% | Priority |
+| --- | -------------------------------------------------- | ----- | -------- | ------ | -------- |
+| 1   | ✅ Git push commits                                | 2min  | Critical | 0%     | P0       |
+| 2   | **Update README.md**                               | 20min | HIGHEST  | 51%    | **P0**   |
+| 3   | **Remove Alpha fallback logic**                    | 15min | High     | 58%    | **P0**   |
+| 4   | **Fix options passing in tests**                   | 45min | High     | 64%    | **P0**   |
+| 5   | Fix 10 critical unit tests                         | 60min | High     | 70%    | P1       |
+| 6   | Add integration test to CI                         | 30min | High     | 75%    | P1       |
+| 7   | Split test-helpers.ts into 4 files                 | 45min | Medium   | 80%    | P1       |
+| 8   | Fix ESLint warnings: no-explicit-any               | 60min | Medium   | 83%    | P2       |
+| 9   | Fix ESLint warnings: prefer-nullish-coalescing     | 45min | Medium   | 85%    | P2       |
+| 10  | Fix ESLint warnings: explicit-function-return-type | 60min | Medium   | 87%    | P2       |
+| 11  | Add branded types (FilePath, DocumentId)           | 45min | Medium   | 89%    | P2       |
+| 12  | Improve error messages                             | 30min | Medium   | 90%    | P2       |
+| 13  | Add JSDoc to public APIs                           | 60min | Low      | 91%    | P3       |
+| 14  | Optimize test performance (cache test host)        | 45min | Low      | 92%    | P3       |
+| 15  | Create migration guide                             | 60min | Low      | 93%    | P3       |
+| 16  | Implement @correlationId decorator                 | 90min | Low      | 94%    | P3       |
+| 17  | Implement @header decorator                        | 60min | Low      | 95%    | P3       |
+| 18  | Implement @tags decorator                          | 45min | Low      | 96%    | P3       |
+| 19  | Add message examples support                       | 60min | Low      | 97%    | P3       |
+| 20  | Create advanced examples                           | 90min | Low      | 98%    | P3       |
+| 21  | Performance profiling                              | 60min | Low      | 99%    | P3       |
+| 22  | Security audit                                     | 45min | Low      | 99.5%  | P3       |
+| 23  | Accessibility review                               | 30min | Low      | 100%   | P3       |
 
 **Total estimated time:** ~17 hours\
 **Time to 80% value:** ~4.25 hours

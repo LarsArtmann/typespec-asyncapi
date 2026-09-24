@@ -35,20 +35,20 @@
 
 Sorted by: **Impact / Effort = Priority Score**
 
-| #  | Task                                                 | Impact | Effort | Score | Time   | Category        |
-| -- | ---------------------------------------------------- | ------ | ------ | ----- | ------ | --------------- |
-| 1  | Update branded-types.ts JSDoc to explain integration | 3      | 10min  | 0.3   | 10min  | Documentation   |
-| 2  | Fix Bun matcher in cli-test-template.test.ts         | 5      | 10min  | 0.5   | 10min  | Test Quality    |
-| 3  | Create real-world Kafka example                      | 9      | 15min  | 0.6   | 15min  | User Value      |
-| 4  | Create real-world WebSocket example                  | 9      | 15min  | 0.6   | 15min  | User Value      |
-| 5  | Create real-world HTTP webhook example               | 8      | 10min  | 0.8   | 10min  | User Value      |
-| 6  | Update README with examples links                    | 7      | 10min  | 0.7   | 10min  | Discoverability |
-| 7  | Add branded types to type-guards.ts                  | 6      | 20min  | 0.3   | 20min  | Type Safety     |
-| 8  | Run bun audit and fix security issues                | 8      | 30min  | 0.27  | 30min  | Production      |
-| 9  | Apply Bun matcher fix to options.test.ts             | 5      | 30min  | 0.17  | 30min  | Test Quality    |
-| 10 | Integrate branded types into DocumentBuilder         | 8      | 60min  | 0.13  | 60min  | Architecture    |
-| 11 | Create helper to convert @asyncapi types to branded  | 6      | 45min  | 0.13  | 45min  | Type Safety     |
-| 12 | Fix remaining ESLint warnings (100+)                 | 4      | 120min | 0.03  | 120min | Code Quality    |
+| #   | Task                                                 | Impact | Effort | Score | Time   | Category        |
+| --- | ---------------------------------------------------- | ------ | ------ | ----- | ------ | --------------- |
+| 1   | Update branded-types.ts JSDoc to explain integration | 3      | 10min  | 0.3   | 10min  | Documentation   |
+| 2   | Fix Bun matcher in cli-test-template.test.ts         | 5      | 10min  | 0.5   | 10min  | Test Quality    |
+| 3   | Create real-world Kafka example                      | 9      | 15min  | 0.6   | 15min  | User Value      |
+| 4   | Create real-world WebSocket example                  | 9      | 15min  | 0.6   | 15min  | User Value      |
+| 5   | Create real-world HTTP webhook example               | 8      | 10min  | 0.8   | 10min  | User Value      |
+| 6   | Update README with examples links                    | 7      | 10min  | 0.7   | 10min  | Discoverability |
+| 7   | Add branded types to type-guards.ts                  | 6      | 20min  | 0.3   | 20min  | Type Safety     |
+| 8   | Run bun audit and fix security issues                | 8      | 30min  | 0.27  | 30min  | Production      |
+| 9   | Apply Bun matcher fix to options.test.ts             | 5      | 30min  | 0.17  | 30min  | Test Quality    |
+| 10  | Integrate branded types into DocumentBuilder         | 8      | 60min  | 0.13  | 60min  | Architecture    |
+| 11  | Create helper to convert @asyncapi types to branded  | 6      | 45min  | 0.13  | 45min  | Type Safety     |
+| 12  | Fix remaining ESLint warnings (100+)                 | 4      | 120min | 0.03  | 120min | Code Quality    |
 
 ---
 

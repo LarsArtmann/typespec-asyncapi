@@ -8,38 +8,38 @@
 
 ## Task Table (Sorted by Priority)
 
-| #  | Task                                             | Category    | Est. Time | Impact     | Effort | ROI | Status     |
-| -- | ------------------------------------------------ | ----------- | --------- | ---------- | ------ | --- | ---------- |
-| 1  | Fix compileAndGetAsyncAPI() helper file matching | CRITICAL    | 30min     | 🔥🔥🔥🔥🔥 | Low    | 5.0 | ⏳ Pending |
-| 2  | Verify helper fix impact with test run           | CRITICAL    | 15min     | 🔥🔥🔥🔥🔥 | Low    | 5.0 | ⏳ Pending |
-| 3  | Fix debug-emitter.test.ts Effect.log import      | QUICK WIN   | 10min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
-| 4  | Fix direct-emitter.test.ts Effect.log import     | QUICK WIN   | 10min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
-| 5  | Fix real-emitter.test.ts Effect.log import       | QUICK WIN   | 10min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
-| 6  | Run test suite after quick wins                  | VALIDATION  | 15min     | 🔥🔥🔥🔥   | Low    | 4.0 | ⏳ Pending |
-| 7  | Analyze TypeSpec compilation errors (26 errors)  | ANALYSIS    | 45min     | 🔥🔥🔥🔥   | Med    | 2.7 | ⏳ Pending |
-| 8  | Fix TypeSpec syntax errors batch 1 (10 tests)    | SYNTAX      | 60min     | 🔥🔥🔥     | Med    | 2.0 | ⏳ Pending |
-| 9  | Fix TypeSpec syntax errors batch 2 (10 tests)    | SYNTAX      | 60min     | 🔥🔥🔥     | Med    | 2.0 | ⏳ Pending |
-| 10 | Fix remaining TypeSpec errors (6 tests)          | SYNTAX      | 40min     | 🔥🔥       | Med    | 1.3 | ⏳ Pending |
-| 11 | Create docs/emitter-feature-matrix.md            | DOCS        | 45min     | 🔥🔥🔥🔥   | Low    | 4.0 | ⏳ Pending |
-| 12 | Mark unsupported security tests as .skip()       | CLEANUP     | 60min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
-| 13 | Mark unsupported Kafka tests as .skip()          | CLEANUP     | 30min     | 🔥🔥       | Low    | 2.0 | ⏳ Pending |
-| 14 | Mark unsupported WebSocket/MQTT tests as .skip() | CLEANUP     | 30min     | 🔥🔥       | Low    | 2.0 | ⏳ Pending |
-| 15 | Run test suite after cleanup                     | VALIDATION  | 15min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
-| 16 | Categorize all 347 failing tests by root cause   | ANALYSIS    | 90min     | 🔥🔥🔥🔥   | High   | 1.3 | ⏳ Pending |
-| 17 | Create docs/known-test-failures.md               | DOCS        | 60min     | 🔥🔥🔥     | Med    | 2.0 | ⏳ Pending |
-| 18 | Implement SASL/PLAIN authentication for Kafka    | FEATURE     | 120min    | 🔥🔥🔥🔥   | High   | 1.3 | ⏳ Pending |
-| 19 | Add tests for SASL/PLAIN implementation          | FEATURE     | 45min     | 🔥🔥🔥     | Med    | 2.0 | ⏳ Pending |
-| 20 | Implement OAuth2 client credentials flow         | FEATURE     | 100min    | 🔥🔥🔥     | High   | 1.0 | ⏳ Pending |
-| 21 | Add tests for OAuth2 implementation              | FEATURE     | 45min     | 🔥🔥       | Med    | 1.3 | ⏳ Pending |
-| 22 | Implement basic WebSocket bindings               | FEATURE     | 90min     | 🔥🔥🔥     | High   | 1.1 | ⏳ Pending |
-| 23 | Add tests for WebSocket implementation           | FEATURE     | 45min     | 🔥🔥       | Med    | 1.3 | ⏳ Pending |
-| 24 | Create validateSecurityScheme() test helper      | UTILITY     | 45min     | 🔥🔥       | Med    | 1.3 | ⏳ Pending |
-| 25 | Create expectAsyncAPIValid() assertion helper    | UTILITY     | 30min     | 🔥🔥       | Low    | 2.0 | ⏳ Pending |
-| 26 | Improve AsyncAPI file detection in helper        | IMPROVEMENT | 45min     | 🔥🔥       | Med    | 1.3 | ⏳ Pending |
-| 27 | Update CLAUDE.md with honest feature matrix      | DOCS        | 30min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
-| 28 | Update README.md with test coverage              | DOCS        | 20min     | 🔥🔥       | Low    | 2.0 | ⏳ Pending |
-| 29 | Run full validation suite                        | VALIDATION  | 20min     | 🔥🔥🔥🔥   | Low    | 4.0 | ⏳ Pending |
-| 30 | Create final status report                       | DOCS        | 30min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
+| #   | Task                                             | Category    | Est. Time | Impact     | Effort | ROI | Status     |
+| --- | ------------------------------------------------ | ----------- | --------- | ---------- | ------ | --- | ---------- |
+| 1   | Fix compileAndGetAsyncAPI() helper file matching | CRITICAL    | 30min     | 🔥🔥🔥🔥🔥 | Low    | 5.0 | ⏳ Pending |
+| 2   | Verify helper fix impact with test run           | CRITICAL    | 15min     | 🔥🔥🔥🔥🔥 | Low    | 5.0 | ⏳ Pending |
+| 3   | Fix debug-emitter.test.ts Effect.log import      | QUICK WIN   | 10min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
+| 4   | Fix direct-emitter.test.ts Effect.log import     | QUICK WIN   | 10min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
+| 5   | Fix real-emitter.test.ts Effect.log import       | QUICK WIN   | 10min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
+| 6   | Run test suite after quick wins                  | VALIDATION  | 15min     | 🔥🔥🔥🔥   | Low    | 4.0 | ⏳ Pending |
+| 7   | Analyze TypeSpec compilation errors (26 errors)  | ANALYSIS    | 45min     | 🔥🔥🔥🔥   | Med    | 2.7 | ⏳ Pending |
+| 8   | Fix TypeSpec syntax errors batch 1 (10 tests)    | SYNTAX      | 60min     | 🔥🔥🔥     | Med    | 2.0 | ⏳ Pending |
+| 9   | Fix TypeSpec syntax errors batch 2 (10 tests)    | SYNTAX      | 60min     | 🔥🔥🔥     | Med    | 2.0 | ⏳ Pending |
+| 10  | Fix remaining TypeSpec errors (6 tests)          | SYNTAX      | 40min     | 🔥🔥       | Med    | 1.3 | ⏳ Pending |
+| 11  | Create docs/emitter-feature-matrix.md            | DOCS        | 45min     | 🔥🔥🔥🔥   | Low    | 4.0 | ⏳ Pending |
+| 12  | Mark unsupported security tests as .skip()       | CLEANUP     | 60min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
+| 13  | Mark unsupported Kafka tests as .skip()          | CLEANUP     | 30min     | 🔥🔥       | Low    | 2.0 | ⏳ Pending |
+| 14  | Mark unsupported WebSocket/MQTT tests as .skip() | CLEANUP     | 30min     | 🔥🔥       | Low    | 2.0 | ⏳ Pending |
+| 15  | Run test suite after cleanup                     | VALIDATION  | 15min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
+| 16  | Categorize all 347 failing tests by root cause   | ANALYSIS    | 90min     | 🔥🔥🔥🔥   | High   | 1.3 | ⏳ Pending |
+| 17  | Create docs/known-test-failures.md               | DOCS        | 60min     | 🔥🔥🔥     | Med    | 2.0 | ⏳ Pending |
+| 18  | Implement SASL/PLAIN authentication for Kafka    | FEATURE     | 120min    | 🔥🔥🔥🔥   | High   | 1.3 | ⏳ Pending |
+| 19  | Add tests for SASL/PLAIN implementation          | FEATURE     | 45min     | 🔥🔥🔥     | Med    | 2.0 | ⏳ Pending |
+| 20  | Implement OAuth2 client credentials flow         | FEATURE     | 100min    | 🔥🔥🔥     | High   | 1.0 | ⏳ Pending |
+| 21  | Add tests for OAuth2 implementation              | FEATURE     | 45min     | 🔥🔥       | Med    | 1.3 | ⏳ Pending |
+| 22  | Implement basic WebSocket bindings               | FEATURE     | 90min     | 🔥🔥🔥     | High   | 1.1 | ⏳ Pending |
+| 23  | Add tests for WebSocket implementation           | FEATURE     | 45min     | 🔥🔥       | Med    | 1.3 | ⏳ Pending |
+| 24  | Create validateSecurityScheme() test helper      | UTILITY     | 45min     | 🔥🔥       | Med    | 1.3 | ⏳ Pending |
+| 25  | Create expectAsyncAPIValid() assertion helper    | UTILITY     | 30min     | 🔥🔥       | Low    | 2.0 | ⏳ Pending |
+| 26  | Improve AsyncAPI file detection in helper        | IMPROVEMENT | 45min     | 🔥🔥       | Med    | 1.3 | ⏳ Pending |
+| 27  | Update CLAUDE.md with honest feature matrix      | DOCS        | 30min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
+| 28  | Update README.md with test coverage              | DOCS        | 20min     | 🔥🔥       | Low    | 2.0 | ⏳ Pending |
+| 29  | Run full validation suite                        | VALIDATION  | 20min     | 🔥🔥🔥🔥   | Low    | 4.0 | ⏳ Pending |
+| 30  | Create final status report                       | DOCS        | 30min     | 🔥🔥🔥     | Low    | 3.0 | ⏳ Pending |
 
 ---
 

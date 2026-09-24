@@ -35,16 +35,16 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
-    "@astrojs/starlight": "^0.42.0",
+    "@astrojs/starlight": "^0.42.3",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.3.2",
-    "astro-og-canvas": "^0.13.1",
+    "astro": "^7.3.5",
+    "astro-og-canvas": "^0.13.2",
     "canvaskit-wasm": "^0.42.0",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "html-validate": "^11.15.0",
+    "html-validate": "^11.16.0",
     "typescript": "^7.0.2"
   },
   "overrides": {

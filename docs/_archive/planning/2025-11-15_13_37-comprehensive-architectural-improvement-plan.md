@@ -1116,38 +1116,38 @@ This is the high-level plan. Next sections will break down into:
 
 **Sorted by: Impact → Effort → Customer Value**
 
-| #  | Task                                                      | Time   | Phase | Impact | Effort | Value | Dependencies |
-| -- | --------------------------------------------------------- | ------ | ----- | ------ | ------ | ----- | ------------ |
-| 1  | Delete state.ts ghost system                              | 30min  | 1%    | HIGH   | LOW    | 51%   | None         |
-| 2  | Delete security-LEGACY.ts                                 | 30min  | 1%    | HIGH   | LOW    | 51%   | None         |
-| 3  | Delete channel-templates.ts                               | 15min  | 1%    | MED    | LOW    | 51%   | None         |
-| 4  | Delete securitySchemeType.ts                              | 15min  | 1%    | LOW    | LOW    | 51%   | None         |
-| 5  | Create canonical ValidationResult type                    | 45min  | 1%    | HIGH   | MED    | 51%   | Tasks 1-4    |
-| 6  | Fix ValidationResult split brain (discriminated union)    | 30min  | 1%    | HIGH   | MED    | 51%   | Task 5       |
-| 7  | Update security-scheme-types.ts imports                   | 30min  | 1%    | HIGH   | MED    | 51%   | Task 6       |
-| 8  | Update ValidationService.ts imports                       | 30min  | 1%    | HIGH   | MED    | 51%   | Task 6       |
-| 9  | Update remaining 7 files with ValidationResult            | 60min  | 1%    | HIGH   | MED    | 51%   | Task 6       |
-| 10 | Add ValidationResult type guards                          | 30min  | 1%    | MED    | LOW    | 51%   | Task 9       |
-| 11 | Verify build after THE 1% changes                         | 15min  | 1%    | HIGH   | LOW    | 51%   | Tasks 1-10   |
-| 12 | Split ValidationService.ts (537 → 3 files)                | 120min | 4%    | HIGH   | HIGH   | 64%   | Task 11      |
-| 13 | Split effect-helpers.ts (536 → 5 files)                   | 120min | 4%    | HIGH   | HIGH   | 64%   | Task 11      |
-| 14 | Split PluginRegistry.ts (509 → 3 files)                   | 90min  | 4%    | MED    | HIGH   | 64%   | Task 11      |
-| 15 | Split standardized-errors.ts (477 → 3 files)              | 90min  | 4%    | MED    | HIGH   | 64%   | Task 11      |
-| 16 | Split lib.ts (455 → 3 files)                              | 90min  | 4%    | HIGH   | HIGH   | 64%   | Task 11      |
-| 17 | Split DocumentGenerator.ts (445 → 3 files)                | 60min  | 4%    | MED    | MED    | 64%   | Task 11      |
-| 18 | Split remaining 7 large files (quick splits)              | 150min | 4%    | MED    | HIGH   | 64%   | Task 11      |
-| 19 | Find all Effect.runSync occurrences                       | 15min  | 4%    | HIGH   | LOW    | 64%   | Task 11      |
-| 20 | Refactor Effect.runSync to Effect.gen (18 occurrences)    | 120min | 4%    | HIGH   | HIGH   | 64%   | Task 19      |
-| 21 | Choose error architecture strategy (Effect.TS vs classes) | 30min  | 4%    | HIGH   | LOW    | 64%   | Task 11      |
-| 22 | Implement unified error architecture                      | 90min  | 4%    | HIGH   | HIGH   | 64%   | Task 21      |
-| 23 | Fix naming conventions (DDD)                              | 60min  | 4%    | MED    | MED    | 64%   | Task 11      |
-| 24 | Complete ESLint warning fixes (50 → 0)                    | 60min  | 4%    | MED    | MED    | 64%   | Tasks 12-23  |
-| 25 | Verify build after THE 4% changes                         | 15min  | 4%    | HIGH   | LOW    | 64%   | Tasks 12-24  |
-| 26 | Write unit tests for ghost system fix                     | 120min | 20%   | HIGH   | MED    | 80%   | Task 25      |
-| 27 | Write integration tests for decorators                    | 150min | 20%   | HIGH   | HIGH   | 80%   | Task 25      |
-| 28 | Fix test suite to 100% pass rate                          | 180min | 20%   | HIGH   | HIGH   | 80%   | Task 27      |
-| 29 | Update architecture documentation                         | 120min | 20%   | MED    | MED    | 80%   | Tasks 25-28  |
-| 30 | Create issues from 132 TODO comments                      | 120min | 20%   | MED    | MED    | 80%   | Task 29      |
+| #   | Task                                                      | Time   | Phase | Impact | Effort | Value | Dependencies |
+| --- | --------------------------------------------------------- | ------ | ----- | ------ | ------ | ----- | ------------ |
+| 1   | Delete state.ts ghost system                              | 30min  | 1%    | HIGH   | LOW    | 51%   | None         |
+| 2   | Delete security-LEGACY.ts                                 | 30min  | 1%    | HIGH   | LOW    | 51%   | None         |
+| 3   | Delete channel-templates.ts                               | 15min  | 1%    | MED    | LOW    | 51%   | None         |
+| 4   | Delete securitySchemeType.ts                              | 15min  | 1%    | LOW    | LOW    | 51%   | None         |
+| 5   | Create canonical ValidationResult type                    | 45min  | 1%    | HIGH   | MED    | 51%   | Tasks 1-4    |
+| 6   | Fix ValidationResult split brain (discriminated union)    | 30min  | 1%    | HIGH   | MED    | 51%   | Task 5       |
+| 7   | Update security-scheme-types.ts imports                   | 30min  | 1%    | HIGH   | MED    | 51%   | Task 6       |
+| 8   | Update ValidationService.ts imports                       | 30min  | 1%    | HIGH   | MED    | 51%   | Task 6       |
+| 9   | Update remaining 7 files with ValidationResult            | 60min  | 1%    | HIGH   | MED    | 51%   | Task 6       |
+| 10  | Add ValidationResult type guards                          | 30min  | 1%    | MED    | LOW    | 51%   | Task 9       |
+| 11  | Verify build after THE 1% changes                         | 15min  | 1%    | HIGH   | LOW    | 51%   | Tasks 1-10   |
+| 12  | Split ValidationService.ts (537 → 3 files)                | 120min | 4%    | HIGH   | HIGH   | 64%   | Task 11      |
+| 13  | Split effect-helpers.ts (536 → 5 files)                   | 120min | 4%    | HIGH   | HIGH   | 64%   | Task 11      |
+| 14  | Split PluginRegistry.ts (509 → 3 files)                   | 90min  | 4%    | MED    | HIGH   | 64%   | Task 11      |
+| 15  | Split standardized-errors.ts (477 → 3 files)              | 90min  | 4%    | MED    | HIGH   | 64%   | Task 11      |
+| 16  | Split lib.ts (455 → 3 files)                              | 90min  | 4%    | HIGH   | HIGH   | 64%   | Task 11      |
+| 17  | Split DocumentGenerator.ts (445 → 3 files)                | 60min  | 4%    | MED    | MED    | 64%   | Task 11      |
+| 18  | Split remaining 7 large files (quick splits)              | 150min | 4%    | MED    | HIGH   | 64%   | Task 11      |
+| 19  | Find all Effect.runSync occurrences                       | 15min  | 4%    | HIGH   | LOW    | 64%   | Task 11      |
+| 20  | Refactor Effect.runSync to Effect.gen (18 occurrences)    | 120min | 4%    | HIGH   | HIGH   | 64%   | Task 19      |
+| 21  | Choose error architecture strategy (Effect.TS vs classes) | 30min  | 4%    | HIGH   | LOW    | 64%   | Task 11      |
+| 22  | Implement unified error architecture                      | 90min  | 4%    | HIGH   | HIGH   | 64%   | Task 21      |
+| 23  | Fix naming conventions (DDD)                              | 60min  | 4%    | MED    | MED    | 64%   | Task 11      |
+| 24  | Complete ESLint warning fixes (50 → 0)                    | 60min  | 4%    | MED    | MED    | 64%   | Tasks 12-23  |
+| 25  | Verify build after THE 4% changes                         | 15min  | 4%    | HIGH   | LOW    | 64%   | Tasks 12-24  |
+| 26  | Write unit tests for ghost system fix                     | 120min | 20%   | HIGH   | MED    | 80%   | Task 25      |
+| 27  | Write integration tests for decorators                    | 150min | 20%   | HIGH   | HIGH   | 80%   | Task 25      |
+| 28  | Fix test suite to 100% pass rate                          | 180min | 20%   | HIGH   | HIGH   | 80%   | Task 27      |
+| 29  | Update architecture documentation                         | 120min | 20%   | MED    | MED    | 80%   | Tasks 25-28  |
+| 30  | Create issues from 132 TODO comments                      | 120min | 20%   | MED    | MED    | 80%   | Task 29      |
 
 **Total Time: 30 tasks × 30min avg = ~30 hours** (includes some 60min+ tasks counted as 2 slots)
 
@@ -1161,140 +1161,140 @@ This is the high-level plan. Next sections will break down into:
 
 #### Delete Ghost Systems (Tasks 1-10)
 
-| #  | Task                                                                    | Time | Type     | Details                                     |
-| -- | ----------------------------------------------------------------------- | ---- | -------- | ------------------------------------------- |
-| 1  | Grep for state.ts imports                                               | 5min | Research | Find all imports of state.ts                |
-| 2  | Verify state.ts only imported in errors/index.ts                        | 5min | Verify   | Confirm safe to delete                      |
-| 3  | Delete state.ts import from errors/index.ts                             | 5min | Code     | Remove import line                          |
-| 4  | Delete state.ts file                                                    | 1min | Delete   | rm src/types/state.ts                       |
-| 5  | Run build to verify                                                     | 5min | Verify   | bun run build                               |
-| 6  | Grep for security-LEGACY.ts imports                                     | 5min | Research | Find all imports                            |
-| 7  | Verify security-LEGACY.ts not imported                                  | 5min | Verify   | Confirm safe to delete                      |
-| 8  | Delete security-LEGACY.ts                                               | 1min | Delete   | rm src/domain/decorators/security-LEGACY.ts |
-| 9  | Run build to verify                                                     | 5min | Verify   | bun run build                               |
-| 10 | Commit: "refactor: delete ghost systems (state.ts, security-LEGACY.ts)" | 5min | Git      | Comprehensive commit message                |
+| #   | Task                                                                    | Time | Type     | Details                                     |
+| --- | ----------------------------------------------------------------------- | ---- | -------- | ------------------------------------------- |
+| 1   | Grep for state.ts imports                                               | 5min | Research | Find all imports of state.ts                |
+| 2   | Verify state.ts only imported in errors/index.ts                        | 5min | Verify   | Confirm safe to delete                      |
+| 3   | Delete state.ts import from errors/index.ts                             | 5min | Code     | Remove import line                          |
+| 4   | Delete state.ts file                                                    | 1min | Delete   | rm src/types/state.ts                       |
+| 5   | Run build to verify                                                     | 5min | Verify   | bun run build                               |
+| 6   | Grep for security-LEGACY.ts imports                                     | 5min | Research | Find all imports                            |
+| 7   | Verify security-LEGACY.ts not imported                                  | 5min | Verify   | Confirm safe to delete                      |
+| 8   | Delete security-LEGACY.ts                                               | 1min | Delete   | rm src/domain/decorators/security-LEGACY.ts |
+| 9   | Run build to verify                                                     | 5min | Verify   | bun run build                               |
+| 10  | Commit: "refactor: delete ghost systems (state.ts, security-LEGACY.ts)" | 5min | Git      | Comprehensive commit message                |
 
 #### Delete Unused Templates (Tasks 11-15)
 
-| #  | Task                                            | Time | Type     | Details                               |
-| -- | ----------------------------------------------- | ---- | -------- | ------------------------------------- |
-| 11 | Grep for channel-templates.ts imports           | 5min | Research | Find all usages                       |
-| 12 | Verify channel-templates only in barrel exports | 5min | Verify   | Check if real usage exists            |
-| 13 | Delete channel-templates.ts                     | 1min | Delete   | rm src/constants/channel-templates.ts |
-| 14 | Remove from constants/index.ts barrel           | 5min | Code     | Remove re-export                      |
-| 15 | Run build to verify                             | 5min | Verify   | bun run build                         |
+| #   | Task                                            | Time | Type     | Details                               |
+| --- | ----------------------------------------------- | ---- | -------- | ------------------------------------- |
+| 11  | Grep for channel-templates.ts imports           | 5min | Research | Find all usages                       |
+| 12  | Verify channel-templates only in barrel exports | 5min | Verify   | Check if real usage exists            |
+| 13  | Delete channel-templates.ts                     | 1min | Delete   | rm src/constants/channel-templates.ts |
+| 14  | Remove from constants/index.ts barrel           | 5min | Code     | Remove re-export                      |
+| 15  | Run build to verify                             | 5min | Verify   | bun run build                         |
 
 #### Delete Unused Type (Tasks 16-20)
 
-| #  | Task                                                  | Time | Type     | Details                                        |
-| -- | ----------------------------------------------------- | ---- | -------- | ---------------------------------------------- |
-| 16 | Grep for securitySchemeType.ts imports                | 5min | Research | Find all imports                               |
-| 17 | Verify securitySchemeType.ts not imported             | 5min | Verify   | Confirm safe to delete                         |
-| 18 | Delete securitySchemeType.ts                          | 1min | Delete   | rm src/domain/decorators/securitySchemeType.ts |
-| 19 | Run build to verify                                   | 5min | Verify   | bun run build                                  |
-| 20 | Commit: "refactor: delete unused types and templates" | 5min | Git      | Commit deletion                                |
+| #   | Task                                                  | Time | Type     | Details                                        |
+| --- | ----------------------------------------------------- | ---- | -------- | ---------------------------------------------- |
+| 16  | Grep for securitySchemeType.ts imports                | 5min | Research | Find all imports                               |
+| 17  | Verify securitySchemeType.ts not imported             | 5min | Verify   | Confirm safe to delete                         |
+| 18  | Delete securitySchemeType.ts                          | 1min | Delete   | rm src/domain/decorators/securitySchemeType.ts |
+| 19  | Run build to verify                                   | 5min | Verify   | bun run build                                  |
+| 20  | Commit: "refactor: delete unused types and templates" | 5min | Git      | Commit deletion                                |
 
 #### Create Canonical ValidationResult (Tasks 21-35)
 
-| #  | Task                                               | Time  | Type   | Details                                                     |
-| -- | -------------------------------------------------- | ----- | ------ | ----------------------------------------------------------- |
-| 21 | Create src/domain/models/validation-result.ts file | 5min  | Code   | New file                                                    |
-| 22 | Define ValidationResult discriminated union        | 15min | Code   | `{ _tag: "Success", value } \| { _tag: "Failure", errors }` |
-| 23 | Add ValidationSuccess type alias                   | 5min  | Code   | Type alias for success case                                 |
-| 24 | Add ValidationFailure type alias                   | 5min  | Code   | Type alias for failure case                                 |
-| 25 | Create isSuccess type guard                        | 5min  | Code   | `result._tag === "Success"`                                 |
-| 26 | Create isFailure type guard                        | 5min  | Code   | `result._tag === "Failure"`                                 |
-| 27 | Create success factory function                    | 5min  | Code   | `success<T>(value: T): ValidationResult<T>`                 |
-| 28 | Create failure factory function                    | 5min  | Code   | `failure(errors: string[]): ValidationResult<never>`        |
-| 29 | Add JSDoc documentation                            | 10min | Docs   | Document discriminated union pattern                        |
-| 30 | Export all types and functions                     | 5min  | Code   | Public API                                                  |
-| 31 | Update security-scheme-types.ts to import          | 10min | Code   | Replace local definition                                    |
-| 32 | Update ValidationService.ts to import              | 10min | Code   | Replace LegacyValidationResult                              |
-| 33 | Update errors/validation-error.ts to import        | 10min | Code   | Replace local definition                                    |
-| 34 | Update remaining 6 files to import canonical type  | 60min | Code   | types/index.ts, test files, etc.                            |
-| 35 | Run build and verify all imports resolved          | 10min | Verify | bun run build, check errors                                 |
+| #   | Task                                               | Time  | Type   | Details                                                     |
+| --- | -------------------------------------------------- | ----- | ------ | ----------------------------------------------------------- |
+| 21  | Create src/domain/models/validation-result.ts file | 5min  | Code   | New file                                                    |
+| 22  | Define ValidationResult discriminated union        | 15min | Code   | `{ _tag: "Success", value } \| { _tag: "Failure", errors }` |
+| 23  | Add ValidationSuccess type alias                   | 5min  | Code   | Type alias for success case                                 |
+| 24  | Add ValidationFailure type alias                   | 5min  | Code   | Type alias for failure case                                 |
+| 25  | Create isSuccess type guard                        | 5min  | Code   | `result._tag === "Success"`                                 |
+| 26  | Create isFailure type guard                        | 5min  | Code   | `result._tag === "Failure"`                                 |
+| 27  | Create success factory function                    | 5min  | Code   | `success<T>(value: T): ValidationResult<T>`                 |
+| 28  | Create failure factory function                    | 5min  | Code   | `failure(errors: string[]): ValidationResult<never>`        |
+| 29  | Add JSDoc documentation                            | 10min | Docs   | Document discriminated union pattern                        |
+| 30  | Export all types and functions                     | 5min  | Code   | Public API                                                  |
+| 31  | Update security-scheme-types.ts to import          | 10min | Code   | Replace local definition                                    |
+| 32  | Update ValidationService.ts to import              | 10min | Code   | Replace LegacyValidationResult                              |
+| 33  | Update errors/validation-error.ts to import        | 10min | Code   | Replace local definition                                    |
+| 34  | Update remaining 6 files to import canonical type  | 60min | Code   | types/index.ts, test files, etc.                            |
+| 35  | Run build and verify all imports resolved          | 10min | Verify | bun run build, check errors                                 |
 
 ### PHASE 2: THE 4% - STRUCTURE (Tasks 36-105, ~17.5 hours)
 
 #### Split ValidationService.ts (Tasks 36-50, 2 hours)
 
-| #  | Task                                                     | Time  | Type     | Details                   |
-| -- | -------------------------------------------------------- | ----- | -------- | ------------------------- |
-| 36 | Create src/domain/validation/ folder structure           | 2min  | Setup    | mkdir -p                  |
-| 37 | Read ValidationService.ts to identify concerns           | 15min | Research | Understand structure      |
-| 38 | Create validation-service.ts (orchestration)             | 15min | Code     | Service layer             |
-| 39 | Create validation-rules.ts (rule definitions)            | 20min | Code     | Extract rules             |
-| 40 | Create validation-formatters.ts (error formatting)       | 20min | Code     | Extract formatters        |
-| 41 | Move orchestration code to validation-service.ts         | 15min | Refactor | Copy/paste/adjust         |
-| 42 | Move rule definitions to validation-rules.ts             | 15min | Refactor | Extract rules             |
-| 43 | Move formatters to validation-formatters.ts              | 10min | Refactor | Extract formatters        |
-| 44 | Update imports in validation-service.ts                  | 5min  | Code     | Import from sibling files |
-| 45 | Delete original ValidationService.ts                     | 1min  | Delete   | rm                        |
-| 46 | Create index.ts barrel in validation/                    | 5min  | Code     | Re-export public API      |
-| 47 | Update all files importing ValidationService             | 20min | Code     | Update import paths       |
-| 48 | Run build to verify                                      | 5min  | Verify   | bun run build             |
-| 49 | Run tests to verify                                      | 5min  | Verify   | bun test                  |
-| 50 | Commit: "refactor: split ValidationService into 3 files" | 5min  | Git      | Detailed commit           |
+| #   | Task                                                     | Time  | Type     | Details                   |
+| --- | -------------------------------------------------------- | ----- | -------- | ------------------------- |
+| 36  | Create src/domain/validation/ folder structure           | 2min  | Setup    | mkdir -p                  |
+| 37  | Read ValidationService.ts to identify concerns           | 15min | Research | Understand structure      |
+| 38  | Create validation-service.ts (orchestration)             | 15min | Code     | Service layer             |
+| 39  | Create validation-rules.ts (rule definitions)            | 20min | Code     | Extract rules             |
+| 40  | Create validation-formatters.ts (error formatting)       | 20min | Code     | Extract formatters        |
+| 41  | Move orchestration code to validation-service.ts         | 15min | Refactor | Copy/paste/adjust         |
+| 42  | Move rule definitions to validation-rules.ts             | 15min | Refactor | Extract rules             |
+| 43  | Move formatters to validation-formatters.ts              | 10min | Refactor | Extract formatters        |
+| 44  | Update imports in validation-service.ts                  | 5min  | Code     | Import from sibling files |
+| 45  | Delete original ValidationService.ts                     | 1min  | Delete   | rm                        |
+| 46  | Create index.ts barrel in validation/                    | 5min  | Code     | Re-export public API      |
+| 47  | Update all files importing ValidationService             | 20min | Code     | Update import paths       |
+| 48  | Run build to verify                                      | 5min  | Verify   | bun run build             |
+| 49  | Run tests to verify                                      | 5min  | Verify   | bun test                  |
+| 50  | Commit: "refactor: split ValidationService into 3 files" | 5min  | Git      | Detailed commit           |
 
 #### Split effect-helpers.ts (Tasks 51-70, 2.5 hours)
 
-| #  | Task                                                    | Time  | Type     | Details                      |
-| -- | ------------------------------------------------------- | ----- | -------- | ---------------------------- |
-| 51 | Create src/utils/effect/ folder                         | 2min  | Setup    | mkdir -p                     |
-| 52 | Read effect-helpers.ts to identify modules              | 15min | Research | 5 distinct modules found     |
-| 53 | Create railway-logging.ts                               | 15min | Code     | Extract logging utilities    |
-| 54 | Create railway-validation.ts                            | 15min | Code     | Extract validation utilities |
-| 55 | Create railway-error-handling.ts                        | 15min | Code     | Extract error handling       |
-| 56 | Create railway-pipeline.ts                              | 15min | Code     | Extract pipeline utilities   |
-| 57 | Create railway-recovery.ts                              | 15min | Code     | Extract recovery utilities   |
-| 58 | Move logging code to railway-logging.ts                 | 10min | Refactor | Copy/extract                 |
-| 59 | Move validation code to railway-validation.ts           | 10min | Refactor | Copy/extract                 |
-| 60 | Move error handling to railway-error-handling.ts        | 10min | Refactor | Copy/extract                 |
-| 61 | Move pipeline code to railway-pipeline.ts               | 10min | Refactor | Copy/extract                 |
-| 62 | Move recovery code to railway-recovery.ts               | 10min | Refactor | Copy/extract                 |
-| 63 | Create index.ts barrel in effect/                       | 5min  | Code     | Re-export all                |
-| 64 | Delete original effect-helpers.ts                       | 1min  | Delete   | rm                           |
-| 65 | Update imports across codebase (will be many)           | 30min | Code     | Global find/replace          |
-| 66 | Run build to verify                                     | 5min  | Verify   | bun run build                |
-| 67 | Run tests to verify                                     | 5min  | Verify   | bun test                     |
-| 68 | Fix any circular dependency issues                      | 15min | Fix      | Adjust imports if needed     |
-| 69 | Verify no regressions                                   | 5min  | Verify   | Final check                  |
-| 70 | Commit: "refactor: split effect-helpers into 5 modules" | 5min  | Git      | Commit                       |
+| #   | Task                                                    | Time  | Type     | Details                      |
+| --- | ------------------------------------------------------- | ----- | -------- | ---------------------------- |
+| 51  | Create src/utils/effect/ folder                         | 2min  | Setup    | mkdir -p                     |
+| 52  | Read effect-helpers.ts to identify modules              | 15min | Research | 5 distinct modules found     |
+| 53  | Create railway-logging.ts                               | 15min | Code     | Extract logging utilities    |
+| 54  | Create railway-validation.ts                            | 15min | Code     | Extract validation utilities |
+| 55  | Create railway-error-handling.ts                        | 15min | Code     | Extract error handling       |
+| 56  | Create railway-pipeline.ts                              | 15min | Code     | Extract pipeline utilities   |
+| 57  | Create railway-recovery.ts                              | 15min | Code     | Extract recovery utilities   |
+| 58  | Move logging code to railway-logging.ts                 | 10min | Refactor | Copy/extract                 |
+| 59  | Move validation code to railway-validation.ts           | 10min | Refactor | Copy/extract                 |
+| 60  | Move error handling to railway-error-handling.ts        | 10min | Refactor | Copy/extract                 |
+| 61  | Move pipeline code to railway-pipeline.ts               | 10min | Refactor | Copy/extract                 |
+| 62  | Move recovery code to railway-recovery.ts               | 10min | Refactor | Copy/extract                 |
+| 63  | Create index.ts barrel in effect/                       | 5min  | Code     | Re-export all                |
+| 64  | Delete original effect-helpers.ts                       | 1min  | Delete   | rm                           |
+| 65  | Update imports across codebase (will be many)           | 30min | Code     | Global find/replace          |
+| 66  | Run build to verify                                     | 5min  | Verify   | bun run build                |
+| 67  | Run tests to verify                                     | 5min  | Verify   | bun test                     |
+| 68  | Fix any circular dependency issues                      | 15min | Fix      | Adjust imports if needed     |
+| 69  | Verify no regressions                                   | 5min  | Verify   | Final check                  |
+| 70  | Commit: "refactor: split effect-helpers into 5 modules" | 5min  | Git      | Commit                       |
 
 #### Split PluginRegistry.ts (Tasks 71-82, 1.5 hours)
 
-| #  | Task                                                  | Time  | Type       | Details              |
-| -- | ----------------------------------------------------- | ----- | ---------- | -------------------- |
-| 71 | Create src/infrastructure/adapters/plugins/ folder    | 2min  | Setup      | mkdir -p             |
-| 72 | Read PluginRegistry.ts structure                      | 10min | Research   | Understand concerns  |
-| 73 | Create plugin-registry.ts (core registry)             | 15min | Code       | Registry logic       |
-| 74 | Create plugin-lifecycle.ts (lifecycle hooks)          | 15min | Code       | Lifecycle management |
-| 75 | Create plugin-dependencies.ts (dependency resolution) | 15min | Code       | Dependency graph     |
-| 76 | Move registry code                                    | 10min | Refactor   | Extract to new file  |
-| 77 | Move lifecycle code                                   | 10min | Refactor   | Extract to new file  |
-| 78 | Move dependency code                                  | 10min | Refactor   | Extract to new file  |
-| 79 | Create index.ts barrel                                | 3min  | Code       | Re-export            |
-| 80 | Delete original PluginRegistry.ts                     | 1min  | Delete     | rm                   |
-| 81 | Update imports                                        | 15min | Code       | Fix all imports      |
-| 82 | Verify build and commit                               | 10min | Verify/Git | Build + commit       |
+| #   | Task                                                  | Time  | Type       | Details              |
+| --- | ----------------------------------------------------- | ----- | ---------- | -------------------- |
+| 71  | Create src/infrastructure/adapters/plugins/ folder    | 2min  | Setup      | mkdir -p             |
+| 72  | Read PluginRegistry.ts structure                      | 10min | Research   | Understand concerns  |
+| 73  | Create plugin-registry.ts (core registry)             | 15min | Code       | Registry logic       |
+| 74  | Create plugin-lifecycle.ts (lifecycle hooks)          | 15min | Code       | Lifecycle management |
+| 75  | Create plugin-dependencies.ts (dependency resolution) | 15min | Code       | Dependency graph     |
+| 76  | Move registry code                                    | 10min | Refactor   | Extract to new file  |
+| 77  | Move lifecycle code                                   | 10min | Refactor   | Extract to new file  |
+| 78  | Move dependency code                                  | 10min | Refactor   | Extract to new file  |
+| 79  | Create index.ts barrel                                | 3min  | Code       | Re-export            |
+| 80  | Delete original PluginRegistry.ts                     | 1min  | Delete     | rm                   |
+| 81  | Update imports                                        | 15min | Code       | Fix all imports      |
+| 82  | Verify build and commit                               | 10min | Verify/Git | Build + commit       |
 
 #### Split Remaining Large Files (Tasks 83-95, Quick splits, 3 hours)
 
-| #  | Task                                            | Time  | Type     | Details                          |
-| -- | ----------------------------------------------- | ----- | -------- | -------------------------------- |
-| 83 | Split standardized-errors.ts → 3 files          | 30min | Refactor | Types, factories, formatters     |
-| 84 | Split lib.ts → 3 files                          | 30min | Refactor | Core, diagnostics, state-schema  |
-| 85 | Split DocumentGenerator.ts → 3 files            | 20min | Refactor | Serializer, validator, optimizer |
-| 86 | Split ImmutableDocumentManager.ts → 2 files     | 20min | Refactor | Manager, state                   |
-| 87 | Split schemas.ts → 3 files by domain            | 30min | Refactor | Group by domain concept          |
-| 88 | Split ErrorHandlingStandardization.ts → 2 files | 15min | Refactor | Service, recovery                |
-| 89 | Split schema-conversion.ts → 2 files            | 15min | Refactor | Converter, helpers               |
-| 90 | Split asyncapi-validator.ts → 2 files           | 15min | Refactor | Validator, rules                 |
-| 91 | Update all imports from splits                  | 30min | Code     | Fix import paths                 |
-| 92 | Run build to verify all splits                  | 5min  | Verify   | bun run build                    |
-| 93 | Run tests to verify no regressions              | 5min  | Verify   | bun test                         |
-| 94 | Verify no files >350 lines                      | 5min  | Verify   | find + wc -l                     |
-| 95 | Commit: "refactor: split remaining large files" | 5min  | Git      | Commit all splits                |
+| #   | Task                                            | Time  | Type     | Details                          |
+| --- | ----------------------------------------------- | ----- | -------- | -------------------------------- |
+| 83  | Split standardized-errors.ts → 3 files          | 30min | Refactor | Types, factories, formatters     |
+| 84  | Split lib.ts → 3 files                          | 30min | Refactor | Core, diagnostics, state-schema  |
+| 85  | Split DocumentGenerator.ts → 3 files            | 20min | Refactor | Serializer, validator, optimizer |
+| 86  | Split ImmutableDocumentManager.ts → 2 files     | 20min | Refactor | Manager, state                   |
+| 87  | Split schemas.ts → 3 files by domain            | 30min | Refactor | Group by domain concept          |
+| 88  | Split ErrorHandlingStandardization.ts → 2 files | 15min | Refactor | Service, recovery                |
+| 89  | Split schema-conversion.ts → 2 files            | 15min | Refactor | Converter, helpers               |
+| 90  | Split asyncapi-validator.ts → 2 files           | 15min | Refactor | Validator, rules                 |
+| 91  | Update all imports from splits                  | 30min | Code     | Fix import paths                 |
+| 92  | Run build to verify all splits                  | 5min  | Verify   | bun run build                    |
+| 93  | Run tests to verify no regressions              | 5min  | Verify   | bun test                         |
+| 94  | Verify no files >350 lines                      | 5min  | Verify   | find + wc -l                     |
+| 95  | Commit: "refactor: split remaining large files" | 5min  | Git      | Commit all splits                |
 
 #### Fix Effect.runSync Anti-Pattern (Tasks 96-105, 2.5 hours)
 

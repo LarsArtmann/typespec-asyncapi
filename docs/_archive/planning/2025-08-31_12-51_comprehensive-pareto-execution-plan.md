@@ -54,8 +54,8 @@
 | **M8**  | **Performance Benchmarking System**        | ⚡ Medium   | High   | 2%    | 100min   | M4           |
 | **M9**  | **Protocol Binding Implementations**       | 🔌 Medium   | High   | 3%    | 100min   | M5           |
 | **M10** | **Comprehensive Documentation**            | 📖 Medium   | Medium | 2%    | 80min    | M6           |
-| **M11** | **File Structure Optimization**            | 🏗️ Low       | Medium | 1%    | 70min    | M4           |
-| **M12** | **Advanced Error Handling**                | 🛡️ Low       | Medium | 1%    | 60min    | M3           |
+| **M11** | **File Structure Optimization**            | 🏗️ Low      | Medium | 1%    | 70min    | M4           |
+| **M12** | **Advanced Error Handling**                | 🛡️ Low      | Medium | 1%    | 60min    | M3           |
 | **M13** | **TypeSpec Integration Testing**           | 🧪 Low      | High   | 1%    | 90min    | M6           |
 | **M14** | **Observability & Monitoring**             | 📊 Low      | High   | 1%    | 100min   | M8           |
 | **M15** | **Final Production Validation**            | ✨ Low      | Medium | 1%    | 80min    | All          |

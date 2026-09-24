@@ -302,28 +302,28 @@ This document provides a **Pareto-optimized execution plan** for completing the 
 
 ### Tasks 13-20: Type Safety & Code Quality
 
-| #  | Task                                | Time  | Impact | Status        |
-| -- | ----------------------------------- | ----- | ------ | ------------- |
-| 13 | Add const assertions to diagnostics | 30min | LOW    | Type safety   |
-| 14 | Group state keys by functionality   | 35min | LOW    | Maintenance   |
-| 15 | Extract diagnostic codes to enum    | 40min | LOW    | Maintenance   |
-| 16 | Add template parameter types        | 45min | MEDIUM | Type safety   |
-| 17 | Add runtime validation for state    | 50min | MEDIUM | Safety        |
-| 18 | Document all public APIs            | 60min | MEDIUM | Documentation |
-| 19 | Add library metadata to lib.ts      | 25min | LOW    | Documentation |
-| 20 | Separate diagnostic groups          | 35min | LOW    | Organization  |
+| #   | Task                                | Time  | Impact | Status        |
+| --- | ----------------------------------- | ----- | ------ | ------------- |
+| 13  | Add const assertions to diagnostics | 30min | LOW    | Type safety   |
+| 14  | Group state keys by functionality   | 35min | LOW    | Maintenance   |
+| 15  | Extract diagnostic codes to enum    | 40min | LOW    | Maintenance   |
+| 16  | Add template parameter types        | 45min | MEDIUM | Type safety   |
+| 17  | Add runtime validation for state    | 50min | MEDIUM | Safety        |
+| 18  | Document all public APIs            | 60min | MEDIUM | Documentation |
+| 19  | Add library metadata to lib.ts      | 25min | LOW    | Documentation |
+| 20  | Separate diagnostic groups          | 35min | LOW    | Organization  |
 
 ### Tasks 21-27: Advanced Features & Testing
 
-| #  | Task                                   | Time  | Impact | Status        |
-| -- | -------------------------------------- | ----- | ------ | ------------- |
-| 21 | Add discriminator support              | 60min | MEDIUM | Feature       |
-| 22 | Add union type conversion              | 50min | MEDIUM | Feature       |
-| 23 | Add enum handling                      | 45min | MEDIUM | Feature       |
-| 24 | Write E2E tests for all decorators     | 90min | HIGH   | Testing       |
-| 25 | Write unit tests for emitter functions | 90min | HIGH   | Testing       |
-| 26 | Add performance benchmarks             | 60min | LOW    | Quality       |
-| 27 | Create comprehensive example           | 45min | MEDIUM | Documentation |
+| #   | Task                                   | Time  | Impact | Status        |
+| --- | -------------------------------------- | ----- | ------ | ------------- |
+| 21  | Add discriminator support              | 60min | MEDIUM | Feature       |
+| 22  | Add union type conversion              | 50min | MEDIUM | Feature       |
+| 23  | Add enum handling                      | 45min | MEDIUM | Feature       |
+| 24  | Write E2E tests for all decorators     | 90min | HIGH   | Testing       |
+| 25  | Write unit tests for emitter functions | 90min | HIGH   | Testing       |
+| 26  | Add performance benchmarks             | 60min | LOW    | Quality       |
+| 27  | Create comprehensive example           | 45min | MEDIUM | Documentation |
 
 ---
 

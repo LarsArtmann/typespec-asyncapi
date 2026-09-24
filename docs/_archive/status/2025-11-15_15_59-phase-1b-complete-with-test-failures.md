@@ -99,8 +99,7 @@ type ValidationFailure = {
 };
 
 type ExtendedValidationResult<T> = (
-  | ValidationSuccess<T>
-  | ValidationFailure
+  ValidationSuccess<T> | ValidationFailure
 ) & {
   metrics: {
     duration: number;

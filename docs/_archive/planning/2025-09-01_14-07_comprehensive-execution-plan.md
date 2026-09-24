@@ -18,18 +18,18 @@ After achieving breakthrough in TypeSpec compilation (bypassing package resoluti
 
 ## Phase 1: Macro Tasks (30-100min each)
 
-| #  | Task                                      | Duration | Impact | Dependencies | Priority |
-| -- | ----------------------------------------- | -------- | ------ | ------------ | -------- |
-| 1  | **Fix Decorator Registration System**     | 100min   | 🔴 51% | None         | P0       |
-| 2  | **Resolve ESLint Protocol.ts Violations** | 45min    | 🟡 8%  | None         | P1       |
-| 3  | **Restore TypeSpec Compile Task**         | 60min    | 🟡 8%  | Task 1       | P1       |
-| 4  | **Implement Decorator State Management**  | 75min    | 🟡 8%  | Task 1       | P1       |
-| 5  | **Fix Critical Validation Tests**         | 90min    | 🟢 10% | Tasks 1,4    | P2       |
-| 6  | **Verify AsyncAPI Generation Pipeline**   | 60min    | 🟢 8%  | Tasks 1,4    | P2       |
-| 7  | **Restore Integration Test Suite**        | 100min   | 🟢 5%  | Tasks 1-6    | P2       |
-| 8  | **Optimize Test Helper Performance**      | 30min    | ⚪ 2%  | Task 7       | P3       |
-| 9  | **Document Breakthrough Solution**        | 45min    | ⚪ 1%  | All          | P3       |
-| 10 | **Clean Up Test Infrastructure**          | 30min    | ⚪ 1%  | All          | P3       |
+| #   | Task                                      | Duration | Impact | Dependencies | Priority |
+| --- | ----------------------------------------- | -------- | ------ | ------------ | -------- |
+| 1   | **Fix Decorator Registration System**     | 100min   | 🔴 51% | None         | P0       |
+| 2   | **Resolve ESLint Protocol.ts Violations** | 45min    | 🟡 8%  | None         | P1       |
+| 3   | **Restore TypeSpec Compile Task**         | 60min    | 🟡 8%  | Task 1       | P1       |
+| 4   | **Implement Decorator State Management**  | 75min    | 🟡 8%  | Task 1       | P1       |
+| 5   | **Fix Critical Validation Tests**         | 90min    | 🟢 10% | Tasks 1,4    | P2       |
+| 6   | **Verify AsyncAPI Generation Pipeline**   | 60min    | 🟢 8%  | Tasks 1,4    | P2       |
+| 7   | **Restore Integration Test Suite**        | 100min   | 🟢 5%  | Tasks 1-6    | P2       |
+| 8   | **Optimize Test Helper Performance**      | 30min    | ⚪ 2%  | Task 7       | P3       |
+| 9   | **Document Breakthrough Solution**        | 45min    | ⚪ 1%  | All          | P3       |
+| 10  | **Clean Up Test Infrastructure**          | 30min    | ⚪ 1%  | All          | P3       |
 
 **Total Estimated Time:** 635 minutes (~10.5 hours)
 

@@ -187,10 +187,10 @@ Searched for common patterns:
 
 ### Phase 1: Critical Blockers (1% = 51% Value)
 
-| # | Task                                     | Effort | Value | Dependencies |
-| - | ---------------------------------------- | ------ | ----- | ------------ |
-| 1 | Debug property enumeration mystery       | 180min | 40%   | None         |
-| 2 | Add decorator registration to src/lib.ts | 30min  | 11%   | None         |
+| #   | Task                                     | Effort | Value | Dependencies |
+| --- | ---------------------------------------- | ------ | ----- | ------------ |
+| 1   | Debug property enumeration mystery       | 180min | 40%   | None         |
+| 2   | Add decorator registration to src/lib.ts | 30min  | 11%   | None         |
 
 **Sub-tasks for Task 1 (Property Enumeration):**
 
@@ -209,51 +209,51 @@ Searched for common patterns:
 
 ### Phase 2: Quick Wins (4% = 64% Value)
 
-| # | Task                                       | Effort | Value      | Type         |
-| - | ------------------------------------------ | ------ | ---------- | ------------ |
-| 3 | Clean test debris (.bak files)             | 15min  | +1%        | Cleanup      |
-| 4 | Fix channel ambiguity errors               | 20min  | +3%        | Bug Fix      |
-| 5 | Extract hardcoded test constants           | 60min  | +4%        | Refactor     |
-| 6 | Add test cleanup hooks (afterEach)         | 30min  | +3%        | Quality      |
-| 7 | Fix test timeouts (5 tests)                | 30min  | +2%        | Reliability  |
-| 8 | Remove CLI spawning from integration tests | 90min  | +5%        | Architecture |
-| 9 | Create test constants file                 | 30min  | Enables #5 | Foundation   |
+| #   | Task                                       | Effort | Value      | Type         |
+| --- | ------------------------------------------ | ------ | ---------- | ------------ |
+| 3   | Clean test debris (.bak files)             | 15min  | +1%        | Cleanup      |
+| 4   | Fix channel ambiguity errors               | 20min  | +3%        | Bug Fix      |
+| 5   | Extract hardcoded test constants           | 60min  | +4%        | Refactor     |
+| 6   | Add test cleanup hooks (afterEach)         | 30min  | +3%        | Quality      |
+| 7   | Fix test timeouts (5 tests)                | 30min  | +2%        | Reliability  |
+| 8   | Remove CLI spawning from integration tests | 90min  | +5%        | Architecture |
+| 9   | Create test constants file                 | 30min  | Enables #5 | Foundation   |
 
 ### Phase 3: File Splitting (Part of 20%)
 
-| #  | Task                                         | Effort | Target   | New Files                       |
-| -- | -------------------------------------------- | ------ | -------- | ------------------------------- |
-| 10 | Split AsyncAPIEmitter.ts (763→3)             | 100min | 250/file | Core, Pipeline, Lifecycle       |
-| 11 | Split ProcessingService.ts (558→3)           | 90min  | 200/file | Service, Processors, Validators |
-| 12 | Split memory-monitor.ts (599→2)              | 80min  | 300/file | Monitor, Metrics                |
-| 13 | Split effect-helpers.ts (536→2)              | 70min  | 270/file | FileOps, TypeOps                |
-| 14 | Split PluginRegistry.ts (516→2)              | 70min  | 260/file | Registry, Loader                |
-| 15 | Split ValidationService.ts (513→3)           | 90min  | 170/file | Service, Validators, Rules      |
-| 16 | Split standardized-errors.ts (477→2)         | 60min  | 240/file | Errors, Formatters              |
-| 17 | Split PerformanceRegressionTester.ts (464→2) | 60min  | 230/file | Tester, Analyzers               |
-| 18 | Split metrics.ts (454→2)                     | 60min  | 230/file | Collectors, Aggregators         |
-| 19 | Refactor lib.ts (445)                        | 50min  | Extract  | Diagnostics to separate file    |
-| 20 | Split DocumentGenerator.ts (426→2)           | 60min  | 215/file | Generator, Serializers          |
+| #   | Task                                         | Effort | Target   | New Files                       |
+| --- | -------------------------------------------- | ------ | -------- | ------------------------------- |
+| 10  | Split AsyncAPIEmitter.ts (763→3)             | 100min | 250/file | Core, Pipeline, Lifecycle       |
+| 11  | Split ProcessingService.ts (558→3)           | 90min  | 200/file | Service, Processors, Validators |
+| 12  | Split memory-monitor.ts (599→2)              | 80min  | 300/file | Monitor, Metrics                |
+| 13  | Split effect-helpers.ts (536→2)              | 70min  | 270/file | FileOps, TypeOps                |
+| 14  | Split PluginRegistry.ts (516→2)              | 70min  | 260/file | Registry, Loader                |
+| 15  | Split ValidationService.ts (513→3)           | 90min  | 170/file | Service, Validators, Rules      |
+| 16  | Split standardized-errors.ts (477→2)         | 60min  | 240/file | Errors, Formatters              |
+| 17  | Split PerformanceRegressionTester.ts (464→2) | 60min  | 230/file | Tester, Analyzers               |
+| 18  | Split metrics.ts (454→2)                     | 60min  | 230/file | Collectors, Aggregators         |
+| 19  | Refactor lib.ts (445)                        | 50min  | Extract  | Diagnostics to separate file    |
+| 20  | Split DocumentGenerator.ts (426→2)           | 60min  | 215/file | Generator, Serializers          |
 
 ### Phase 4: Test Quality Improvements
 
-| #  | Task                                   | Effort | Impact          |
-| -- | -------------------------------------- | ------ | --------------- |
-| 21 | Split test-helpers.ts (571→4 files)    | 100min | Maintainability |
-| 22 | Implement Given/When/Then BDD patterns | 90min  | Readability     |
-| 23 | Add test isolation (proper cleanup)    | 60min  | Reliability     |
-| 24 | Create test constants module           | 40min  | DRY             |
-| 25 | Standardize test assertions            | 70min  | Consistency     |
+| #   | Task                                   | Effort | Impact          |
+| --- | -------------------------------------- | ------ | --------------- |
+| 21  | Split test-helpers.ts (571→4 files)    | 100min | Maintainability |
+| 22  | Implement Given/When/Then BDD patterns | 90min  | Readability     |
+| 23  | Add test isolation (proper cleanup)    | 60min  | Reliability     |
+| 24  | Create test constants module           | 40min  | DRY             |
+| 25  | Standardize test assertions            | 70min  | Consistency     |
 
 ### Phase 5: Type Safety Enhancements
 
-| #  | Task                                       | Effort | Impact         |
-| -- | ------------------------------------------ | ------ | -------------- |
-| 26 | Apply branded types to domain entities     | 80min  | Type safety    |
-| 27 | Add Result/Either types for error handling | 90min  | Robustness     |
-| 28 | Define service interfaces for DI           | 70min  | Testability    |
-| 29 | Remove remaining TODOs (first 100)         | 80min  | Code quality   |
-| 30 | Add @effect/schema validation              | 60min  | Runtime safety |
+| #   | Task                                       | Effort | Impact         |
+| --- | ------------------------------------------ | ------ | -------------- |
+| 26  | Apply branded types to domain entities     | 80min  | Type safety    |
+| 27  | Add Result/Either types for error handling | 90min  | Robustness     |
+| 28  | Define service interfaces for DI           | 70min  | Testability    |
+| 29  | Remove remaining TODOs (first 100)         | 80min  | Code quality   |
+| 30  | Add @effect/schema validation              | 60min  | Runtime safety |
 
 ---
 

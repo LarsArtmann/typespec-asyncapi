@@ -73,8 +73,7 @@ function declarationNameOf(t: Type): string | null {
   }
 
   const mapper = (t as { templateMapper?: unknown }).templateMapper as
-    | { args?: unknown[] }
-    | undefined;
+    { args?: unknown[] } | undefined;
   if (mapper === undefined || mapper.args === undefined) {
     return baseName;
   }

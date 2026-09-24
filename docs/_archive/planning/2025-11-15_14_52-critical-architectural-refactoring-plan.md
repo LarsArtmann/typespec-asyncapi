@@ -90,8 +90,8 @@ This codebase has **EXCELLENT foundations** but is **ACCUMULATING DEBT** at an u
 | ----------- | ---------------------- | ---------- | --------------------------- | ------------------ |
 | 🔥 CRITICAL | ValidationService.ts   | 211        | `forEach + runSync`         | `Effect.all(map)`  |
 | 🔥 CRITICAL | schema-conversion.ts   | 27,101,282 | Blocking operations         | Return Effect      |
-| ⚠️ HIGH      | standardized-errors.ts | 416,430    | Error logging with runSync  | Effect composition |
-| ⚠️ HIGH      | PluginRegistry.ts      | 456-463    | Event emission with runSync | Effect.gen         |
+| ⚠️ HIGH     | standardized-errors.ts | 416,430    | Error logging with runSync  | Effect composition |
+| ⚠️ HIGH     | PluginRegistry.ts      | 456-463    | Event emission with runSync | Effect.gen         |
 
 **Execution:**
 
@@ -478,52 +478,52 @@ graph TB
 
 #### Delete Ghost Code (Tasks 1-5, 30min)
 
-| # | Task                                       | Time  | Type   | Details                       |
-| - | ------------------------------------------ | ----- | ------ | ----------------------------- |
-| 1 | Find all .disabled files                   | 5min  | Search | `find src -name "*.disabled"` |
-| 2 | Delete AsyncAPIEmitter.ts.disabled         | 2min  | Delete | rm -676 lines                 |
-| 3 | Search for commented code blocks >10 lines | 10min | Grep   | `grep -r "^//.*{10,}"`        |
-| 4 | Delete commented code blocks               | 8min  | Edit   | Remove dead code              |
-| 5 | Build + commit ghost deletion              | 5min  | Verify | bun run build && git commit   |
+| #   | Task                                       | Time  | Type   | Details                       |
+| --- | ------------------------------------------ | ----- | ------ | ----------------------------- |
+| 1   | Find all .disabled files                   | 5min  | Search | `find src -name "*.disabled"` |
+| 2   | Delete AsyncAPIEmitter.ts.disabled         | 2min  | Delete | rm -676 lines                 |
+| 3   | Search for commented code blocks >10 lines | 10min | Grep   | `grep -r "^//.*{10,}"`        |
+| 4   | Delete commented code blocks               | 8min  | Edit   | Remove dead code              |
+| 5   | Build + commit ghost deletion              | 5min  | Verify | bun run build && git commit   |
 
 #### Fix ValidationResult Split Brain (Tasks 6-11, 1h)
 
-| #  | Task                                                  | Time  | Type     | Details                            |
-| -- | ----------------------------------------------------- | ----- | -------- | ---------------------------------- |
-| 6  | Search LegacyValidationResult usages                  | 10min | Research | `grep -r "LegacyValidationResult"` |
-| 7  | Read ValidationService.ts understand usage            | 10min | Research | Line-by-line analysis              |
-| 8  | Replace with ValidationResult<T> in ValidationService | 20min | Code     | Type migration                     |
-| 9  | Add @deprecated to LegacyValidationResult             | 3min  | Code     | JSDoc warning                      |
-| 10 | Update tests for discriminated union                  | 12min | Test     | Expect .\_tag instead of .valid    |
-| 11 | Build + test + commit                                 | 5min  | Verify   | Quality check                      |
+| #   | Task                                                  | Time  | Type     | Details                            |
+| --- | ----------------------------------------------------- | ----- | -------- | ---------------------------------- |
+| 6   | Search LegacyValidationResult usages                  | 10min | Research | `grep -r "LegacyValidationResult"` |
+| 7   | Read ValidationService.ts understand usage            | 10min | Research | Line-by-line analysis              |
+| 8   | Replace with ValidationResult<T> in ValidationService | 20min | Code     | Type migration                     |
+| 9   | Add @deprecated to LegacyValidationResult             | 3min  | Code     | JSDoc warning                      |
+| 10  | Update tests for discriminated union                  | 12min | Test     | Expect .\_tag instead of .valid    |
+| 11  | Build + test + commit                                 | 5min  | Verify   | Quality check                      |
 
 #### Eliminate Effect.runSync (Tasks 12-19, 2h)
 
-| #  | Task                                      | Time  | Type     | Details                    |
-| -- | ----------------------------------------- | ----- | -------- | -------------------------- |
-| 12 | Read ValidationService.ts:211 context     | 5min  | Research | Understand forEach pattern |
-| 13 | Replace forEach + runSync with Effect.all | 15min | Code     | Proper Effect composition  |
-| 14 | Test ValidationService changes            | 5min  | Test     | Verify behavior            |
-| 15 | Read schema-conversion.ts blocking ops    | 10min | Research | Lines 27, 101, 282         |
-| 16 | Refactor to return Effect<T, E>           | 25min | Code     | Remove runSync             |
-| 17 | Read standardized-errors.ts logging       | 5min  | Research | Lines 416, 430             |
-| 18 | Replace runSync with Effect.logError      | 10min | Code     | Proper logging             |
-| 19 | Read PluginRegistry.ts event emission     | 5min  | Research | Lines 456-463              |
-| 20 | Refactor to Effect.gen pattern            | 15min | Code     | Event composition          |
-| 21 | Search remaining Effect.runSync           | 5min  | Grep     | `grep -r "Effect.runSync"` |
-| 22 | Fix remaining low-priority instances      | 15min | Code     | Batch cleanup              |
-| 23 | Full quality check                        | 10min | Verify   | Build + test + lint        |
-| 24 | Commit runSync elimination                | 5min  | Git      | Detailed message           |
+| #   | Task                                      | Time  | Type     | Details                    |
+| --- | ----------------------------------------- | ----- | -------- | -------------------------- |
+| 12  | Read ValidationService.ts:211 context     | 5min  | Research | Understand forEach pattern |
+| 13  | Replace forEach + runSync with Effect.all | 15min | Code     | Proper Effect composition  |
+| 14  | Test ValidationService changes            | 5min  | Test     | Verify behavior            |
+| 15  | Read schema-conversion.ts blocking ops    | 10min | Research | Lines 27, 101, 282         |
+| 16  | Refactor to return Effect<T, E>           | 25min | Code     | Remove runSync             |
+| 17  | Read standardized-errors.ts logging       | 5min  | Research | Lines 416, 430             |
+| 18  | Replace runSync with Effect.logError      | 10min | Code     | Proper logging             |
+| 19  | Read PluginRegistry.ts event emission     | 5min  | Research | Lines 456-463              |
+| 20  | Refactor to Effect.gen pattern            | 15min | Code     | Event composition          |
+| 21  | Search remaining Effect.runSync           | 5min  | Grep     | `grep -r "Effect.runSync"` |
+| 22  | Fix remaining low-priority instances      | 15min | Code     | Batch cleanup              |
+| 23  | Full quality check                        | 10min | Verify   | Build + test + lint        |
+| 24  | Commit runSync elimination                | 5min  | Git      | Detailed message           |
 
 #### Complete ESLint (Tasks 25-29, 1h)
 
-| #  | Task                                 | Time  | Type   | Details                    |
-| -- | ------------------------------------ | ----- | ------ | -------------------------- |
-| 25 | Fix asyncapi-validator unused vars   | 15min | Code   | Remove parser, stats, etc. |
-| 26 | Fix ProcessingService unused imports | 10min | Code   | Remove Context, Layer      |
-| 27 | Rename Effect.TS services UPPER_CASE | 25min | Code   | Batch rename 13+ services  |
-| 28 | Run eslint --fix                     | 5min  | Auto   | Auto-fixable warnings      |
-| 29 | Verify 0 warnings + commit           | 5min  | Verify | Final check                |
+| #   | Task                                 | Time  | Type   | Details                    |
+| --- | ------------------------------------ | ----- | ------ | -------------------------- |
+| 25  | Fix asyncapi-validator unused vars   | 15min | Code   | Remove parser, stats, etc. |
+| 26  | Fix ProcessingService unused imports | 10min | Code   | Remove Context, Layer      |
+| 27  | Rename Effect.TS services UPPER_CASE | 25min | Code   | Batch rename 13+ services  |
+| 28  | Run eslint --fix                     | 5min  | Auto   | Auto-fixable warnings      |
+| 29  | Verify 0 warnings + commit           | 5min  | Verify | Final check                |
 
 ---
 
@@ -531,36 +531,36 @@ graph TB
 
 #### Split ValidationService (Tasks 30-40, 2h)
 
-| #  | Task                                       | Time  | Type     | Details                        |
-| -- | ------------------------------------------ | ----- | -------- | ------------------------------ |
-| 30 | Create validation/ folder                  | 2min  | Setup    | mkdir -p src/domain/validation |
-| 31 | Read ValidationService.ts structure        | 15min | Research | Identify concerns              |
-| 32 | Create document-structure-validator.ts     | 20min | Code     | Extract structure validation   |
-| 33 | Create cross-reference-validator.ts        | 20min | Code     | Extract ref validation         |
-| 34 | Create validation-reporter.ts              | 20min | Code     | Extract reporting              |
-| 35 | Update validation-service.ts orchestration | 15min | Code     | Delegate to modules            |
-| 36 | Create index.ts barrel                     | 5min  | Code     | Re-export public API           |
-| 37 | Update imports across codebase             | 15min | Code     | Global find/replace            |
-| 38 | Build + test verification                  | 5min  | Verify   | Quality check                  |
-| 39 | Verify all files <200 lines                | 3min  | Verify   | wc -l                          |
-| 40 | Commit split                               | 5min  | Git      | Detailed message               |
+| #   | Task                                       | Time  | Type     | Details                        |
+| --- | ------------------------------------------ | ----- | -------- | ------------------------------ |
+| 30  | Create validation/ folder                  | 2min  | Setup    | mkdir -p src/domain/validation |
+| 31  | Read ValidationService.ts structure        | 15min | Research | Identify concerns              |
+| 32  | Create document-structure-validator.ts     | 20min | Code     | Extract structure validation   |
+| 33  | Create cross-reference-validator.ts        | 20min | Code     | Extract ref validation         |
+| 34  | Create validation-reporter.ts              | 20min | Code     | Extract reporting              |
+| 35  | Update validation-service.ts orchestration | 15min | Code     | Delegate to modules            |
+| 36  | Create index.ts barrel                     | 5min  | Code     | Re-export public API           |
+| 37  | Update imports across codebase             | 15min | Code     | Global find/replace            |
+| 38  | Build + test verification                  | 5min  | Verify   | Quality check                  |
+| 39  | Verify all files <200 lines                | 3min  | Verify   | wc -l                          |
+| 40  | Commit split                               | 5min  | Git      | Detailed message               |
 
 #### Split effect-helpers (Tasks 41-52, 2.5h)
 
-| #  | Task                                    | Time  | Type     | Details                |
-| -- | --------------------------------------- | ----- | -------- | ---------------------- |
-| 41 | Create utils/effect/ folder             | 2min  | Setup    | mkdir -p               |
-| 42 | Read effect-helpers.ts identify modules | 15min | Research | Find 5 concerns        |
-| 43 | Create railway-logging.ts               | 15min | Code     | Extract logging        |
-| 44 | Create railway-validation.ts            | 20min | Code     | Extract validation     |
-| 45 | Create railway-error-handling.ts        | 15min | Code     | Extract error handling |
-| 46 | Create railway-pipeline.ts              | 20min | Code     | Extract pipelines      |
-| 47 | Create railway-recovery.ts              | 15min | Code     | Extract recovery       |
-| 48 | Create index.ts barrel                  | 5min  | Code     | Re-export all          |
-| 49 | Update imports (many files!)            | 30min | Code     | Global update          |
-| 50 | Build + test verification               | 5min  | Verify   | Quality check          |
-| 51 | Verify all files <150 lines             | 3min  | Verify   | wc -l                  |
-| 52 | Commit split                            | 5min  | Git      | Detailed message       |
+| #   | Task                                    | Time  | Type     | Details                |
+| --- | --------------------------------------- | ----- | -------- | ---------------------- |
+| 41  | Create utils/effect/ folder             | 2min  | Setup    | mkdir -p               |
+| 42  | Read effect-helpers.ts identify modules | 15min | Research | Find 5 concerns        |
+| 43  | Create railway-logging.ts               | 15min | Code     | Extract logging        |
+| 44  | Create railway-validation.ts            | 20min | Code     | Extract validation     |
+| 45  | Create railway-error-handling.ts        | 15min | Code     | Extract error handling |
+| 46  | Create railway-pipeline.ts              | 20min | Code     | Extract pipelines      |
+| 47  | Create railway-recovery.ts              | 15min | Code     | Extract recovery       |
+| 48  | Create index.ts barrel                  | 5min  | Code     | Re-export all          |
+| 49  | Update imports (many files!)            | 30min | Code     | Global update          |
+| 50  | Build + test verification               | 5min  | Verify   | Quality check          |
+| 51  | Verify all files <150 lines             | 3min  | Verify   | wc -l                  |
+| 52  | Commit split                            | 5min  | Git      | Detailed message       |
 
 #### Quick Splits Remaining Files (Tasks 53-75, 3h)
 
@@ -568,44 +568,44 @@ graph TB
 
 **PluginRegistry (509 lines → 3 files, 30min):**
 
-| #  | Task                              | Time | Type   | Details               |
-| -- | --------------------------------- | ---- | ------ | --------------------- |
-| 53 | Create adapters/plugins/ folder   | 2min | Setup  | mkdir -p              |
-| 54 | Extract to plugin-registry.ts     | 8min | Code   | Core registry         |
-| 55 | Extract to plugin-lifecycle.ts    | 8min | Code   | Lifecycle hooks       |
-| 56 | Extract to plugin-dependencies.ts | 7min | Code   | Dependency resolution |
-| 57 | Update imports + verify           | 5min | Verify | Build check           |
+| #   | Task                              | Time | Type   | Details               |
+| --- | --------------------------------- | ---- | ------ | --------------------- |
+| 53  | Create adapters/plugins/ folder   | 2min | Setup  | mkdir -p              |
+| 54  | Extract to plugin-registry.ts     | 8min | Code   | Core registry         |
+| 55  | Extract to plugin-lifecycle.ts    | 8min | Code   | Lifecycle hooks       |
+| 56  | Extract to plugin-dependencies.ts | 7min | Code   | Dependency resolution |
+| 57  | Update imports + verify           | 5min | Verify | Build check           |
 
 **standardized-errors (477 lines → 3 files, 25min):**
 
-| #  | Task                           | Time | Type   | Details           |
-| -- | ------------------------------ | ---- | ------ | ----------------- |
-| 58 | Extract to error-types.ts      | 8min | Code   | Type definitions  |
-| 59 | Extract to error-factories.ts  | 8min | Code   | Factory functions |
-| 60 | Extract to error-formatters.ts | 7min | Code   | Formatting logic  |
-| 61 | Update imports + verify        | 2min | Verify | Build check       |
+| #   | Task                           | Time | Type   | Details           |
+| --- | ------------------------------ | ---- | ------ | ----------------- |
+| 58  | Extract to error-types.ts      | 8min | Code   | Type definitions  |
+| 59  | Extract to error-factories.ts  | 8min | Code   | Factory functions |
+| 60  | Extract to error-formatters.ts | 7min | Code   | Formatting logic  |
+| 61  | Update imports + verify        | 2min | Verify | Build check       |
 
 **lib.ts (455 lines → 3 files, 25min):**
 
-| #  | Task                           | Time | Type   | Details          |
-| -- | ------------------------------ | ---- | ------ | ---------------- |
-| 62 | Extract to lib-core.ts         | 8min | Code   | Core definitions |
-| 63 | Extract to lib-diagnostics.ts  | 8min | Code   | Diagnostic codes |
-| 64 | Extract to lib-state-schema.ts | 7min | Code   | State schemas    |
-| 65 | Update imports + verify        | 2min | Verify | Build check      |
+| #   | Task                           | Time | Type   | Details          |
+| --- | ------------------------------ | ---- | ------ | ---------------- |
+| 62  | Extract to lib-core.ts         | 8min | Code   | Core definitions |
+| 63  | Extract to lib-diagnostics.ts  | 8min | Code   | Diagnostic codes |
+| 64  | Extract to lib-state-schema.ts | 7min | Code   | State schemas    |
+| 65  | Update imports + verify        | 2min | Verify | Build check      |
 
 **Continue pattern for remaining 6 files (tasks 66-89, 2h)...**
 
 #### Extract Duplications (Tasks 90-95, 1h)
 
-| #  | Task                                | Time  | Type   | Details               |
-| -- | ----------------------------------- | ----- | ------ | --------------------- |
-| 90 | Create error-patterns.ts            | 10min | Code   | Shared utilities      |
-| 91 | Extract toStandardizedError pattern | 15min | Code   | Single implementation |
-| 92 | Extract error context enrichment    | 10min | Code   | Shared enrichment     |
-| 93 | Update 10+ files to use shared      | 15min | Code   | Global replace        |
-| 94 | Build + test verification           | 5min  | Verify | Quality check         |
-| 95 | Commit duplication fixes            | 5min  | Git    | Detailed message      |
+| #   | Task                                | Time  | Type   | Details               |
+| --- | ----------------------------------- | ----- | ------ | --------------------- |
+| 90  | Create error-patterns.ts            | 10min | Code   | Shared utilities      |
+| 91  | Extract toStandardizedError pattern | 15min | Code   | Single implementation |
+| 92  | Extract error context enrichment    | 10min | Code   | Shared enrichment     |
+| 93  | Update 10+ files to use shared      | 15min | Code   | Global replace        |
+| 94  | Build + test verification           | 5min  | Verify | Quality check         |
+| 95  | Commit duplication fixes            | 5min  | Git    | Detailed message      |
 
 ---
 
