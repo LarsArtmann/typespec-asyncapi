@@ -15,11 +15,23 @@ removal.
 
 ## Release
 
-- [ ] **Publish stable v0.3.0** — BLOCKED on maintainer decisions (ship M15
-      in 0.3.0 vs 0.4.0; stable timing; NPM_TOKEN rotation; stale `beta`
-      dist-tag still points at `0.2.1-beta`). CHANGELOG, tag, verify,
-      fresh-install smoke once unblocked. `0.3.0-beta.1` is live on
-      npm; everything else in the v0.3.0 plan (Phases 1-3) is green.
+- [ ] **Release v1.0.0** (maintainer leaning 1.0.0 straight from 0.3.0-beta.1;
+      zero breaking changes since the beta; full plan:
+      `docs/planning/2026-09-30_00-39_SUPERB-V1.0.0-RELEASE-READINESS.html`):
+  - [ ] Decision: semver commitment — freeze public API (30 decorators,
+        EmitterOptions, output contract, `./shared`); retitle ROADMAP's
+        v0.4.0 direct-AST rewrite as the internal-only 1.1.0
+  - [ ] NPM_TOKEN rotation + update the GitHub publish secret
+  - [ ] CHANGELOG 1.0.0 entry (fold `[Unreleased]`) + package.json bump
+  - [ ] README de-beta-ification + stability statement
+  - [ ] Dist-tag cleanup at publish (`beta` → 1.0.0 or delete; delete stale
+        `alpha` → 0.0.1-alpha.2)
+  - [ ] Tag `v1.0.0` → provenance workflow; fresh-install smoke test
+  - Resolved 2026-09-30: M15 (stable template names) shipped inside
+    0.3.0-beta.1 — the old "ship M15 in 0.3.0 vs 0.4.0" blocker was stale.
+    Verify gate restored green (schema-emitter.ts 406→389 lines via
+    `schema-fragments.ts` extraction; import-block clone eliminated;
+    0 clones again).
 
 ## Test-Suite Integrity (residual)
 
@@ -66,8 +78,9 @@ P4/P5 migration tasks stay in the plan (gated on a YES) until D1 resolves.
       `api-extractor`; produce remediation memo (T12, coverage memo T13).
 - [ ] **typespec.io third-party listing** — the "no" fallback; PR/issue to
       their docs (T10, README section T11).
-- [ ] **Stable v0.3.0 release interplay** — keep blocked while D1 pending;
-      unblock immediately if "no" (T14, ties into Release section above).
+- [ ] **Release/upstream interplay** — flipped 2026-09-30: ship v1.0.0
+      FIRST, then post the proposal ("adopt a proven 1.0" beats "beta seeking
+      verdict"). Do not block the tag on D1.
 
 Post-release (feeds 0.3.1/0.4.0): docs site, v0.4.0 direct-AST spike +
 memo, openapi3 EFv2-migration watch. See
