@@ -8,7 +8,6 @@
 import type {
   BooleanLiteral,
   Enum,
-  EnumMember,
   Interface,
   Model,
   ModelProperty,
@@ -39,6 +38,11 @@ import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
 import { extractValue } from "./extract-value.js";
 import { refForNamedType } from "./schema-ref.js";
+import {
+  composeUnionVariants,
+  constSchema,
+  enumSchema,
+} from "./schema-fragments.js";
 
 export class AsyncAPISchemaEmitter extends TypeEmitter<
   JsonSchema,
@@ -135,11 +139,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     name ? this.scalarDeclaration(s, name) : this.intrinsicSchema(s.name);
 
   stringLiteral = (literal: StringLiteral): EmitterOutput<JsonSchema> =>
-    this.returnConst(literal.value);
+    constSchema(literal.value);
   numericLiteral = (literal: NumericLiteral): EmitterOutput<JsonSchema> =>
-    this.returnConst(literal.value);
+    constSchema(literal.value);
   booleanLiteral = (literal: BooleanLiteral): EmitterOutput<JsonSchema> =>
-    this.returnConst(literal.value);
+    constSchema(literal.value);
   arrayDeclaration = (
     _array: Type,
     _name: string,
@@ -179,27 +183,16 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   interfaceDeclaration = (_iface: Interface): EmitterOutput<JsonSchema> =>
     this.emitter.result.none();
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
-    return this.declareSchema(name, en, this.buildEnumSchema(en.members));
+    return this.declareSchema(name, en, enumSchema(en.members));
   }
 
   sourceFile(sourceFile: SourceFile<JsonSchema>): EmittedSourceFile {
     return { contents: "", path: sourceFile.path };
   }
 
-  /** Build a `{ const: value }` literal schema. */
-  private returnConst(value: unknown): JsonSchema {
-    return { const: value };
-  }
-
   /** Build an intrinsic type schema. Falls back to `"string"` when name is undefined. */
   private intrinsicSchema(name: string | undefined): JsonSchema {
     return intrinsicToSchema(name ?? "string");
-  }
-
-  /** Build an enum schema `{ enum: values, type: "string" }` from a map of `EnumMember`. */
-  private buildEnumSchema(members: Map<string, EnumMember>): JsonSchema {
-    const values = [...members.values()].map((m) => m.value ?? m.name);
-    return { enum: values, type: "string" };
   }
 
   /** Apply metadata decorators to a schema and register it as a named declaration. */
@@ -214,7 +207,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
 
   /** Compose a union's variants into an enum/oneOf/anyOf schema. */
   private composedUnionSchema(union: Union): JsonSchema {
-    return this.composeUnionVariants(this.mapUnionVariants(union), union);
+    return composeUnionVariants(
+      this.mapUnionVariants(union),
+      union,
+      this.emitter.getProgram(),
+    );
   }
 
   /** Map union variants to schemas: named types → `$ref`, string literals → `const`, else intrinsic fallback. */
@@ -228,24 +225,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
         return intrinsicToSchema(tt.name ?? "string");
       }),
     );
-  }
-
-  /** Decide oneOf vs anyOf for union variants, applying discriminator when all variants are models. */
-  private composeUnionVariants(
-    variants: JsonSchema[],
-    union: Union,
-  ): JsonSchema {
-    const allModelVariants = [...union.variants.values()].every(
-      (v) => (v.type as { kind: string }).kind === "Model",
-    );
-    if (allModelVariants) {
-      const disc = getDiscriminator(this.emitter.getProgram(), union);
-      if (disc) {
-        return { oneOf: variants, discriminator: disc.propertyName };
-      }
-      return { oneOf: variants };
-    }
-    return { anyOf: variants };
   }
 
   /**
@@ -373,7 +352,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       const schemaVariants = variants.map((v) =>
         typeof v === "string" ? { const: v } : v,
       );
-      return this.composeUnionVariants(schemaVariants, tUnion);
+      return composeUnionVariants(
+        schemaVariants,
+        tUnion,
+        this.emitter.getProgram(),
+      );
     }
     if (kind === "Model" && (t as Model).indexer) {
       return this.indexedModelSchema(t as Model);
@@ -382,13 +365,13 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
       return this.intrinsicSchema((t as { name?: string }).name);
     }
     if (kind === "String") {
-      return this.returnConst((t as { value: string }).value);
+      return constSchema((t as { value: string }).value);
     }
     if (kind === "Number") {
-      return this.returnConst((t as { value: number }).value);
+      return constSchema((t as { value: number }).value);
     }
     if (kind === "Boolean") {
-      return this.returnConst((t as { value: boolean }).value);
+      return constSchema((t as { value: boolean }).value);
     }
     if (kind === "Tuple") {
       return {
