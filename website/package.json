@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
-    "@astrojs/starlight": "^0.42.3",
+    "@astrojs/starlight": "^0.42.4",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.5",
     "astro-og-canvas": "^0.13.2",
@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
-    "html-validate": "^11.16.0",
+    "html-validate": "^11.16.1",
     "typescript": "^7.0.2"
   },
   "overrides": {
