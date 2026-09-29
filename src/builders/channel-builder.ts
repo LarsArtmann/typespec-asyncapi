@@ -21,13 +21,11 @@ import {
 import {
   normalizeBindingProtocol,
   supportsBindingPlacement,
+  withMessage,
+  type AsyncAPIConsolidatedState,
+  type BuilderFn,
+  type DocumentBuildContext,
 } from "./_imports.js";
-import type {
-  AsyncAPIConsolidatedState,
-  BuilderFn,
-  DocumentBuildContext,
-} from "./_imports.js";
-import { withMessage } from "./_imports.js";
 import {
   buildMessageObject,
   buildProtocolBindings,
