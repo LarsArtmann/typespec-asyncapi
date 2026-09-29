@@ -16,10 +16,10 @@ import {
 } from "./shared-utils.js";
 import {
   getDoc,
-  getSummary,
-  nameOfType,
   type AsyncAPIConsolidatedState,
+  getSummary,
   type BuilderFn,
+  nameOfType,
   type DocumentBuildContext,
 } from "./_imports.js";
 import { schemaNameForType } from "../schema-ref.js";
