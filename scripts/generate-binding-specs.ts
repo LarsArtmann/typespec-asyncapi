@@ -53,6 +53,12 @@ function sortVersions(versions: string[]): string[] {
   });
 }
 
+function subdirectoryNames(dir: string): string[] {
+  return readdirSync(dir, { withFileTypes: true })
+    .filter((d) => d.isDirectory())
+    .map((d) => d.name);
+}
+
 function extractFieldRules(schemaPath: string): Record<string, FieldRule> | null {
   if (!existsSync(schemaPath)) {
     return null;
@@ -103,10 +109,7 @@ function generate(): void {
     process.exit(1);
   }
 
-  const protocols = readdirSync(SPECS_DIR, { withFileTypes: true })
-    .filter((d) => d.isDirectory())
-    .map((d) => d.name)
-    .toSorted();
+  const protocols = subdirectoryNames(SPECS_DIR).toSorted();
 
   const latestVersions: Record<string, string> = {};
   const allVersions: Record<string, string[]> = {};
@@ -116,9 +119,7 @@ function generate(): void {
   for (const protoDir of protocols) {
     const key = toBindingKey(protoDir);
     const protoPath = join(SPECS_DIR, protoDir);
-    const versions = readdirSync(protoPath, { withFileTypes: true })
-      .filter((d) => d.isDirectory())
-      .map((d) => d.name);
+    const versions = subdirectoryNames(protoPath);
 
     const sorted = sortVersions(versions);
     latestVersions[key] = sorted[0] ?? "";

@@ -4,33 +4,14 @@
  * Only the options the emitter actually reads at runtime.
  */
 
-import type {
-  ContactObject,
-  LicenseObject,
-  ExternalDocumentationObject,
-} from "../../domain/models/asyncapi-document.js";
+import type { InfoOptionalFields } from "../../domain/models/asyncapi-document.js";
 
-export interface EmitterOptions {
+export interface EmitterOptions extends InfoOptionalFields {
   /** Target AsyncAPI specification version */
   version?: string;
 
   /** Generated document title */
   title?: string;
-
-  /** Generated document description */
-  description?: string;
-
-  /** Contact information for the API */
-  contact?: ContactObject;
-
-  /** License information for the API */
-  license?: LicenseObject;
-
-  /** URL to the Terms of Service */
-  termsOfService?: string;
-
-  /** External documentation URL */
-  externalDocs?: ExternalDocumentationObject;
 
   /** Unique document identifier (AsyncAPI root `id`, e.g. a URN) */
   "asyncapi-id"?: string;

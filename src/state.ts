@@ -10,7 +10,7 @@ import type {
   ProtocolBindings,
   SecurityRequirement,
   SecurityScheme,
-  ServerVariable,
+  ServerObject,
   Tag,
 } from "./domain/models/asyncapi-document.js";
 import { getMultiState, getStateMap } from "./state-compatibility.js";
@@ -57,17 +57,12 @@ export interface MessageConfigData {
 /**
  * Server Configuration State Data
  */
-export interface ServerConfigData {
+export interface ServerConfigData
+  extends Pick<ServerObject, "protocolVersion" | "pathname" | "variables" | "security"> {
   url: string;
   protocol: AsyncAPIProtocol;
   description?: string;
   name: string;
-  protocolVersion?: string;
-  pathname?: string;
-  /** Server variables: maps variable name to enum/default/description. */
-  variables?: Record<string, ServerVariable>;
-  /** Server-level security requirements (AsyncAPI 3.1 server.security). */
-  security?: SecurityRequirement[];
 }
 
 /**

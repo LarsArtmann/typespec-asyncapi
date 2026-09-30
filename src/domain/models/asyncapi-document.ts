@@ -107,14 +107,27 @@ export interface OAuth2Flows {
   authorizationCode?: OAuth2Flow;
 }
 
-export interface InfoObject {
+/**
+ * Optional annotation fields of the AsyncAPI 3.1 info object, shared with the
+ * emitter options that populate them.
+ * @see https://www.asyncapi.com/docs/reference/specification/v3.1.0#infoObject
+ */
+export interface InfoOptionalFields {
+  /** A short description of the API. */
+  description?: string;
+  /** Contact information for the exposed API. */
+  contact?: ContactObject;
+  /** License information for the exposed API. */
+  license?: LicenseObject;
+  /** URL to the Terms of Service. */
+  termsOfService?: string;
+  /** External documentation. */
+  externalDocs?: ExternalDocumentationObject;
+}
+
+export interface InfoObject extends InfoOptionalFields {
   title: string;
   version: string;
-  description?: string;
-  contact?: ContactObject;
-  license?: LicenseObject;
-  termsOfService?: string;
-  externalDocs?: ExternalDocumentationObject;
   tags?: Tag[];
 }
 
