@@ -18,12 +18,13 @@ removal.
 - [ ] **Release v1.0.0** (maintainer leaning 1.0.0 straight from 0.3.0-beta.1;
       zero breaking changes since the beta; full plan:
       `docs/planning/2026-09-30_00-39_SUPERB-V1.0.0-RELEASE-READINESS.html`):
-  - [ ] Decision: semver commitment — freeze public API (30 decorators,
+  - [x] Decision: semver commitment — freeze public API (30 decorators,
         EmitterOptions, output contract, `./shared`); retitle ROADMAP's
         v0.4.0 direct-AST rewrite as the internal-only 1.1.0
-  - [ ] NPM_TOKEN rotation + update the GitHub publish secret
-  - [ ] CHANGELOG 1.0.0 entry (fold `[Unreleased]`) + package.json bump
-  - [ ] README de-beta-ification + stability statement
+        (approved 2026-09-30)
+  - [ ] NPM_TOKEN rotation + update the GitHub publish secret (maintainer)
+  - [x] CHANGELOG 1.0.0 entry (fold `[Unreleased]`) + package.json bump
+  - [x] README de-beta-ification + stability statement
   - [ ] Dist-tag cleanup at publish (`beta` → 1.0.0 or delete; delete stale
         `alpha` → 0.0.1-alpha.2)
   - [ ] Tag `v1.0.0` → provenance workflow; fresh-install smoke test

@@ -346,7 +346,7 @@ Run all commands inside `nix develop .#default` to get the right toolchain (pnpm
 
 ### Releasing
 
-Releases are published automatically by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a `v*` tag runs the full `pnpm run verify` gate (build, lint, 1250+ tests, coverage ≥ 75%/file, zero code clones) and then publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements) attestation.
+Releases are published automatically by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a `v*` tag runs the full `pnpm run verify` gate (build, lint, 1236 tests, coverage ≥ 75%/file, zero code clones) and then publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements) attestation.
 
 ```bash
 # bump version in package.json and update CHANGELOG.md first
@@ -361,8 +361,8 @@ The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publi
 | Metric      | Value                                                 |
 | ----------- | ----------------------------------------------------- |
 | Version     | 1.0.0 (npm, `latest`)                                |
-| Tests       | 1259 passing (vitest)                                 |
-| Coverage    | 98.1% average line coverage (gated at 75% per file)   |
+| Tests       | 1236 passing (vitest)                                 |
+| Coverage    | 98.0% average line coverage (gated at 75% per file)   |
 | Build       | 0 TypeScript errors (strict mode)                     |
 | Lint        | 0 errors, 0 warnings (ESLint + oxlint)                |
 | Decorators  | 30                                                    |
