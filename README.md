@@ -51,7 +51,7 @@ Skip this emitter if:
 - You need **AsyncAPI 2.x output** — this emitter targets AsyncAPI 3.x only. Tooling locked to 2.6 (older AsyncAPI Studio releases, some code generators) cannot consume 3.1 documents; reach for a 2.6-targeted authoring workflow instead.
 - You want **runtime broker administration** — this generates specification documents; it does not create topics or queues, deploy brokers, or validate live traffic. Use infrastructure-as-code tools for that.
 - Your team will not adopt **TypeSpec as the source of truth** — a generator whose input is maintained separately from the code it describes just adds a second document to drift. Keep a linter (Spectral) on hand-written YAML instead.
-- You need **a stable public API surface today** — the project is 0.x beta; decorator signatures and emitter options can change before 1.0 (see the [roadmap](ROADMAP.md)).
+- You want **a long-track-record tool** — 1.0.0 freezes the decorator signatures, emitter options, and output contract, but the project is younger than the official TypeSpec emitters; pin exact versions and watch the [changelog](CHANGELOG.md) if that matters to you.
 
 ## Installation
 
@@ -350,8 +350,8 @@ Releases are published automatically by [`.github/workflows/release.yml`](.githu
 
 ```bash
 # bump version in package.json and update CHANGELOG.md first
-git tag -m "v0.3.0" v0.3.0
-git push origin v0.3.0
+git tag -m "v1.0.0" v1.0.0
+git push origin v1.0.0
 ```
 
 The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publish --dry-run`, no upload). The `NPM_TOKEN` secret must be a granular access token with publish rights for this package.
@@ -360,7 +360,7 @@ The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publi
 
 | Metric      | Value                                                 |
 | ----------- | ----------------------------------------------------- |
-| Version     | 0.3.0-beta.1 (npm, `latest`)                          |
+| Version     | 1.0.0 (npm, `latest`)                                |
 | Tests       | 1259 passing (vitest)                                 |
 | Coverage    | 98.1% average line coverage (gated at 75% per file)   |
 | Build       | 0 TypeScript errors (strict mode)                     |

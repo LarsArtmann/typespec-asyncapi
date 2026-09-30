@@ -6,9 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
-### Released
+## [1.0.0] - 2026-09-30
 
-- **`0.3.0-beta.1` is live on npm** (tag `v0.3.0-beta.1`, CI run with provenance attestation). Verified from a clean registry install: `pnpm add @lars-artmann/typespec-asyncapi@0.3.0-beta.1` in a fresh project, spec compiles and emits a valid AsyncAPI 3.1 document. Tarball contains only `dist/`, `lib/main.tsp`, README, LICENSE, CHANGELOG (181 files). `dist-tag: latest` points at `0.3.0-beta.1`; the stale `beta` tag still points at `0.2.1-beta`.
+First stable release. The public API surface is now frozen under semantic versioning: the 30 decorator signatures declared in `lib/main.tsp`, the `EmitterOptions` model, the emitted AsyncAPI 3.1 document contract (byte-locked by golden files), and the `@lars-artmann/typespec-asyncapi/shared` subpath export. Breaking changes to any of these will only land in a new major version.
+
+This is a direct promotion of `0.3.0-beta.1`, which has been live on npm `latest` since 2026-08-21 (tag `v0.3.0-beta.1`, published with provenance attestation and verified from a clean registry install: fresh project, spec compiles, emits an AsyncAPI 3.1-valid document; tarball contains only `dist/`, `lib/main.tsp`, README, LICENSE, CHANGELOG). No code changes since. The historical `beta` dist-tag still points at `0.2.1-beta` and `alpha` at `0.0.1-alpha.2`.
 
 ### Fixed
 
