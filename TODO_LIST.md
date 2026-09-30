@@ -15,24 +15,32 @@ removal.
 
 ## Release
 
-- [ ] **Release v1.0.0** (maintainer leaning 1.0.0 straight from 0.3.0-beta.1;
-      zero breaking changes since the beta; full plan:
-      `docs/planning/2026-09-30_00-39_SUPERB-V1.0.0-RELEASE-READINESS.html`):
+- [x] **Release v1.0.0 — SHIPPED 2026-09-30** (tag `v1.0.0`, npm `latest` +
+      `beta` dist-tags, provenance attested — sigstore logIndex 3009748579,
+      GitHub release created; verified from a clean registry install: fresh
+      project, spec compiles, output AJV-valid against the official
+      AsyncAPI 3.1.0 schema):
   - [x] Decision: semver commitment — freeze public API (30 decorators,
         EmitterOptions, output contract, `./shared`); retitle ROADMAP's
         v0.4.0 direct-AST rewrite as the internal-only 1.1.0
-        (approved 2026-09-30)
-  - [ ] NPM_TOKEN rotation + update the GitHub publish secret (maintainer)
   - [x] CHANGELOG 1.0.0 entry (fold `[Unreleased]`) + package.json bump
   - [x] README de-beta-ification + stability statement
-  - [ ] Dist-tag cleanup at publish (`beta` → 1.0.0 or delete; delete stale
-        `alpha` → 0.0.1-alpha.2)
-  - [ ] Tag `v1.0.0` → provenance workflow; fresh-install smoke test
-  - Resolved 2026-09-30: M15 (stable template names) shipped inside
-    0.3.0-beta.1 — the old "ship M15 in 0.3.0 vs 0.4.0" blocker was stale.
-    Verify gate restored green (schema-emitter.ts 406→389 lines via
-    `schema-fragments.ts` extraction; import-block clone eliminated;
-    0 clones again).
+  - [x] Tag `v1.0.0` → provenance workflow; fresh-install smoke test
+  - [ ] NPM_TOKEN rotation + update the GitHub publish secret (maintainer;
+        current token still works — the 1.0.0 publish succeeded — but was
+        flagged for rotation before the beta)
+  - [ ] Remove the stale `alpha` dist-tag (0.0.1-alpha.2) — `npm dist-tag rm`
+        returns 403 with the local token (registry DELETEs restricted); do it
+        from the npmjs.com package settings page. `beta` was re-pointed at
+        1.0.0 via `npm dist-tag add` (the `set` form 400s).
+  - Resolved en route 2026-09-30 (release blockers fixed before the tag):
+    Dependabot bumped package.json without regenerating pnpm-lock.yaml
+    (frozen-lockfile CI failure), `typescript` had drifted to ^7.0.2
+    (typescript-eslint has no TS 7 support — pinned back to ^6.0.3,
+    typescript-eslint held at 8.70.x), jscpd 5.3.3 surfaced 3 pre-existing
+    clones (fixed via `InfoOptionalFields`, `ServerConfigData` Pick, and
+    `subdirectoryNames` extractions). Gate green at tag time: 1236 tests,
+    98.0% coverage, 0 clones.
 
 ## Test-Suite Integrity (residual)
 
