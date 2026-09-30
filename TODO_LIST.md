@@ -62,6 +62,34 @@ removal.
       scopes tsserver correctly for workspace editors — trust
       `tsc -p tsconfig.test.json` meanwhile (see AGENTS.md).
 
+## Release Hardening (harvested 2026-09-30 from post-1.0 status report)
+
+- [ ] **Branch protection on master requiring green CI** — the Dependabot
+      "21 updates" PR failed its own CI (frozen-lockfile mismatch) and was
+      merged anyway; master CI then stayed red 09-24 → 09-30 (5 runs) until
+      the v1.0.0 release work fixed the lockfile. GitHub settings change, ~10
+      min.
+- [ ] **Release preflight script** (`scripts/release-preflight`):
+      `pnpm install --lockfile-only && pnpm install --frozen-lockfile &&
+      pnpm run verify` + clean-tree check — one command before tagging, so a
+      green gate measures the dependency set CI will install (tonight's
+      stale-node_modules false-green).
+- [ ] **Track typescript-eslint#10940 → un-pin deliberately** — typescript
+      (^6.0.3) and typescript-eslint (8.70.x) must be un-pinned TOGETHER in
+      one PR when TS 7 support lands; decline Dependabot bumps of either
+      until then (8.71.0 hard-blocks TS 7).
+- [ ] **Website 1.0 truth-sync** — `website/src/content/docs/changelog.md`
+      ("Current status") still tells the beta story; full docs-content pass
+      for 1.0.
+- [ ] **Announce 1.0.0** (XYD thread / TypeSpec community) — sequencing
+      question open: announce now vs bundle with the #2463 proposal (see
+      `docs/status/2026-09-30_04-39_POST-1.0.0-RELEASE-STATUS.html` §G).
+- [ ] **Daemon guard for toolchain files** — auto-commits of
+      package.json/tsconfig/pnpm-lock.yaml should pass at least a build
+      before committing (the TS 7 drift entered via a 151-file auto-commit).
+- [ ] **Provenance verification instructions in README** — how consumers
+      verify the npm attestation.
+
 ## Upstream Adoption (from 2026-09-13 plan)
 
 Source of truth for this track:

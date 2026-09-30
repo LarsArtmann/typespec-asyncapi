@@ -1,0 +1,1194 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Status Report — Post-1.0.0 — typespec-asyncapi</title>
+    <style>
+      /* =========================================================================
+         BAUHAUS DARK — Dashboard template
+         Design language: form follows function. Primary colors on graphite.
+         Zero external dependencies: system fonts, no CDN, no build step.
+         Token architecture: see references/bauhaus-tokens.md
+         ========================================================================= */
+
+      :root {
+        /* --- Primitive palette (Bauhaus Dark) --- */
+        --color-graphite: #0e0e10;
+        --color-graphite-2: #18181d;
+        --color-graphite-3: #16161a;
+        --color-bone: #f4f4f0;
+        --color-red: #ff6b6b;
+        --color-blue: #6eb5ff;
+        --color-yellow: #f4d35e;
+        --color-amber: #ffb347;
+        --color-hairline: rgba(244, 244, 240, 0.12);
+        --color-hairline-strong: rgba(244, 244, 240, 0.25);
+
+        /* --- Semantic layer (shared vocabulary with editorial template) --- */
+        --surface: var(--color-graphite);
+        --surface-raised: var(--color-graphite-2);
+        --surface-sunken: var(--color-graphite-3);
+        --text: var(--color-bone);
+        --text-muted: rgba(244, 244, 240, 0.72);
+        --text-faint: rgba(244, 244, 240, 0.45);
+        --border: var(--color-hairline);
+        --border-strong: var(--color-hairline-strong);
+        --accent: var(--color-amber);
+        --problem: var(--color-red);
+        --solution: var(--color-blue);
+        --warning: var(--color-yellow);
+
+        /* --- Backward-compatible aliases (do not break consumer skills) --- */
+        --bg: var(--surface);
+        --bg-elevated: var(--surface-raised);
+        --bg-sunken: var(--surface-sunken);
+        --bg-card: var(--surface-raised);
+        --bg-code: var(--surface-sunken);
+        --ink: var(--text);
+        --ink-secondary: var(--text-muted);
+        --ink-muted: var(--text-faint);
+        --rose: var(--problem);
+        --rose-glow: color-mix(in srgb, var(--problem) 15%, transparent);
+        --emerald: var(--solution);
+        --emerald-glow: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-glow: color-mix(in srgb, var(--warning) 15%, transparent);
+        --coral: var(--problem);
+        --coral-light: color-mix(in srgb, var(--problem) 15%, transparent);
+        --teal: var(--solution);
+        --teal-light: color-mix(in srgb, var(--solution) 15%, transparent);
+        --amber-light: color-mix(in srgb, var(--warning) 20%, transparent);
+
+        /* --- Shape --- */
+        --radius: 0px; /* Bauhaus default: sharp corners */
+        --radius-sm: 0px;
+
+        /* --- Type stacks (system only — zero external fonts) --- */
+        --font-heading:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-body:
+          ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+          "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        --font-mono:
+          ui-monospace, "Cascadia Code", "Source Code Pro", "JetBrains Mono",
+          Menlo, Consolas, monospace;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      html {
+        scroll-behavior: smooth;
+      }
+      /* Sticky-header offset for anchor jumps */
+      section[id],
+      [id] {
+        scroll-margin-top: 60px;
+      }
+
+      body {
+        background: var(--surface);
+        color: var(--text);
+        font-family: var(--font-body);
+        font-size: 15px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      /* --- Accessibility: keyboard focus --- */
+      :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+      a:focus-visible {
+        outline-offset: -1px;
+      }
+
+      /* --- Full-bleed top bar --- */
+      .top-bar {
+        background: var(--text);
+        color: var(--surface);
+        padding: 0.6rem 2rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      /* --- Layout: optional sticky sidebar TOC --- */
+      .layout {
+        display: flex;
+        gap: 2.5rem;
+        padding: 2rem;
+      }
+      .sidebar {
+        width: 220px;
+        flex-shrink: 0;
+        position: sticky;
+        top: 1rem;
+        align-self: flex-start;
+        height: calc(100vh - 2rem);
+        overflow-y: auto;
+        display: none;
+      }
+      .sidebar nav {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .sidebar .label {
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--accent);
+        margin-bottom: 0.75rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .sidebar a {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        text-decoration: none;
+        padding: 0.45rem 0.75rem;
+        border-left: 2px solid transparent;
+        transition: all 0.15s ease;
+        line-height: 1.4;
+        font-weight: 500;
+      }
+      .sidebar a:hover,
+      .sidebar a.active {
+        color: var(--accent);
+        border-left-color: var(--accent);
+        background: color-mix(in srgb, var(--accent) 8%, transparent);
+      }
+      .main {
+        flex: 1;
+        min-width: 0;
+      }
+
+      /* --- Headings --- */
+      h1,
+      h2,
+      h3,
+      h4 {
+        font-family: var(--font-heading);
+        font-weight: 800;
+        letter-spacing: -0.02em;
+      }
+      h1 {
+        font-size: clamp(1.8rem, 4vw, 2.6rem);
+        line-height: 1.1;
+        margin: 0 0 0.6rem;
+      }
+      h2 {
+        font-size: 1.4rem;
+        margin: 2.5rem 0 1rem;
+        padding-bottom: 0.4rem;
+        border-bottom: 2px solid var(--border-strong);
+        display: flex;
+        align-items: baseline;
+        gap: 0.6rem;
+      }
+      h2 .num {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.06em;
+      }
+      h3 {
+        font-size: 1.1rem;
+        margin: 0 0 0.4rem;
+        font-weight: 700;
+      }
+      h4 {
+        font-size: 0.98rem;
+        margin: 0 0 0.3rem;
+        font-weight: 700;
+      }
+      p {
+        margin: 0 0 1rem;
+      }
+
+      /* --- Hero --- */
+      .hero {
+        padding: 1.5rem 0 1.5rem;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--border-strong);
+      }
+      .hero-badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        color: var(--surface);
+        background: var(--accent);
+        padding: 0.3rem 0.7rem;
+        margin-bottom: 0.9rem;
+      }
+      .hero-subtitle {
+        font-size: 1.05rem;
+        color: var(--text-muted);
+        max-width: 70ch;
+        margin: 0;
+      }
+
+      /* Bauhaus signature: geometric shape cluster (optional) */
+      .hero-shapes {
+        position: relative;
+        height: 80px;
+        margin-bottom: 1rem;
+      }
+      .hero-shapes .circle {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 56px;
+        height: 56px;
+        background: var(--problem);
+        border-radius: 50%;
+      }
+      .hero-shapes .square {
+        position: absolute;
+        top: 24px;
+        left: 72px;
+        width: 48px;
+        height: 48px;
+        background: var(--solution);
+      }
+      .hero-shapes .tri {
+        position: absolute;
+        top: 8px;
+        left: 140px;
+        width: 0;
+        height: 0;
+        border-left: 28px solid transparent;
+        border-right: 28px solid transparent;
+        border-bottom: 48px solid var(--warning);
+      }
+
+      /* --- General cards --- */
+      .card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .card-problem {
+        border-left-color: var(--problem);
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
+      }
+      .card-solution {
+        border-left-color: var(--solution);
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
+      }
+      .card-warning {
+        border-left-color: var(--warning);
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
+      }
+
+      /* --- Issue cards --- */
+      .issue {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1.3rem;
+        margin-bottom: 1rem;
+        border-left: 4px solid var(--border-strong);
+      }
+      .issue-critical {
+        border-left-color: var(--problem);
+        background: color-mix(
+          in srgb,
+          var(--problem) 8%,
+          var(--surface-raised)
+        );
+      }
+      .issue-important {
+        border-left-color: var(--warning);
+        background: color-mix(
+          in srgb,
+          var(--warning) 8%,
+          var(--surface-raised)
+        );
+      }
+      .issue-nice {
+        border-left-color: var(--solution);
+        background: color-mix(
+          in srgb,
+          var(--solution) 8%,
+          var(--surface-raised)
+        );
+      }
+      .issue h3 {
+        margin-bottom: 0.3rem;
+      }
+      .issue .where {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--text-faint);
+        margin: 0.2rem 0 0.6rem;
+      }
+      .issue p:last-child {
+        margin-bottom: 0;
+      }
+
+      /* --- Severity badges (used inside issue cards) --- */
+      .severity {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        padding: 0.2rem 0.55rem;
+        margin-bottom: 0.6rem;
+        color: var(--surface);
+      }
+      .severity-critical {
+        background: var(--problem);
+      }
+      .severity-important {
+        background: var(--warning);
+      }
+      .severity-nice {
+        background: var(--solution);
+      }
+
+      /* --- Inline badges (used in tables) --- */
+      .badge {
+        display: inline-block;
+        font-family: var(--font-mono);
+        font-size: 0.62rem;
+        font-weight: 700;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        padding: 0.18rem 0.5rem;
+        border: 1px solid var(--border-strong);
+        color: var(--text-muted);
+      }
+      .badge-critical {
+        color: var(--problem);
+        border-color: var(--problem);
+      }
+      .badge-high {
+        color: var(--warning);
+        border-color: var(--warning);
+      }
+      .badge-medium {
+        color: var(--accent);
+        border-color: var(--accent);
+      }
+      .badge-low {
+        color: var(--text-muted);
+      }
+      .badge-fixed {
+        color: var(--solution);
+        border-color: var(--solution);
+      }
+
+      /* --- Callouts (used inside issues or standalone) --- */
+      .callout {
+        margin: 0.8rem 0 0;
+        padding: 0.7rem 0.9rem;
+        border-left: 3px solid var(--border-strong);
+        background: color-mix(in srgb, var(--text) 5%, transparent);
+        font-size: 0.9rem;
+      }
+      .callout strong {
+        display: inline-block;
+        margin-right: 0.4rem;
+      }
+      .callout-solution {
+        border-left-color: var(--solution);
+        background: color-mix(in srgb, var(--solution) 10%, transparent);
+      }
+      .callout-warning {
+        border-left-color: var(--warning);
+        background: color-mix(in srgb, var(--warning) 10%, transparent);
+      }
+
+      /* --- Stat cards / scorecards (aliased vocabulary) --- */
+      .stat-grid,
+      .scorecard {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.75rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .stat-card,
+      .score-card {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        padding: 1.1rem 1rem;
+        position: relative;
+      }
+      .stat-card::before,
+      .score-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: var(--border-strong);
+      }
+      .stat-bad,
+      .score-bad {
+        /* default top bar already set */
+      }
+      .stat-bad::before,
+      .score-bad::before {
+        background: var(--problem);
+      }
+      .stat-good::before,
+      .score-good::before {
+        background: var(--solution);
+      }
+      .stat-warn::before,
+      .score-warn::before {
+        background: var(--warning);
+      }
+      .stat-value,
+      .score {
+        font-family: var(--font-heading);
+        font-size: 2rem;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: -0.03em;
+        color: var(--text);
+      }
+      .stat-bad .stat-value,
+      .score-bad .score {
+        color: var(--problem);
+      }
+      .stat-good .stat-value,
+      .score-good .score {
+        color: var(--solution);
+      }
+      .stat-warn .stat-value,
+      .score-warn .score {
+        color: var(--warning);
+      }
+      .stat-label,
+      .score-card .label {
+        font-family: var(--font-mono);
+        font-size: 0.65rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--text-faint);
+        margin-top: 0.5rem;
+      }
+
+      /* --- Strengths list --- */
+      .strengths {
+        display: grid;
+        gap: 0.5rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .strength {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 0.8rem;
+        padding: 0.7rem 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .strength .check {
+        font-family: var(--font-mono);
+        font-weight: 700;
+        color: var(--solution);
+        font-size: 1.1rem;
+        line-height: 1.4;
+      }
+      .strength .text strong {
+        display: block;
+        margin-bottom: 0.15rem;
+      }
+      .strength .text span {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      /* --- Tables --- */
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0 1.5rem;
+        font-size: 0.9rem;
+      }
+      th {
+        text-align: left;
+        padding: 0.6rem 0.9rem;
+        background: var(--surface-raised);
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+        font-size: 0.66rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border-strong);
+      }
+      td {
+        padding: 0.6rem 0.9rem;
+        border-bottom: 1px solid var(--border);
+      }
+      tr:hover td {
+        background: var(--surface-raised);
+      }
+
+      /* --- Before/After comparison --- */
+      .compare-header {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin: 1rem 0 0.5rem;
+      }
+      .compare-before,
+      .compare-after {
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        padding: 0.4rem 0.7rem;
+        color: var(--surface);
+      }
+      .compare-before {
+        background: var(--problem);
+      }
+      .compare-after {
+        background: var(--solution);
+      }
+      .compare-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+      .compare-row pre {
+        margin: 0;
+      }
+
+      /* --- Code blocks + syntax highlighting --- */
+      pre {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.65;
+        overflow-x: auto;
+      }
+      code {
+        font-family: var(--font-mono);
+      }
+      p code,
+      li code,
+      td code {
+        font-size: 0.88em;
+        background: var(--surface-sunken);
+        padding: 0.1rem 0.35rem;
+      }
+      .tok-keyword {
+        color: var(--accent);
+      } /* func, type, struct, if, return */
+      .tok-type {
+        color: var(--warning);
+      } /* int, string, bool, error */
+      .tok-string {
+        color: var(--solution);
+      } /* "quoted strings" */
+      .tok-comment {
+        color: var(--text-faint);
+        font-style: italic;
+      }
+      .tok-func {
+        color: #74a9ff;
+      } /* function names */
+      .tok-number {
+        color: var(--accent);
+      } /* 42, 3.14 */
+      .tok-generic {
+        color: var(--problem);
+      } /* T, ID in generics */
+      .tok-builtin {
+        color: #4dd9ff;
+      } /* make, len, append */
+      .tok-punct {
+        color: var(--text-muted);
+      } /* { } ( ) ; = : */
+      .tok-attr {
+        color: var(--accent);
+      } /* Nix attribute names */
+
+      /* --- Dependency tree / ASCII diagrams --- */
+      .dep-tree {
+        background: var(--surface-sunken);
+        border: 1px solid var(--border);
+        padding: 1rem 1.2rem;
+        margin: 1rem 0;
+        font-family: var(--font-mono);
+        font-size: 0.82rem;
+        line-height: 1.7;
+        white-space: pre;
+        overflow-x: auto;
+      }
+      .dep-tree .root {
+        color: var(--accent);
+        font-weight: 700;
+      }
+      .dep-tree .ok {
+        color: var(--solution);
+      }
+      .dep-tree .unwanted {
+        color: var(--problem);
+      }
+
+      /* --- Inline node-and-arrow diagrams --- */
+      .diagram {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 1rem;
+        margin: 1rem 0;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+      }
+      .node {
+        display: inline-block;
+        padding: 0.35rem 0.7rem;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        font-weight: 600;
+        background: var(--surface-sunken);
+        border: 1px solid var(--border-strong);
+      }
+      .node-core {
+        background: var(--accent);
+        color: var(--surface);
+        border-color: var(--accent);
+      }
+      .node-problem {
+        background: var(--problem);
+        color: var(--surface);
+        border-color: var(--problem);
+      }
+      .node-good {
+        background: var(--solution);
+        color: var(--surface);
+        border-color: var(--solution);
+      }
+      .arrow {
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Grids (responsive) --- */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      /* --- Inline TOC (alternative to sidebar) --- */
+      .toc {
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+        padding: 1rem 1.3rem;
+        margin: 1rem 0 1.5rem;
+      }
+      .toc h3 {
+        margin-bottom: 0.5rem;
+      }
+      .toc ul {
+        list-style: none;
+        padding: 0;
+      }
+      .toc li {
+        margin: 0.25rem 0;
+      }
+      .toc a {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+      .toc a:hover {
+        color: var(--accent);
+      }
+
+      /* --- Migration / numbered steps --- */
+      .migration-step {
+        display: grid;
+        grid-template-columns: 48px 1fr;
+        gap: 1rem;
+        margin: 1rem 0;
+        padding: 1rem;
+        background: var(--surface-raised);
+        border: 1px solid var(--border);
+        border-left: 3px solid var(--accent);
+      }
+      .migration-num {
+        font-family: var(--font-mono);
+        font-weight: 800;
+        font-size: 1.5rem;
+        color: var(--accent);
+        line-height: 1;
+      }
+      .migration-content h4 {
+        margin-bottom: 0.2rem;
+      }
+      .migration-content p {
+        margin-bottom: 0;
+        color: var(--text-muted);
+        font-size: 0.92rem;
+      }
+
+      /* --- Footer --- */
+      .footer {
+        margin-top: 2rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--border);
+        font-size: 0.8rem;
+        color: var(--text-faint);
+        font-family: var(--font-mono);
+      }
+
+      /* --- Responsive --- */
+      @media (min-width: 1024px) {
+        .sidebar {
+          display: block;
+        }
+      }
+      @media (max-width: 768px) {
+        .layout {
+          flex-direction: column;
+          padding: 1rem;
+        }
+        .top-bar {
+          padding: 0.6rem 1rem;
+          flex-wrap: wrap;
+          gap: 0.3rem;
+        }
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .compare-header,
+        .compare-row {
+          grid-template-columns: 1fr;
+        }
+        .stat-grid,
+        .scorecard {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .migration-step {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Full-bleed top bar -->
+    <div class="top-bar">
+      <span>STATUS REPORT — POST-1.0.0</span>
+      <span>2026-09-30 04:39</span>
+      <span>typespec-asyncapi</span>
+    </div>
+
+    <div class="layout">
+      <aside class="sidebar" data-nav>
+        <nav>
+          <div class="label">Contents</div>
+          <a href="#summary">Summary</a>
+          <a href="#done">A · Fully Done</a>
+          <a href="#partial">B · Partially Done</a>
+          <a href="#notstarted">C · Not Started</a>
+          <a href="#fucked">D · Totally Fucked Up</a>
+          <a href="#improve">E · Improve</a>
+          <a href="#next">F · Next Tasks</a>
+          <a href="#question">G · Top Question</a>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <div class="hero">
+          <div class="hero-shapes">
+            <div class="circle"></div>
+            <div class="square"></div>
+            <div class="tri"></div>
+          </div>
+          <div class="hero-badge">Point-in-time snapshot</div>
+          <h1>1.0.0 is live — now the real work starts</h1>
+          <p class="hero-subtitle">
+            Full status of the TypeSpec → AsyncAPI 3.1 emitter, hours after
+            shipping v1.0.0 to npm: what shipped, what nearly sank the release,
+            what is still open, and what to do next.
+          </p>
+        </div>
+
+        <h2 id="summary"><span class="num">00</span>Summary</h2>
+        <div class="stat-grid">
+          <div class="stat-card stat-good">
+            <div class="stat-value">1.0.0</div>
+            <div class="stat-label">Shipped: npm latest + beta, provenance-attested</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">1236</div>
+            <div class="stat-label">Tests passing (100 files, vitest 5)</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">98.0%</div>
+            <div class="stat-label">Coverage, 43 files, gate ≥75%/file</div>
+          </div>
+          <div class="stat-card stat-good">
+            <div class="stat-value">0</div>
+            <div class="stat-label">Lint findings / code clones (jscpd 5.3.3)</div>
+          </div>
+          <div class="stat-card stat-bad">
+            <div class="stat-value">5.5d</div>
+            <div class="stat-label">Master CI was RED (09-24 → today) — unwatched</div>
+          </div>
+          <div class="stat-card stat-warn">
+            <div class="stat-value">2</div>
+            <div class="stat-label">Maintainer-only items left (token, alpha tag)</div>
+          </div>
+        </div>
+
+        <div class="card card-solution">
+          <h4>One-paragraph state</h4>
+          <p>
+            v1.0.0 was tagged, published with provenance (sigstore logIndex
+            3009748579), given a GitHub release, and verified end-to-end from a
+            clean registry install whose output AJV-validates against the
+            official AsyncAPI 3.1.0 schema. The public API is now frozen under
+            semver (30 decorators, EmitterOptions, output contract, ./shared).
+            En route, three un-gated dependency landmines were found and
+            defused — but the deepest finding is that master CI had been red
+            for 5½ days because a failed Dependabot PR was merged anyway and
+            nobody was watching. The release succeeded on a fixed tree; the
+            process hole that allowed the red window is still open.
+          </p>
+        </div>
+
+        <h2 id="done"><span class="num">A</span>Fully Done</h2>
+
+        <div class="card card-solution">
+          <h4>v1.0.0 released and verified (2026-09-30)</h4>
+          <p>
+            Tag <code>v1.0.0</code> at 5c89244d → release.yml CI green (run
+            36656872514) → <code>npm publish --provenance</code> →
+            <code>latest</code> confirmed 1.0.0 on the registry. GitHub release
+            "v1.0.0 — First stable release" created. Fresh-install smoke test
+            in a clean project: <code>pnpm add @lars-artmann/typespec-asyncapi@1.0.0</code>,
+            spec compiles with zero diagnostics, emitted asyncapi.yaml
+            AJV-validates against the official AsyncAPI 3.1.0 JSON Schema.
+            <code>beta</code> dist-tag re-pointed at 1.0.0.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Release blockers found and fixed before the tag</h4>
+          <p>
+            Three failures, all fixed the same session: (1) Dependabot bumped
+            package.json without regenerating pnpm-lock.yaml — CI's
+            --frozen-lockfile install failed; lockfile regenerated and frozen
+            install proven. (2) typescript had drifted to ^7.0.2 via an un-gated
+            151-file auto-commit — typescript-eslint hard-errors on TS 7;
+            pinned back to ^6.0.3, typescript-eslint held at 8.70.x. (3) jscpd
+            5.3.3 surfaced 3 pre-existing clones — fixed structurally
+            (InfoOptionalFields, ServerConfigData extends Pick&lt;ServerObject,…&gt;,
+            subdirectoryNames helper), no detector pinning. Full gate green at
+            tag time.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Release artifacts and docs updated</h4>
+          <p>
+            CHANGELOG.md gained a [1.0.0] - 2026-09-30 section (semver freeze
+            statement, beta-promotion provenance); package.json at 1.0.0 with
+            the stale "beta" keyword removed; README de-beta-ified (stability
+            bullet replaces the "0.x beta" warning, release snippet v1.0.0,
+            status table corrected to 1236 tests / 98.0%); TODO_LIST.md and
+            AGENTS.md carry the release learnings (TS pin rationale, lockfile
+            preflight rule, jscpd baseline shift).
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Earlier the same night: verify gate restored</h4>
+          <p>
+            schema-emitter.ts extracted to 389 lines via the new
+            schema-fragments.ts (constSchema/enumSchema/composeUnionVariants);
+            import-block jscpd clone eliminated (merged import + interleaved
+            members). Gate went red→green before any release work started.
+          </p>
+        </div>
+
+        <div class="card card-solution">
+          <h4>Semver commitment made (T1 decision)</h4>
+          <p>
+            Public API frozen: 30 decorator signatures in lib/main.tsp,
+            EmitterOptions, the emitted AsyncAPI 3.1 document contract
+            (byte-locked by golden files), and the ./shared subpath export.
+            The ROADMAP v0.4.0 direct-AST rewrite is retitled as the
+            internal-only 1.1.0 behind the frozen contract.
+          </p>
+        </div>
+
+        <h2 id="partial"><span class="num">B</span>Partially Done</h2>
+
+        <div class="card card-warning">
+          <h4>Upstream adoption campaign (microsoft/typespec#2463)</h4>
+          <p>
+            <strong>Works:</strong> full campaign plan exists in TODO_LIST
+            (baseline snapshot, proposal draft, 14-day watch, comparison,
+            typespec.io fallback); strategy flipped 2026-09-30 to
+            "ship 1.0.0 first, then post the proposal".<br>
+            <strong>Open:</strong> the proposal itself is still un-drafted and
+            un-posted; thread's last activity remains the 0.2.1-beta
+            announcement (2026-08-21).<br>
+            <strong>Blocker:</strong> none — sequencing decision made; just not
+            executed.<br>
+            <strong>Effort:</strong> M (draft with verify-before-filing +
+            github-voice passes).
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>npm registry hygiene</h4>
+          <p>
+            <strong>Works:</strong> latest and beta both point at 1.0.0;
+            publish with provenance works.<br>
+            <strong>Open:</strong> stale alpha tag (0.0.1-alpha.2) — API DELETE
+            returns 403 with the local token (only add works); NPM_TOKEN not
+            rotated despite being flagged before the beta (it still works).
+            <br><strong>Blocker:</strong> maintainer-only.<br>
+            <strong>Effort:</strong> S.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Website 1.0 truth-sync</h4>
+          <p>
+            <strong>Works:</strong> website/package.json already at 1.0.0; site
+            builds are not part of the gate.<br>
+            <strong>Open:</strong> website/src/content/docs/changelog.md
+            ("Current status" page) still tells a beta-era story; no 1.0.0 pass
+            has been made over the docs content.<br>
+            <strong>Effort:</strong> S–M.
+          </p>
+        </div>
+
+        <div class="card card-warning">
+          <h4>Editor diagnostics (vtsls)</h4>
+          <p>
+            <strong>Works:</strong> test/tsconfig.json scopes tsserver;
+            documented rule "trust tsc -p + lint, not vtsls".<br>
+            <strong>Open:</strong> vtsls still serves stale diagnostics for
+            test/ (and this session: src/ files pointed past EOF after edits).
+            Cosmetic but erodes trust in the editor.<br>
+            <strong>Effort:</strong> M.
+          </p>
+        </div>
+
+        <h2 id="notstarted"><span class="num">C</span>Not Started</h2>
+
+        <div class="card">
+          <h4>Planned, no code/words written yet</h4>
+          <ul>
+            <li><strong>#2463 decision-forcing proposal</strong> — evidence pack + scope offer A/B + maintenance commitment. Priority: High (the whole upstream campaign hangs on it).</li>
+            <li><strong>Baseline evidence snapshot</strong> — capture gate green, test/coverage numbers as reproducible evidence for the proposal. Wanted, trivial.</li>
+            <li><strong>14-day response watch</strong> on #2463 (day-7 follow-up if silent). Blocked on the proposal being posted.</li>
+            <li><strong>Verified head-to-head vs tsp-asyncapi</strong> — install both, compile identical specs, publish the honest table. Wanted (README already claims the comparison; claims currently unverified at the install level).</li>
+            <li><strong>Killer demo spec + annotated output</strong> — kafka + polymorphism + reusable components in one spec.</li>
+            <li><strong>Pre-alignment dry-run</strong> — scratch-branch rehearsal of the upstream ask; merge nothing.</li>
+            <li><strong>typespec.io third-party listing</strong> — the fallback path if #2463 stalls.</li>
+            <li><strong>Docs site content for 1.0</strong> — the competitive gap vs tsp-asyncapi (they lead on docs site; we have a website skeleton).</li>
+            <li><strong>Demo video</strong> — ROADMAP theme 5, storyboarded 2026-09-19, not produced.</li>
+            <li><strong>1.1.0 direct-AST rewrite (EFv1 exit)</strong> — deliberately deferred behind the frozen 1.0 contract; golden files now enforce output stability for it.</li>
+            <li><strong>Property-suite breadth</strong> — unions/inheritance/generics/channel params still only covered by the compliance suite, not the fast-check generators.</li>
+          </ul>
+        </div>
+
+        <h2 id="fucked"><span class="num">D</span>Totally Fucked Up</h2>
+
+        <div class="card card-problem">
+          <h4>Master CI was red for 5½ days and nobody knew</h4>
+          <p>
+            <strong>What:</strong> every CI run on master since 2026-09-24
+            22:32 UTC failed (5 consecutive runs) — the Dependabot "21 updates"
+            PR failed its own CI check (frozen-lockfile mismatch) and was
+            merged/committed to master anyway (d83d1cf8); every daemon push
+            after that kept failing.<br>
+            <strong>Severity:</strong> process-critical. The 1.0.0 tag was
+            pushed onto a tree whose CI was red; only the release workflow's
+            own verify run caught it (the most expensive possible place).<br>
+            <strong>Root cause:</strong> no branch protection requiring green
+            CI + no one monitoring master CI + the auto-commit daemon merges
+            whatever is on disk.<br>
+            <strong>Mitigation:</strong> lockfile now regenerated; master CI
+            green as of 01:48 UTC (run on 5c89244d's parent). Fix is content,
+            not process — see E/F for the durable fix.
+          </p>
+        </div>
+
+        <div class="card card-problem">
+          <h4>Un-gated toolchain drift reached the release tag</h4>
+          <p>
+            <strong>What:</strong> typescript ^7.0.2 and 7 dev-dep bumps landed
+            via an auto-commit (c4de6190, 151 files) that never ran the gate;
+            a local "green" verify was measuring a stale node_modules — a
+            different dependency set than CI installs.<br>
+            <strong>Severity:</strong> high — "pnpm run verify green" locally
+            was not evidence about what CI would do.<br>
+            <strong>Root cause:</strong> stale node_modules masked manifest
+            drift; nothing validates manifest↔lockfile↔node_modules coherence
+            before tagging.<br>
+            <strong>Mitigation:</strong> documented preflight
+            (install --lockfile-only → frozen install → verify) in AGENTS.md;
+            not yet automated.
+          </p>
+        </div>
+
+        <div class="card card-problem">
+          <h4>Dependency pins now block the upgrade path (deliberate debt)</h4>
+          <p>
+            <strong>What:</strong> typescript held at ^6.0.3 and
+            typescript-eslint at 8.70.x because 8.71+ hard-blocks TS 7
+            (typescript-eslint#10940). Dependabot will keep re-offering bumps
+            that break the gate until upstream ships TS 7 support.<br>
+            <strong>Severity:</strong> medium — every future dep-bump PR risks
+            another red CI cycle; ESLint plugin stays a minor behind.<br>
+            <strong>Root cause:</strong> upstream (typescript-eslint TS 7
+            support), timing unknown.<br>
+            <strong>Mitigation:</strong> pins documented in AGENTS.md + TODO
+            with the revisit condition; declining the bumps is correct until
+            then.
+          </p>
+        </div>
+
+        <div class="card card-problem">
+          <h4>npm token cannot delete dist-tags (403) and "set" 400s</h4>
+          <p>
+            <strong>What:</strong> <code>npm dist-tag rm … alpha</code> → 403
+            Forbidden; <code>npm dist-tag set … beta 1.0.0</code> → 400 Bad
+            Request; only <code>npm dist-tag add</code> works.<br>
+            <strong>Severity:</strong> low (cosmetic tag), but symptomatic of
+            token scope/restriction drift — the same token class npm is
+            deprecating for 2FA-bypass publishing.<br>
+            <strong>Root cause:</strong> unknown — needs the token rotation to
+            also review scopes.<br>
+            <strong>Mitigation:</strong> alpha removable via npmjs.com UI.
+          </p>
+        </div>
+
+        <h2 id="improve"><span class="num">E</span>What We Should Improve</h2>
+
+        <div class="card">
+          <ul>
+            <li><strong>Branch protection on master requiring green CI.</strong> Today a failed Dependabot PR merged anyway. Impact: the entire 5½-day red window. Fix: GitHub settings, 10 minutes.</li>
+            <li><strong>A one-command release preflight</strong> (<code>scripts/release-preflight</code>: lockfile-only → frozen install → verify → clean-tree check). The manual sequence worked tonight but lives only in AGENTS.md prose. Impact: prevents the most expensive failure mode (red tag push).</li>
+            <li><strong>Gate the auto-commit daemon on toolchain files.</strong> package.json/tsconfig/lockfile changes should trigger at least a build before commit. Impact: prevents the next ^7.0.2-style drift.</li>
+            <li><strong>Watch typescript-eslint#10940</strong> and un-pin deliberately when TS 7 support lands (typescript-eslint AND typescript together, one PR). Impact: restores the upgrade path.</li>
+            <li><strong>Announce releases.</strong> 1.0.0 shipped hours ago with zero external signal; the XYD thread has been quiet since 08-21. Announcement discipline is the cheapest adoption lever we are not pulling.</li>
+            <li><strong>Verify README's competitive table at install-time</strong> (the tsp-asyncapi comparison row) before claiming it in the announcement.</li>
+            <li><strong>Same improvement now in 2+ sessions: false-green local gates.</strong> Candidates for a skill/hook: preflight enforcement.</li>
+          </ul>
+        </div>
+
+        <h2 id="next"><span class="num">F</span>Top Next Tasks</h2>
+        <table>
+          <thead>
+            <tr><th>#</th><th>Task</th><th>Impact</th><th>Effort</th><th>Category</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Branch protection on master: require CI green before merge</td><td><span class="badge badge-critical">Critical</span></td><td>S</td><td>Quality</td></tr>
+            <tr><td>2</td><td>NPM_TOKEN rotation + scope review (incl. dist-tag delete rights) + update GitHub secret</td><td><span class="badge badge-critical">Critical</span></td><td>S</td><td>Ops</td></tr>
+            <tr><td>3</td><td>Draft + post the #2463 decision-forcing proposal (verify-before-filing + github-voice passes first)</td><td><span class="badge badge-critical">High</span></td><td>M</td><td>Feature</td></tr>
+            <tr><td>4</td><td>Baseline evidence snapshot for the proposal (gate output, test/coverage numbers)</td><td><span class="badge badge-critical">High</span></td><td>S</td><td>Documentation</td></tr>
+            <tr><td>5</td><td>Announce 1.0.0 (XYD thread, TypeSpec community) — see question G for sequencing</td><td><span class="badge badge-critical">High</span></td><td>S</td><td>Documentation</td></tr>
+            <tr><td>6</td><td>Release preflight script (lockfile-only → frozen → verify → clean tree)</td><td>High</td><td>S</td><td>Quality</td></tr>
+            <tr><td>7</td><td>Website 1.0 truth-sync: changelog "Current status" page + version claims pass</td><td>High</td><td>S</td><td>Documentation</td></tr>
+            <tr><td>8</td><td>Remove stale alpha dist-tag via npmjs.com UI</td><td>Low</td><td>S</td><td>Ops</td></tr>
+            <tr><td>9</td><td>Track typescript-eslint#10940; un-pin TS+lint together when supported</td><td>High</td><td>S</td><td>Cleanup</td></tr>
+            <tr><td>10</td><td>Verified comparison vs tsp-asyncapi (install both, same specs, honest table)</td><td>High</td><td>M</td><td>Feature</td></tr>
+            <tr><td>11</td><td>14-day #2463 response watch (day-7 nudge) once proposal is posted</td><td>Medium</td><td>S</td><td>Feature</td></tr>
+            <tr><td>12</td><td>Killer demo spec + annotated output (kafka + polymorphism + components)</td><td>Medium</td><td>M</td><td>Documentation</td></tr>
+            <tr><td>13</td><td>Pre-alignment dry-run on a scratch branch (merge nothing)</td><td>Medium</td><td>M</td><td>Feature</td></tr>
+            <tr><td>14</td><td>typespec.io third-party listing PR (the fallback path)</td><td>Medium</td><td>S</td><td>Feature</td></tr>
+            <tr><td>15</td><td>Daemon guard: build check before auto-committing toolchain files</td><td>Medium</td><td>M</td><td>Quality</td></tr>
+            <tr><td>16</td><td>Property-suite generator breadth (unions, inheritance, generics, channel params)</td><td>Medium</td><td>M</td><td>Quality</td></tr>
+            <tr><td>17</td><td>Docs-site content push for 1.0 (close the gap vs tsp-asyncapi's site)</td><td>Medium</td><td>L</td><td>Documentation</td></tr>
+            <tr><td>18</td><td>Demo video production (storyboard exists from 2026-09-19)</td><td>Medium</td><td>L</td><td>Documentation</td></tr>
+            <tr><td>19</td><td>1.1.0 direct-AST rewrite kickoff under golden-file lock (EFv1 exit)</td><td>High</td><td>L</td><td>Feature</td></tr>
+            <tr><td>20</td><td>Root-cause transient bun/vitest exit-with-zero-failures race (last seen 09-13)</td><td>Low</td><td>M</td><td>Bug</td></tr>
+            <tr><td>21</td><td>vtsls stale-diagnostics cleanup for test/ (and post-edit src/ staleness)</td><td>Low</td><td>M</td><td>Cleanup</td></tr>
+            <tr><td>22</td><td>Add provenance/attestation verification instructions to README install section</td><td>Low</td><td>S</td><td>Documentation</td></tr>
+          </tbody>
+        </table>
+        <p class="text-muted">
+          22 honest items (not padded to 25). Items 1–7 are this week's work;
+          19 is the post-announcement quarter. Items 2 and 8 are maintainer-only.
+        </p>
+
+        <h2 id="question"><span class="num">G</span>Top Question</h2>
+        <div class="card card-warning">
+          <h4>Announce 1.0.0 now, or bundle the announcement with the #2463 proposal?</h4>
+          <p>
+            TODO_LIST settled "ship first, then propose" — but says nothing
+            about the public announcement. Sequencing options I cannot decide
+            myself: (a) announce 1.0.0 immediately in the XYD thread where the
+            beta was announced, then post the proposal as a follow-up while
+            attention is fresh; (b) hold the announcement until the
+            decision-forcing proposal is ready, so one post carries "1.0.0 is
+            live" + "here is why TypeSpec should point users at it". Option (a)
+            risks two competing moments; option (b) risks shipping 1.0.0 in
+            silence for however long the proposal takes. I could not find the
+            answer in TODO_LIST, ROADMAP, or the 2026-09-13 adoption plan.
+          </p>
+        </div>
+
+      </main>
+    </div>
+
+</body>
+</html>
