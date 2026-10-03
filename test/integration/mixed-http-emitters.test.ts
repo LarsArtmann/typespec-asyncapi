@@ -4,12 +4,15 @@
  * Locked behaviors:
  * - Event operations (@publish/@subscribe/@channel) inside a @service namespace
  *   warn via `event-op-in-service-namespace` when @typespec/http is loaded.
+ * - The warning cites the exact http route (evidence, not heuristics) and is
+ *   deduplicated per (service, namespace) with an "N more" suffix.
  * - Events outside the service subtree (the recommended split) stay silent.
  * - AsyncAPI-over-HTTP servers (http/https protocol) are intentional channels,
  *   not accidents, and stay silent.
  * - Without @typespec/http nothing changes, even under a @service namespace.
  * - Bare REST operations under a @service namespace do not leak into the
- *   AsyncAPI document once decorated event ops exist.
+ *   AsyncAPI document once decorated event ops exist; every exclusion is
+ *   signaled via `bare-op-assumed-rest`.
  * - Pure minimal specs (bare ops, no decorators anywhere) keep working.
  */
 
@@ -28,6 +31,12 @@ const countByCode = (
   diagnostics: readonly Diagnostic[],
   code: string,
 ): number => diagnostics.filter((d) => d.code?.endsWith(code)).length;
+
+const findByCode = (
+  diagnostics: readonly Diagnostic[],
+  code: string,
+): Diagnostic | undefined =>
+  diagnostics.find((d) => d.code?.endsWith(code));
 
 describe("mixed @typespec/http + AsyncAPI programs", () => {
   it("reports the issue #252 spec verbatim: http duplicate errors PLUS our explanatory warnings", async () => {
@@ -280,6 +289,144 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
     expect(Object.keys(asyncApiDoc.channels ?? {}).toSorted()).toStrictEqual([
       "bareOperation",
       "declared",
+    ]);
+  });
+
+  it("cites the exact http route in the conflict warning", async () => {
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      @service(#{title: "Backend"})
+      @TypeSpec.Http.server("https://my.service.io", "Production")
+      @route("/api/v1")
+      namespace Service.Backend;
+
+      model Pong {
+        status: string;
+      }
+
+      @TypeSpec.AsyncAPI.server("Production", #{
+        url: "my.service.io",
+        protocol: "wss",
+        pathname: "/api/v1/socket",
+      })
+      namespace Service.Backend {
+        @subscribe
+        op receivePing(): Pong;
+      }
+    `);
+    const warning = findByCode(diagnostics, "event-op-in-service-namespace");
+    expect(warning).toBeDefined();
+    expect(warning?.message).toContain("GET /api/v1");
+  });
+
+  it("warns exactly once per namespace when several event ops share it", async () => {
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      @service(#{title: "Backend"})
+      @TypeSpec.Http.server("https://my.service.io", "Production")
+      @route("/api/v1")
+      namespace Service.Backend;
+
+      model Pong {
+        status: string;
+      }
+
+      @TypeSpec.AsyncAPI.server("Production", #{
+        url: "my.service.io",
+        protocol: "wss",
+        pathname: "/api/v1/socket",
+      })
+      namespace Service.Backend {
+        @subscribe
+        op receivePing(): Pong;
+
+        @subscribe
+        op receivePong(): Pong;
+      }
+    `);
+    expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(1);
+    const warning = findByCode(diagnostics, "event-op-in-service-namespace");
+    expect(warning?.message).toContain("1 more operation(s) in this namespace");
+  });
+
+  it("signals every excluded bare operation via bare-op-assumed-rest", async () => {
+    const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      model Pong {
+        status: string;
+      }
+
+      @service(#{title: "Backend"})
+      @TypeSpec.Http.server("https://my.service.io", "Production")
+      namespace Rest {
+        op getThing(): Pong;
+
+        op putThing(): Pong;
+      }
+
+      @TypeSpec.AsyncAPI.server("Production", #{
+        url: "my.service.io",
+        protocol: "wss",
+      })
+      namespace Events {
+        @subscribe
+        op receivePing(): Pong;
+      }
+    `);
+    expect(countByCode(diagnostics, "bare-op-assumed-rest")).toBe(2);
+    const warning = findByCode(diagnostics, "bare-op-assumed-rest");
+    expect(warning?.message).toMatch(/GET \/|POST \//);
+    expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual([
+      "receivePing",
+    ]);
+  });
+
+  it("suppresses bare-op-assumed-rest via #suppress", async () => {
+    const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      model Pong {
+        status: string;
+      }
+
+      @service(#{title: "Backend"})
+      @TypeSpec.Http.server("https://my.service.io", "Production")
+      namespace Rest {
+        #suppress "@lars-artmann/typespec-asyncapi/bare-op-assumed-rest" "intentional"
+        op getThing(): Pong;
+      }
+
+      @TypeSpec.AsyncAPI.server("Production", #{
+        url: "my.service.io",
+        protocol: "wss",
+      })
+      namespace Events {
+        @subscribe
+        op receivePing(): Pong;
+      }
+    `);
+    expect(countByCode(diagnostics, "bare-op-assumed-rest")).toBe(0);
+    expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual([
+      "receivePing",
     ]);
   });
 });

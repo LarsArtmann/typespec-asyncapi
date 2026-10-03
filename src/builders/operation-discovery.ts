@@ -24,7 +24,11 @@ import {
 } from "./_imports.js";
 import { schemaNameForType } from "../schema-ref.js";
 import { findEnclosingServiceNamespace } from "./cross-emitter-validation.js";
-import { isHttpLibraryLoaded } from "./http-route-facts.js";
+import {
+  type HttpRouteFacts,
+  isHttpLibraryLoaded,
+} from "./http-route-facts.js";
+import { reportProgramDiagnostic } from "../decorator-helpers.js";
 
 /**
  * Discover all operations from three sources:
@@ -162,6 +166,7 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
     httpRouteFacts
       ? httpRouteFacts.isRouted(op)
       : findEnclosingServiceNamespace(ctx.program, op) !== undefined;
+  let warnedAboutInference = false;
   const globalNs = ctx.program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
   for (const ns of namespaces) {
@@ -173,6 +178,19 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
         continue;
       }
       if (restOpsAreInPlay && isHttpOwned(op)) {
+        reportSkippedBareOp(ctx, op, opName, httpRouteFacts);
+        if (httpRouteFacts === undefined && !warnedAboutInference) {
+          warnedAboutInference = true;
+          const service = findEnclosingServiceNamespace(ctx.program, op);
+          reportProgramDiagnostic(ctx.program, {
+            code: "bare-op-inference-deprecated",
+            target: op,
+            format: {
+              operationName: opName,
+              serviceName: service?.name ?? "",
+            },
+          });
+        }
         continue;
       }
       const effectiveName = resolveOpName(state, op, opName);
@@ -191,3 +209,28 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
     }
   }
 };
+
+/** Signal the ownership decision for a bare operation claimed by http. */
+function reportSkippedBareOp(
+  ctx: DocumentBuildContext,
+  op: Operation,
+  opName: string,
+  httpRouteFacts: HttpRouteFacts | undefined,
+): void {
+  const route = httpRouteFacts?.routeOf(op);
+  if (route) {
+    reportProgramDiagnostic(ctx.program, {
+      code: "bare-op-assumed-rest",
+      target: op,
+      format: { operationName: opName, path: route.path, verb: route.verb },
+    });
+    return;
+  }
+  const service = findEnclosingServiceNamespace(ctx.program, op);
+  reportProgramDiagnostic(ctx.program, {
+    code: "bare-op-assumed-rest",
+    target: op,
+    format: { operationName: opName, serviceName: service?.name ?? "" },
+    messageId: "assumed",
+  });
+}
