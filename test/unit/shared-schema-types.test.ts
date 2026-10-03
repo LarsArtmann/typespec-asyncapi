@@ -1,9 +1,5 @@
 import { asJsonSchema } from "../utils/type-guards.js";
-import type {
-  JsonSchema,
-  SchemaMap,
-  SchemaRef,
-} from "../../src/shared/index.js";
+import type { JsonSchema, SchemaMap, SchemaRef } from "../../src/shared/index.js";
 import {
   AsyncAPISchemaEmitter,
   extractValue,
@@ -100,18 +96,14 @@ describe("extractValue", () => {
       kind: "declaration" as const,
       value: { type: "string" },
     };
-    expect(
-      extractValue(entity as unknown as EmitEntity<JsonSchema>),
-    ).toStrictEqual({
+    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({
       type: "string",
     });
   });
 
   it("returns empty object for none kind", () => {
     const entity = { kind: "none" as const };
-    expect(
-      extractValue(entity as unknown as EmitEntity<JsonSchema>),
-    ).toStrictEqual({});
+    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({});
   });
 
   it("filters out Placeholder values with onValue", () => {
@@ -119,16 +111,12 @@ describe("extractValue", () => {
       kind: "declaration" as const,
       value: { onValue: () => {} },
     };
-    expect(
-      extractValue(entity as unknown as EmitEntity<JsonSchema>),
-    ).toStrictEqual({});
+    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({});
   });
 
   it("returns empty object for circular kind", () => {
     const entity = { kind: "circular" as const };
-    expect(
-      extractValue(entity as unknown as EmitEntity<JsonSchema>),
-    ).toStrictEqual({});
+    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({});
   });
 
   it("extracts value from code kind entity", () => {
@@ -136,9 +124,7 @@ describe("extractValue", () => {
       kind: "code" as const,
       value: { type: "integer" },
     };
-    expect(
-      extractValue(entity as unknown as EmitEntity<JsonSchema>),
-    ).toStrictEqual({
+    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({
       type: "integer",
     });
   });
@@ -148,9 +134,7 @@ describe("extractValue", () => {
       kind: "declaration" as const,
       value: null,
     };
-    expect(
-      extractValue(entity as unknown as EmitEntity<JsonSchema>),
-    ).toStrictEqual({});
+    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({});
   });
 
   it("returns empty object for declaration with non-object value", () => {
@@ -158,9 +142,7 @@ describe("extractValue", () => {
       kind: "declaration" as const,
       value: "not-an-object",
     };
-    expect(
-      extractValue(entity as unknown as EmitEntity<JsonSchema>),
-    ).toStrictEqual({});
+    expect(extractValue(entity as unknown as EmitEntity<JsonSchema>)).toStrictEqual({});
   });
 
   it("extracts complex nested schema from declaration", () => {
@@ -269,18 +251,10 @@ describe("shared barrel public API surface", () => {
   });
 
   it("exposes expected TypeEmitter overrides", () => {
-    expect(AsyncAPISchemaEmitter.prototype.modelDeclaration).toBeTypeOf(
-      "function",
-    );
-    expect(AsyncAPISchemaEmitter.prototype.modelInstantiation).toBeTypeOf(
-      "function",
-    );
-    expect(AsyncAPISchemaEmitter.prototype.unionDeclaration).toBeTypeOf(
-      "function",
-    );
-    expect(AsyncAPISchemaEmitter.prototype.enumDeclaration).toBeTypeOf(
-      "function",
-    );
+    expect(AsyncAPISchemaEmitter.prototype.modelDeclaration).toBeTypeOf("function");
+    expect(AsyncAPISchemaEmitter.prototype.modelInstantiation).toBeTypeOf("function");
+    expect(AsyncAPISchemaEmitter.prototype.unionDeclaration).toBeTypeOf("function");
+    expect(AsyncAPISchemaEmitter.prototype.enumDeclaration).toBeTypeOf("function");
   });
 
   it("type exports are usable at compile time", () => {
@@ -294,10 +268,7 @@ describe("shared barrel public API surface", () => {
 describe("shared subpath export contract", () => {
   it("package.json exports ./shared with types and default conditions", () => {
     const pkg = JSON.parse(
-      readFileSync(
-        join(import.meta.dirname, "..", "..", "package.json"),
-        "utf8",
-      ),
+      readFileSync(join(import.meta.dirname, "..", "..", "package.json"), "utf8"),
     ) as { exports: Record<string, { types: string; default: string }> };
 
     expect(pkg.exports["./shared"]).toBeDefined();
@@ -307,10 +278,7 @@ describe("shared subpath export contract", () => {
 
   it("package.json exports . as the main entry point", () => {
     const pkg = JSON.parse(
-      readFileSync(
-        join(import.meta.dirname, "..", "..", "package.json"),
-        "utf8",
-      ),
+      readFileSync(join(import.meta.dirname, "..", "..", "package.json"), "utf8"),
     ) as { exports: Record<string, { typespec: string; default: string }> };
 
     expect(pkg.exports["."]).toBeDefined();

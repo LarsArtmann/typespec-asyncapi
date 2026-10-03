@@ -9,10 +9,7 @@
  * - All decorators integrated with TypeSpec compiler
  */
 
-import {
-  compileAsyncAPISpecWithoutErrors,
-  parseAsyncAPIOutput,
-} from "../utils/test-helpers.js";
+import { compileAsyncAPISpecWithoutErrors, parseAsyncAPIOutput } from "../utils/test-helpers.js";
 import { validateAsyncAPIDocument } from "../utils/schema-validator.js";
 import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import { inlineObject } from "../utils/type-guards.js";
@@ -56,23 +53,17 @@ describe("real Decorator Functionality Tests", () => {
         op publishUserRegistered(): UserRegisteredMessage;
       `;
 
-      const { outputFiles, program } =
-        await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify the compilation actually processed the decorator
       expect(program).toBeDefined();
       expect(outputFiles.size).toBeGreaterThan(0);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(
-        outputFiles,
-        "message-decorator-test.json",
-      );
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "message-decorator-test.json");
       expect(asyncapiDoc).toBeDefined();
 
       // Validate the message decorator was processed correctly
-      expect(
-        asyncapiDoc.components?.schemas?.UserRegisteredMessage,
-      ).toBeDefined();
+      expect(asyncapiDoc.components?.schemas?.UserRegisteredMessage).toBeDefined();
 
       const userSchema = asyncapiDoc.components.schemas.UserRegisteredMessage;
       expect(userSchema.type).toBe("object");
@@ -91,9 +82,7 @@ describe("real Decorator Functionality Tests", () => {
       expect(userSchema.required).toContain("preferences");
 
       // Validate operations were created
-      expect(Object.keys(asyncapiDoc.operations || {})).toContain(
-        "publishUserRegistered",
-      );
+      expect(Object.keys(asyncapiDoc.operations || {})).toContain("publishUserRegistered");
 
       const operation = asyncapiDoc.operations?.publishUserRegistered;
       expect(operation?.action).toBe("send");
@@ -144,10 +133,7 @@ describe("real Decorator Functionality Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(
-        outputFiles,
-        "content-type-test.json",
-      );
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "content-type-test.json");
 
       // Validate both message schemas were created
       expect(asyncapiDoc.components?.schemas?.AvroMessage).toBeDefined();
@@ -198,10 +184,7 @@ describe("real Decorator Functionality Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(
-        outputFiles,
-        "headers-test.json",
-      );
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "headers-test.json");
 
       // Validate message schema with correlation ID
       expect(asyncapiDoc.components?.schemas?.TrackedMessage).toBeDefined();
@@ -247,16 +230,12 @@ describe("real Decorator Functionality Tests", () => {
         op publishKafkaUserEvent(): KafkaMessage;
       `;
 
-      const { outputFiles, program } =
-        await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify real compilation occurred
       expect(program).toBeDefined();
 
-      const asyncapiDoc = await parseAsyncAPIOutput(
-        outputFiles,
-        "kafka-protocol-test.json",
-      );
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "kafka-protocol-test.json");
 
       // Validate schema was created
       expect(asyncapiDoc.components?.schemas?.KafkaMessage).toBeDefined();
@@ -281,22 +260,14 @@ describe("real Decorator Functionality Tests", () => {
       );
       expect(channelBinding.kafka.topic).toBe("user-events");
       expect(channelBinding.kafka.partitions).toBe(3);
-      expect(channelBinding.kafka.bindingVersion).toBe(
-        LATEST_BINDING_VERSIONS.kafka,
-      );
-      expect(
-        inlineObject(operation.bindings, "operation bindings").kafka.groupId,
-      ).toMatchObject({
+      expect(channelBinding.kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
+      expect(inlineObject(operation.bindings, "operation bindings").kafka.groupId).toMatchObject({
         type: "string",
       });
-      const message = inlineObject(
-        asyncapiDoc.components!.messages!.KafkaMessage,
-        "message",
+      const message = inlineObject(asyncapiDoc.components!.messages!.KafkaMessage, "message");
+      expect(inlineObject(message.bindings, "message bindings").kafka.schemaIdLocation).toBe(
+        "header",
       );
-      expect(
-        inlineObject(message.bindings, "message bindings").kafka
-          .schemaIdLocation,
-      ).toBe("header");
 
       validateAsyncAPIDocument(asyncapiDoc);
     });
@@ -326,10 +297,7 @@ describe("real Decorator Functionality Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(
-        outputFiles,
-        "websocket-protocol-test.json",
-      );
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "websocket-protocol-test.json");
 
       // Validate WebSocket message schema
       expect(asyncapiDoc.components?.schemas?.WebSocketMessage).toBeDefined();
@@ -395,10 +363,7 @@ describe("real Decorator Functionality Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(
-        outputFiles,
-        "multi-protocol-test.json",
-      );
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "multi-protocol-test.json");
 
       // Validate both operations were created
       expect(asyncapiDoc.operations?.publishAMQPEvent).toBeDefined();
@@ -409,10 +374,7 @@ describe("real Decorator Functionality Tests", () => {
 
       // AMQP defines a channel binding, so the passthrough lands there
       const amqpChannel = asyncapiDoc.channels?.["amqp.user.events"];
-      const amqpBindings = inlineObject(
-        amqpChannel?.bindings,
-        "amqp channel bindings",
-      );
+      const amqpBindings = inlineObject(amqpChannel?.bindings, "amqp channel bindings");
       const amqp = inlineObject(amqpBindings.amqp, "amqp binding");
       expect(amqp.exchange).toBe("events");
       expect(amqp.routingKey).toBe("user.created");
@@ -421,10 +383,7 @@ describe("real Decorator Functionality Tests", () => {
 
       // MQTT has no channel binding, so the passthrough lands on the operation
       const mqttOp = asyncapiDoc.operations?.publishMQTTSensorData;
-      const mqttBindings = inlineObject(
-        mqttOp?.bindings,
-        "mqtt operation bindings",
-      );
+      const mqttBindings = inlineObject(mqttOp?.bindings, "mqtt operation bindings");
       const mqtt = inlineObject(mqttBindings.mqtt, "mqtt binding");
       expect(mqtt.topic).toBe("sensors/temperature");
       expect(mqtt.qos).toBe(2);
@@ -458,16 +417,12 @@ describe("real Decorator Functionality Tests", () => {
         op publishSecureMessage(): SecureMessage;
       `;
 
-      const { outputFiles, program } =
-        await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify compilation occurred
       expect(program).toBeDefined();
 
-      const asyncapiDoc = await parseAsyncAPIOutput(
-        outputFiles,
-        "jwt-security-test.json",
-      );
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "jwt-security-test.json");
 
       // Validate secure message schema
       expect(asyncapiDoc.components?.schemas?.SecureMessage).toBeDefined();
@@ -487,9 +442,7 @@ describe("real Decorator Functionality Tests", () => {
       expect(scheme.scheme).toBe("bearer");
       expect(scheme.bearerFormat).toBe("JWT");
       const security = asyncapiDoc.operations?.publishSecureMessage?.security;
-      expect(security).toStrictEqual([
-        { $ref: "#/components/securitySchemes/jwtAuth" },
-      ]);
+      expect(security).toStrictEqual([{ $ref: "#/components/securitySchemes/jwtAuth" }]);
     });
 
     it("should process @security decorator with OAuth2 flows", async () => {
@@ -534,15 +487,10 @@ describe("real Decorator Functionality Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(
-        outputFiles,
-        "oauth2-security-test.json",
-      );
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "oauth2-security-test.json");
 
       // Validate OAuth2 secured message schema
-      expect(
-        asyncapiDoc.components?.schemas?.OAuth2SecuredMessage,
-      ).toBeDefined();
+      expect(asyncapiDoc.components?.schemas?.OAuth2SecuredMessage).toBeDefined();
 
       const oauth2Schema = asyncapiDoc.components.schemas.OAuth2SecuredMessage;
       expect(oauth2Schema.properties?.resourceId?.type).toBe("string");
@@ -557,20 +505,12 @@ describe("real Decorator Functionality Tests", () => {
       );
       expect(scheme.type).toBe("oauth2");
       const flows = inlineObject(scheme.flows, "oauth2 flows");
-      const clientCredentials = inlineObject(
-        flows.clientCredentials,
-        "clientCredentials flow",
-      );
+      const clientCredentials = inlineObject(flows.clientCredentials, "clientCredentials flow");
       expect(clientCredentials.tokenUrl).toBe("https://auth.example.com/token");
       expect(clientCredentials.availableScopes?.read).toBe("Read access");
       expect(clientCredentials.availableScopes?.admin).toBe("Admin access");
-      const authorizationCode = inlineObject(
-        flows.authorizationCode,
-        "authorizationCode flow",
-      );
-      expect(authorizationCode.authorizationUrl).toBe(
-        "https://auth.example.com/authorize",
-      );
+      const authorizationCode = inlineObject(flows.authorizationCode, "authorizationCode flow");
+      expect(authorizationCode.authorizationUrl).toBe("https://auth.example.com/authorize");
       expect(authorizationCode.availableScopes?.write).toBe("Write access");
     });
 
@@ -606,10 +546,7 @@ describe("real Decorator Functionality Tests", () => {
 
       const { outputFiles } = await compileAsyncAPISpecWithoutErrors(source);
 
-      const asyncapiDoc = await parseAsyncAPIOutput(
-        outputFiles,
-        "sasl-security-test.json",
-      );
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "sasl-security-test.json");
 
       // Validate SASL secured message
       expect(asyncapiDoc.components?.schemas?.SASLSecuredMessage).toBeDefined();
@@ -725,16 +662,12 @@ describe("real Decorator Functionality Tests", () => {
         op subscribeUserAuditEvents(userId: string): SecureKafkaEvent;
       `;
 
-      const { outputFiles, program } =
-        await compileAsyncAPISpecWithoutErrors(source);
+      const { outputFiles, program } = await compileAsyncAPISpecWithoutErrors(source);
 
       // Verify comprehensive compilation
       expect(program).toBeDefined();
 
-      const asyncapiDoc = await parseAsyncAPIOutput(
-        outputFiles,
-        "combined-decorators-test.json",
-      );
+      const asyncapiDoc = await parseAsyncAPIOutput(outputFiles, "combined-decorators-test.json");
 
       // Validate complex message schema
       expect(asyncapiDoc.components?.schemas?.SecureKafkaEvent).toBeDefined();
@@ -772,9 +705,7 @@ describe("real Decorator Functionality Tests", () => {
       );
       expect(channelBinding.kafka.topic).toBe("secure-audit-events");
       expect(channelBinding.kafka.partitions).toBe(6);
-      expect(
-        inlineObject(publishOp.bindings, "operation bindings").kafka.groupId,
-      ).toMatchObject({
+      expect(inlineObject(publishOp.bindings, "operation bindings").kafka.groupId).toMatchObject({
         type: "string",
       });
 

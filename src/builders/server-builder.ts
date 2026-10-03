@@ -4,10 +4,7 @@
  * Builds AsyncAPI server objects from @server decorator state.
  */
 
-import type {
-  ServerObject,
-  ServerVariable,
-} from "../domain/models/asyncapi-document.js";
+import type { ServerObject, ServerVariable } from "../domain/models/asyncapi-document.js";
 import type { SecurityRequirement } from "../domain/models/asyncapi-document.js";
 import { normalizeProtocol } from "../constants/protocols.js";
 import type { BuilderFn } from "./types.js";
@@ -40,9 +37,7 @@ function buildServerVar(rawVar: unknown, varName: string): ServerVariable {
 }
 
 /** Normalize security to an array of SecurityRequirement objects. */
-function normalizeSecurity(
-  security: unknown,
-): SecurityRequirement[] | undefined {
+function normalizeSecurity(security: unknown): SecurityRequirement[] | undefined {
   if (Array.isArray(security)) {
     return security as SecurityRequirement[];
   }

@@ -23,10 +23,7 @@ import {
   type DocumentBuildContext,
 } from "./_imports.js";
 import { schemaNameForType } from "../schema-ref.js";
-import {
-  findEnclosingServiceNamespace,
-  isHttpLibraryLoaded,
-} from "./cross-emitter-validation.js";
+import { findEnclosingServiceNamespace, isHttpLibraryLoaded } from "./cross-emitter-validation.js";
 
 /**
  * Discover all operations from three sources:
@@ -58,17 +55,12 @@ function resolveMessageInfo(
   }
   return {
     messageNames: models.map((m) => resolveMessageKey(m, state.messages)),
-    messageSchemaNames: models.map(
-      (m) => schemaNameForType(m) ?? nameOfType(m) ?? fallbackName,
-    ),
+    messageSchemaNames: models.map((m) => schemaNameForType(m) ?? nameOfType(m) ?? fallbackName),
   };
 }
 
 /** 1a. Operations from @publish/@subscribe + @channel decorators. */
-function discoverDecoratedOps(
-  state: AsyncAPIConsolidatedState,
-  ctx: DocumentBuildContext,
-): void {
+function discoverDecoratedOps(state: AsyncAPIConsolidatedState, ctx: DocumentBuildContext): void {
   for (const { type, name, data } of iterNamedTypes(state.channels)) {
     ctx.opToChannel.set(name, data.path);
     const doc = getDoc(ctx.program, type);
@@ -90,11 +82,7 @@ function discoverDecoratedOps(
     const opName = opId ?? name;
     const channelKey = ctx.opToChannel.get(name) ?? name;
 
-    let { messageNames, messageSchemaNames } = resolveMessageInfo(
-      type,
-      state,
-      opName,
-    );
+    let { messageNames, messageSchemaNames } = resolveMessageInfo(type, state, opName);
     if (data.messageType) {
       messageNames = [data.messageType];
       messageSchemaNames = [data.messageType];
@@ -116,11 +104,7 @@ function discoverDecoratedOps(
 }
 
 /** Resolve the operation name from `@operationId` if present, else fall back to the type name. */
-function resolveOpName(
-  state: AsyncAPIConsolidatedState,
-  type: Type,
-  fallback: string,
-): string {
+function resolveOpName(state: AsyncAPIConsolidatedState, type: Type, fallback: string): string {
   return state.operationIds.get(type) ?? fallback;
 }
 
@@ -146,16 +130,12 @@ const discoverChannelOnlyOps: BuilderFn = (state, ctx) => {
 
 /** 1c. Bare operations (no decorators at all). */
 const discoverBareOps: BuilderFn = (state, ctx) => {
-  const allKnownOps = new Set([
-    ...namesOfTypes(state.operations),
-    ...namesOfTypes(state.channels),
-  ]);
+  const allKnownOps = new Set([...namesOfTypes(state.operations), ...namesOfTypes(state.channels)]);
   // In mixed REST + events programs, bare operations under a @service namespace are REST operations.
   // Keep them out of the AsyncAPI document because @typespec/http routes them as REST endpoints.
   // The "decorated ops exist" guard keeps pure minimal specs (no @publish/@subscribe/@channel) unchanged.
   const restOpsAreInPlay =
-    isHttpLibraryLoaded(ctx.program) &&
-    (state.operations.size > 0 || state.channels.size > 0);
+    isHttpLibraryLoaded(ctx.program) && (state.operations.size > 0 || state.channels.size > 0);
   const globalNs = ctx.program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
   for (const ns of namespaces) {
@@ -166,10 +146,7 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
       if (allKnownOps.has(opName)) {
         continue;
       }
-      if (
-        restOpsAreInPlay &&
-        findEnclosingServiceNamespace(ctx.program, op) !== undefined
-      ) {
+      if (restOpsAreInPlay && findEnclosingServiceNamespace(ctx.program, op) !== undefined) {
         continue;
       }
       const effectiveName = resolveOpName(state, op, opName);

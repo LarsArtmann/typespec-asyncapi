@@ -13,10 +13,7 @@ import {
   type ParsedAsyncAPIDocument,
 } from "../utils/test-helpers";
 import { validateAsyncAPIDocument } from "../utils/schema-validator.js";
-import {
-  PROTOCOL_LIST,
-  isSupportedProtocol,
-} from "../../src/constants/protocols.js";
+import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
 import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import { inlineObject } from "../utils/type-guards.js";
 
@@ -27,13 +24,9 @@ import { inlineObject } from "../utils/type-guards.js";
  * Returns the clean parsed document (without the test-only `diagnostics` /
  * `outputFiles` extras), which the strict root schema would reject.
  */
-async function compileAndValidateIntegrationSpec(
-  source: string,
-): Promise<ParsedAsyncAPIDocument> {
+async function compileAndValidateIntegrationSpec(source: string): Promise<ParsedAsyncAPIDocument> {
   const spec = await compileAsyncAPISpec(source);
-  expect(spec.diagnostics.filter((d) => d.severity === "error")).toHaveLength(
-    0,
-  );
+  expect(spec.diagnostics.filter((d) => d.severity === "error")).toHaveLength(0);
   const document = await parseAsyncAPIOutput(spec.outputFiles);
   validateAsyncAPIDocument(document);
   return document;
@@ -154,10 +147,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
       expect(spec.channels).toBeDefined();
       expect(spec.channels!["chat-room"]).toBeDefined();
 
-      const bindings = inlineObject(
-        spec.channels!["chat-room"].bindings,
-        "ws channel bindings",
-      );
+      const bindings = inlineObject(spec.channels!["chat-room"].bindings, "ws channel bindings");
       const ws = inlineObject(bindings.ws, "ws binding");
       expect(ws.headers).toStrictEqual({ xRoomId: "room-1" });
       expect(ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);
@@ -194,10 +184,7 @@ describe("asyncAPI Protocol Binding Integration", () => {
       expect(spec.servers!["ws-api"].protocol).toBe("wss");
       expect(spec.channels!["messages"]).toBeDefined();
 
-      const bindings = inlineObject(
-        spec.channels!["messages"].bindings,
-        "ws channel bindings",
-      );
+      const bindings = inlineObject(spec.channels!["messages"].bindings, "ws channel bindings");
       const ws = inlineObject(bindings.ws, "ws binding");
       expect(ws.query).toStrictEqual({ debug: "1" });
       expect(ws.bindingVersion).toBe(LATEST_BINDING_VERSIONS.ws);

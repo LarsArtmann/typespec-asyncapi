@@ -108,11 +108,7 @@ describe("decorator combinations and edge cases", () => {
         op publish(): Event;
       `);
       const statusSchema = asyncApiDoc?.components?.schemas?.Status;
-      expect(statusSchema?.enum).toStrictEqual([
-        "active",
-        "inactive",
-        "pending",
-      ]);
+      expect(statusSchema?.enum).toStrictEqual(["active", "inactive", "pending"]);
     });
 
     it("emits member names when no explicit value", async () => {

@@ -53,8 +53,7 @@ export default defineConfig({
       customCss: ["./src/styles/starlight.css"],
       lastUpdated: true,
       editLink: {
-        baseUrl:
-          "https://github.com/LarsArtmann/typespec-asyncapi/edit/master/website",
+        baseUrl: "https://github.com/LarsArtmann/typespec-asyncapi/edit/master/website",
       },
       expressiveCode: {
         themes: ["github-light", "dracula"],

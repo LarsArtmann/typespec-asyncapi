@@ -13,11 +13,7 @@ import {
   type SecurityScheme,
   type SecuritySchemeInput,
 } from "../domain/models/asyncapi-document.js";
-import type {
-  MessageConfigData,
-  OperationTypeData,
-  ProtocolConfigData,
-} from "../state.js";
+import type { MessageConfigData, OperationTypeData, ProtocolConfigData } from "../state.js";
 import {
   getLatestBindingVersion,
   hasProtocolBindings,
@@ -95,9 +91,7 @@ export function buildMessageObject(
  * Normalize OAuth2 flows: AsyncAPI 3.1 uses `availableScopes` (not `scopes`).
  * Accept both as input; always output `availableScopes`.
  */
-export function normalizeOAuth2Scopes(
-  scheme: SecuritySchemeInput,
-): SecurityScheme {
+export function normalizeOAuth2Scopes(scheme: SecuritySchemeInput): SecurityScheme {
   if (!scheme.flows) {
     // Cast: the input scheme without flows already satisfies the output shape.
     return scheme as SecurityScheme;
@@ -133,9 +127,7 @@ export function inferActionFromName(name: string): OperationAction {
 }
 
 /** Map a decorator-declared operation type to an AsyncAPI OperationAction. */
-export function operationAction(
-  type: OperationTypeData["type"],
-): OperationAction {
+export function operationAction(type: OperationTypeData["type"]): OperationAction {
   return type === "publish" ? "send" : "receive";
 }
 
@@ -164,12 +156,7 @@ export function returnModels<T>(type: Type, selector: (t: Type) => T): T[] {
     return out;
   }
 
-  if (
-    "name" in rt &&
-    typeof rt.name === "string" &&
-    rt.name &&
-    rt.kind !== "Operation"
-  ) {
+  if ("name" in rt && typeof rt.name === "string" && rt.name && rt.kind !== "Operation") {
     return [selector(rt)];
   }
 
@@ -180,10 +167,7 @@ export function returnModels<T>(type: Type, selector: (t: Type) => T): T[] {
  * Resolve the channel object for a named operation/channel type, following
  * `@channel` path overrides recorded during discovery.
  */
-export function channelForName(
-  ctx: DocumentBuildContext,
-  name: string,
-): ChannelObject | undefined {
+export function channelForName(ctx: DocumentBuildContext, name: string): ChannelObject | undefined {
   return ctx.channels[ctx.opToChannel.get(name) ?? name];
 }
 
@@ -204,9 +188,7 @@ export function resolveMessageKey(
 ): string {
   const name =
     schemaNameForType(modelType) ??
-    ("name" in modelType && typeof modelType.name === "string"
-      ? modelType.name
-      : "");
+    ("name" in modelType && typeof modelType.name === "string" ? modelType.name : "");
   const msgData = stateMessages.get(modelType);
   return msgData?.messageId ?? name;
 }
@@ -226,9 +208,7 @@ export function extractChannelParameters(
 }
 
 /** Drop `undefined` values from a field map, keeping only written config. */
-function definedFields(
-  entries: Record<string, unknown>,
-): Record<string, unknown> {
+function definedFields(entries: Record<string, unknown>): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(entries)) {
     if (value !== undefined) {
@@ -257,9 +237,7 @@ const kafkaFields: ProtocolFieldPicker = (d) => {
     }),
     operation: definedFields({
       groupId:
-        d.consumerGroup === undefined
-          ? undefined
-          : { type: "string", const: d.consumerGroup },
+        d.consumerGroup === undefined ? undefined : { type: "string", const: d.consumerGroup },
     }),
   };
 };
@@ -308,14 +286,9 @@ export interface ProtocolBindingPlacements {
  * - Bindings without content fields are omitted entirely (no version-only
  *   shells); `bindingVersion` is auto-injected from the binding specs.
  */
-export function buildProtocolBindings(
-  data: ProtocolConfigData,
-): ProtocolBindingPlacements {
+export function buildProtocolBindings(data: ProtocolConfigData): ProtocolBindingPlacements {
   const bindingKey = normalizeBindingProtocol(data.protocol);
-  const passthroughTarget: "channel" | "operation" = supportsBindingPlacement(
-    bindingKey,
-    "channel",
-  )
+  const passthroughTarget: "channel" | "operation" = supportsBindingPlacement(bindingKey, "channel")
     ? "channel"
     : "operation";
   const fields = FIELD_PICKERS[data.protocol]?.(data) ?? {};
@@ -348,10 +321,7 @@ export function injectLatestBindingVersion(
   bindingKey: string,
   bindingFields: Record<string, unknown>,
 ): void {
-  if (
-    hasProtocolBindings(bindingKey) &&
-    bindingFields.bindingVersion === undefined
-  ) {
+  if (hasProtocolBindings(bindingKey) && bindingFields.bindingVersion === undefined) {
     bindingFields.bindingVersion = getLatestBindingVersion(bindingKey);
   }
 }

@@ -18,9 +18,7 @@ import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
 import { parse as parseYAML } from "yaml";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
-async function compileAndParse(
-  source: string,
-): Promise<ParsedAsyncAPIDocument> {
+async function compileAndParse(source: string): Promise<ParsedAsyncAPIDocument> {
   const result = await compileAsyncAPISpecWithoutErrors(source);
   for (const [, content] of result.outputFiles) {
     if (typeof content === "string" && content.startsWith("asyncapi")) {
@@ -69,9 +67,9 @@ describe("integration: new protocol bindings end-to-end", () => {
     expect(server).toBeDefined();
     expect(server.bindings).toBeDefined();
     expect(inlineObject(server.bindings, "bindings").solace).toBeDefined();
-    expect(
-      inlineObject(server.bindings, "bindings").solace.bindingVersion,
-    ).toBe(LATEST_BINDING_VERSIONS.solace);
+    expect(inlineObject(server.bindings, "bindings").solace.bindingVersion).toBe(
+      LATEST_BINDING_VERSIONS.solace,
+    );
   });
 
   it("anypointmq bindings compile through emitter without errors", async () => {
@@ -125,9 +123,7 @@ describe("integration: new protocol bindings end-to-end", () => {
         op publish(): Event;
       `);
 
-      const errorDiagnostics = result.diagnostics.filter(
-        (d) => d.severity === "error",
-      );
+      const errorDiagnostics = result.diagnostics.filter((d) => d.severity === "error");
       expect(errorDiagnostics).toHaveLength(0);
     }
   });

@@ -9,12 +9,12 @@ paths:
       operationId: Events_receivePing
       parameters: []
       responses:
-        '200':
+        "200":
           description: The request has succeeded.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Service.Backend.HealthcheckPong'
+                $ref: "#/components/schemas/Service.Backend.HealthcheckPong"
 components:
   schemas:
     Service.Backend.HealthcheckPong:

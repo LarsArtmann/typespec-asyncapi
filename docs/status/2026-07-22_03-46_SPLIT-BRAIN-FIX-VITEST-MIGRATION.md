@@ -300,14 +300,14 @@ Issue #229 asks for "RFC 3986 URL Format Validation." What I built rejects empty
 
 ### Immediate items (section f, items 1-6)
 
-| #   | Item                                        | Status | Evidence                                                                         |
-| --- | ------------------------------------------- | ------ | -------------------------------------------------------------------------------- |
-| 1   | Commit the work                             | DONE   | Commits `42ad7ac`, `60b526c`, `28bed42`, `83e3917`, `fa6857d`                    |
-| 2   | Update planning doc status                  | DONE   | Both planning docs annotated                                                     |
-| 3   | Close GitHub #229                           | OPEN   | Still open; pragmatic validation shipped, full RFC 3986 not done                 |
-| 4   | Close GitHub #160                           | OPEN   | Still open; moot after vitest migration but never closed                         |
-| 5   | Remove dead coverage devDeps                | OPEN   | `@vitest/coverage-v8`, `@vitest/coverage-istanbul`, `c8` still in `package.json` |
-| 6   | Clean up `vitest.config.ts` coverage config | OPEN   | Still references non-functional coverage settings                                |
+| # | Item                                        | Status | Evidence                                                                         |
+| - | ------------------------------------------- | ------ | -------------------------------------------------------------------------------- |
+| 1 | Commit the work                             | DONE   | Commits `42ad7ac`, `60b526c`, `28bed42`, `83e3917`, `fa6857d`                    |
+| 2 | Update planning doc status                  | DONE   | Both planning docs annotated                                                     |
+| 3 | Close GitHub #229                           | OPEN   | Still open; pragmatic validation shipped, full RFC 3986 not done                 |
+| 4 | Close GitHub #160                           | OPEN   | Still open; moot after vitest migration but never closed                         |
+| 5 | Remove dead coverage devDeps                | OPEN   | `@vitest/coverage-v8`, `@vitest/coverage-istanbul`, `c8` still in `package.json` |
+| 6 | Clean up `vitest.config.ts` coverage config | OPEN   | Still references non-functional coverage settings                                |
 
 ### Section (d) "TOTALLY FUCKED UP" items
 

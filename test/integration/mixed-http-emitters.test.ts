@@ -13,10 +13,7 @@
  * - Pure minimal specs (bare ops, no decorators anywhere) keep working.
  */
 
-import {
-  compileAsyncAPI,
-  compileAsyncAPISpecRaw,
-} from "../utils/test-helpers.js";
+import { compileAsyncAPI, compileAsyncAPISpecRaw } from "../utils/test-helpers.js";
 import type { Diagnostic } from "@typespec/compiler";
 
 const hasWarning = (diagnostics: readonly Diagnostic[], code: string): boolean =>

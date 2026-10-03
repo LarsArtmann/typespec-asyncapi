@@ -61,14 +61,7 @@ export const buildReusableComponents: BuilderFn = (state, ctx) => {
   Object.assign(
     ctx.operationTraits,
     populateNamed(state.operationTraits, (t) =>
-      pickOpt(t, [
-        "title",
-        "summary",
-        "description",
-        "security",
-        "tags",
-        "bindings",
-      ]),
+      pickOpt(t, ["title", "summary", "description", "security", "tags", "bindings"]),
     ),
   );
   Object.assign(
@@ -91,8 +84,7 @@ export const buildReusableComponents: BuilderFn = (state, ctx) => {
     ctx.reusableParameters,
     populateNamed(
       state.reusableParameters,
-      (p) =>
-        pickOpt(p, ["description", "location", "enum", "default", "examples"]),
+      (p) => pickOpt(p, ["description", "location", "enum", "default", "examples"]),
       (p) => {
         upgradeChannelParameterRefs(ctx, p.name);
       },
@@ -133,9 +125,7 @@ export const applyReusableRefs: BuilderFn = (state, ctx) => {
     }
     const traitNames = state.messageTraitRefs.get(type);
     if (traitNames) {
-      msg.traits = traitNames
-        .filter((n) => n in ctx.messageTraits)
-        .map((n) => refMessageTrait(n));
+      msg.traits = traitNames.filter((n) => n in ctx.messageTraits).map((n) => refMessageTrait(n));
     }
     const corrIdName = state.correlationIdRefs.get(type);
     if (corrIdName && corrIdName in ctx.reusableCorrelationIds) {
@@ -147,10 +137,7 @@ export const applyReusableRefs: BuilderFn = (state, ctx) => {
   applyChannelBindingRefs(state, ctx);
 };
 
-function pickOpt<T extends object, K extends keyof T>(
-  data: T,
-  keys: readonly K[],
-): Pick<T, K> {
+function pickOpt<T extends object, K extends keyof T>(data: T, keys: readonly K[]): Pick<T, K> {
   const out = {} as Pick<T, K>;
   const src = data as Record<K, unknown>;
   for (const key of keys) {
@@ -183,11 +170,7 @@ function applyBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
           ? "serverBindings"
           : "messageBindings";
 
-    const applied = applyBindingNamesToSection(
-      names,
-      bindingDefinitions,
-      ctx[section],
-    );
+    const applied = applyBindingNamesToSection(names, bindingDefinitions, ctx[section]);
     if (applied.length > 0) {
       const refPointer = `#/components/${section}/${applied[0] ?? ""}`;
       applyBindingToTarget(state, ctx, type, kind, refPointer);
@@ -243,10 +226,7 @@ function applyBindingToTarget(
 }
 
 /** Apply @useChannelBinding refs: populate components.channelBindings and set channel.bindings to $ref. */
-function applyChannelBindingRefs(
-  state: AsyncAPIConsolidatedState,
-  ctx: Ctx,
-): void {
+function applyChannelBindingRefs(state: AsyncAPIConsolidatedState, ctx: Ctx): void {
   if (state.channelBindingRefs.size === 0) {
     return;
   }
@@ -260,15 +240,9 @@ function applyChannelBindingRefs(
     if (!channel) {
       continue;
     }
-    const applied = applyBindingNamesToSection(
-      names,
-      bindingDefinitions,
-      ctx.channelBindings,
-    );
+    const applied = applyBindingNamesToSection(names, bindingDefinitions, ctx.channelBindings);
     if (applied.length > 0) {
-      channel.bindings = ref(
-        `#/components/channelBindings/${applied[0] ?? ""}`,
-      );
+      channel.bindings = ref(`#/components/channelBindings/${applied[0] ?? ""}`);
     }
   }
 }

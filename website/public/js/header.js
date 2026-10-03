@@ -7,18 +7,12 @@ if (themeToggle) {
   const themes = ["light", "dark", "auto"];
 
   function getStoredTheme() {
-    return (
-      localStorage.getItem("starlight-theme") ||
-      localStorage.getItem("theme") ||
-      "auto"
-    );
+    return localStorage.getItem("starlight-theme") || localStorage.getItem("theme") || "auto";
   }
 
   function resolveVisualTheme(stored) {
     if (stored === "light" || stored === "dark") return stored;
-    return window.matchMedia("(prefers-color-scheme: dark)").matches
-      ? "dark"
-      : "light";
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
   }
 
   function applyTheme() {
@@ -27,10 +21,7 @@ if (themeToggle) {
     if (lightIcon) lightIcon.classList.toggle("hidden", stored !== "light");
     if (darkIcon) darkIcon.classList.toggle("hidden", stored !== "dark");
     if (autoIcon) autoIcon.classList.toggle("hidden", stored !== "auto");
-    themeToggle.setAttribute(
-      "aria-label",
-      "Current: " + stored + " (click to cycle)",
-    );
+    themeToggle.setAttribute("aria-label", "Current: " + stored + " (click to cycle)");
     const color = visual === "light" ? "#fafaf9" : "#0c0a09";
     themeColorMetas.forEach((m) => m.setAttribute("content", color));
   }
@@ -45,15 +36,13 @@ if (themeToggle) {
     applyTheme();
   });
 
-  window
-    .matchMedia("(prefers-color-scheme: dark)")
-    .addEventListener("change", () => {
-      const stored = getStoredTheme();
-      if (stored === "auto" || !stored) {
-        document.documentElement.dataset.theme = resolveVisualTheme(stored);
-        applyTheme();
-      }
-    });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => {
+    const stored = getStoredTheme();
+    if (stored === "auto" || !stored) {
+      document.documentElement.dataset.theme = resolveVisualTheme(stored);
+      applyTheme();
+    }
+  });
 }
 
 const toggle = document.getElementById("nav-toggle");

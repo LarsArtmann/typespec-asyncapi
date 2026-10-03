@@ -35,10 +35,7 @@ import { mergeExplicitMessages } from "./builders/message-builder.js";
 import { buildServers } from "./builders/server-builder.js";
 import { buildSecuritySchemes } from "./builders/security-builder.js";
 import { buildTags } from "./builders/tag-builder.js";
-import {
-  applyReusableRefs,
-  buildReusableComponents,
-} from "./builders/components-builder.js";
+import { applyReusableRefs, buildReusableComponents } from "./builders/components-builder.js";
 
 export const ASYNCAPI_SPEC_VERSION = "3.1.0";
 
@@ -114,9 +111,7 @@ export function buildAsyncAPIDocument(
       Object.assign(rootExtensions, extensions);
     }
   }
-  return Object.keys(rootExtensions).length > 0
-    ? { ...document, ...rootExtensions }
-    : document;
+  return Object.keys(rootExtensions).length > 0 ? { ...document, ...rootExtensions } : document;
 }
 
 function getFirstWithConflictWarning<T, V>(
@@ -217,17 +212,14 @@ function assembleDocument(
       version: options.version ?? apiVersion ?? "1.0.0",
       ...(options.contact ? { contact: options.contact } : {}),
       ...(options.license ? { license: options.license } : {}),
-      ...(options.termsOfService
-        ? { termsOfService: options.termsOfService }
-        : {}),
+      ...(options.termsOfService ? { termsOfService: options.termsOfService } : {}),
       ...(options.externalDocs ? { externalDocs: options.externalDocs } : {}),
       ...(infoTags ? { tags: infoTags } : {}),
     },
     ...(defaultContentType ? { defaultContentType } : {}),
     ...(Object.keys(ctx.servers).length > 0 ? { servers: ctx.servers } : {}),
     channels: ctx.channels,
-    operations:
-      Object.keys(ctx.operations).length > 0 ? ctx.operations : undefined,
+    operations: Object.keys(ctx.operations).length > 0 ? ctx.operations : undefined,
     components: Object.keys(components).length > 0 ? components : undefined,
   };
 }

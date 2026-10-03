@@ -17,10 +17,7 @@ import type {
   Union,
 } from "@typespec/compiler";
 import { reportDiagnostic } from "./decorator-helpers.js";
-import {
-  storeJsonSchemaExtension,
-  storeObjectExtension,
-} from "./state-writers.js";
+import { storeJsonSchemaExtension, storeObjectExtension } from "./state-writers.js";
 
 const JSON_SCHEMA_EXTENSION_KEY = /^[A-Za-z_][A-Za-z0-9_.-]*$/u;
 

@@ -51,9 +51,7 @@ describe("spec Compliance: defaultContentType", () => {
       }
     `);
 
-    const warning = diagnostics.find((d) =>
-      d.code?.endsWith("conflicting-default-content-type"),
-    );
+    const warning = diagnostics.find((d) => d.code?.endsWith("conflicting-default-content-type"));
     expect(warning).toBeDefined();
     expect(warning!.severity).toBe("warning");
     // The document must use exactly the value the warning says is kept
@@ -83,9 +81,7 @@ describe("spec Compliance: defaultContentType", () => {
     `);
 
     expect(
-      diagnostics.some((d) =>
-        d.code?.endsWith("conflicting-default-content-type"),
-      ),
+      diagnostics.some((d) => d.code?.endsWith("conflicting-default-content-type")),
     ).toBeFalsy();
     expect(asyncApiDoc!.defaultContentType).toBe("application/json");
   });

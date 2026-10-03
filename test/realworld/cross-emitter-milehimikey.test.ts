@@ -55,9 +55,7 @@ describe("cross-emitter: milehimikey → this emitter", () => {
       .filter((d) => d.severity === "error")
       .map((d) => ({ code: d.code, message: d.message }))
       .toSorted((a, b) =>
-        a.code === b.code
-          ? a.message.localeCompare(b.message)
-          : a.code.localeCompare(b.code),
+        a.code === b.code ? a.message.localeCompare(b.message) : a.code.localeCompare(b.code),
       );
 
     // Known API differences between milehimikey and this emitter:

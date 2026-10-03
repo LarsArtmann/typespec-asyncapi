@@ -99,9 +99,7 @@ describe("integration: @messageId decorator", () => {
 
     const channel = doc.channels!["orders"];
     expect(channel.messages!["order.event"]).toBeDefined();
-    expect(channel.messages!["order.event"].$ref).toBe(
-      "#/components/messages/order.event",
-    );
+    expect(channel.messages!["order.event"].$ref).toBe("#/components/messages/order.event");
     expect(channel.messages!.OrderPlaced).toBeUndefined();
   });
 
@@ -152,9 +150,7 @@ describe("integration: @operationId + @messageId together", () => {
       "#/components/messages/user.created.event",
     );
 
-    const createdMsg = doc.components!.messages![
-      "user.created.event"
-    ] as MessageObject;
+    const createdMsg = doc.components!.messages!["user.created.event"] as MessageObject;
     expect(createdMsg.payload).toStrictEqual({
       $ref: "#/components/schemas/UserCreated",
     });

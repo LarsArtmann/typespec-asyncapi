@@ -231,18 +231,18 @@ Right now, invalid binding fields (like `key`, `acks` on Kafka channel bindings)
 
 ### High-priority items (section f, items 1-10)
 
-| #   | Item                                               | Status            | Evidence                                                                                            |
-| --- | -------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------- |
-| 1   | Fix `websocket`/`ws` split-brain                   | DONE              | `normalizeProtocol()` maps aliases; commit `f5088c4`                                                |
-| 2   | Diagnostic for invalid protocol binding keys       | DONE              | `unsupported-protocol` diagnostic; `isSupportedProtocol()`                                          |
-| 3   | Fix e2e `realworld-ecommerce.test.ts` binding bugs | DONE              | All 8 binding blocks corrected; commit `f5088c4`                                                    |
-| 4   | Add AsyncAPI schema validation to e2e test         | DONE              | AJV validation added; commit `f5088c4`                                                              |
-| 5   | Test against external `.tsp` files                 | PARTIALLY DONE    | 16 patterns from 5 projects in `test/external/`; commit `42ad7ac`                                   |
-| 6   | Run `@asyncapi/parser` for semantic validation     | CLOSED AS BLOCKED | Parser crashes under Bun/vitest (AJV `new Function()` codegen); manual `$ref` resolver used instead |
-| 7   | Unit test for `refForNamedType()`                  | DONE              | `test/validation/schema-emitter-regression.test.ts` (16 tests)                                      |
-| 8   | Unit test for `Record<string>` mapping             | DONE              | Same file                                                                                           |
-| 9   | Unit test for `typeToSchema()` branches            | DONE              | Same file                                                                                           |
-| 10  | Golden file capture for validated outputs          | DONE              | `test/golden/golden-file.test.ts` (3 tests)                                                         |
+| #  | Item                                               | Status            | Evidence                                                                                            |
+| -- | -------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------- |
+| 1  | Fix `websocket`/`ws` split-brain                   | DONE              | `normalizeProtocol()` maps aliases; commit `f5088c4`                                                |
+| 2  | Diagnostic for invalid protocol binding keys       | DONE              | `unsupported-protocol` diagnostic; `isSupportedProtocol()`                                          |
+| 3  | Fix e2e `realworld-ecommerce.test.ts` binding bugs | DONE              | All 8 binding blocks corrected; commit `f5088c4`                                                    |
+| 4  | Add AsyncAPI schema validation to e2e test         | DONE              | AJV validation added; commit `f5088c4`                                                              |
+| 5  | Test against external `.tsp` files                 | PARTIALLY DONE    | 16 patterns from 5 projects in `test/external/`; commit `42ad7ac`                                   |
+| 6  | Run `@asyncapi/parser` for semantic validation     | CLOSED AS BLOCKED | Parser crashes under Bun/vitest (AJV `new Function()` codegen); manual `$ref` resolver used instead |
+| 7  | Unit test for `refForNamedType()`                  | DONE              | `test/validation/schema-emitter-regression.test.ts` (16 tests)                                      |
+| 8  | Unit test for `Record<string>` mapping             | DONE              | Same file                                                                                           |
+| 9  | Unit test for `typeToSchema()` branches            | DONE              | Same file                                                                                           |
+| 10 | Golden file capture for validated outputs          | DONE              | `test/golden/golden-file.test.ts` (3 tests)                                                         |
 
 ### Questions resolved
 

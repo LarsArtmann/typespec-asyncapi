@@ -17,11 +17,7 @@ function getSchema(doc: ParsedAsyncAPIDocument, name: string): JsonSchema {
   return doc.components!.schemas![name];
 }
 
-function getProp(
-  doc: ParsedAsyncAPIDocument,
-  model: string,
-  field: string,
-): JsonSchema {
+function getProp(doc: ParsedAsyncAPIDocument, model: string, field: string): JsonSchema {
   return getSchema(doc, model).properties![field];
 }
 
@@ -207,9 +203,7 @@ describe("comprehensive type mapping through compilation", () => {
     it("maps Record<unknown> values to the unconstrained schema", async () => {
       const s = await compileField("val", "Record<unknown>");
       expect(s.type).toBe("object");
-      expect(
-        asJsonSchema(s.additionalProperties, "additionalProperties"),
-      ).toStrictEqual({});
+      expect(asJsonSchema(s.additionalProperties, "additionalProperties")).toStrictEqual({});
     });
 
     it("does not leak doc metadata across usages of unknown", async () => {
@@ -250,10 +244,7 @@ describe("comprehensive type mapping through compilation", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const pair = doc?.components?.schemas?.Event?.properties?.pair as Record<
-        string,
-        unknown
-      >;
+      const pair = doc?.components?.schemas?.Event?.properties?.pair as Record<string, unknown>;
       expect(pair?.type).toBe("array");
       const items = pair?.items as Record<string, unknown>[];
       expect(Array.isArray(items)).toBe(true);
@@ -272,8 +263,7 @@ describe("comprehensive type mapping through compilation", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const triple = doc?.components?.schemas?.Event?.properties
-        ?.triple as Record<string, unknown>;
+      const triple = doc?.components?.schemas?.Event?.properties?.triple as Record<string, unknown>;
       expect(triple?.type).toBe("array");
       const items = triple?.items as Record<string, unknown>[];
       expect(items).toHaveLength(3);
@@ -408,10 +398,9 @@ describe("comprehensive type mapping through compilation", () => {
       const schema = getSchema(doc, "Order");
       const props = schema.properties!;
       expect(asJsonSchema(props.items, "items").type).toBe("array");
-      expect(
-        asJsonSchema(asJsonSchema(props.items, "items").items, "items.items")
-          .$ref,
-      ).toBe("#/components/schemas/Item");
+      expect(asJsonSchema(asJsonSchema(props.items, "items").items, "items.items").$ref).toBe(
+        "#/components/schemas/Item",
+      );
     });
   });
 

@@ -50,9 +50,7 @@ export function inlineObject<T extends object>(
     throw new Error(`Expected ${label} to be defined`);
   }
   if ("$ref" in value) {
-    throw new Error(
-      `Expected ${label} to be an inline object, got a $ref pointer: ${value.$ref}`,
-    );
+    throw new Error(`Expected ${label} to be an inline object, got a $ref pointer: ${value.$ref}`);
   }
   return value;
 }
@@ -95,14 +93,10 @@ export function asJsonSchema(
  * console.log(doc.asyncapi) // No error, no optional chaining needed
  * ```
  */
-export function assertAsyncAPIDoc(
-  value: unknown,
-): asserts value is ParsedAsyncAPIDocument {
+export function assertAsyncAPIDoc(value: unknown): asserts value is ParsedAsyncAPIDocument {
   // Check value exists and is object
   if (!value || typeof value !== "object") {
-    throw new Error(
-      `Expected AsyncAPI document to be an object, got ${typeof value}`,
-    );
+    throw new Error(`Expected AsyncAPI document to be an object, got ${typeof value}`);
   }
 
   const doc = value as Partial<ParsedAsyncAPIDocument>;
@@ -250,10 +244,7 @@ export function assertHasProperties<T extends object>(
  * console.log(title.toUpperCase())
  * ```
  */
-export function assertNonEmptyString(
-  value: unknown,
-  name = "value",
-): asserts value is string {
+export function assertNonEmptyString(value: unknown, name = "value"): asserts value is string {
   if (typeof value !== "string") {
     throw new TypeError(`Expected ${name} to be a string, got ${typeof value}`);
   }
@@ -332,9 +323,7 @@ export function assertCompilationSuccess(result: {
   }
 
   if (!result.asyncapiDoc) {
-    throw new Error(
-      "Compilation succeeded but AsyncAPI document not generated",
-    );
+    throw new Error("Compilation succeeded but AsyncAPI document not generated");
   }
 
   // Validate it's a proper AsyncAPI document
@@ -357,9 +346,7 @@ export function assertCompilationSuccess(result: {
  * expect(keys).toContain('user.events')
  * ```
  */
-export function getPropertyKeys<T extends object>(
-  obj: T | undefined | null,
-): string[] {
+export function getPropertyKeys<T extends object>(obj: T | undefined | null): string[] {
   return Object.keys(obj || {});
 }
 

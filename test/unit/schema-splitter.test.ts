@@ -123,10 +123,7 @@ describe("splitSchemas", () => {
       },
     } as unknown as AsyncAPIDocument;
     const result = splitSchemas(doc, "json");
-    const msg = result.mainDocument.components?.messages?.UserMessage as Record<
-      string,
-      unknown
-    >;
+    const msg = result.mainDocument.components?.messages?.UserMessage as Record<string, unknown>;
     expect(msg?.payload).toStrictEqual({ $ref: "schemas/User.json" });
   });
 
@@ -141,10 +138,7 @@ describe("splitSchemas", () => {
       Address: { type: "object", properties: { street: { type: "string" } } },
     });
     const result = splitSchemas(doc, "json");
-    const userSchema = result.schemaFiles.get("User.json") as Record<
-      string,
-      unknown
-    >;
+    const userSchema = result.schemaFiles.get("User.json") as Record<string, unknown>;
     const props = userSchema?.properties as Record<string, unknown>;
     expect(props?.address).toStrictEqual({ $ref: "schemas/Address.json" });
   });
@@ -163,10 +157,7 @@ describe("splitSchemas", () => {
       },
     } as unknown as AsyncAPIDocument;
     const result = splitSchemas(doc, "json");
-    const msg = result.mainDocument.components?.messages?.UserMessage as Record<
-      string,
-      unknown
-    >;
+    const msg = result.mainDocument.components?.messages?.UserMessage as Record<string, unknown>;
     expect(msg?.payload).toStrictEqual({
       $ref: "#/components/messages/OtherMessage",
     });
@@ -197,11 +188,7 @@ describe("splitSchemas", () => {
     });
     const result = splitSchemas(doc, "json");
     expect(result.schemaFiles.size).toBe(3);
-    expect([...result.schemaFiles.keys()].toSorted()).toStrictEqual([
-      "A.json",
-      "B.json",
-      "C.json",
-    ]);
+    expect([...result.schemaFiles.keys()].toSorted()).toStrictEqual(["A.json", "B.json", "C.json"]);
   });
 
   it("rewrites $ref inside arrays (anyOf, oneOf)", () => {
@@ -213,18 +200,14 @@ describe("splitSchemas", () => {
         messages: {
           MultiMessage: {
             payload: {
-              anyOf: [
-                { $ref: "#/components/schemas/User" },
-                { type: "string" },
-              ],
+              anyOf: [{ $ref: "#/components/schemas/User" }, { type: "string" }],
             },
           },
         },
       },
     } as unknown as AsyncAPIDocument;
     const result = splitSchemas(doc, "json");
-    const msg = result.mainDocument.components?.messages
-      ?.MultiMessage as Record<string, unknown>;
+    const msg = result.mainDocument.components?.messages?.MultiMessage as Record<string, unknown>;
     const payload = msg?.payload as Record<string, unknown[]>;
     const anyOf = payload?.anyOf;
     expect(anyOf?.[0]).toStrictEqual({ $ref: "schemas/User.json" });

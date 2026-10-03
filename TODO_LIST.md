@@ -71,7 +71,7 @@ removal.
       min.
 - [ ] **Release preflight script** (`scripts/release-preflight`):
       `pnpm install --lockfile-only && pnpm install --frozen-lockfile &&
-      pnpm run verify` + clean-tree check — one command before tagging, so a
+    pnpm run verify` + clean-tree check — one command before tagging, so a
       green gate measures the dependency set CI will install (tonight's
       stale-node_modules false-green).
 - [ ] **Track typescript-eslint#10940 → un-pin deliberately** — typescript

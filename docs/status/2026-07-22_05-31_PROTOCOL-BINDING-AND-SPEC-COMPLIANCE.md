@@ -244,12 +244,12 @@ ROADMAP says "95% coverage" but coverage hasn't been measured this session. The 
 
 ### Section (e) architectural items
 
-| #   | Item                                               | Status                                        |
-| --- | -------------------------------------------------- | --------------------------------------------- |
-| 1   | Binding placement enforcement                      | OPEN — `BINDING_PLACEMENT` still dead code    |
-| 2   | Binding field-level validation                     | OPEN — structural validation only             |
-| 3   | `getValidVersionsString()` duplication             | DONE — now imports from `binding-versions.ts` |
-| 4   | `storeSecurityConfig` getStateMap vs getMultiState | OPEN — still uses manual accumulation         |
+| # | Item                                               | Status                                        |
+| - | -------------------------------------------------- | --------------------------------------------- |
+| 1 | Binding placement enforcement                      | OPEN — `BINDING_PLACEMENT` still dead code    |
+| 2 | Binding field-level validation                     | OPEN — structural validation only             |
+| 3 | `getValidVersionsString()` duplication             | DONE — now imports from `binding-versions.ts` |
+| 4 | `storeSecurityConfig` getStateMap vs getMultiState | OPEN — still uses manual accumulation         |
 
 ### Questions resolved
 

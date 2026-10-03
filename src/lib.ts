@@ -64,8 +64,7 @@ export const $lib = createTypeSpecLibrary({
     },
     "invalid-tags-config": {
       messages: {
-        default:
-          "Tags configuration missing or invalid. Use @tags with string array.",
+        default: "Tags configuration missing or invalid. Use @tags with string array.",
         "non-string": "All tags must be strings.",
       },
       severity: "error",

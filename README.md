@@ -360,7 +360,7 @@ The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publi
 
 | Metric      | Value                                                 |
 | ----------- | ----------------------------------------------------- |
-| Version     | 1.0.0 (npm, `latest`)                                |
+| Version     | 1.0.0 (npm, `latest`)                                 |
 | Tests       | 1236 passing (vitest)                                 |
 | Coverage    | 98.0% average line coverage (gated at 75% per file)   |
 | Build       | 0 TypeScript errors (strict mode)                     |

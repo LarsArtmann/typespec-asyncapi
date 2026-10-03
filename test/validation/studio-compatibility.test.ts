@@ -29,13 +29,10 @@ async function parseWithAsyncAPIParser(source: string): Promise<ParserOutput> {
 }
 
 function expectZeroErrors(diagnostics: ParserOutput["diagnostics"]) {
-  const errors =
-    diagnostics?.filter((d) => d.severity === DiagnosticSeverity.Error) ?? [];
+  const errors = diagnostics?.filter((d) => d.severity === DiagnosticSeverity.Error) ?? [];
   if (errors.length > 0) {
     const messages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
-    throw new Error(
-      `AsyncAPI parser reported ${errors.length} error(s):\n${messages}`,
-    );
+    throw new Error(`AsyncAPI parser reported ${errors.length} error(s):\n${messages}`);
   }
 }
 

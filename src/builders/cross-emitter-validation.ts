@@ -38,10 +38,7 @@ function namespaceOf(type: Type): Namespace | undefined {
  * The `@service` namespace containing `type` in its subtree, if any
  * (operations in a service subtree are HTTP-routed by `@typespec/http`).
  */
-export function findEnclosingServiceNamespace(
-  program: Program,
-  type: Type,
-): Namespace | undefined {
+export function findEnclosingServiceNamespace(program: Program, type: Type): Namespace | undefined {
   const services = listServices(program).map((service) => service.type);
   if (services.length === 0) {
     return undefined;
@@ -56,16 +53,11 @@ export function findEnclosingServiceNamespace(
 }
 
 /** True when the nearest AsyncAPI server in scope uses the http(s) protocol. */
-function isAsyncApiOverHttp(
-  state: AsyncAPIConsolidatedState,
-  type: Type,
-): boolean {
+function isAsyncApiOverHttp(state: AsyncAPIConsolidatedState, type: Type): boolean {
   for (let ns = namespaceOf(type); ns !== undefined; ns = namespaceOf(ns)) {
     const servers = state.servers.get(ns);
     if (servers !== undefined) {
-      return servers.some(
-        (server) => server.protocol === "http" || server.protocol === "https",
-      );
+      return servers.some((server) => server.protocol === "http" || server.protocol === "https");
     }
   }
   return false;

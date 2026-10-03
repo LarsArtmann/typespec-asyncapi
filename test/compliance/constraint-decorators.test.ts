@@ -19,11 +19,7 @@
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import type { JsonSchema } from "../../src/domain/models/asyncapi-document.js";
 
-function propSchema(
-  doc: Record<string, unknown>,
-  model: string,
-  prop: string,
-): JsonSchema {
+function propSchema(doc: Record<string, unknown>, model: string, prop: string): JsonSchema {
   const { schemas } = doc.components as {
     schemas: Record<string, { properties: Record<string, JsonSchema> }>;
   };
@@ -191,8 +187,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const schema = (doc.components as { schemas: Record<string, JsonSchema> })
-        .schemas.Event;
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.Event;
       expect(schema.deprecated).toBe(true);
     });
   });
@@ -363,9 +358,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      expect(propSchema(doc, "Event", "code").pattern).toBe(
-        "^[a-z]{1,3}/[0-9]+$",
-      );
+      expect(propSchema(doc, "Event", "code").pattern).toBe("^[a-z]{1,3}/[0-9]+$");
     });
 
     it("handles @format override on uri type", async () => {
@@ -395,8 +388,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const schema = (doc.components as { schemas: Record<string, JsonSchema> })
-        .schemas.Status;
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.Status;
       expect(schema.deprecated).toBe(true);
     });
 
@@ -447,8 +439,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const schema = (doc.components as { schemas: Record<string, JsonSchema> })
-        .schemas.Event;
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.Event;
       expect(schema.title).toBe("Event Schema");
     });
 
@@ -466,8 +457,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const schema = (doc.components as { schemas: Record<string, JsonSchema> })
-        .schemas.Status;
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.Status;
       expect(schema.title).toBe("Status Codes");
     });
 
@@ -501,9 +491,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      expect(propSchema(doc, "Event", "message").examples).toStrictEqual([
-        "hello world",
-      ]);
+      expect(propSchema(doc, "Event", "message").examples).toStrictEqual(["hello world"]);
     });
 
     it("maps @example on a numeric property to examples array", async () => {
@@ -529,9 +517,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      expect(propSchema(doc, "Event", "tags").examples).toStrictEqual([
-        ["a", "b", "c"],
-      ]);
+      expect(propSchema(doc, "Event", "tags").examples).toStrictEqual([["a", "b", "c"]]);
     });
 
     it("maps multiple @example decorators", async () => {
@@ -561,8 +547,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const schema = (doc.components as { schemas: Record<string, JsonSchema> })
-        .schemas.Event;
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.Event;
       expect(schema.examples).toStrictEqual([{ name: "Test Event" }]);
     });
   });
@@ -593,9 +578,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         op publish(): Event;
       `);
       expect(propSchema(doc, "Event", "writeOnlyField").writeOnly).toBe(true);
-      expect(
-        propSchema(doc, "Event", "writeOnlyField").readOnly,
-      ).toBeUndefined();
+      expect(propSchema(doc, "Event", "writeOnlyField").readOnly).toBeUndefined();
     });
 
     it("maps @visibility(Lifecycle.Update) to writeOnly", async () => {
@@ -758,10 +741,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      expect(propSchema(doc, "Event", "tags").default).toStrictEqual([
-        "urgent",
-        "important",
-      ]);
+      expect(propSchema(doc, "Event", "tags").default).toStrictEqual(["urgent", "important"]);
     });
 
     it("maps enum member default to default keyword", async () => {
@@ -804,8 +784,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const schema = (doc.components as { schemas: Record<string, JsonSchema> })
-        .schemas.UserId;
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.UserId;
       expect(schema.title).toBe("User Identifier");
     });
 
@@ -820,8 +799,7 @@ describe("spec Compliance: Constraint Decorators", () => {
         @channel("events")
         op publish(): Event;
       `);
-      const schema = (doc.components as { schemas: Record<string, JsonSchema> })
-        .schemas.OldId;
+      const schema = (doc.components as { schemas: Record<string, JsonSchema> }).schemas.OldId;
       expect(schema.deprecated).toBe(true);
     });
   });

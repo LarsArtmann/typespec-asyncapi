@@ -139,58 +139,58 @@ The user manually deleted some docs. I noticed the `git mv` failures but didn't 
 
 ## f) 50 THINGS TO DO NEXT (sorted by impact/effort)
 
-| #   | Task                                                                                             | Impact   | Effort |
-| --- | ------------------------------------------------------------------------------------------------ | -------- | ------ |
-| 1   | **COMMIT EVERYTHING** (multiple logical commits or one big "recovery" commit)                    | CRITICAL | 5 min  |
-| 2   | **Push to remote**                                                                               | CRITICAL | 1 min  |
-| 3   | Remove `effect` from devDependencies                                                             | HIGH     | 2 min  |
-| 4   | Remove `vitest`, `@vitest/coverage-v8`, `vitest.config.ts`                                       | HIGH     | 5 min  |
-| 5   | Remove unused imports (`compilerAssert`, `Diagnostic`) from emitter.ts                           | HIGH     | 2 min  |
-| 6   | Fix `docs/_archive/docs/` → `docs/_archive/` nesting                                             | MEDIUM   | 5 min  |
-| 7   | Update README.md test count (348 → 302) and architecture info                                    | HIGH     | 10 min |
-| 8   | Update FEATURES.md test count and feature statuses                                               | HIGH     | 10 min |
-| 9   | Update CHANGELOG.md with session changes                                                         | HIGH     | 15 min |
-| 10  | Tag `v0.1.0-alpha`                                                                               | HIGH     | 2 min  |
-| 11  | Fix 5 lint warnings in `state-writers.ts` and `state-compatibility.ts`                           | MEDIUM   | 20 min |
-| 12  | Delete 4 dead `.tsp` files in `test/`                                                            | LOW      | 2 min  |
-| 13  | Delete dead `test-baselines.json`, `test-regression-baselines.json`, `test-metrics-history.json` | LOW      | 2 min  |
-| 14  | Delete `.effect-arch-lint.yml`                                                                   | LOW      | 1 min  |
-| 15  | Clean up `scripts/` — 13 dead files (debug/, fix-imports, validate-architecture, etc.)           | MEDIUM   | 10 min |
-| 16  | Move `path-templates.ts` to `test/utils/` if emitter doesn't use it                              | MEDIUM   | 10 min |
-| 17  | Move `serialization-format-option.ts` to `test/utils/` if emitter doesn't use it                 | MEDIUM   | 10 min |
-| 18  | Trim `test-helpers.ts` from 600+ lines — remove dead `TestSources`, legacy host                  | MEDIUM   | 30 min |
-| 19  | Make `ProtocolConfigData` a discriminated union                                                  | MEDIUM   | 30 min |
-| 20  | Make `ServerConfigData` properly typed                                                           | MEDIUM   | 20 min |
-| 21  | Update golden file to test nested `$ref` output                                                  | MEDIUM   | 15 min |
-| 22  | Add test for `@security` in output                                                               | MEDIUM   | 15 min |
-| 23  | Add test for `@protocol` bindings in output                                                      | MEDIUM   | 15 min |
-| 24  | Add test for `@message` contentType override                                                     | LOW      | 10 min |
-| 25  | Add test for `@header` with Model type                                                           | LOW      | 10 min |
-| 26  | Add test for channel parameters with multiple params                                             | LOW      | 10 min |
-| 27  | Add test for server variables with multiple vars                                                 | LOW      | 10 min |
-| 28  | Remove dead `examples/*.tsp` files (14 loose files not in example dirs)                          | LOW      | 5 min  |
-| 29  | Add `tsp compile` smoke test to CI for examples/                                                 | MEDIUM   | 20 min |
-| 30  | Add coverage reporting to CI                                                                     | LOW      | 15 min |
-| 31  | Remove `@typespec/versioning` peerDep if unused                                                  | LOW      | 5 min  |
-| 32  | Verify `@typespec/openapi3` devDep is actually needed                                            | LOW      | 5 min  |
-| 33  | Clean up `examples/` directory structure — only keep `simple/`, `kafka/`, `multi-channel/`       | MEDIUM   | 15 min |
-| 34  | Add proper README to each example                                                                | LOW      | 15 min |
-| 35  | Fix `clean:test` script using `rm` instead of `trash`                                            | LOW      | 2 min  |
-| 36  | Research if `@typespec/events` should be a dependency                                            | LOW      | 15 min |
-| 37  | Add `output-dir` option support in emitter                                                       | LOW      | 15 min |
-| 38  | Add `id` field support for AsyncAPI document                                                     | LOW      | 10 min |
-| 39  | Add `defaultContentType` field support                                                           | LOW      | 10 min |
-| 40  | Add `@doc` → `description` mapping for channels and operations                                   | MEDIUM   | 20 min |
-| 41  | Add `@summary` → `summary` mapping                                                               | LOW      | 10 min |
-| 42  | Consider using `@asyncapi/parser` for validation instead of raw AJV                              | LOW      | 30 min |
-| 43  | Remove `test/README.md` (outdated)                                                               | LOW      | 1 min  |
-| 44  | Remove `test/test-creation-method.txt`                                                           | LOW      | 1 min  |
-| 45  | Remove `test/scratch/` directory if exists                                                       | LOW      | 2 min  |
-| 46  | Clean up `test/fixtures/` and `test/templates/` directories                                      | LOW      | 10 min |
-| 47  | Add `.editorconfig` for consistent formatting                                                    | LOW      | 5 min  |
-| 48  | Add `LICENSE` to `.npmignore` exceptions (already in `files` but check)                          | LOW      | 2 min  |
-| 49  | Consider adding `provenance` to pnpm publish for supply chain security                           | LOW      | 15 min |
-| 50  | Write integration test that compiles ALL examples and validates output                           | MEDIUM   | 30 min |
+| #  | Task                                                                                             | Impact   | Effort |
+| -- | ------------------------------------------------------------------------------------------------ | -------- | ------ |
+| 1  | **COMMIT EVERYTHING** (multiple logical commits or one big "recovery" commit)                    | CRITICAL | 5 min  |
+| 2  | **Push to remote**                                                                               | CRITICAL | 1 min  |
+| 3  | Remove `effect` from devDependencies                                                             | HIGH     | 2 min  |
+| 4  | Remove `vitest`, `@vitest/coverage-v8`, `vitest.config.ts`                                       | HIGH     | 5 min  |
+| 5  | Remove unused imports (`compilerAssert`, `Diagnostic`) from emitter.ts                           | HIGH     | 2 min  |
+| 6  | Fix `docs/_archive/docs/` → `docs/_archive/` nesting                                             | MEDIUM   | 5 min  |
+| 7  | Update README.md test count (348 → 302) and architecture info                                    | HIGH     | 10 min |
+| 8  | Update FEATURES.md test count and feature statuses                                               | HIGH     | 10 min |
+| 9  | Update CHANGELOG.md with session changes                                                         | HIGH     | 15 min |
+| 10 | Tag `v0.1.0-alpha`                                                                               | HIGH     | 2 min  |
+| 11 | Fix 5 lint warnings in `state-writers.ts` and `state-compatibility.ts`                           | MEDIUM   | 20 min |
+| 12 | Delete 4 dead `.tsp` files in `test/`                                                            | LOW      | 2 min  |
+| 13 | Delete dead `test-baselines.json`, `test-regression-baselines.json`, `test-metrics-history.json` | LOW      | 2 min  |
+| 14 | Delete `.effect-arch-lint.yml`                                                                   | LOW      | 1 min  |
+| 15 | Clean up `scripts/` — 13 dead files (debug/, fix-imports, validate-architecture, etc.)           | MEDIUM   | 10 min |
+| 16 | Move `path-templates.ts` to `test/utils/` if emitter doesn't use it                              | MEDIUM   | 10 min |
+| 17 | Move `serialization-format-option.ts` to `test/utils/` if emitter doesn't use it                 | MEDIUM   | 10 min |
+| 18 | Trim `test-helpers.ts` from 600+ lines — remove dead `TestSources`, legacy host                  | MEDIUM   | 30 min |
+| 19 | Make `ProtocolConfigData` a discriminated union                                                  | MEDIUM   | 30 min |
+| 20 | Make `ServerConfigData` properly typed                                                           | MEDIUM   | 20 min |
+| 21 | Update golden file to test nested `$ref` output                                                  | MEDIUM   | 15 min |
+| 22 | Add test for `@security` in output                                                               | MEDIUM   | 15 min |
+| 23 | Add test for `@protocol` bindings in output                                                      | MEDIUM   | 15 min |
+| 24 | Add test for `@message` contentType override                                                     | LOW      | 10 min |
+| 25 | Add test for `@header` with Model type                                                           | LOW      | 10 min |
+| 26 | Add test for channel parameters with multiple params                                             | LOW      | 10 min |
+| 27 | Add test for server variables with multiple vars                                                 | LOW      | 10 min |
+| 28 | Remove dead `examples/*.tsp` files (14 loose files not in example dirs)                          | LOW      | 5 min  |
+| 29 | Add `tsp compile` smoke test to CI for examples/                                                 | MEDIUM   | 20 min |
+| 30 | Add coverage reporting to CI                                                                     | LOW      | 15 min |
+| 31 | Remove `@typespec/versioning` peerDep if unused                                                  | LOW      | 5 min  |
+| 32 | Verify `@typespec/openapi3` devDep is actually needed                                            | LOW      | 5 min  |
+| 33 | Clean up `examples/` directory structure — only keep `simple/`, `kafka/`, `multi-channel/`       | MEDIUM   | 15 min |
+| 34 | Add proper README to each example                                                                | LOW      | 15 min |
+| 35 | Fix `clean:test` script using `rm` instead of `trash`                                            | LOW      | 2 min  |
+| 36 | Research if `@typespec/events` should be a dependency                                            | LOW      | 15 min |
+| 37 | Add `output-dir` option support in emitter                                                       | LOW      | 15 min |
+| 38 | Add `id` field support for AsyncAPI document                                                     | LOW      | 10 min |
+| 39 | Add `defaultContentType` field support                                                           | LOW      | 10 min |
+| 40 | Add `@doc` → `description` mapping for channels and operations                                   | MEDIUM   | 20 min |
+| 41 | Add `@summary` → `summary` mapping                                                               | LOW      | 10 min |
+| 42 | Consider using `@asyncapi/parser` for validation instead of raw AJV                              | LOW      | 30 min |
+| 43 | Remove `test/README.md` (outdated)                                                               | LOW      | 1 min  |
+| 44 | Remove `test/test-creation-method.txt`                                                           | LOW      | 1 min  |
+| 45 | Remove `test/scratch/` directory if exists                                                       | LOW      | 2 min  |
+| 46 | Clean up `test/fixtures/` and `test/templates/` directories                                      | LOW      | 10 min |
+| 47 | Add `.editorconfig` for consistent formatting                                                    | LOW      | 5 min  |
+| 48 | Add `LICENSE` to `.npmignore` exceptions (already in `files` but check)                          | LOW      | 2 min  |
+| 49 | Consider adding `provenance` to pnpm publish for supply chain security                           | LOW      | 15 min |
+| 50 | Write integration test that compiles ALL examples and validates output                           | MEDIUM   | 30 min |
 
 ---
 

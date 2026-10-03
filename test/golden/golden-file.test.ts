@@ -84,9 +84,7 @@ describe("golden File Test", () => {
     expect(actual.servers).toStrictEqual(golden.servers);
     expect(actual.channels).toStrictEqual(golden.channels);
     expect(actual.operations).toStrictEqual(golden.operations);
-    expect(actual.components.messages).toStrictEqual(
-      golden.components.messages,
-    );
+    expect(actual.components.messages).toStrictEqual(golden.components.messages);
     expect(actual.components.schemas).toStrictEqual(golden.components.schemas);
   });
 
@@ -121,9 +119,7 @@ describe("golden File Test", () => {
 
     // Every component message payload MUST point to components/schemas
     for (const [, msg] of Object.entries(doc.components?.messages ?? {})) {
-      expect((msg as MessageObject).payload?.$ref).toMatch(
-        /^#\/components\/schemas\/.+$/,
-      );
+      expect((msg as MessageObject).payload?.$ref).toMatch(/^#\/components\/schemas\/.+$/);
     }
   });
 

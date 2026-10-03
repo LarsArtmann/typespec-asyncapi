@@ -1,14 +1,6 @@
-import type {
-  DecoratorContext,
-  Namespace,
-  Operation,
-} from "@typespec/compiler";
+import type { DecoratorContext, Namespace, Operation } from "@typespec/compiler";
 import { isSupportedProtocol } from "./constants/protocols.js";
-import {
-  storeDefaultContentType,
-  storeMulti,
-  storeServerConfig,
-} from "./state-writers.js";
+import { storeDefaultContentType, storeMulti, storeServerConfig } from "./state-writers.js";
 import { stateSymbols } from "./lib.js";
 import {
   extractConfigRecord,
@@ -70,11 +62,9 @@ export function $server(
   if (
     (configTyped.protocolVersion !== undefined &&
       typeof configTyped.protocolVersion !== "string") ||
-    (configTyped.pathname !== undefined &&
-      typeof configTyped.pathname !== "string") ||
+    (configTyped.pathname !== undefined && typeof configTyped.pathname !== "string") ||
     (configTyped.variables !== undefined &&
-      (typeof configTyped.variables !== "object" ||
-        Array.isArray(configTyped.variables)))
+      (typeof configTyped.variables !== "object" || Array.isArray(configTyped.variables)))
   ) {
     reportDiagnostic(context, "invalid-server-config", target, {
       serverName: name,
@@ -93,11 +83,7 @@ export function $defaultContentType(
   if (!contentType || typeof contentType !== "string") {
     return;
   }
-  if (
-    !/^[a-zA-Z0-9!#$&^_.+-]+\/[a-zA-Z0-9!#$&^_.+-]+(?:\s*;\s*.+)?$/u.test(
-      contentType,
-    )
-  ) {
+  if (!/^[a-zA-Z0-9!#$&^_.+-]+\/[a-zA-Z0-9!#$&^_.+-]+(?:\s*;\s*.+)?$/u.test(contentType)) {
     reportDiagnostic(context, "invalid-default-content-type", target, {
       contentType,
     });
@@ -108,10 +94,7 @@ export function $defaultContentType(
 
 // === REUSABLE COMPONENT DEFINITION DECORATORS ===
 
-function pickStringFields(
-  cfg: Record<string, unknown>,
-  keys: string[],
-): Record<string, unknown> {
+function pickStringFields(cfg: Record<string, unknown>, keys: string[]): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const key of keys) {
     if (typeof cfg[key] === "string") {
@@ -123,21 +106,13 @@ function pickStringFields(
 
 const PARAMETER_EXTRA_FIELDS = ["enum", "default", "examples"] as const;
 const OPERATION_TRAIT_EXTRA = ["security", "tags", "bindings"] as const;
-const MESSAGE_TRAIT_EXTRA = [
-  "summary",
-  "tags",
-  "bindings",
-  "headers",
-  "correlationId",
-] as const;
+const MESSAGE_TRAIT_EXTRA = ["summary", "tags", "bindings", "headers", "correlationId"] as const;
 
 function pickDefined(
   source: Record<string, unknown>,
   keys: readonly string[],
 ): Record<string, unknown> {
-  return Object.fromEntries(
-    keys.filter((k) => source[k] !== undefined).map((k) => [k, source[k]]),
-  );
+  return Object.fromEntries(keys.filter((k) => source[k] !== undefined).map((k) => [k, source[k]]));
 }
 
 function namedConfigDecorator(
@@ -150,12 +125,7 @@ function namedConfigDecorator(
     context?: DecoratorContext,
     target?: Namespace,
   ) => Record<string, unknown>,
-): (
-  context: DecoratorContext,
-  target: Namespace,
-  name: unknown,
-  config: unknown,
-) => void {
+): (context: DecoratorContext, target: Namespace, name: unknown, config: unknown) => void {
   return (context, target, name, config) => {
     const valid = validateNonEmptyString(name, context, target, code, {
       [formatKey]: String(name),
@@ -224,20 +194,8 @@ export function $reusableCorrelationId(
 ): void {
   const fmt = { modelName: String(name) };
   const ok =
-    validateNonEmptyString(
-      name,
-      context,
-      target,
-      "invalid-correlationId-config",
-      fmt,
-    ) &&
-    validateNonEmptyString(
-      location,
-      context,
-      target,
-      "invalid-correlationId-config",
-      fmt,
-    );
+    validateNonEmptyString(name, context, target, "invalid-correlationId-config", fmt) &&
+    validateNonEmptyString(location, context, target, "invalid-correlationId-config", fmt);
   if (ok) {
     storeMulti(context.program, stateSymbols.reusableCorrelationIds, target, {
       location,
@@ -253,13 +211,7 @@ export function $reusableBinding(
   bindingConfig: unknown,
 ): void {
   const fmt = { targetKind: target.kind };
-  const nameOk = validateNonEmptyString(
-    name,
-    context,
-    target,
-    "invalid-bindings-config",
-    fmt,
-  );
+  const nameOk = validateNonEmptyString(name, context, target, "invalid-bindings-config", fmt);
   if (!nameOk || !bindingConfig || typeof bindingConfig !== "object") {
     if (nameOk) {
       reportDiagnostic(context, "invalid-bindings-config", target, fmt);

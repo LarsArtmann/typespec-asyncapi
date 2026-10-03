@@ -57,8 +57,10 @@ export interface MessageConfigData {
 /**
  * Server Configuration State Data
  */
-export interface ServerConfigData
-  extends Pick<ServerObject, "protocolVersion" | "pathname" | "variables" | "security"> {
+export interface ServerConfigData extends Pick<
+  ServerObject,
+  "protocolVersion" | "pathname" | "variables" | "security"
+> {
   url: string;
   protocol: AsyncAPIProtocol;
   description?: string;
@@ -122,10 +124,7 @@ export type MqttConfigData = ProtocolConfigBase & {
 };
 
 export type GenericProtocolConfigData = ProtocolConfigBase & {
-  protocol: Exclude<
-    AsyncAPIProtocol,
-    "kafka" | "ws" | "wss" | "mqtt" | "mqtt5"
-  >;
+  protocol: Exclude<AsyncAPIProtocol, "kafka" | "ws" | "wss" | "mqtt" | "mqtt5">;
 };
 
 export type ProtocolConfigData =
@@ -268,66 +267,28 @@ export interface OperationSecurityRef {
  * Handles TypeSpec's StateMapView which wraps the actual Map.
  * The StateMapView stores data in an internal 'map' property.
  */
-export function consolidateAsyncAPIState(
-  program: Program,
-): AsyncAPIConsolidatedState {
+export function consolidateAsyncAPIState(program: Program): AsyncAPIConsolidatedState {
   return {
     channels: getStateMap<ChannelPathData>(program, stateSymbols.channelPaths),
-    correlationIds: getStateMap<CorrelationIdData>(
-      program,
-      stateSymbols.correlationIds,
-    ),
+    correlationIds: getStateMap<CorrelationIdData>(program, stateSymbols.correlationIds),
     defaultContentType: getStateMap<DefaultContentTypeData>(
       program,
       stateSymbols.defaultContentType,
     ),
-    operationReplies: getStateMap<OperationReplyData>(
-      program,
-      stateSymbols.operationReplies,
-    ),
-    messageHeaders: getStateMap<MessageHeaderData[]>(
-      program,
-      stateSymbols.messageHeaders,
-    ),
-    messages: getStateMap<MessageConfigData>(
-      program,
-      stateSymbols.messageConfigs,
-    ),
-    operations: getStateMap<OperationTypeData>(
-      program,
-      stateSymbols.operationTypes,
-    ),
-    protocolBindings: getStateMap<ProtocolBindings>(
-      program,
-      stateSymbols.protocolBindings,
-    ),
-    protocolConfigs: getStateMap<ProtocolConfigData>(
-      program,
-      stateSymbols.protocolConfigs,
-    ),
-    securityConfigs: getMultiState<SecurityConfigData>(
-      program,
-      stateSymbols.securityConfigs,
-    ),
-    servers: getMultiState<ServerConfigData>(
-      program,
-      stateSymbols.serverConfigs,
-    ),
+    operationReplies: getStateMap<OperationReplyData>(program, stateSymbols.operationReplies),
+    messageHeaders: getStateMap<MessageHeaderData[]>(program, stateSymbols.messageHeaders),
+    messages: getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs),
+    operations: getStateMap<OperationTypeData>(program, stateSymbols.operationTypes),
+    protocolBindings: getStateMap<ProtocolBindings>(program, stateSymbols.protocolBindings),
+    protocolConfigs: getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs),
+    securityConfigs: getMultiState<SecurityConfigData>(program, stateSymbols.securityConfigs),
+    servers: getMultiState<ServerConfigData>(program, stateSymbols.serverConfigs),
     tags: getStateMap<TagData>(program, stateSymbols.tags),
-    objectExtensions: getStateMap<Record<string, unknown>>(
-      program,
-      stateSymbols.objectExtensions,
-    ),
+    objectExtensions: getStateMap<Record<string, unknown>>(program, stateSymbols.objectExtensions),
     operationIds: getStateMap<string>(program, stateSymbols.operationIds),
     apiVersion: getStateMap<string>(program, stateSymbols.apiVersion),
-    operationTraits: getMultiState<OperationTraitData>(
-      program,
-      stateSymbols.operationTraits,
-    ),
-    messageTraits: getMultiState<MessageTraitData>(
-      program,
-      stateSymbols.messageTraits,
-    ),
+    operationTraits: getMultiState<OperationTraitData>(program, stateSymbols.operationTraits),
+    messageTraits: getMultiState<MessageTraitData>(program, stateSymbols.messageTraits),
     reusableParameters: getMultiState<ParameterConfigData>(
       program,
       stateSymbols.reusableParameters,
@@ -336,31 +297,13 @@ export function consolidateAsyncAPIState(
       program,
       stateSymbols.reusableCorrelationIds,
     ),
-    reusableBindings: getMultiState<ReusableBindingData>(
-      program,
-      stateSymbols.reusableBindings,
-    ),
-    operationTraitRefs: getMultiState<string>(
-      program,
-      stateSymbols.operationTraitRefs,
-    ),
-    messageTraitRefs: getMultiState<string>(
-      program,
-      stateSymbols.messageTraitRefs,
-    ),
-    correlationIdRefs: getStateMap<string>(
-      program,
-      stateSymbols.correlationIdRefs,
-    ),
+    reusableBindings: getMultiState<ReusableBindingData>(program, stateSymbols.reusableBindings),
+    operationTraitRefs: getMultiState<string>(program, stateSymbols.operationTraitRefs),
+    messageTraitRefs: getMultiState<string>(program, stateSymbols.messageTraitRefs),
+    correlationIdRefs: getStateMap<string>(program, stateSymbols.correlationIdRefs),
     bindingRefs: getMultiState<string>(program, stateSymbols.bindingRefs),
-    channelBindingRefs: getMultiState<string>(
-      program,
-      stateSymbols.channelBindingRefs,
-    ),
-    channelServerRefs: getMultiState<string>(
-      program,
-      stateSymbols.channelServerRefs,
-    ),
+    channelBindingRefs: getMultiState<string>(program, stateSymbols.channelBindingRefs),
+    channelServerRefs: getMultiState<string>(program, stateSymbols.channelServerRefs),
     operationSecurityRefs: getMultiState<OperationSecurityRef>(
       program,
       stateSymbols.operationSecurityRefs,

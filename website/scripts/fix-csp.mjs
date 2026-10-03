@@ -26,8 +26,7 @@ function stripStyleHashes(cspContent) {
   });
 }
 
-const EMPTY_STRING_HASH =
-  "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='";
+const EMPTY_STRING_HASH = "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='";
 
 function stripEmptyScriptHash(cspContent) {
   return cspContent.replaceAll(` ${EMPTY_STRING_HASH}`, "");
@@ -51,9 +50,7 @@ async function findHtmlFiles(dir) {
 }
 
 function sha256Base64(content) {
-  return (
-    "sha256-" + createHash("sha256").update(content, "utf-8").digest("base64")
-  );
+  return "sha256-" + createHash("sha256").update(content, "utf-8").digest("base64");
 }
 
 async function main() {
@@ -75,10 +72,7 @@ async function main() {
 
     if (missingHashes.size > 0) {
       const hashList = [...missingHashes].join(" ");
-      fixed = fixed.replace(
-        /script-src ('self'(?: 'sha256-[^']+')*)/,
-        `script-src $1 ${hashList}`,
-      );
+      fixed = fixed.replace(/script-src ('self'(?: 'sha256-[^']+')*)/, `script-src $1 ${hashList}`);
     }
 
     if (fixed !== html) {

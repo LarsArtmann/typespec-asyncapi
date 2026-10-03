@@ -68,9 +68,7 @@ describe("apiVersion decorator", () => {
       }
     `);
 
-    const warning = diagnostics.find((d) =>
-      d.code?.endsWith("conflicting-api-version"),
-    );
+    const warning = diagnostics.find((d) => d.code?.endsWith("conflicting-api-version"));
     expect(warning).toBeDefined();
     expect(warning!.severity).toBe("warning");
     // The document must use exactly the value the warning says is kept
@@ -99,9 +97,7 @@ describe("apiVersion decorator", () => {
       }
     `);
 
-    expect(
-      diagnostics.some((d) => d.code?.endsWith("conflicting-api-version")),
-    ).toBeFalsy();
+    expect(diagnostics.some((d) => d.code?.endsWith("conflicting-api-version"))).toBeFalsy();
     expect(asyncApiDoc!.info.version).toBe("2.0.0");
   });
 });

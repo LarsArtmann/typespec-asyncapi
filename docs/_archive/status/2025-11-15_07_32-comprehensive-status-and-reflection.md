@@ -10,11 +10,11 @@
 
 ### Build & Quality Metrics
 
-| Metric               | Status          | Details                               |
-| -------------------- | --------------- | ------------------------------------- |
-| **TypeScript Build** | ✅ **PASSING**  | 0 compilation errors                  |
-| **ESLint**           | 🔴 **FAILING**  | 20 errors, 59 warnings (79 total)     |
-| **Tests**            | 🔴 **FAILING**  | 389 pass, 313 fail (55.4% pass rate)  |
+| Metric               | Status         | Details                               |
+| -------------------- | -------------- | ------------------------------------- |
+| **TypeScript Build** | ✅ **PASSING** | 0 compilation errors                  |
+| **ESLint**           | 🔴 **FAILING** | 20 errors, 59 warnings (79 total)     |
+| **Tests**            | 🔴 **FAILING** | 389 pass, 313 fail (55.4% pass rate)  |
 | **Code Duplication** | ⚠️ **MODERATE** | 1.82% lines, 2.75% tokens (39 clones) |
 
 ### Quality Trend
@@ -234,33 +234,33 @@ function validateSecurityScheme(scheme: SecurityScheme): Result<Valid, Error> {
 
 ## f) 🎯 TOP #25 THINGS TO GET DONE NEXT
 
-| #   | Task                                             | Impact      | Effort | Priority | Notes                           |
-| --- | ------------------------------------------------ | ----------- | ------ | -------- | ------------------------------- |
-| 1   | Fix security-ENHANCED.ts type safety (20 errors) | 🔥 CRITICAL | 90min  | **P0**   | Security code must be type-safe |
-| 2   | Create proper SecurityScheme discriminated union | 🔥 HIGH     | 45min  | **P0**   | Foundation for #1               |
-| 3   | Investigate test number fluctuations             | 🔥 HIGH     | 30min  | **P0**   | Flaky tests = unreliable CI     |
-| 4   | Fix ValidationService Effect.TS errors           | 🔥 HIGH     | 45min  | **P1**   | Many tests failing here         |
-| 5   | Complete quick wins #6-10                        | 🟡 MEDIUM   | 60min  | **P1**   | Finish what we started          |
-| 6   | Fix ProcessingService test assertions            | 🟡 MEDIUM   | 45min  | **P1**   | 13 failures remaining           |
-| 7   | Consolidate security-LEGACY vs security-ENHANCED | 🟢 LOW      | 90min  | **P2**   | 41 lines duplicated             |
-| 8   | Fix Effect.TS naming conventions (59 warnings)   | 🟢 LOW      | 45min  | **P2**   | Code style consistency          |
-| 9   | Consolidate ImmutableDocumentManager duplicates  | 🟢 LOW      | 60min  | **P2**   | 10 clones detected              |
-| 10  | Replace `any` with proper type guards            | 🔥 HIGH     | 60min  | **P1**   | Prevents future type errors     |
-| 11  | Use `@effect/schema` for security validation     | 🟡 MEDIUM   | 90min  | **P2**   | Replace custom validation       |
-| 12  | Use `ts-pattern` for exhaustive matching         | 🟡 MEDIUM   | 45min  | **P2**   | Better than switch statements   |
-| 13  | Extract MQTT plugin logic                        | 🟢 LOW      | 60min  | **P3**   | Plugin architecture             |
-| 14  | Extract Kafka plugin logic                       | 🟢 LOW      | 60min  | **P3**   | Plugin architecture             |
-| 15  | Split files >350 lines                           | 🟢 LOW      | 90min  | **P3**   | Maintainability                 |
-| 16  | Add proper error types (not generic Error)       | 🟡 MEDIUM   | 45min  | **P2**   | Better error handling           |
-| 17  | Create ADR for security architecture             | 🟢 LOW      | 30min  | **P3**   | Documentation                   |
-| 18  | Add pre-commit hooks (lint+test)                 | 🟢 LOW      | 15min  | **P3**   | Prevent bad commits             |
-| 19  | Fix channel address double-slash bug             | 🟡 MEDIUM   | 15min  | **P1**   | Test showed "//" instead of "/" |
-| 20  | Investigate why 340+ tests fail                  | 🔥 HIGH     | 120min | **P0**   | Systematic investigation needed |
-| 21  | Create type-safe message schema builders         | 🟡 MEDIUM   | 60min  | **P2**   | DDD value objects               |
-| 22  | Use branded types for IDs                        | 🟡 MEDIUM   | 45min  | **P2**   | Prevent ID confusion            |
-| 23  | Add integration tests for full pipeline          | 🟡 MEDIUM   | 90min  | **P2**   | End-to-end coverage             |
-| 24  | Performance baseline benchmarks                  | 🟢 LOW      | 30min  | **P3**   | Track regressions               |
-| 25  | Update CLAUDE.md with current status             | 🟢 LOW      | 20min  | **P3**   | Keep docs current               |
+| #  | Task                                             | Impact      | Effort | Priority | Notes                           |
+| -- | ------------------------------------------------ | ----------- | ------ | -------- | ------------------------------- |
+| 1  | Fix security-ENHANCED.ts type safety (20 errors) | 🔥 CRITICAL | 90min  | **P0**   | Security code must be type-safe |
+| 2  | Create proper SecurityScheme discriminated union | 🔥 HIGH     | 45min  | **P0**   | Foundation for #1               |
+| 3  | Investigate test number fluctuations             | 🔥 HIGH     | 30min  | **P0**   | Flaky tests = unreliable CI     |
+| 4  | Fix ValidationService Effect.TS errors           | 🔥 HIGH     | 45min  | **P1**   | Many tests failing here         |
+| 5  | Complete quick wins #6-10                        | 🟡 MEDIUM   | 60min  | **P1**   | Finish what we started          |
+| 6  | Fix ProcessingService test assertions            | 🟡 MEDIUM   | 45min  | **P1**   | 13 failures remaining           |
+| 7  | Consolidate security-LEGACY vs security-ENHANCED | 🟢 LOW      | 90min  | **P2**   | 41 lines duplicated             |
+| 8  | Fix Effect.TS naming conventions (59 warnings)   | 🟢 LOW      | 45min  | **P2**   | Code style consistency          |
+| 9  | Consolidate ImmutableDocumentManager duplicates  | 🟢 LOW      | 60min  | **P2**   | 10 clones detected              |
+| 10 | Replace `any` with proper type guards            | 🔥 HIGH     | 60min  | **P1**   | Prevents future type errors     |
+| 11 | Use `@effect/schema` for security validation     | 🟡 MEDIUM   | 90min  | **P2**   | Replace custom validation       |
+| 12 | Use `ts-pattern` for exhaustive matching         | 🟡 MEDIUM   | 45min  | **P2**   | Better than switch statements   |
+| 13 | Extract MQTT plugin logic                        | 🟢 LOW      | 60min  | **P3**   | Plugin architecture             |
+| 14 | Extract Kafka plugin logic                       | 🟢 LOW      | 60min  | **P3**   | Plugin architecture             |
+| 15 | Split files >350 lines                           | 🟢 LOW      | 90min  | **P3**   | Maintainability                 |
+| 16 | Add proper error types (not generic Error)       | 🟡 MEDIUM   | 45min  | **P2**   | Better error handling           |
+| 17 | Create ADR for security architecture             | 🟢 LOW      | 30min  | **P3**   | Documentation                   |
+| 18 | Add pre-commit hooks (lint+test)                 | 🟢 LOW      | 15min  | **P3**   | Prevent bad commits             |
+| 19 | Fix channel address double-slash bug             | 🟡 MEDIUM   | 15min  | **P1**   | Test showed "//" instead of "/" |
+| 20 | Investigate why 340+ tests fail                  | 🔥 HIGH     | 120min | **P0**   | Systematic investigation needed |
+| 21 | Create type-safe message schema builders         | 🟡 MEDIUM   | 60min  | **P2**   | DDD value objects               |
+| 22 | Use branded types for IDs                        | 🟡 MEDIUM   | 45min  | **P2**   | Prevent ID confusion            |
+| 23 | Add integration tests for full pipeline          | 🟡 MEDIUM   | 90min  | **P2**   | End-to-end coverage             |
+| 24 | Performance baseline benchmarks                  | 🟢 LOW      | 30min  | **P3**   | Track regressions               |
+| 25 | Update CLAUDE.md with current status             | 🟢 LOW      | 20min  | **P3**   | Keep docs current               |
 
 ### Priority Matrix
 

@@ -5,706 +5,641 @@
  * Source: @asyncapi/specs/bindings/ JSON Schemas
  */
 
-export const GENERATED_BINDING_PROTOCOLS = ["amqp","amqp1","anypointmq","googlepubsub","http","ibmmq","jms","kafka","mercure","mqtt","nats","pulsar","redis","ros2","sns","solace","sqs","stomp","ws"] as const;
+export const GENERATED_BINDING_PROTOCOLS = [
+  "amqp",
+  "amqp1",
+  "anypointmq",
+  "googlepubsub",
+  "http",
+  "ibmmq",
+  "jms",
+  "kafka",
+  "mercure",
+  "mqtt",
+  "nats",
+  "pulsar",
+  "redis",
+  "ros2",
+  "sns",
+  "solace",
+  "sqs",
+  "stomp",
+  "ws",
+] as const;
 
 export const GENERATED_LATEST_VERSIONS: Record<string, string> = {
-  "amqp": "0.3.0",
-  "amqp1": "",
-  "anypointmq": "0.0.1",
-  "googlepubsub": "0.2.0",
-  "http": "0.3.0",
-  "ibmmq": "0.1.0",
-  "jms": "0.0.1",
-  "kafka": "0.5.0",
-  "mercure": "",
-  "mqtt": "0.2.0",
-  "nats": "0.1.0",
-  "pulsar": "0.1.0",
-  "redis": "",
-  "ros2": "0.1.0",
-  "sns": "0.2.0",
-  "solace": "0.4.0",
-  "sqs": "0.3.0",
-  "stomp": "",
-  "ws": "0.1.0"
+  amqp: "0.3.0",
+  amqp1: "",
+  anypointmq: "0.0.1",
+  googlepubsub: "0.2.0",
+  http: "0.3.0",
+  ibmmq: "0.1.0",
+  jms: "0.0.1",
+  kafka: "0.5.0",
+  mercure: "",
+  mqtt: "0.2.0",
+  nats: "0.1.0",
+  pulsar: "0.1.0",
+  redis: "",
+  ros2: "0.1.0",
+  sns: "0.2.0",
+  solace: "0.4.0",
+  sqs: "0.3.0",
+  stomp: "",
+  ws: "0.1.0",
 };
 
 export const GENERATED_ALL_VERSIONS: Record<string, string[]> = {
-  "amqp": [
-    "0.3.0",
-    "0.2.0"
-  ],
-  "amqp1": [],
-  "anypointmq": [
-    "0.0.1"
-  ],
-  "googlepubsub": [
-    "0.2.0",
-    "0.1.0"
-  ],
-  "http": [
-    "0.3.0",
-    "0.2.0",
-    "0.1.0"
-  ],
-  "ibmmq": [
-    "0.1.0"
-  ],
-  "jms": [
-    "0.0.1"
-  ],
-  "kafka": [
-    "0.5.0",
-    "0.4.0",
-    "0.3.0",
-    "0.1.0"
-  ],
-  "mercure": [],
-  "mqtt": [
-    "0.2.0",
-    "0.1.0"
-  ],
-  "nats": [
-    "0.1.0"
-  ],
-  "pulsar": [
-    "0.1.0"
-  ],
-  "redis": [],
-  "ros2": [
-    "0.1.0"
-  ],
-  "sns": [
-    "0.2.0",
-    "0.1.0"
-  ],
-  "solace": [
-    "0.4.0",
-    "0.3.0",
-    "0.2.0"
-  ],
-  "sqs": [
-    "0.3.0",
-    "0.2.0"
-  ],
-  "stomp": [],
-  "ws": [
-    "0.1.0"
-  ]
+  amqp: ["0.3.0", "0.2.0"],
+  amqp1: [],
+  anypointmq: ["0.0.1"],
+  googlepubsub: ["0.2.0", "0.1.0"],
+  http: ["0.3.0", "0.2.0", "0.1.0"],
+  ibmmq: ["0.1.0"],
+  jms: ["0.0.1"],
+  kafka: ["0.5.0", "0.4.0", "0.3.0", "0.1.0"],
+  mercure: [],
+  mqtt: ["0.2.0", "0.1.0"],
+  nats: ["0.1.0"],
+  pulsar: ["0.1.0"],
+  redis: [],
+  ros2: ["0.1.0"],
+  sns: ["0.2.0", "0.1.0"],
+  solace: ["0.4.0", "0.3.0", "0.2.0"],
+  sqs: ["0.3.0", "0.2.0"],
+  stomp: [],
+  ws: ["0.1.0"],
 };
 
 export const GENERATED_PLACEMENT: Record<string, Record<string, boolean>> = {
-  "amqp": {
-    "channel": true,
-    "message": true,
-    "operation": true,
-    "server": false
+  amqp: {
+    channel: true,
+    message: true,
+    operation: true,
+    server: false,
   },
-  "amqp1": {
-    "channel": false,
-    "message": false,
-    "operation": false,
-    "server": false
+  amqp1: {
+    channel: false,
+    message: false,
+    operation: false,
+    server: false,
   },
-  "anypointmq": {
-    "channel": true,
-    "message": true,
-    "operation": false,
-    "server": false
+  anypointmq: {
+    channel: true,
+    message: true,
+    operation: false,
+    server: false,
   },
-  "googlepubsub": {
-    "channel": true,
-    "message": true,
-    "operation": false,
-    "server": false
+  googlepubsub: {
+    channel: true,
+    message: true,
+    operation: false,
+    server: false,
   },
-  "http": {
-    "channel": false,
-    "message": true,
-    "operation": true,
-    "server": false
+  http: {
+    channel: false,
+    message: true,
+    operation: true,
+    server: false,
   },
-  "ibmmq": {
-    "channel": true,
-    "message": true,
-    "operation": false,
-    "server": true
+  ibmmq: {
+    channel: true,
+    message: true,
+    operation: false,
+    server: true,
   },
-  "jms": {
-    "channel": true,
-    "message": true,
-    "operation": false,
-    "server": true
+  jms: {
+    channel: true,
+    message: true,
+    operation: false,
+    server: true,
   },
-  "kafka": {
-    "channel": true,
-    "message": true,
-    "operation": true,
-    "server": true
+  kafka: {
+    channel: true,
+    message: true,
+    operation: true,
+    server: true,
   },
-  "mercure": {
-    "channel": false,
-    "message": false,
-    "operation": false,
-    "server": false
+  mercure: {
+    channel: false,
+    message: false,
+    operation: false,
+    server: false,
   },
-  "mqtt": {
-    "channel": false,
-    "message": true,
-    "operation": true,
-    "server": true
+  mqtt: {
+    channel: false,
+    message: true,
+    operation: true,
+    server: true,
   },
-  "nats": {
-    "channel": false,
-    "message": false,
-    "operation": true,
-    "server": false
+  nats: {
+    channel: false,
+    message: false,
+    operation: true,
+    server: false,
   },
-  "pulsar": {
-    "channel": true,
-    "message": false,
-    "operation": false,
-    "server": true
+  pulsar: {
+    channel: true,
+    message: false,
+    operation: false,
+    server: true,
   },
-  "redis": {
-    "channel": false,
-    "message": false,
-    "operation": false,
-    "server": false
+  redis: {
+    channel: false,
+    message: false,
+    operation: false,
+    server: false,
   },
-  "ros2": {
-    "channel": false,
-    "message": false,
-    "operation": true,
-    "server": true
+  ros2: {
+    channel: false,
+    message: false,
+    operation: true,
+    server: true,
   },
-  "sns": {
-    "channel": true,
-    "message": false,
-    "operation": true,
-    "server": false
+  sns: {
+    channel: true,
+    message: false,
+    operation: true,
+    server: false,
   },
-  "solace": {
-    "channel": false,
-    "message": false,
-    "operation": true,
-    "server": true
+  solace: {
+    channel: false,
+    message: false,
+    operation: true,
+    server: true,
   },
-  "sqs": {
-    "channel": true,
-    "message": false,
-    "operation": true,
-    "server": false
+  sqs: {
+    channel: true,
+    message: false,
+    operation: true,
+    server: false,
   },
-  "stomp": {
-    "channel": false,
-    "message": false,
-    "operation": false,
-    "server": false
+  stomp: {
+    channel: false,
+    message: false,
+    operation: false,
+    server: false,
   },
-  "ws": {
-    "channel": true,
-    "message": false,
-    "operation": false,
-    "server": false
-  }
+  ws: {
+    channel: true,
+    message: false,
+    operation: false,
+    server: false,
+  },
 };
 
-export const GENERATED_FIELD_RULES: Record<string, Record<string, Record<string, { type: string; enum?: unknown[]; min?: number; max?: number }>>> = {
-  "amqp": {
-    "channel": {
-      "is": {
-        "type": "string",
-        "enum": [
-          "queue",
-          "routingKey"
-        ]
+export const GENERATED_FIELD_RULES: Record<
+  string,
+  Record<string, Record<string, { type: string; enum?: unknown[]; min?: number; max?: number }>>
+> = {
+  amqp: {
+    channel: {
+      is: {
+        type: "string",
+        enum: ["queue", "routingKey"],
       },
-      "exchange": {
-        "type": "object"
+      exchange: {
+        type: "object",
       },
-      "queue": {
-        "type": "object"
-      }
+      queue: {
+        type: "object",
+      },
     },
-    "message": {
-      "contentEncoding": {
-        "type": "string"
+    message: {
+      contentEncoding: {
+        type: "string",
       },
-      "messageType": {
-        "type": "string"
-      }
+      messageType: {
+        type: "string",
+      },
     },
-    "operation": {
-      "expiration": {
-        "type": "integer",
-        "min": 0
+    operation: {
+      expiration: {
+        type: "integer",
+        min: 0,
       },
-      "userId": {
-        "type": "string"
+      userId: {
+        type: "string",
       },
-      "cc": {
-        "type": "array"
+      cc: {
+        type: "array",
       },
-      "priority": {
-        "type": "integer"
+      priority: {
+        type: "integer",
       },
-      "deliveryMode": {
-        "type": "integer",
-        "enum": [
-          1,
-          2
-        ]
+      deliveryMode: {
+        type: "integer",
+        enum: [1, 2],
       },
-      "mandatory": {
-        "type": "boolean"
+      mandatory: {
+        type: "boolean",
       },
-      "bcc": {
-        "type": "array"
+      bcc: {
+        type: "array",
       },
-      "timestamp": {
-        "type": "boolean"
+      timestamp: {
+        type: "boolean",
       },
-      "ack": {
-        "type": "boolean"
-      }
-    }
+      ack: {
+        type: "boolean",
+      },
+    },
   },
-  "amqp1": {},
-  "anypointmq": {
-    "channel": {
-      "destination": {
-        "type": "string"
+  amqp1: {},
+  anypointmq: {
+    channel: {
+      destination: {
+        type: "string",
       },
-      "destinationType": {
-        "type": "string",
-        "enum": [
-          "exchange",
-          "queue",
-          "fifo-queue"
-        ]
-      }
+      destinationType: {
+        type: "string",
+        enum: ["exchange", "queue", "fifo-queue"],
+      },
     },
-    "message": {
-      "headers": {
-        "type": "any"
-      }
-    }
+    message: {
+      headers: {
+        type: "any",
+      },
+    },
   },
-  "googlepubsub": {
-    "channel": {
-      "labels": {
-        "type": "object"
+  googlepubsub: {
+    channel: {
+      labels: {
+        type: "object",
       },
-      "messageRetentionDuration": {
-        "type": "string"
+      messageRetentionDuration: {
+        type: "string",
       },
-      "messageStoragePolicy": {
-        "type": "object"
+      messageStoragePolicy: {
+        type: "object",
       },
-      "schemaSettings": {
-        "type": "object"
-      }
+      schemaSettings: {
+        type: "object",
+      },
     },
-    "message": {
-      "attributes": {
-        "type": "object"
+    message: {
+      attributes: {
+        type: "object",
       },
-      "orderingKey": {
-        "type": "string"
+      orderingKey: {
+        type: "string",
       },
-      "schema": {
-        "type": "object"
-      }
-    }
+      schema: {
+        type: "object",
+      },
+    },
   },
-  "http": {
-    "message": {
-      "headers": {
-        "type": "any"
+  http: {
+    message: {
+      headers: {
+        type: "any",
       },
-      "statusCode": {
-        "type": "number"
-      }
+      statusCode: {
+        type: "number",
+      },
     },
-    "operation": {
-      "method": {
-        "type": "string",
-        "enum": [
-          "GET",
-          "PUT",
-          "POST",
-          "PATCH",
-          "DELETE",
-          "HEAD",
-          "OPTIONS",
-          "CONNECT",
-          "TRACE"
-        ]
+    operation: {
+      method: {
+        type: "string",
+        enum: ["GET", "PUT", "POST", "PATCH", "DELETE", "HEAD", "OPTIONS", "CONNECT", "TRACE"],
       },
-      "query": {
-        "type": "any"
-      }
-    }
+      query: {
+        type: "any",
+      },
+    },
   },
-  "ibmmq": {
-    "channel": {
-      "destinationType": {
-        "type": "string",
-        "enum": [
-          "topic",
-          "queue"
-        ]
+  ibmmq: {
+    channel: {
+      destinationType: {
+        type: "string",
+        enum: ["topic", "queue"],
       },
-      "queue": {
-        "type": "object"
+      queue: {
+        type: "object",
       },
-      "topic": {
-        "type": "object"
+      topic: {
+        type: "object",
       },
-      "maxMsgLength": {
-        "type": "integer",
-        "min": 0,
-        "max": 104857600
-      }
+      maxMsgLength: {
+        type: "integer",
+        min: 0,
+        max: 104857600,
+      },
     },
-    "message": {
-      "type": {
-        "type": "string",
-        "enum": [
-          "string",
-          "jms",
-          "binary"
-        ]
+    message: {
+      type: {
+        type: "string",
+        enum: ["string", "jms", "binary"],
       },
-      "headers": {
-        "type": "string"
+      headers: {
+        type: "string",
       },
-      "description": {
-        "type": "string"
+      description: {
+        type: "string",
       },
-      "expiry": {
-        "type": "integer",
-        "min": 0
-      }
+      expiry: {
+        type: "integer",
+        min: 0,
+      },
     },
-    "server": {
-      "groupId": {
-        "type": "string"
+    server: {
+      groupId: {
+        type: "string",
       },
-      "ccdtQueueManagerName": {
-        "type": "string"
+      ccdtQueueManagerName: {
+        type: "string",
       },
-      "cipherSpec": {
-        "type": "string"
+      cipherSpec: {
+        type: "string",
       },
-      "multiEndpointServer": {
-        "type": "boolean"
+      multiEndpointServer: {
+        type: "boolean",
       },
-      "heartBeatInterval": {
-        "type": "integer",
-        "min": 0,
-        "max": 999999
-      }
-    }
+      heartBeatInterval: {
+        type: "integer",
+        min: 0,
+        max: 999999,
+      },
+    },
   },
-  "jms": {
-    "channel": {
-      "destination": {
-        "type": "string"
+  jms: {
+    channel: {
+      destination: {
+        type: "string",
       },
-      "destinationType": {
-        "type": "string",
-        "enum": [
-          "queue",
-          "fifo-queue"
-        ]
-      }
+      destinationType: {
+        type: "string",
+        enum: ["queue", "fifo-queue"],
+      },
     },
-    "message": {
-      "headers": {
-        "type": "any"
-      }
+    message: {
+      headers: {
+        type: "any",
+      },
     },
-    "server": {
-      "jmsConnectionFactory": {
-        "type": "string"
+    server: {
+      jmsConnectionFactory: {
+        type: "string",
       },
-      "properties": {
-        "type": "array"
+      properties: {
+        type: "array",
       },
-      "clientID": {
-        "type": "string"
-      }
-    }
+      clientID: {
+        type: "string",
+      },
+    },
   },
-  "kafka": {
-    "channel": {
-      "topic": {
-        "type": "string"
+  kafka: {
+    channel: {
+      topic: {
+        type: "string",
       },
-      "partitions": {
-        "type": "integer",
-        "min": 1
+      partitions: {
+        type: "integer",
+        min: 1,
       },
-      "replicas": {
-        "type": "integer",
-        "min": 1
+      replicas: {
+        type: "integer",
+        min: 1,
       },
-      "topicConfiguration": {
-        "type": "object"
-      }
+      topicConfiguration: {
+        type: "object",
+      },
     },
-    "message": {
-      "key": {
-        "type": "any"
+    message: {
+      key: {
+        type: "any",
       },
-      "schemaIdLocation": {
-        "type": "string",
-        "enum": [
-          "header",
-          "payload"
-        ]
+      schemaIdLocation: {
+        type: "string",
+        enum: ["header", "payload"],
       },
-      "schemaIdPayloadEncoding": {
-        "type": "string"
+      schemaIdPayloadEncoding: {
+        type: "string",
       },
-      "schemaLookupStrategy": {
-        "type": "string"
-      }
+      schemaLookupStrategy: {
+        type: "string",
+      },
     },
-    "operation": {
-      "groupId": {
-        "type": "any"
+    operation: {
+      groupId: {
+        type: "any",
       },
-      "clientId": {
-        "type": "any"
-      }
+      clientId: {
+        type: "any",
+      },
     },
-    "server": {
-      "schemaRegistryUrl": {
-        "type": "string"
+    server: {
+      schemaRegistryUrl: {
+        type: "string",
       },
-      "schemaRegistryVendor": {
-        "type": "string"
-      }
-    }
+      schemaRegistryVendor: {
+        type: "string",
+      },
+    },
   },
-  "mercure": {},
-  "mqtt": {
-    "message": {
-      "payloadFormatIndicator": {
-        "type": "integer",
-        "enum": [
-          0,
-          1
-        ]
+  mercure: {},
+  mqtt: {
+    message: {
+      payloadFormatIndicator: {
+        type: "integer",
+        enum: [0, 1],
       },
-      "correlationData": {
-        "type": "any"
+      correlationData: {
+        type: "any",
       },
-      "contentType": {
-        "type": "string"
+      contentType: {
+        type: "string",
       },
-      "responseTopic": {
-        "type": "any"
-      }
+      responseTopic: {
+        type: "any",
+      },
     },
-    "operation": {
-      "qos": {
-        "type": "integer",
-        "enum": [
-          0,
-          1,
-          2
-        ]
+    operation: {
+      qos: {
+        type: "integer",
+        enum: [0, 1, 2],
       },
-      "retain": {
-        "type": "boolean"
+      retain: {
+        type: "boolean",
       },
-      "messageExpiryInterval": {
-        "type": "any"
-      }
+      messageExpiryInterval: {
+        type: "any",
+      },
     },
-    "server": {
-      "clientId": {
-        "type": "string"
+    server: {
+      clientId: {
+        type: "string",
       },
-      "cleanSession": {
-        "type": "boolean"
+      cleanSession: {
+        type: "boolean",
       },
-      "lastWill": {
-        "type": "object"
+      lastWill: {
+        type: "object",
       },
-      "keepAlive": {
-        "type": "integer"
+      keepAlive: {
+        type: "integer",
       },
-      "sessionExpiryInterval": {
-        "type": "any"
+      sessionExpiryInterval: {
+        type: "any",
       },
-      "maximumPacketSize": {
-        "type": "any"
-      }
-    }
+      maximumPacketSize: {
+        type: "any",
+      },
+    },
   },
-  "nats": {
-    "operation": {
-      "queue": {
-        "type": "string"
-      }
-    }
+  nats: {
+    operation: {
+      queue: {
+        type: "string",
+      },
+    },
   },
-  "pulsar": {
-    "channel": {
-      "namespace": {
-        "type": "string"
+  pulsar: {
+    channel: {
+      namespace: {
+        type: "string",
       },
-      "persistence": {
-        "type": "string",
-        "enum": [
-          "persistent",
-          "non-persistent"
-        ]
+      persistence: {
+        type: "string",
+        enum: ["persistent", "non-persistent"],
       },
-      "compaction": {
-        "type": "integer",
-        "min": 0
+      compaction: {
+        type: "integer",
+        min: 0,
       },
       "geo-replication": {
-        "type": "array"
+        type: "array",
       },
-      "retention": {
-        "type": "object"
+      retention: {
+        type: "object",
       },
-      "ttl": {
-        "type": "integer"
+      ttl: {
+        type: "integer",
       },
-      "deduplication": {
-        "type": "boolean"
-      }
+      deduplication: {
+        type: "boolean",
+      },
     },
-    "server": {
-      "tenant": {
-        "type": "string"
-      }
-    }
+    server: {
+      tenant: {
+        type: "string",
+      },
+    },
   },
-  "redis": {},
-  "ros2": {
-    "operation": {
-      "node": {
-        "type": "string"
+  redis: {},
+  ros2: {
+    operation: {
+      node: {
+        type: "string",
       },
-      "qosPolicies": {
-        "type": "object"
+      qosPolicies: {
+        type: "object",
       },
-      "role": {
-        "type": "string",
-        "enum": [
+      role: {
+        type: "string",
+        enum: [
           "publisher",
           "action_client",
           "service_client",
           "subscriber",
           "action_server",
-          "service_server"
-        ]
-      }
+          "service_server",
+        ],
+      },
     },
-    "server": {
-      "domainId": {
-        "type": "integer",
-        "min": 0,
-        "max": 231
+    server: {
+      domainId: {
+        type: "integer",
+        min: 0,
+        max: 231,
       },
-      "rmwImplementation": {
-        "type": "string"
-      }
-    }
-  },
-  "sns": {
-    "channel": {
-      "name": {
-        "type": "string"
+      rmwImplementation: {
+        type: "string",
       },
-      "ordering": {
-        "type": "any"
-      },
-      "policy": {
-        "type": "any"
-      },
-      "tags": {
-        "type": "object"
-      }
     },
-    "operation": {
-      "topic": {
-        "type": "any"
-      },
-      "consumers": {
-        "type": "array"
-      },
-      "deliveryPolicy": {
-        "type": "any"
-      }
-    }
   },
-  "solace": {
-    "operation": {
-      "destinations": {
-        "type": "array"
+  sns: {
+    channel: {
+      name: {
+        type: "string",
       },
-      "timeToLive": {
-        "type": "integer"
+      ordering: {
+        type: "any",
       },
-      "priority": {
-        "type": "integer",
-        "min": 0,
-        "max": 255
+      policy: {
+        type: "any",
       },
-      "dmqEligible": {
-        "type": "boolean"
-      }
+      tags: {
+        type: "object",
+      },
     },
-    "server": {
-      "msgVpn": {
-        "type": "string"
+    operation: {
+      topic: {
+        type: "any",
       },
-      "clientName": {
-        "type": "string"
-      }
-    }
-  },
-  "sqs": {
-    "channel": {
-      "queue": {
-        "type": "any"
+      consumers: {
+        type: "array",
       },
-      "deadLetterQueue": {
-        "type": "any"
-      }
+      deliveryPolicy: {
+        type: "any",
+      },
     },
-    "operation": {
-      "queues": {
-        "type": "array"
-      }
-    }
   },
-  "stomp": {},
-  "ws": {
-    "channel": {
-      "method": {
-        "type": "string",
-        "enum": [
-          "GET",
-          "POST"
-        ]
+  solace: {
+    operation: {
+      destinations: {
+        type: "array",
       },
-      "query": {
-        "type": "any"
+      timeToLive: {
+        type: "integer",
       },
-      "headers": {
-        "type": "any"
-      }
-    }
-  }
+      priority: {
+        type: "integer",
+        min: 0,
+        max: 255,
+      },
+      dmqEligible: {
+        type: "boolean",
+      },
+    },
+    server: {
+      msgVpn: {
+        type: "string",
+      },
+      clientName: {
+        type: "string",
+      },
+    },
+  },
+  sqs: {
+    channel: {
+      queue: {
+        type: "any",
+      },
+      deadLetterQueue: {
+        type: "any",
+      },
+    },
+    operation: {
+      queues: {
+        type: "array",
+      },
+    },
+  },
+  stomp: {},
+  ws: {
+    channel: {
+      method: {
+        type: "string",
+        enum: ["GET", "POST"],
+      },
+      query: {
+        type: "any",
+      },
+      headers: {
+        type: "any",
+      },
+    },
+  },
 };

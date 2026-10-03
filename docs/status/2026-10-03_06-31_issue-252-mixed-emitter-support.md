@@ -10,8 +10,8 @@
 
 1. **Issue #252 reproduced exactly** — the reporter's spec shape yields their two `@typespec/http/duplicate-operation` errors verbatim.
 2. **Root cause chain verified at source level** (compiler/http 1.16.0):
-   - `@typespec/http` has a program-level `$onValidate` that HTTP-routes every op under a `@service` namespace on *every* compile — proven to fire with `noEmit` and with either emitter disabled. The reporter's guess ("OpenAPI emitter fallback logic") was close but the trigger is library-level validation.
-   - Blockless `namespace A.B;` is a file-level ambient scope and later *dotted* declarations resolve relative to it (`namespace A.B.C {}` → `A.B.A.B.C`). The reporter's second `namespace Service.Backend {}` block actually nests. Verified via namespace-tree dump.
+   - `@typespec/http` has a program-level `$onValidate` that HTTP-routes every op under a `@service` namespace on _every_ compile — proven to fire with `noEmit` and with either emitter disabled. The reporter's guess ("OpenAPI emitter fallback logic") was close but the trigger is library-level validation.
+   - Blockless `namespace A.B;` is a file-level ambient scope and later _dotted_ declarations resolve relative to it (`namespace A.B.C {}` → `A.B.A.B.C`). The reporter's second `namespace Service.Backend {}` block actually nests. Verified via namespace-tree dump.
    - Verb-less ops default to GET; route-less ops under a service default to `/`.
 3. **Phantom-GET leak proven** — the reporter's "worked so far" single-event setup silently emits `GET /api/v1` / `operationId: Events_receivePing` into the OpenAPI document.
 4. **Reverse leak discovered and fixed** — bare REST ops at global-depth-1 namespaces were discovered as AsyncAPI channels (`getThing` appeared in `channels`). Guard added in `src/builders/operation-discovery.ts` (skip bare ops under `@service` when http is loaded AND decorated ops exist; pure minimal specs unchanged).
@@ -40,9 +40,9 @@
 
 ## d) TOTALLY FUCKED UP (session failures, honestly)
 
-1. **Wrong compiler-options shape wasted a full debug cycle** — I passed `emitters: {...}` (doesn't exist) to `compile()`; it was silently ignored, and I *initially misread the resulting output* as evidence that our emitter triggered http validation. I nearly built the reply on a false premise. Caught only because zero output files appeared.
+1. **Wrong compiler-options shape wasted a full debug cycle** — I passed `emitters: {...}` (doesn't exist) to `compile()`; it was silently ignored, and I _initially misread the resulting output_ as evidence that our emitter triggered http validation. I nearly built the reply on a false premise. Caught only because zero output files appeared.
 2. **Two repro variants invalidated by my own unknown** — variants C/D used dotted namespaces after a blockless one; intermediate conclusions ("events still collide when split out") were artifacts of the ambient-namespace trap I only discovered afterwards. I wrote TypeSpec I hadn't fully understood and debugged my own spec bugs thinking they were product behavior.
-3. **Three of seven first-draft tests were vacuously passing** — the specs had `blockless-namespace-first` errors, which skip emit; the "no warning expected" assertions passed because *nothing* ran. Only test 1 failing exposed it. Without that, fake coverage would have shipped.
+3. **Three of seven first-draft tests were vacuously passing** — the specs had `blockless-namespace-first` errors, which skip emit; the "no warning expected" assertions passed because _nothing_ ran. Only test 1 failing exposed it. Without that, fake coverage would have shipped.
 4. **Scratch files in a tracked directory** — `scripts/scratch-*.ts` + generated fixtures landed in `scripts/`, got auto-committed, then trashed: noisy history plus permanent stale-LSP noise in every subsequent tool result.
 5. **FEATURES.md count "fixed" twice** — first to 31 (20+11, assumed), then recounted to the true 34 (20+14). The file was already stale (33) before me; I nonetheless edited-by-assumption before measuring. AGENTS explicitly says count in lib.ts, never trust hardcoded numbers.
 6. **Minor: variant E mislabeled** in the scratch matrix (described as "service on root covering Rest+Events"; it actually only wrapped Rest). No downstream damage — it duplicated variant F.
@@ -51,11 +51,13 @@
 ## e) WHAT WE SHOULD IMPROVE (self-review answers)
 
 **What did you forget?**
+
 - CHANGELOG entry (release-blocking), TODO_LIST harvest, README/examples-README count audit, and the AGENTS "Key Tests" list (doesn't mention `mixed-http-emitters.test.ts` yet).
 - The pre-tag `pnpm install --frozen-lockfile && verify` ritual from AGENTS — the lockfile changed and I didn't run it.
 - Nothing was left unwired: no ghost systems (validation is called in the pipeline, guard is in the discovery loop, both are test-exercised, example runs in CI).
 
 **What could you have done better?**
+
 - Verify the option knob actually applies before drawing conclusions from output (the `emitters:` bug).
 - Write the ambient-namespace semantics test FIRST as a 6-line minimal spec; it would have invalidated variants C/D in one minute instead of an hour of misdirection.
 - Structure negative-expectation tests so they fail when the phase under test never runs (e.g. additionally assert the AsyncAPI document was produced, or assert on total diagnostic shape). Three vacuous passes is a process failure, not bad luck.
@@ -63,6 +65,7 @@
 - Count before editing counts.
 
 **What could you still improve?**
+
 - **Warning spam**: the warning fires per operation; a 50-event namespace under a service yields 50 warnings. Dedupe per (service, namespace) is a small UX win.
 - **`findEnclosingServiceNamespace` recomputes `listServices` per bare op** in the discovery loop — O(ops × services × depth). Fine now (realworld suite + gate green), but memoize if benchmarks ever regress.
 - **Escape-hatch semantics** ("nearest ancestor with any AsyncAPI server wins") are only documented in code — needs a locking test and one line in the message or docs.
@@ -76,35 +79,35 @@
 
 ## f) Next things (impact-ordered; DO NOW → TODO_LIST → ROADMAP routing)
 
-| # | Task | Route | Impact |
-|---|------|-------|--------|
-| 1 | Post the issue #252 reply (final wording incl. new warning + example link) | DO NOW | Reporter unblocked |
-| 2 | CHANGELOG.md entry for warning + bare-op guard + example | DO NOW | Release-blocking |
-| 3 | Version call + release (1.0.1 vs 1.1.0) | DO NOW (decision) | Ships the fix |
-| 4 | Pre-tag ritual: `pnpm install --lockfile-only && --frozen-lockfile && verify` | DO NOW | CI-proven release |
-| 5 | Harvest this list into TODO_LIST/ROADMAP | DO NOW | No entombed tasks |
-| 6 | Test: `@channel`-only op (1b path) gets the warning | TODO_LIST | Coverage |
-| 7 | Test: `#suppress` works for `event-op-in-service-namespace` | TODO_LIST | UX lock |
-| 8 | Test: nested `@service` namespaces (inner service wins) | TODO_LIST | Semantics lock |
-| 9 | Test: nearest-ancestor server escape order (wss root + http inner → exempt) | TODO_LIST | Escape lock |
-| 10 | Test: events under service with NO server → still warns (documented residual FP) | TODO_LIST | Honest lock |
-| 11 | Test: two bare ops + http + NO decorated ops → both still discovered (guard semantics) | TODO_LIST | Regression lock |
-| 12 | Assert "emit actually ran" in negative tests (asyncApiDoc non-null) — helper convention | TODO_LIST | Kills vacuous passes |
-| 13 | Add the reporter's exact spec as `test/realworld/issue-252.tsp` fixture | TODO_LIST | Regression |
-| 14 | Golden-file lock for `examples/mixed-rest-events` outputs (both documents) | TODO_LIST | Output stability |
-| 15 | Dedupe warning per (service, namespace) instead of per op | TODO_LIST | UX |
-| 16 | Audit README.md + examples/README.md for count drift (diagnostics 34, examples 15) | TODO_LIST | Docs truth |
-| 17 | Add mixed-http-emitters to AGENTS "Key Tests" list | TODO_LIST | Docs truth |
-| 18 | Validate the mixed example's OpenAPI output in `check-examples` (OpenAPI 3.1 AJV) | TODO_LIST | Gate gap |
-| 19 | Memoize service-set computation in discovery loop | TODO_LIST | Perf (minor now) |
-| 20 | Per-file coverage check for `cross-emitter-validation.ts`; top up if near 75% floor | TODO_LIST | Gate margin |
-| 21 | Benchmark discovery pre/post guard on large spec | TODO_LIST | Perf evidence |
-| 22 | README FAQ: "Can I mix this with @typespec/openapi3?" | TODO_LIST | Discovery |
-| 23 | Website docs page: mixing with OpenAPI (competitor gap) | ROADMAP | Market |
-| 24 | Property test: mixed http+events generator asserting zero cross-leak | ROADMAP | Invariant |
-| 25 | Commit session lessons to crush-config `references/lessons.md` | ROADMAP (Lars) | Cross-project |
-| 26 | Consider an `@asyncapiOnly`-style explicit marker if warning FPs ever surface in the wild | ROADMAP | Future API (post-1.0 caution) |
-| 27 | LSP hygiene: `lsp_restart` at session start when stale file diagnostics appear | Process note | Session quality |
+| #  | Task                                                                                      | Route             | Impact                        |
+| -- | ----------------------------------------------------------------------------------------- | ----------------- | ----------------------------- |
+| 1  | Post the issue #252 reply (final wording incl. new warning + example link)                | DO NOW            | Reporter unblocked            |
+| 2  | CHANGELOG.md entry for warning + bare-op guard + example                                  | DO NOW            | Release-blocking              |
+| 3  | Version call + release (1.0.1 vs 1.1.0)                                                   | DO NOW (decision) | Ships the fix                 |
+| 4  | Pre-tag ritual: `pnpm install --lockfile-only && --frozen-lockfile && verify`             | DO NOW            | CI-proven release             |
+| 5  | Harvest this list into TODO_LIST/ROADMAP                                                  | DO NOW            | No entombed tasks             |
+| 6  | Test: `@channel`-only op (1b path) gets the warning                                       | TODO_LIST         | Coverage                      |
+| 7  | Test: `#suppress` works for `event-op-in-service-namespace`                               | TODO_LIST         | UX lock                       |
+| 8  | Test: nested `@service` namespaces (inner service wins)                                   | TODO_LIST         | Semantics lock                |
+| 9  | Test: nearest-ancestor server escape order (wss root + http inner → exempt)               | TODO_LIST         | Escape lock                   |
+| 10 | Test: events under service with NO server → still warns (documented residual FP)          | TODO_LIST         | Honest lock                   |
+| 11 | Test: two bare ops + http + NO decorated ops → both still discovered (guard semantics)    | TODO_LIST         | Regression lock               |
+| 12 | Assert "emit actually ran" in negative tests (asyncApiDoc non-null) — helper convention   | TODO_LIST         | Kills vacuous passes          |
+| 13 | Add the reporter's exact spec as `test/realworld/issue-252.tsp` fixture                   | TODO_LIST         | Regression                    |
+| 14 | Golden-file lock for `examples/mixed-rest-events` outputs (both documents)                | TODO_LIST         | Output stability              |
+| 15 | Dedupe warning per (service, namespace) instead of per op                                 | TODO_LIST         | UX                            |
+| 16 | Audit README.md + examples/README.md for count drift (diagnostics 34, examples 15)        | TODO_LIST         | Docs truth                    |
+| 17 | Add mixed-http-emitters to AGENTS "Key Tests" list                                        | TODO_LIST         | Docs truth                    |
+| 18 | Validate the mixed example's OpenAPI output in `check-examples` (OpenAPI 3.1 AJV)         | TODO_LIST         | Gate gap                      |
+| 19 | Memoize service-set computation in discovery loop                                         | TODO_LIST         | Perf (minor now)              |
+| 20 | Per-file coverage check for `cross-emitter-validation.ts`; top up if near 75% floor       | TODO_LIST         | Gate margin                   |
+| 21 | Benchmark discovery pre/post guard on large spec                                          | TODO_LIST         | Perf evidence                 |
+| 22 | README FAQ: "Can I mix this with @typespec/openapi3?"                                     | TODO_LIST         | Discovery                     |
+| 23 | Website docs page: mixing with OpenAPI (competitor gap)                                   | ROADMAP           | Market                        |
+| 24 | Property test: mixed http+events generator asserting zero cross-leak                      | ROADMAP           | Invariant                     |
+| 25 | Commit session lessons to crush-config `references/lessons.md`                            | ROADMAP (Lars)    | Cross-project                 |
+| 26 | Consider an `@asyncapiOnly`-style explicit marker if warning FPs ever surface in the wild | ROADMAP           | Future API (post-1.0 caution) |
+| 27 | LSP hygiene: `lsp_restart` at session start when stale file diagnostics appear            | Process note      | Session quality               |
 
 ## g) Questions I cannot answer myself
 
@@ -113,4 +116,5 @@
 3. **Cross-repo writes:** may I (a) commit the two process lessons to the crush-config repo's `references/lessons.md` (option-knob verification; vacuous-test trap), and (b) harvest this report's (f) list into TODO_LIST/ROADMAP now, or leave that to a docs-health pass?
 
 ---
-*Written by Crush. Point-in-time snapshot; ANNOTATE, never rewrite, when bringing it current.*
+
+_Written by Crush. Point-in-time snapshot; ANNOTATE, never rewrite, when bringing it current._

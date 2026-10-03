@@ -66,9 +66,10 @@ describe("golden file: server security output", () => {
     const raw = await compileAsyncAPISpecRaw(SOURCE);
     const doc = YAML.parse(extractOutput(raw));
 
-    expect(
-      Object.keys(doc.components.securitySchemes).toSorted(),
-    ).toStrictEqual(["brokerAuth", "scramAuth"]);
+    expect(Object.keys(doc.components.securitySchemes).toSorted()).toStrictEqual([
+      "brokerAuth",
+      "scramAuth",
+    ]);
   });
 
   it("should have correct scheme types", async () => {

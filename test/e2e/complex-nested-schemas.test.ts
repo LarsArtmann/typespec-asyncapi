@@ -171,31 +171,26 @@ describe("e2E: Complex Nested Schemas", () => {
 
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
-      (f) =>
-        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     const content = host.fs.get(asyncApiFile!) as string;
-    const spec = content.startsWith("{")
-      ? JSON.parse(content)
-      : YAML.parse(content);
+    const spec = content.startsWith("{") ? JSON.parse(content) : YAML.parse(content);
 
     const schemas = spec.components?.schemas || {};
 
     // Validate deep nesting (5 levels)
     expect(schemas.UserProfile).toBeDefined();
     expect(schemas.UserProfile.properties.personalInfo.type).toBe("object");
-    expect(
-      schemas.UserProfile.properties.personalInfo.properties.contact.$ref,
-    ).toBe("#/components/schemas/ContactInfo");
+    expect(schemas.UserProfile.properties.personalInfo.properties.contact.$ref).toBe(
+      "#/components/schemas/ContactInfo",
+    );
     expect(schemas.Address).toBeDefined();
 
     // Validate arrays
-    expect(asJsonSchema(schemas.Order.properties.items, "items").type).toBe(
-      "array",
-    );
+    expect(asJsonSchema(schemas.Order.properties.items, "items").type).toBe("array");
     expect(schemas.Order.properties.items.items.type).toBe("object");
     expect(schemas.ProductVariant.properties.attributes.type).toBe("array");
 
@@ -204,14 +199,14 @@ describe("e2E: Complex Nested Schemas", () => {
     expect(schemas.ContactInfo.required).not.toContain("phone");
 
     // Validate union types in nested structures
-    expect(
-      schemas.ProductVariant.properties.pricing.properties.discount,
-    ).toBeDefined();
+    expect(schemas.ProductVariant.properties.pricing.properties.discount).toBeDefined();
 
     // Validate enums from union types
-    expect(
-      schemas.Order.properties.shipping.properties.method.enum,
-    ).toStrictEqual(["standard", "express", "overnight"]);
+    expect(schemas.Order.properties.shipping.properties.method.enum).toStrictEqual([
+      "standard",
+      "express",
+      "overnight",
+    ]);
     expect(schemas.UserEventPayload.properties.eventType.enum).toStrictEqual([
       "created",
       "updated",
