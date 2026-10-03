@@ -8,6 +8,7 @@
 import { type EmitContext, type Program, emitFile } from "@typespec/compiler";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import { buildAsyncAPIDocument } from "./document-builder.js";
+import { loadHttpRouteFacts } from "./builders/http-route-facts.js";
 import { consolidateAsyncAPIState } from "./state.js";
 import { generateSchemas } from "./schema-generator.js";
 import { splitSchemas } from "./schema-splitter.js";
@@ -19,11 +20,13 @@ export async function $onEmit(
   const { options } = context;
   const rawState = consolidateAsyncAPIState(context.program);
   const schemas = generateSchemas(context);
+  const httpRouteFacts = await loadHttpRouteFacts(context.program);
   const document = buildAsyncAPIDocument(
     rawState,
     schemas,
     options,
     context.program,
+    httpRouteFacts,
   );
 
   const format = resolveFileFormat(options["file-type"]);

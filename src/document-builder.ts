@@ -24,6 +24,7 @@ import type {
 } from "./domain/models/asyncapi-document.js";
 import type { DocumentBuildContext } from "./builders/types.js";
 import { discoverOperations } from "./builders/operation-discovery.js";
+import type { HttpRouteFacts } from "./builders/http-route-facts.js";
 import { reportProgramDiagnostic } from "./decorator-helpers.js";
 import {
   applyChannelDocs,
@@ -47,6 +48,7 @@ export function buildAsyncAPIDocument(
   schemas: Record<string, JsonSchema>,
   options: AsyncAPIEmitterOptions,
   program: Program,
+  httpRouteFacts?: HttpRouteFacts,
 ): AsyncAPIDocument {
   const ctx: DocumentBuildContext = {
     channels: {},
@@ -59,6 +61,7 @@ export function buildAsyncAPIDocument(
     channelSummaries: new Map(),
     channelTags: new Map(),
     program,
+    httpRouteFacts,
     schemas,
     securitySchemes: {},
     servers: {},

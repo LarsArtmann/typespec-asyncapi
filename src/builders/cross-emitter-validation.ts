@@ -22,14 +22,7 @@ import type { Namespace, Program, Type } from "@typespec/compiler";
 import type { AsyncAPIConsolidatedState } from "../state.js";
 import { consolidateAsyncAPIState } from "../state.js";
 import { reportProgramDiagnostic } from "../decorator-helpers.js";
-
-/** True when the program has loaded the `@typespec/http` library. */
-export function isHttpLibraryLoaded(program: Program): boolean {
-  const typeSpecNs = program
-    .getGlobalNamespaceType()
-    .namespaces.get("TypeSpec");
-  return typeSpecNs?.namespaces.has("Http") ?? false;
-}
+import { isHttpLibraryLoaded } from "./http-route-facts.js";
 
 /** The namespace of `type`, when the type carries one. */
 function namespaceOf(type: Type): Namespace | undefined {

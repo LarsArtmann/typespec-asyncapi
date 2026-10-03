@@ -19,6 +19,7 @@ import type {
   Tag,
 } from "../domain/models/asyncapi-document.js";
 import type { AsyncAPIConsolidatedState } from "../state.js";
+import type { HttpRouteFacts } from "./http-route-facts.js";
 
 /** A discovered operation from decorator state or bare namespace scanning. */
 export interface DiscoveredOp {
@@ -53,6 +54,8 @@ export interface DocumentBuildContext {
   channelTags: Map<string, Tag[]>;
   opDocs: Map<string, string>;
   program: Program;
+  /** Resolved `@typespec/http` route table, when the program provides one. */
+  httpRouteFacts?: HttpRouteFacts;
 }
 
 /** Standard signature shared by every document builder function. */

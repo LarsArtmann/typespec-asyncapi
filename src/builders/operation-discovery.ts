@@ -5,7 +5,7 @@
  * all AsyncAPI operations, their channels, and message types.
  */
 
-import { isStdNamespace, type Type } from "@typespec/compiler";
+import { isStdNamespace, type Operation } from "@typespec/compiler";
 import {
   inferActionFromName,
   iterNamedTypes,
@@ -24,7 +24,7 @@ import {
 } from "./_imports.js";
 import { schemaNameForType } from "../schema-ref.js";
 import { findEnclosingServiceNamespace } from "./cross-emitter-validation.js";
-import { type HttpRouteFacts, isHttpLibraryLoaded } from "./http-route-facts.js";
+import { isHttpLibraryLoaded } from "./http-route-facts.js";
 
 /**
  * Discover all operations from three sources:
@@ -154,11 +154,11 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
   const restOpsAreInPlay =
     isHttpLibraryLoaded(ctx.program) &&
     (state.operations.size > 0 || state.channels.size > 0);
-  // Ownership evidence: the resolved HTTP route table when readable, else the
-  // service-containment heuristic. A routed operation belongs to the REST
-  // contract, never to the event document.
-  const httpRouteFacts = ctx.httpRouteFacts;
-  const isHttpOwned = (op: Type): boolean =>
+  // Ownership decision uses the resolved HTTP route table when readable.
+  // Service containment is the fallback. A routed operation belongs to the
+  // REST contract, never to the event document.
+  const { httpRouteFacts } = ctx;
+  const isHttpOwned = (op: Operation): boolean =>
     httpRouteFacts
       ? httpRouteFacts.isRouted(op)
       : findEnclosingServiceNamespace(ctx.program, op) !== undefined;
