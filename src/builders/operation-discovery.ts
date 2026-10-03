@@ -5,7 +5,7 @@
  * all AsyncAPI operations, their channels, and message types.
  */
 
-import { isStdNamespace, type Operation } from "@typespec/compiler";
+import { isStdNamespace, type Operation, type Type } from "@typespec/compiler";
 import {
   inferActionFromName,
   iterNamedTypes,
