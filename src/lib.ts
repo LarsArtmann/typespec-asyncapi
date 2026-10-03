@@ -205,7 +205,20 @@ export const $lib = createTypeSpecLibrary({
     },
     "event-op-in-service-namespace": {
       messages: {
-        default: paramMessage`AsyncAPI operation '${"operationName"}' is declared inside the @service namespace '${"serviceName"}' while @typespec/http is loaded. Every operation under a @service namespace is also routed as a REST endpoint (verb-less operations default to GET), which leaks events into OpenAPI output and can cause duplicate-operation errors. Move event operations to a namespace outside the REST @service namespace, or suppress this warning if the operation is intentionally an AsyncAPI-over-HTTP channel.`,
+        default: paramMessage`AsyncAPI operation '${"operationName"}' is declared inside the @service namespace '${"serviceName"}' while @typespec/http is loaded.${"routeDetail"} Every operation under a @service namespace is also routed as a REST endpoint (verb-less operations default to GET), which leaks events into OpenAPI output and can cause duplicate-operation errors.${"additional"} Move event operations to a namespace outside the REST @service namespace, or suppress this warning if the operation is intentionally an AsyncAPI-over-HTTP channel.`,
+      },
+      severity: "warning",
+    },
+    "bare-op-assumed-rest": {
+      messages: {
+        default: paramMessage`Operation '${"operationName"}' was routed by @typespec/http as ${"verb"} ${"path"} and is therefore excluded from the AsyncAPI document. Rename it or add @publish/@subscribe if it is meant to be an event operation.`,
+        "assumed": paramMessage`Operation '${"operationName"}' is assumed to be a REST operation because it is declared under the @service namespace '${"serviceName"}' and therefore excluded from the AsyncAPI document. Add @publish/@subscribe if it is meant to be an event operation.`,
+      },
+      severity: "warning",
+    },
+    "bare-op-inference-deprecated": {
+      messages: {
+        default: paramMessage`Bare operation ownership in mixed programs is inferred from namespace geometry because the @typespec/http route table was not readable. This inference is deprecated and will be removed in 2.0; operation '${"operationName"}' was excluded based on containment in @service namespace '${"serviceName"}'.`,
       },
       severity: "warning",
     },
