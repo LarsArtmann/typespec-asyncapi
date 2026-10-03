@@ -51,12 +51,12 @@
 | **2**    | ✅ Close Issue #2 (TypeScript)  | 35min    | High     | High           | Task #1      |
 | **3**    | ⚡ Close Issue #5 (Performance) | 35min    | High     | High           | Task #1      |
 | **4**    | 🔍 Close Issue #3 (Validation)  | 30min    | High     | High           | Task #1      |
-| **5**    | 🏷️ Close Issue #7 (Decorators)  | 30min    | Medium   | High           | Task #1      |
+| **5**    | 🏷️ Close Issue #7 (Decorators)   | 30min    | Medium   | High           | Task #1      |
 | **6**    | ⚡ Close Issue #4 (Effect.TS)   | 30min    | Medium   | Medium         | Task #1      |
 | **7**    | 📌 Close Issue #1 (Versioning)  | 30min    | Low      | Low            | None         |
 | **8**    | 🚀 Final production build       | 40min    | Medium   | High           | All tests    |
 | **9**    | 📚 Update README                | 45min    | Medium   | High           | All above    |
-| **10**   | 🏷️ Create v1.0.0 release        | 30min    | Medium   | High           | All above    |
+| **10**   | 🏷️ Create v1.0.0 release         | 30min    | Medium   | High           | All above    |
 
 **Total Duration:** 335 minutes (5.6 hours)
 

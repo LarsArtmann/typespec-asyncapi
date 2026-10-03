@@ -709,33 +709,33 @@ describe("Feature: Security Scheme Validation", () => {
 
 ## f) 🎯 TOP #25 THINGS TO GET DONE NEXT
 
-| #   | Task                                                | Impact      | Effort | Leverage | Priority | Notes                   |
-| --- | --------------------------------------------------- | ----------- | ------ | -------- | -------- | ----------------------- |
-| 1   | **Integrate validateSecurityScheme into decorator** | 🔥 CRITICAL | 15min  | 🔥🔥🔥   | **P0**   | Fix ghost system!       |
-| 2   | **Add runtime type guard validation to decorator**  | 🔥 CRITICAL | 15min  | 🔥🔥🔥   | **P0**   | Use isSecurityScheme()  |
-| 3   | **Run comprehensive test suite**                    | 🔥 CRITICAL | 10min  | 🔥🔥🔥   | **P0**   | Verify no regressions   |
-| 4   | **Fix line 313: unusedTarget → \_target**           | 🟢 LOW      | 2min   | 🔥       | **P0**   | Quick ESLint cleanup    |
-| 5   | **Commit Phase 1.4 changes**                        | 🟡 MEDIUM   | 5min   | 🔥🔥     | **P0**   | Git checkpoint          |
-| 6   | **Investigate test number fluctuations**            | 🔥 CRITICAL | 120min | 🔥🔥🔥   | **P0**   | Fix flaky tests         |
-| 7   | **Audit all services for ghost systems**            | 🔥 HIGH     | 60min  | 🔥🔥🔥   | **P0**   | Prevent unused code     |
-| 8   | **Phase 1.5: Unit tests for type guards**           | 🔥 HIGH     | 45min  | 🔥🔥     | **P1**   | Complete THE 1% Phase 1 |
-| 9   | **Phase 1.5: Tests for validateSecurityScheme**     | 🔥 HIGH     | 30min  | 🔥🔥     | **P1**   | Complete THE 1% Phase 1 |
-| 10  | **Consolidate security-LEGACY vs ENHANCED**         | 🔥 CRITICAL | 90min  | 🔥🔥🔥   | **P1**   | Eliminate split brain   |
-| 11  | **Phase 2.1: Design value object architecture**     | 🔥 HIGH     | 45min  | 🔥🔥     | **P1**   | Start THE 1% Phase 2    |
-| 12  | **Phase 2.2: Implement ChannelPath value object**   | 🔥 HIGH     | 60min  | 🔥🔥     | **P1**   | Fix double-slash bug    |
-| 13  | **Phase 2.3: Implement ServerUrl value object**     | 🔥 HIGH     | 60min  | 🔥🔥     | **P1**   | Type-safe URLs          |
-| 14  | **Phase 2.4: Implement ProtocolName value object**  | 🟡 MEDIUM   | 45min  | 🔥🔥     | **P1**   | Prevent protocol typos  |
-| 15  | **Phase 2.5: Implement SchemaName value object**    | 🟡 MEDIUM   | 45min  | 🔥🔥     | **P1**   | Type-safe schema refs   |
-| 16  | **Phase 2.6: Update codebase with value objects**   | 🔥 HIGH     | 90min  | 🔥🔥     | **P1**   | Complete THE 1%         |
-| 17  | **Define Domain Events (ChannelCreated, etc.)**     | 🔥 HIGH     | 60min  | 🔥🔥🔥   | **P2**   | Start Event-Driven      |
-| 18  | **Define Commands (CreateChannel, etc.)**           | 🔥 HIGH     | 60min  | 🔥🔥🔥   | **P2**   | Start Event-Driven      |
-| 19  | **Implement EventBus with Effect.Queue**            | 🔥 HIGH     | 120min | 🔥🔥🔥   | **P2**   | Event infrastructure    |
-| 20  | **Implement CommandBus with Effect handlers**       | 🔥 HIGH     | 120min | 🔥🔥🔥   | **P2**   | Command infrastructure  |
-| 21  | **Fix remaining 69 ESLint warnings**                | 🟢 LOW      | 120min | 🔥       | **P3**   | Code quality            |
-| 22  | **Split files >350 lines**                          | 🟡 MEDIUM   | 120min | 🔥       | **P3**   | Maintainability         |
-| 23  | **Add Event Store for audit trail**                 | 🟡 MEDIUM   | 180min | 🔥🔥     | **P3**   | Event-Driven Phase 2    |
-| 24  | **Implement CQRS read model**                       | 🟡 MEDIUM   | 180min | 🔥🔥     | **P3**   | Event-Driven Phase 3    |
-| 25  | **Add Saga for complex workflows**                  | 🟡 MEDIUM   | 240min | 🔥🔥     | **P3**   | Event-Driven Phase 4    |
+| #  | Task                                                | Impact      | Effort | Leverage | Priority | Notes                   |
+| -- | --------------------------------------------------- | ----------- | ------ | -------- | -------- | ----------------------- |
+| 1  | **Integrate validateSecurityScheme into decorator** | 🔥 CRITICAL | 15min  | 🔥🔥🔥   | **P0**   | Fix ghost system!       |
+| 2  | **Add runtime type guard validation to decorator**  | 🔥 CRITICAL | 15min  | 🔥🔥🔥   | **P0**   | Use isSecurityScheme()  |
+| 3  | **Run comprehensive test suite**                    | 🔥 CRITICAL | 10min  | 🔥🔥🔥   | **P0**   | Verify no regressions   |
+| 4  | **Fix line 313: unusedTarget → \_target**           | 🟢 LOW      | 2min   | 🔥       | **P0**   | Quick ESLint cleanup    |
+| 5  | **Commit Phase 1.4 changes**                        | 🟡 MEDIUM   | 5min   | 🔥🔥     | **P0**   | Git checkpoint          |
+| 6  | **Investigate test number fluctuations**            | 🔥 CRITICAL | 120min | 🔥🔥🔥   | **P0**   | Fix flaky tests         |
+| 7  | **Audit all services for ghost systems**            | 🔥 HIGH     | 60min  | 🔥🔥🔥   | **P0**   | Prevent unused code     |
+| 8  | **Phase 1.5: Unit tests for type guards**           | 🔥 HIGH     | 45min  | 🔥🔥     | **P1**   | Complete THE 1% Phase 1 |
+| 9  | **Phase 1.5: Tests for validateSecurityScheme**     | 🔥 HIGH     | 30min  | 🔥🔥     | **P1**   | Complete THE 1% Phase 1 |
+| 10 | **Consolidate security-LEGACY vs ENHANCED**         | 🔥 CRITICAL | 90min  | 🔥🔥🔥   | **P1**   | Eliminate split brain   |
+| 11 | **Phase 2.1: Design value object architecture**     | 🔥 HIGH     | 45min  | 🔥🔥     | **P1**   | Start THE 1% Phase 2    |
+| 12 | **Phase 2.2: Implement ChannelPath value object**   | 🔥 HIGH     | 60min  | 🔥🔥     | **P1**   | Fix double-slash bug    |
+| 13 | **Phase 2.3: Implement ServerUrl value object**     | 🔥 HIGH     | 60min  | 🔥🔥     | **P1**   | Type-safe URLs          |
+| 14 | **Phase 2.4: Implement ProtocolName value object**  | 🟡 MEDIUM   | 45min  | 🔥🔥     | **P1**   | Prevent protocol typos  |
+| 15 | **Phase 2.5: Implement SchemaName value object**    | 🟡 MEDIUM   | 45min  | 🔥🔥     | **P1**   | Type-safe schema refs   |
+| 16 | **Phase 2.6: Update codebase with value objects**   | 🔥 HIGH     | 90min  | 🔥🔥     | **P1**   | Complete THE 1%         |
+| 17 | **Define Domain Events (ChannelCreated, etc.)**     | 🔥 HIGH     | 60min  | 🔥🔥🔥   | **P2**   | Start Event-Driven      |
+| 18 | **Define Commands (CreateChannel, etc.)**           | 🔥 HIGH     | 60min  | 🔥🔥🔥   | **P2**   | Start Event-Driven      |
+| 19 | **Implement EventBus with Effect.Queue**            | 🔥 HIGH     | 120min | 🔥🔥🔥   | **P2**   | Event infrastructure    |
+| 20 | **Implement CommandBus with Effect handlers**       | 🔥 HIGH     | 120min | 🔥🔥🔥   | **P2**   | Command infrastructure  |
+| 21 | **Fix remaining 69 ESLint warnings**                | 🟢 LOW      | 120min | 🔥       | **P3**   | Code quality            |
+| 22 | **Split files >350 lines**                          | 🟡 MEDIUM   | 120min | 🔥       | **P3**   | Maintainability         |
+| 23 | **Add Event Store for audit trail**                 | 🟡 MEDIUM   | 180min | 🔥🔥     | **P3**   | Event-Driven Phase 2    |
+| 24 | **Implement CQRS read model**                       | 🟡 MEDIUM   | 180min | 🔥🔥     | **P3**   | Event-Driven Phase 3    |
+| 25 | **Add Saga for complex workflows**                  | 🟡 MEDIUM   | 240min | 🔥🔥     | **P3**   | Event-Driven Phase 4    |
 
 ### Priority Matrix: Impact vs Effort
 
@@ -916,7 +916,7 @@ The **improved Event-Driven Architecture** I designed (Events & Commands diagram
 | **Architecture Diagrams**    | 0             | 4                        | +4 diagrams ✅           |
 | **Learning Documents**       | 0             | 1                        | +1 document ✅           |
 | **Reusable Prompts**         | 0             | 10                       | +10 prompts ✅           |
-| **Ghost Systems Identified** | 0             | 2                        | +2 (need fixing) ⚠️      |
+| **Ghost Systems Identified** | 0             | 2                        | +2 (need fixing) ⚠️       |
 | **Test Pass Rate**           | ~55%          | Unknown                  | Need to run tests ⏳     |
 | **Files Modified**           | 0             | 6                        | +6 files ✅              |
 

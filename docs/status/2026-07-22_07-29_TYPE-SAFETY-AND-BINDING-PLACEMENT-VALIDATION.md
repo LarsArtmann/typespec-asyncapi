@@ -225,13 +225,13 @@ Right now the matrix is hand-maintained based on reading the AsyncAPI spec. The 
 
 ### Section (e) open items carried forward
 
-| #   | Item                                                         | Status                                     |
-| --- | ------------------------------------------------------------ | ------------------------------------------ |
-| 5   | `schema-emitter.ts:316` oxlint error                         | RESOLVED — fixed during oxlint remediation |
-| 6   | `test-helpers.ts:251` oxlint error                           | RESOLVED — fixed during oxlint remediation |
-| 7   | `as { kind: string }` casts in schema-emitter                | OPEN — ROADMAP territory                   |
-| 10  | `BindingDiagnosticCode` compile-time enforcement             | OPEN — ROADMAP territory                   |
-| 12  | `@bindings` support for `Namespace` target (server bindings) | OPEN — ROADMAP territory                   |
+| #  | Item                                                         | Status                                     |
+| -- | ------------------------------------------------------------ | ------------------------------------------ |
+| 5  | `schema-emitter.ts:316` oxlint error                         | RESOLVED — fixed during oxlint remediation |
+| 6  | `test-helpers.ts:251` oxlint error                           | RESOLVED — fixed during oxlint remediation |
+| 7  | `as { kind: string }` casts in schema-emitter                | OPEN — ROADMAP territory                   |
+| 10 | `BindingDiagnosticCode` compile-time enforcement             | OPEN — ROADMAP territory                   |
+| 12 | `@bindings` support for `Namespace` target (server bindings) | OPEN — ROADMAP territory                   |
 
 ### Questions
 

@@ -20,15 +20,15 @@
 
 ### TODO Items Completed
 
-| #   | Item                               | Tests Added      | Key Change                                                                                                                                 |
-| --- | ---------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1   | AsyncAPI Studio compatibility      | 9                | `test/validation/studio-compatibility.test.ts` — parses emitter output via `@asyncapi/parser`, validates $ref resolution, zero diagnostics |
-| 2   | BDD step definitions               | 23 (replaced 12) | Dead Cucumber infra deleted, `user-behaviors.test.ts` rewritten with real end-to-end tests                                                 |
-| 3   | ESLint/oxlint consolidation        | 3                | `test/unit/linter-strategy.test.ts` — verifies both linters pass                                                                           |
-| 4   | Generator compatibility            | 8                | `test/validation/generator-compatibility.test.ts` — structural requirements for `@asyncapi/generator`                                      |
-| 5   | `@typespec/versioning` integration | 5                | `src/document-builder.ts` reads `@versioned` enum, `test/integration/versioning.test.ts`                                                   |
-| 6   | Plugin/hook system                 | —                | Removed from TODO (Non-Goal in ROADMAP)                                                                                                    |
-| 7   | OpenAPI shared module              | 2                | `test/unit/shared-schema-types.test.ts` — export verification. Remaining as long-term (building OpenAPI emitter is out of scope)           |
+| # | Item                               | Tests Added      | Key Change                                                                                                                                 |
+| - | ---------------------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| 1 | AsyncAPI Studio compatibility      | 9                | `test/validation/studio-compatibility.test.ts` — parses emitter output via `@asyncapi/parser`, validates $ref resolution, zero diagnostics |
+| 2 | BDD step definitions               | 23 (replaced 12) | Dead Cucumber infra deleted, `user-behaviors.test.ts` rewritten with real end-to-end tests                                                 |
+| 3 | ESLint/oxlint consolidation        | 3                | `test/unit/linter-strategy.test.ts` — verifies both linters pass                                                                           |
+| 4 | Generator compatibility            | 8                | `test/validation/generator-compatibility.test.ts` — structural requirements for `@asyncapi/generator`                                      |
+| 5 | `@typespec/versioning` integration | 5                | `src/document-builder.ts` reads `@versioned` enum, `test/integration/versioning.test.ts`                                                   |
+| 6 | Plugin/hook system                 | —                | Removed from TODO (Non-Goal in ROADMAP)                                                                                                    |
+| 7 | OpenAPI shared module              | 2                | `test/unit/shared-schema-types.test.ts` — export verification. Remaining as long-term (building OpenAPI emitter is out of scope)           |
 
 **Net test change:** 679 → 713 (+34 tests, +4 files)
 

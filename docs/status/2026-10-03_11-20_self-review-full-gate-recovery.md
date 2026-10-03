@@ -146,6 +146,7 @@ clean (re-proven after the last workspace.yaml change).
 ## f) NEXT THINGS (harvest-ready; ⏳=gated on Lars, ⏰=time-based)
 
 **Recovery tail**
+
 1. ⏰ eslint → 10.12.0 after 20:08 UTC tonight; relock; frozen proof; quick lint.
 2. ⏰ After baseline WIP lands: reinstall buildflow from main URL, remove
    `.bf-jscpd-worktree`, verify version ≠ -dirty build.
@@ -158,7 +159,7 @@ clean (re-proven after the last workspace.yaml change).
 5. BuildFlow HEAD has 5 pre-existing lint issues (gofumpt/golines/wsl_v5 in
    vendor_resync_ordering_test.go, nix_tools.go) — other session's domain,
    currently red for their own gates.
-**Gated release chain**
+   **Gated release chain**
 6. ⏳ Post issue #252 reply (verify-before-filing pass done 10-12; then github-voice).
 7. ⏳ Version call 1.0.1 (bugfix) vs 1.1.0 (the #252 diagnostic+behavior change
    is arguably minor-not-patch) → CHANGELOG section rename → `pnpm version` →
@@ -168,7 +169,7 @@ clean (re-proven after the last workspace.yaml change).
 9. ⏳ TODO_LIST/ROADMAP harvest (this §f + 10-12 §f).
 10. ⏳ crush-config lessons commit (worktree-placement-for-relative-replaces;
     result-cache masking; lossy-grep failures).
-**Quality / hygiene**
+    **Quality / hygiene**
 11. lychee 99 findings triage (docs link rot; fix or archive dead links).
 12. Evaluate knip adoption for the frozen public API surface.
 13. Review nix-checker's 2 remaining info suggestions (cleaner-diffs/nvfetcher).

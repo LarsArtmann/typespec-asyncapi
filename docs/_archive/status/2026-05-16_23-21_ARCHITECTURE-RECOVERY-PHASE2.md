@@ -241,33 +241,33 @@ These self-congratulatory tests (emoji-laden, measuring "impact") add noise and 
 
 ## F) Top 25 Things We Should Get Done Next
 
-| Priority | #   | Task                                                                      | Category            | Est. Tests Fixed |
-| -------- | --- | ------------------------------------------------------------------------- | ------------------- | ---------------- |
-| P0       | 1   | **Implement `components.schemas` generation**                             | Emitter Feature     | +60-80           |
-| P0       | 2   | **Implement `operations` section generation**                             | Emitter Feature     | +20              |
-| P0       | 3   | **Rewrite `test-helpers.ts` into focused modules**                        | Test Infrastructure | Maintenance      |
-| P1       | 4   | Fix YAML→JSON content generation for `file-type: "json"`                  | Emitter Bug         | +2               |
-| P1       | 5   | Fix OAuth2 test syntax (remove colons from property names)                | Test Data           | +21              |
-| P1       | 6   | Implement security scheme output in emitter                               | Emitter Feature     | +10              |
-| P1       | 7   | Implement protocol binding details in emitter                             | Emitter Feature     | +20              |
-| P1       | 8   | Standardize on `createTester` API, deprecate old helpers                  | Test Infrastructure | Maintenance      |
-| P1       | 9   | Extract `supportedProtocols` to `ReadonlySet` constant                    | Code Quality        | 0                |
-| P1       | 10  | Fix `storeTags` split brain (`{name: "a,b,c"}` → `{tags: ["a","b","c"]}`) | Data Model          | +5               |
-| P2       | 11  | Remove Effect.TS from options validation                                  | Simplification      | 0                |
-| P2       | 12  | Fix `state-compatibility.ts` silent error swallowing                      | Reliability         | 0                |
-| P2       | 13  | Split `minimal-decorators.ts` (611→<370 lines)                            | Code Quality        | 0                |
-| P2       | 14  | Implement `@message` header/correlationId output                          | Emitter Feature     | +5               |
-| P2       | 15  | Add `@server` servers section to output                                   | Emitter Feature     | +5               |
-| P2       | 16  | Fix CLI test infrastructure (bash dependency)                             | Test Infrastructure | +18              |
-| P2       | 17  | Delete remaining `test/debug-*.test.ts` that test non-existent APIs       | Cleanup             | 0                |
-| P2       | 18  | Add integration test: full TypeSpec → AsyncAPI roundtrip                  | Verification        | 0                |
-| P3       | 19  | Split `lib.ts` (457→<370 lines)                                           | Code Quality        | 0                |
-| P3       | 20  | Add proper logging (replace `Effect.log` and `console.log`)               | Code Quality        | 0                |
-| P3       | 21  | Implement `@tags` output in channels/operations                           | Emitter Feature     | +3               |
-| P3       | 22  | Remove dead `emitter-alloy.tsx` references from dist                      | Cleanup             | 0                |
-| P3       | 23  | Add AsyncAPI schema validation against 3.0 spec                           | Verification        | 0                |
-| P3       | 24  | Document the TypeSpec decorator API properly                              | Documentation       | 0                |
-| P3       | 25  | Set up CI pipeline (the `just` commands fail on NixOS)                    | DevOps              | 0                |
+| Priority | #  | Task                                                                      | Category            | Est. Tests Fixed |
+| -------- | -- | ------------------------------------------------------------------------- | ------------------- | ---------------- |
+| P0       | 1  | **Implement `components.schemas` generation**                             | Emitter Feature     | +60-80           |
+| P0       | 2  | **Implement `operations` section generation**                             | Emitter Feature     | +20              |
+| P0       | 3  | **Rewrite `test-helpers.ts` into focused modules**                        | Test Infrastructure | Maintenance      |
+| P1       | 4  | Fix YAML→JSON content generation for `file-type: "json"`                  | Emitter Bug         | +2               |
+| P1       | 5  | Fix OAuth2 test syntax (remove colons from property names)                | Test Data           | +21              |
+| P1       | 6  | Implement security scheme output in emitter                               | Emitter Feature     | +10              |
+| P1       | 7  | Implement protocol binding details in emitter                             | Emitter Feature     | +20              |
+| P1       | 8  | Standardize on `createTester` API, deprecate old helpers                  | Test Infrastructure | Maintenance      |
+| P1       | 9  | Extract `supportedProtocols` to `ReadonlySet` constant                    | Code Quality        | 0                |
+| P1       | 10 | Fix `storeTags` split brain (`{name: "a,b,c"}` → `{tags: ["a","b","c"]}`) | Data Model          | +5               |
+| P2       | 11 | Remove Effect.TS from options validation                                  | Simplification      | 0                |
+| P2       | 12 | Fix `state-compatibility.ts` silent error swallowing                      | Reliability         | 0                |
+| P2       | 13 | Split `minimal-decorators.ts` (611→<370 lines)                            | Code Quality        | 0                |
+| P2       | 14 | Implement `@message` header/correlationId output                          | Emitter Feature     | +5               |
+| P2       | 15 | Add `@server` servers section to output                                   | Emitter Feature     | +5               |
+| P2       | 16 | Fix CLI test infrastructure (bash dependency)                             | Test Infrastructure | +18              |
+| P2       | 17 | Delete remaining `test/debug-*.test.ts` that test non-existent APIs       | Cleanup             | 0                |
+| P2       | 18 | Add integration test: full TypeSpec → AsyncAPI roundtrip                  | Verification        | 0                |
+| P3       | 19 | Split `lib.ts` (457→<370 lines)                                           | Code Quality        | 0                |
+| P3       | 20 | Add proper logging (replace `Effect.log` and `console.log`)               | Code Quality        | 0                |
+| P3       | 21 | Implement `@tags` output in channels/operations                           | Emitter Feature     | +3               |
+| P3       | 22 | Remove dead `emitter-alloy.tsx` references from dist                      | Cleanup             | 0                |
+| P3       | 23 | Add AsyncAPI schema validation against 3.0 spec                           | Verification        | 0                |
+| P3       | 24 | Document the TypeSpec decorator API properly                              | Documentation       | 0                |
+| P3       | 25 | Set up CI pipeline (the `just` commands fail on NixOS)                    | DevOps              | 0                |
 
 ---
 

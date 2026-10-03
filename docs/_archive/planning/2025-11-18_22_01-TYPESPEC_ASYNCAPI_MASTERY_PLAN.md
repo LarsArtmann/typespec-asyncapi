@@ -94,35 +94,35 @@ This ONE issue is blocking 50+ tests and preventing the entire test framework fr
 
 ## Sorted by: Impact × Urgency ÷ Effort = Priority Score
 
-| #   | Task                                           | Time | Impact   | Urgency  | Effort | Priority   | Customer Value |
-| --- | ---------------------------------------------- | ---- | -------- | -------- | ------ | ---------- | -------------- |
-| 1   | Fix emitFile API test framework integration    | 100m | CRITICAL | CRITICAL | MEDIUM | ⭐⭐⭐⭐⭐ | BLOCKING       |
-| 2   | Fix TypeSpec compilation diagnostics           | 90m  | HIGH     | HIGH     | MEDIUM | ⭐⭐⭐⭐⭐ | BLOCKING       |
-| 3   | Fix missing module/build system issues         | 90m  | HIGH     | HIGH     | LOW    | ⭐⭐⭐⭐⭐ | CRITICAL       |
-| 4   | Fix security schemes transformation logic      | 100m | HIGH     | MEDIUM   | HIGH   | ⭐⭐⭐⭐   | HIGH           |
-| 5   | Fix Kafka protocol binding tests (38 failures) | 90m  | HIGH     | MEDIUM   | MEDIUM | ⭐⭐⭐⭐   | HIGH           |
-| 6   | Fix WebSocket protocol tests (44 failures)     | 90m  | HIGH     | MEDIUM   | MEDIUM | ⭐⭐⭐⭐   | HIGH           |
-| 7   | Fix @server decorator implementation           | 80m  | HIGH     | MEDIUM   | MEDIUM | ⭐⭐⭐⭐   | HIGH           |
-| 8   | Fix ProcessingService core logic (13 failures) | 80m  | HIGH     | HIGH     | MEDIUM | ⭐⭐⭐⭐   | CRITICAL       |
-| 9   | Fix AsyncAPI spec validation tests             | 70m  | MEDIUM   | HIGH     | LOW    | ⭐⭐⭐⭐   | HIGH           |
-| 10  | Fix message processing transformation          | 70m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
-| 11  | Fix MQTT protocol binding tests                | 60m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
-| 12  | Fix decorator registration tests               | 60m  | MEDIUM   | LOW      | LOW    | ⭐⭐⭐     | MEDIUM         |
-| 13  | Fix EmitterTester API verification             | 60m  | MEDIUM   | MEDIUM   | LOW    | ⭐⭐⭐     | MEDIUM         |
-| 14  | Fix AsyncAPI protocol binding integration      | 70m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
-| 15  | Fix channel generation tests                   | 60m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
-| 16  | Fix operation generation tests                 | 60m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
-| 17  | Fix real decorator functionality tests         | 70m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
-| 18  | Fix schema conversion utilities                | 50m  | LOW      | MEDIUM   | MEDIUM | ⭐⭐       | LOW            |
-| 19  | Fix correlation ID decorator                   | 40m  | LOW      | LOW      | LOW    | ⭐⭐       | LOW            |
-| 20  | Fix message decorator tests                    | 50m  | LOW      | LOW      | MEDIUM | ⭐⭐       | LOW            |
-| 21  | Clean up duplicate code patterns               | 60m  | LOW      | LOW      | HIGH   | ⭐⭐       | QUALITY        |
-| 22  | Fix remaining assertion failures               | 100m | LOW      | LOW      | HIGH   | ⭐⭐       | QUALITY        |
-| 23  | Update test baselines for new behavior         | 50m  | LOW      | LOW      | MEDIUM | ⭐⭐       | MAINTENANCE    |
-| 24  | Fix skipped tests (29 tests)                   | 80m  | LOW      | LOW      | MEDIUM | ⭐⭐       | COMPLETENESS   |
-| 25  | Add missing test coverage                      | 70m  | LOW      | LOW      | HIGH   | ⭐         | NICE-TO-HAVE   |
-| 26  | Optimize test execution performance            | 50m  | LOW      | LOW      | MEDIUM | ⭐         | OPTIMIZATION   |
-| 27  | Documentation and code cleanup                 | 60m  | LOW      | LOW      | MEDIUM | ⭐         | POLISH         |
+| #  | Task                                           | Time | Impact   | Urgency  | Effort | Priority   | Customer Value |
+| -- | ---------------------------------------------- | ---- | -------- | -------- | ------ | ---------- | -------------- |
+| 1  | Fix emitFile API test framework integration    | 100m | CRITICAL | CRITICAL | MEDIUM | ⭐⭐⭐⭐⭐ | BLOCKING       |
+| 2  | Fix TypeSpec compilation diagnostics           | 90m  | HIGH     | HIGH     | MEDIUM | ⭐⭐⭐⭐⭐ | BLOCKING       |
+| 3  | Fix missing module/build system issues         | 90m  | HIGH     | HIGH     | LOW    | ⭐⭐⭐⭐⭐ | CRITICAL       |
+| 4  | Fix security schemes transformation logic      | 100m | HIGH     | MEDIUM   | HIGH   | ⭐⭐⭐⭐   | HIGH           |
+| 5  | Fix Kafka protocol binding tests (38 failures) | 90m  | HIGH     | MEDIUM   | MEDIUM | ⭐⭐⭐⭐   | HIGH           |
+| 6  | Fix WebSocket protocol tests (44 failures)     | 90m  | HIGH     | MEDIUM   | MEDIUM | ⭐⭐⭐⭐   | HIGH           |
+| 7  | Fix @server decorator implementation           | 80m  | HIGH     | MEDIUM   | MEDIUM | ⭐⭐⭐⭐   | HIGH           |
+| 8  | Fix ProcessingService core logic (13 failures) | 80m  | HIGH     | HIGH     | MEDIUM | ⭐⭐⭐⭐   | CRITICAL       |
+| 9  | Fix AsyncAPI spec validation tests             | 70m  | MEDIUM   | HIGH     | LOW    | ⭐⭐⭐⭐   | HIGH           |
+| 10 | Fix message processing transformation          | 70m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
+| 11 | Fix MQTT protocol binding tests                | 60m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
+| 12 | Fix decorator registration tests               | 60m  | MEDIUM   | LOW      | LOW    | ⭐⭐⭐     | MEDIUM         |
+| 13 | Fix EmitterTester API verification             | 60m  | MEDIUM   | MEDIUM   | LOW    | ⭐⭐⭐     | MEDIUM         |
+| 14 | Fix AsyncAPI protocol binding integration      | 70m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
+| 15 | Fix channel generation tests                   | 60m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
+| 16 | Fix operation generation tests                 | 60m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
+| 17 | Fix real decorator functionality tests         | 70m  | MEDIUM   | MEDIUM   | MEDIUM | ⭐⭐⭐     | MEDIUM         |
+| 18 | Fix schema conversion utilities                | 50m  | LOW      | MEDIUM   | MEDIUM | ⭐⭐       | LOW            |
+| 19 | Fix correlation ID decorator                   | 40m  | LOW      | LOW      | LOW    | ⭐⭐       | LOW            |
+| 20 | Fix message decorator tests                    | 50m  | LOW      | LOW      | MEDIUM | ⭐⭐       | LOW            |
+| 21 | Clean up duplicate code patterns               | 60m  | LOW      | LOW      | HIGH   | ⭐⭐       | QUALITY        |
+| 22 | Fix remaining assertion failures               | 100m | LOW      | LOW      | HIGH   | ⭐⭐       | QUALITY        |
+| 23 | Update test baselines for new behavior         | 50m  | LOW      | LOW      | MEDIUM | ⭐⭐       | MAINTENANCE    |
+| 24 | Fix skipped tests (29 tests)                   | 80m  | LOW      | LOW      | MEDIUM | ⭐⭐       | COMPLETENESS   |
+| 25 | Add missing test coverage                      | 70m  | LOW      | LOW      | HIGH   | ⭐         | NICE-TO-HAVE   |
+| 26 | Optimize test execution performance            | 50m  | LOW      | LOW      | MEDIUM | ⭐         | OPTIMIZATION   |
+| 27 | Documentation and code cleanup                 | 60m  | LOW      | LOW      | MEDIUM | ⭐         | POLISH         |
 
 **Total Estimated Time**: 1,870 minutes (~31.2 hours)
 **Top 8 Tasks (20%)**: 680 minutes (~11.3 hours) → **80% of value**

@@ -224,6 +224,7 @@ propagated into four docs — including a pre-existing website omission.
 ## f) NEXT THINGS (up to 50; sorted by impact; ⏳=gated on Lars, ⏰=time-gated)
 
 **Gated release chain (blocks the most value):**
+
 1. ⏳ Lars: pick #252 reply timing (now vs post-1.1.0) → post
    `/tmp/issue-252-reply.md` (M01).
 2. ⏳ Lars: version call → run the 1.1.0 release ritual (lockfile-only →
@@ -240,60 +241,60 @@ propagated into four docs — including a pre-existing website omission.
 
 **Trust-in-gate hardening (cheap, high value):**
 8. Add the diagnostic-count lock test (e.1) — 15 min, prevents the exact
-   class of today's worst miss.
+class of today's worst miss.
 9. Build-script appends `nix fmt` after codegen (e.4) — one line.
 10. Sweep AGENTS.md gotchas: add the 3 new ones (e; b.1) + property-suite
-    pointer (b.1) — one editing pass.
+pointer (b.1) — one editing pass.
 11. Investigate `nix flake check` 0-checks vs existing check derivations
-    (e.10).
+(e.10).
 12. Update the SUPERB plan + session summaries convention: mode flags
-    copied from SKILL.md, not memory (process note; today's d.4).
+copied from SKILL.md, not memory (process note; today's d.4).
 13. Daemon guard: build/lint-sensitive files pass at least format check
-    before auto-commit (e.6) — coordinates with BuildFlow baseline session.
+before auto-commit (e.6) — coordinates with BuildFlow baseline session.
 14. Pre-flight trap checklist into AGENTS.md test-harness section (e.7).
 15. Run the on-demand sweeps now that the gate is green: gitleaks,
-    codespell, markdownlint (11-20 §f.14).
+codespell, markdownlint (11-20 §f.14).
 16. Add `BUILDFLOW_NO_RESULT_CACHE=1` to the CI final-gate job (11-20
-    §f.15, pairs with result-cache masking finding).
+§f.15, pairs with result-cache masking finding).
 
 **Website/docs (visibility = adoption):**
 17. Visual QA of `guides/mixing-with-openapi` in a real browser; fix any
-    rendering/analytics gaps.
+rendering/analytics gaps.
 18. Cross-link the new guide from related pages (bindings, security,
-    landing "why" section).
+landing "why" section).
 19. Website changelog.md still tells the beta story (TODO-listed since
-    1.0.0) — 1.0 truth-sync pass over ALL website content, now including
-    36-code counts and the new guide.
+1.0.0) — 1.0 truth-sync pass over ALL website content, now including
+36-code counts and the new guide.
 20. og:image / social card refresh for the new guide (fleet review
-    standard from 2026-09-19).
+standard from 2026-09-19).
 21. Lychee triage: separate sandboxed-network false positives from real
-    dead links; fix or archive (11-20 §f.11).
+dead links; fix or archive (11-20 §f.11).
 22. Add `docs-entropy` CI guard (counts in docs vs code) — ROADMAP idea,
-    promote after f.8 proves the pattern.
+promote after f.8 proves the pattern.
 
 **Test-suite depth:**
 23. Property-suite generator breadth: unions of models, inheritance,
-    generics, channel parameters (TODO-listed; the mixed-ownership suite
-    is the template).
+generics, channel parameters (TODO-listed; the mixed-ownership suite
+is the template).
 24. Root-cause the transient `bun test`/vitest exit-zero-failures flake
-    (needs a captured failing run; TODO-listed since 09-13).
+(needs a captured failing run; TODO-listed since 09-13).
 25. Extend mixed-ownership property suite to cover the fallback path
-    (http-loaded vs not) as a second invariant set — cheap now that the
-    generator exists.
+(http-loaded vs not) as a second invariant set — cheap now that the
+generator exists.
 26. Consider an integration test that runs BOTH emitters' outputs through
-    AJV in one compile (check-examples does this per-example in CI; an
-    in-suite version would catch regressions before push).
+AJV in one compile (check-examples does this per-example in CI; an
+in-suite version would catch regressions before push).
 
 **Upstream/ecosystem:**
 27. Watch `http-cache-semantics` for a patched release → remove
-    `ignoreGhsas` (TODO-listed).
+`ignoreGhsas` (TODO-listed).
 28. Watch microsoft/typespec for movement on #2463 + the new issue once
-    posted (D1 verdict chain already TODO-listed).
+posted (D1 verdict chain already TODO-listed).
 29. Evaluate knip for the frozen public API surface (11-20 §f.12).
 30. Note/upstream website `@astrojs/check` TS-7 mismatch to Astro
-    templates (11-20 §f.20).
+templates (11-20 §f.20).
 31. Review nix-checker's 2 info suggestions (cleaner diffs / nvfetcher)
-    (11-20 §f.13).
+(11-20 §f.13).
 
 **Hygiene (small, batch them):**
 32. Trash `scripts/ns-test/` (owner call — not my file).
@@ -301,36 +302,36 @@ propagated into four docs — including a pre-existing website omission.
 34. Harmonize AGENTS pin wording `^6.0.3` vs exact `6.0.3` (11-20 §f.18).
 35. TODO_LIST checkbox templates for ⏰ items (11-20 §f.24).
 36. Dependabot divergence guard: config/lockfile drift detection in
-    preflight (pattern recurred TODAY via pnpm-update manifest drift).
+preflight (pattern recurred TODAY via pnpm-update manifest drift).
 37. Branch protection on master requiring green CI (TODO since 09-30; the
-    single highest-leverage repo setting).
+single highest-leverage repo setting).
 38. NPM_TOKEN rotation + GitHub publish secret update (TODO since 1.0.0).
 39. Remove stale npm `alpha` dist-tag via npmjs.com UI (token can't).
 40. Release-preflight script (TODO since 09-30) — now would have caught
-    today's daemon-unformatted-commit class too.
+today's daemon-unformatted-commit class too.
 41. `nix fmt` + daemon race: either serialize (daemon skips while
-    formatter lock held) or document the false-verdict mode (e.5/d.5).
+formatter lock held) or document the false-verdict mode (e.5/d.5).
 
 **Bigger bets (ROADMAP fuel, not commitments):**
 42. EFv1 containment watch: quarterly check of openapi3's
-    emitter-framework adoption (ROADMAP plan step 2; next check due).
+emitter-framework adoption (ROADMAP plan step 2; next check due).
 43. Announce 1.0.0/1.1.0 (XYD thread / TypeSpec community) — sequencing
-    with #2463 proposal still open (TODO since 09-30).
+with #2463 proposal still open (TODO since 09-30).
 44. Demo video epic (ROADMAP §5 storyboard exists; multi-hour creative
-    commitment — schedule deliberately or descope).
+commitment — schedule deliberately or descope).
 45. Verified comparison vs `tsp-asyncapi` competitor (TODO T05) — the
-    mixed-emitter feature is now a differentiator worth adding to the
-    matrix.
+mixed-emitter feature is now a differentiator worth adding to the
+matrix.
 46. 2.0 strictness design note: geometry-fallback removal mechanics
-    (ROADMAP idea added today; needs a migration story before anyone
-    promises it).
+(ROADMAP idea added today; needs a migration story before anyone
+promises it).
 47. `@asyncapi/generator` real-CLI run against emitter output (ROADMAP;
-    Bun incompatibility workaround needed).
+Bun incompatibility workaround needed).
 48. Split `./shared` into neutral vs AsyncAPI-bound entry points (ROADMAP
-    DX idea).
+DX idea).
 49. Provenance verification instructions in README (TODO since 1.0.0).
 50. Session-report cadence: next report should be the RELEASE report
-    (11-20 §f.30) — everything else here is fuel, not obligation.
+(11-20 §f.30) — everything else here is fuel, not obligation.
 
 ## g) QUESTIONS (cannot figure out myself; the standing 3)
 
@@ -346,8 +347,8 @@ propagated into four docs — including a pre-existing website omission.
 
 ---
 
-*Annotated point-in-time snapshot. Corrections to THIS report go inline
+_Annotated point-in-time snapshot. Corrections to THIS report go inline
 (docs-health ANNOTATE mode). Harvest state: actionable items already in
 TODO_LIST.md/ROADMAP.md as of 13:52 CEST; §f items 8–16 etc. that postdate
 that harvest need a docs-health HARVEST pass before they can be considered
-tracked.*
+tracked._

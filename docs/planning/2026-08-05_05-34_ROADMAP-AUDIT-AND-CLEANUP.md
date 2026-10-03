@@ -82,16 +82,16 @@ Everything in 4%, plus:
 
 Sorted by impact (critical → polish). All source file references verified against actual codebase.
 
-| #   | Task                                                                                        | Impact   | Effort | Tier | Safe? |
-| --- | ------------------------------------------------------------------------------------------- | -------- | ------ | ---- | ----- |
-| M1  | Fix lint failure: 13 `padding-around-test-blocks` violations in `binding-placement.test.ts` | Critical | 10min  | 1%   | Yes   |
-| M2  | Fix type-guards.ts:266 — `AsyncAPIObject` → `ParsedAsyncAPIDocument` + fix JSDoc            | High     | 10min  | 4%   | Yes   |
-| M3  | Remove dead `test/core/unified-test-infrastructure.ts` (0 imports)                          | Medium   | 5min   | 4%   | Yes   |
-| M4  | Clean stale TODO comments in 5+ test files                                                  | Medium   | 15min  | 20%  | Yes   |
-| M5  | Rewrite ROADMAP.md — audit all items, update state, mark done                               | Critical | 35min  | 1%   | Yes   |
-| M6  | Update FEATURES.md — test count, new features (19 protocols, reply, etc.)                   | High     | 20min  | 4%   | Yes   |
-| M7  | Update AGENTS.md — test count, line counts, builders/, 19 protocols                         | High     | 25min  | 20%  | Yes   |
-| M8  | Populate TODO_LIST.md with refined actionable items                                         | High     | 15min  | 20%  | Yes   |
+| #  | Task                                                                                        | Impact   | Effort | Tier | Safe? |
+| -- | ------------------------------------------------------------------------------------------- | -------- | ------ | ---- | ----- |
+| M1 | Fix lint failure: 13 `padding-around-test-blocks` violations in `binding-placement.test.ts` | Critical | 10min  | 1%   | Yes   |
+| M2 | Fix type-guards.ts:266 — `AsyncAPIObject` → `ParsedAsyncAPIDocument` + fix JSDoc            | High     | 10min  | 4%   | Yes   |
+| M3 | Remove dead `test/core/unified-test-infrastructure.ts` (0 imports)                          | Medium   | 5min   | 4%   | Yes   |
+| M4 | Clean stale TODO comments in 5+ test files                                                  | Medium   | 15min  | 20%  | Yes   |
+| M5 | Rewrite ROADMAP.md — audit all items, update state, mark done                               | Critical | 35min  | 1%   | Yes   |
+| M6 | Update FEATURES.md — test count, new features (19 protocols, reply, etc.)                   | High     | 20min  | 4%   | Yes   |
+| M7 | Update AGENTS.md — test count, line counts, builders/, 19 protocols                         | High     | 25min  | 20%  | Yes   |
+| M8 | Populate TODO_LIST.md with refined actionable items                                         | High     | 15min  | 20%  | Yes   |
 
 **Total estimated effort:** ~2h 15min
 

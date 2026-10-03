@@ -21,8 +21,8 @@
 
 ### **b) PARTIALLY DONE ⚠️**
 
-| Component                        | Status     | Missing                                               | Details |
-| -------------------------------- | ---------- | ----------------------------------------------------- | ------- |
+| Component                        | Status    | Missing                                               | Details |
+| -------------------------------- | --------- | ----------------------------------------------------- | ------- |
 | **Decorator State Persistence**  | ⚠️ PARTIAL | State storage works, consolidation needs verification |         |
 | **Document Generation Pipeline** | ⚠️ PARTIAL | Basic generation works, advanced features missing     |         |
 | **AsyncAPI 3.0 Compliance**      | ⚠️ PARTIAL | Structure correct, advanced schema generation needed  |         |

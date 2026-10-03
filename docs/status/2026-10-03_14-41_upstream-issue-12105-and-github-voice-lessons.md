@@ -168,6 +168,7 @@ to a `/tmp` wipe.
 ## f) NEXT THINGS (up to 50; impact-sorted; ⏳=gated on Lars, ⏰=time-gated)
 
 **Gated chain (blocks the most value):**
+
 1. ⏳ Lars: #252 reply — redraft now citing #12105, then decide
    post-now vs post-1.1.0 (draft must be rebuilt from scratch or from
    the 13-27 report IF it contains the text — verify first).
@@ -183,28 +184,28 @@ to a `/tmp` wipe.
 
 **Close-the-loop hygiene (small, immediate):**
 7. Archive the posted #12105 draft + final body into the project repo
-   (`docs/drafts/upstream-typespec-12105.md`) — the /tmp copy is
-   disposable.
+(`docs/drafts/upstream-typespec-12105.md`) — the /tmp copy is
+disposable.
 8. Verify whether the 13-27 report contains the #252 reply text; update
-   TODO_LIST's recreate-vs-redraft wording to the truth.
+TODO_LIST's recreate-vs-redraft wording to the truth.
 9. Move the five SKILL.md lessons' enforcement into a pre-posting
-   checklist the agent runs before any `gh issue create`.
+checklist the agent runs before any `gh issue create`.
 10. Generalize "/tmp is volatile" into the cross-project lessons file
-    (crush-config repo, committed — not an in-session write).
+(crush-config repo, committed — not an in-session write).
 11. Sync the `[!NOTICE]` rendering caveat into the skill next to the
-    template (one line: renders as plain blockquote on GitHub;
-    `[!NOTE]` is the styled equivalent) — it is only in this report
-    today.
+template (one line: renders as plain blockquote on GitHub;
+`[!NOTE]` is the styled equivalent) — it is only in this report
+today.
 12. typespec-asyncapi TODO_LIST: prune items completed today beyond
-    M16 (the Hygiene section items resolved en route earlier).
+M16 (the Hygiene section items resolved en route earlier).
 
 **Trust-in-gate (carried from the 13-58 report, still open):**
 13. Diagnostic-count lock test (36) — 15 min, kills the hand-count
-    drift class.
+drift class.
 14. Build script appends `nix fmt` after codegen (generator-format
-    split-brain class).
+split-brain class).
 15. AGENTS.md gotcha sweep: 3 new gotchas from session-2 + property-suite
-    pointer.
+pointer.
 16. `nix flake check` "0 checks" mystery vs existing check derivations.
 17. Daemon guard for format/toolchain-sensitive auto-commits.
 18. Add `BUILDFLOW_NO_RESULT_CACHE=1` to CI final-gate job.
@@ -212,7 +213,7 @@ to a `/tmp` wipe.
 **Website/docs (carried, unchanged):**
 19. Visual QA of the new mixing-with-openapi guide page.
 20. Website 1.0 truth-sync (changelog.md beta story) — now also covers
-    36-code counts + the new guide.
+36-code counts + the new guide.
 21. Cross-link the guide from related pages; og:image refresh.
 22. Lychee triage (sandbox false positives vs real rot).
 23. docs-entropy CI guard promotion after f.13 proves the pattern.
@@ -222,7 +223,7 @@ to a `/tmp` wipe.
 25. Root-cause the transient vitest/bun exit-zero flake (needs a capture).
 26. Mixed-ownership property suite: fallback-path invariant set.
 27. In-suite dual-emitter AJV compile (pre-push variant of
-    check-examples).
+check-examples).
 
 **Upstream/ecosystem (carried + today):**
 28. `http-cache-semantics` watch → remove `ignoreGhsas`.
@@ -238,24 +239,24 @@ to a `/tmp` wipe.
 36. TODO_LIST checkbox templates for ⏰ items.
 37. Dependabot config/lockfile divergence guard in preflight.
 38. Branch protection on master (green CI required) — highest-leverage
-    repo setting, open since 09-30.
+repo setting, open since 09-30.
 39. NPM_TOKEN rotation + publish secret update.
 40. Stale npm `alpha` dist-tag removal (UI-only).
 41. Release-preflight script (would have caught two incident classes).
 42. crush-config lessons commit (worktree replaces, result-cache
-    masking, lossy grep) — now ALSO carries the /tmp lesson (f.10).
+masking, lossy grep) — now ALSO carries the /tmp lesson (f.10).
 
 **Bigger bets (ROADMAP fuel, unchanged):**
 43. EFv1 containment quarterly watch (openapi3 emitter-framework move).
 44. 1.0/1.1 announcement sequencing (XYD / TypeSpec community).
 45. Demo video epic (storyboarded; schedule deliberately or descope).
 46. Verified `tsp-asyncapi` comparison matrix (mixed-emitter feature
-    now a differentiator — add to it).
+now a differentiator — add to it).
 47. 2.0 strictness design note (geometry-fallback removal migration).
 48. `@asyncapi/generator` real-CLI run (Bun workaround needed).
 49. `./shared` neutral vs AsyncAPI-bound entry-point split.
 50. Next status report = the RELEASE report (cadence rule from 11-20
-    §f.30; everything above is fuel, not obligation).
+§f.30; everything above is fuel, not obligation).
 
 ## g) QUESTIONS (cannot figure out myself)
 
@@ -272,6 +273,6 @@ to a `/tmp` wipe.
 
 ---
 
-*Point-in-time snapshot; corrections go inline (docs-health ANNOTATE).
+_Point-in-time snapshot; corrections go inline (docs-health ANNOTATE).
 §f actionable items beyond today's completions are already in
-TODO_LIST.md / ROADMAP.md or flagged for the next HARVEST pass.*
+TODO_LIST.md / ROADMAP.md or flagged for the next HARVEST pass._

@@ -79,35 +79,35 @@
 
 ## f) Next things (impact-ordered; DO NOW → TODO_LIST → ROADMAP routing)
 
-| #   | Task                                                                                      | Route             | Impact                        |
-| --- | ----------------------------------------------------------------------------------------- | ----------------- | ----------------------------- |
-| 1   | Post the issue #252 reply (final wording incl. new warning + example link)                | DO NOW            | Reporter unblocked            |
-| 2   | CHANGELOG.md entry for warning + bare-op guard + example                                  | DO NOW            | Release-blocking              |
-| 3   | Version call + release (1.0.1 vs 1.1.0)                                                   | DO NOW (decision) | Ships the fix                 |
-| 4   | Pre-tag ritual: `pnpm install --lockfile-only && --frozen-lockfile && verify`             | DO NOW            | CI-proven release             |
-| 5   | Harvest this list into TODO_LIST/ROADMAP                                                  | DO NOW            | No entombed tasks             |
-| 6   | Test: `@channel`-only op (1b path) gets the warning                                       | TODO_LIST         | Coverage                      |
-| 7   | Test: `#suppress` works for `event-op-in-service-namespace`                               | TODO_LIST         | UX lock                       |
-| 8   | Test: nested `@service` namespaces (inner service wins)                                   | TODO_LIST         | Semantics lock                |
-| 9   | Test: nearest-ancestor server escape order (wss root + http inner → exempt)               | TODO_LIST         | Escape lock                   |
-| 10  | Test: events under service with NO server → still warns (documented residual FP)          | TODO_LIST         | Honest lock                   |
-| 11  | Test: two bare ops + http + NO decorated ops → both still discovered (guard semantics)    | TODO_LIST         | Regression lock               |
-| 12  | Assert "emit actually ran" in negative tests (asyncApiDoc non-null) — helper convention   | TODO_LIST         | Kills vacuous passes          |
-| 13  | Add the reporter's exact spec as `test/realworld/issue-252.tsp` fixture                   | TODO_LIST         | Regression                    |
-| 14  | Golden-file lock for `examples/mixed-rest-events` outputs (both documents)                | TODO_LIST         | Output stability              |
-| 15  | Dedupe warning per (service, namespace) instead of per op                                 | TODO_LIST         | UX                            |
-| 16  | Audit README.md + examples/README.md for count drift (diagnostics 34, examples 15)        | TODO_LIST         | Docs truth                    |
-| 17  | Add mixed-http-emitters to AGENTS "Key Tests" list                                        | TODO_LIST         | Docs truth                    |
-| 18  | Validate the mixed example's OpenAPI output in `check-examples` (OpenAPI 3.1 AJV)         | TODO_LIST         | Gate gap                      |
-| 19  | Memoize service-set computation in discovery loop                                         | TODO_LIST         | Perf (minor now)              |
-| 20  | Per-file coverage check for `cross-emitter-validation.ts`; top up if near 75% floor       | TODO_LIST         | Gate margin                   |
-| 21  | Benchmark discovery pre/post guard on large spec                                          | TODO_LIST         | Perf evidence                 |
-| 22  | README FAQ: "Can I mix this with @typespec/openapi3?"                                     | TODO_LIST         | Discovery                     |
-| 23  | Website docs page: mixing with OpenAPI (competitor gap)                                   | ROADMAP           | Market                        |
-| 24  | Property test: mixed http+events generator asserting zero cross-leak                      | ROADMAP           | Invariant                     |
-| 25  | Commit session lessons to crush-config `references/lessons.md`                            | ROADMAP (Lars)    | Cross-project                 |
-| 26  | Consider an `@asyncapiOnly`-style explicit marker if warning FPs ever surface in the wild | ROADMAP           | Future API (post-1.0 caution) |
-| 27  | LSP hygiene: `lsp_restart` at session start when stale file diagnostics appear            | Process note      | Session quality               |
+| #  | Task                                                                                      | Route             | Impact                        |
+| -- | ----------------------------------------------------------------------------------------- | ----------------- | ----------------------------- |
+| 1  | Post the issue #252 reply (final wording incl. new warning + example link)                | DO NOW            | Reporter unblocked            |
+| 2  | CHANGELOG.md entry for warning + bare-op guard + example                                  | DO NOW            | Release-blocking              |
+| 3  | Version call + release (1.0.1 vs 1.1.0)                                                   | DO NOW (decision) | Ships the fix                 |
+| 4  | Pre-tag ritual: `pnpm install --lockfile-only && --frozen-lockfile && verify`             | DO NOW            | CI-proven release             |
+| 5  | Harvest this list into TODO_LIST/ROADMAP                                                  | DO NOW            | No entombed tasks             |
+| 6  | Test: `@channel`-only op (1b path) gets the warning                                       | TODO_LIST         | Coverage                      |
+| 7  | Test: `#suppress` works for `event-op-in-service-namespace`                               | TODO_LIST         | UX lock                       |
+| 8  | Test: nested `@service` namespaces (inner service wins)                                   | TODO_LIST         | Semantics lock                |
+| 9  | Test: nearest-ancestor server escape order (wss root + http inner → exempt)               | TODO_LIST         | Escape lock                   |
+| 10 | Test: events under service with NO server → still warns (documented residual FP)          | TODO_LIST         | Honest lock                   |
+| 11 | Test: two bare ops + http + NO decorated ops → both still discovered (guard semantics)    | TODO_LIST         | Regression lock               |
+| 12 | Assert "emit actually ran" in negative tests (asyncApiDoc non-null) — helper convention   | TODO_LIST         | Kills vacuous passes          |
+| 13 | Add the reporter's exact spec as `test/realworld/issue-252.tsp` fixture                   | TODO_LIST         | Regression                    |
+| 14 | Golden-file lock for `examples/mixed-rest-events` outputs (both documents)                | TODO_LIST         | Output stability              |
+| 15 | Dedupe warning per (service, namespace) instead of per op                                 | TODO_LIST         | UX                            |
+| 16 | Audit README.md + examples/README.md for count drift (diagnostics 34, examples 15)        | TODO_LIST         | Docs truth                    |
+| 17 | Add mixed-http-emitters to AGENTS "Key Tests" list                                        | TODO_LIST         | Docs truth                    |
+| 18 | Validate the mixed example's OpenAPI output in `check-examples` (OpenAPI 3.1 AJV)         | TODO_LIST         | Gate gap                      |
+| 19 | Memoize service-set computation in discovery loop                                         | TODO_LIST         | Perf (minor now)              |
+| 20 | Per-file coverage check for `cross-emitter-validation.ts`; top up if near 75% floor       | TODO_LIST         | Gate margin                   |
+| 21 | Benchmark discovery pre/post guard on large spec                                          | TODO_LIST         | Perf evidence                 |
+| 22 | README FAQ: "Can I mix this with @typespec/openapi3?"                                     | TODO_LIST         | Discovery                     |
+| 23 | Website docs page: mixing with OpenAPI (competitor gap)                                   | ROADMAP           | Market                        |
+| 24 | Property test: mixed http+events generator asserting zero cross-leak                      | ROADMAP           | Invariant                     |
+| 25 | Commit session lessons to crush-config `references/lessons.md`                            | ROADMAP (Lars)    | Cross-project                 |
+| 26 | Consider an `@asyncapiOnly`-style explicit marker if warning FPs ever surface in the wild | ROADMAP           | Future API (post-1.0 caution) |
+| 27 | LSP hygiene: `lsp_restart` at session start when stale file diagnostics appear            | Process note      | Session quality               |
 
 ## g) Questions I cannot answer myself
 
