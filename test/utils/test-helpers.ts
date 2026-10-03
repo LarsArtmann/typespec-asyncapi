@@ -50,10 +50,14 @@ async function createTesterInstance(
     mainContent.includes("import '@lars-artmann/typespec-asyncapi'");
   const hasOwnUsing = mainContent.includes("using TypeSpec.AsyncAPI");
   const usesVersioning = mainContent.includes("@typespec/versioning");
+  const usesHttp = mainContent.includes("@typespec/http");
 
   const libraries = ["@lars-artmann/typespec-asyncapi"];
   if (usesVersioning) {
     libraries.push("@typespec/versioning");
+  }
+  if (usesHttp) {
+    libraries.push("@typespec/http");
   }
 
   let tester = createTester(packageRoot, { libraries });

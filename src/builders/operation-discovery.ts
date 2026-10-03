@@ -23,6 +23,10 @@ import {
   type DocumentBuildContext,
 } from "./_imports.js";
 import { schemaNameForType } from "../schema-ref.js";
+import {
+  findEnclosingServiceNamespace,
+  isHttpLibraryLoaded,
+} from "./cross-emitter-validation.js";
 
 /**
  * Discover all operations from three sources:
@@ -146,6 +150,12 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
     ...namesOfTypes(state.operations),
     ...namesOfTypes(state.channels),
   ]);
+  // In mixed REST + events programs, bare operations under a @service namespace are REST operations.
+  // Keep them out of the AsyncAPI document because @typespec/http routes them as REST endpoints.
+  // The "decorated ops exist" guard keeps pure minimal specs (no @publish/@subscribe/@channel) unchanged.
+  const restOpsAreInPlay =
+    isHttpLibraryLoaded(ctx.program) &&
+    (state.operations.size > 0 || state.channels.size > 0);
   const globalNs = ctx.program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
   for (const ns of namespaces) {
@@ -154,6 +164,12 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
     }
     for (const [opName, op] of ns.operations) {
       if (allKnownOps.has(opName)) {
+        continue;
+      }
+      if (
+        restOpsAreInPlay &&
+        findEnclosingServiceNamespace(ctx.program, op) !== undefined
+      ) {
         continue;
       }
       const effectiveName = resolveOpName(state, op, opName);

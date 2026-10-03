@@ -203,6 +203,12 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "warning",
     },
+    "event-op-in-service-namespace": {
+      messages: {
+        default: paramMessage`AsyncAPI operation '${"operationName"}' is declared inside the @service namespace '${"serviceName"}' while @typespec/http is loaded. Every operation under a @service namespace is also routed as a REST endpoint (verb-less operations default to GET), which leaks events into OpenAPI output and can cause duplicate-operation errors. Move event operations to a namespace outside the REST @service namespace, or suppress this warning if the operation is intentionally an AsyncAPI-over-HTTP channel.`,
+      },
+      severity: "warning",
+    },
   },
   name: "@lars-artmann/typespec-asyncapi",
   state: {
