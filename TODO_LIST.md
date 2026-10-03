@@ -42,6 +42,60 @@ removal.
     `subdirectoryNames` extractions). Gate green at tag time: 1236 tests,
     98.0% coverage, 0 clones.
 
+## Mixed-Emitter Ownership Track (harvested 2026-10-03 from the SUPERB plan + 11-20 report §f)
+
+Feature work (route-facts ownership, new diagnostics, docs, locks) is DONE
+and gate-green — see `docs/status/2026-10-03_13-27_mixed-emitter-ownership-execution.md`.
+What remains is the gated release chain and the tail:
+
+- [ ] **⏳ Post the #252 reply** — draft voice-checked at `/tmp/issue-252-reply.md`
+      (recreate from the 10-03 13-27 report if /tmp was cleared). Open question
+      for Lars: post now vs after 1.1.0 ships.
+- [ ] **⏳ Release 1.1.0** — new diagnostics + behavior refinement (rec: 1.1.0,
+      not patch). Ritual per AGENTS: `pnpm install --lockfile-only && pnpm
+    install --frozen-lockfile && pnpm run verify` → `pnpm version` →
+      annotated tag → watch release.yml. FEATURES refresh after it ships.
+- [ ] **⏳ Post the upstream microsoft/typespec issue** — verb-less implicit-GET
+      friction in mixed programs; draft voice-checked (0 FAIL 0 WARN) at
+      `/tmp/typespec-upstream-issue.md`; prior-art search found none (closest:
+      #2463 AsyncAPI POC, #4124 websockets). Open question: post as drafted
+      (bug evidence) vs rescoped proposal.
+- [ ] **⏰ eslint 10.12.0 bump** — after the 20:08 UTC soak on 2026-10-03;
+      relock, frozen-lockfile proof, quick lint.
+- [ ] **⏰ After the BuildFlow baseline WIP lands** — remove
+      `.bf-jscpd-worktree`, reinstall buildflow from the main URL, verify
+      version is not `-dirty`.
+- [ ] **⏳ BuildFlow upstream handoff** — 4 findings (pnpm-update lockless
+      manifest writes; `minimumReleaseAgeExclude` bypasses; result cache can
+      replay GREEN over live-RED; `nix profile install` same-URL no-op) plus
+      the 5 pre-existing BuildFlow-repo lint issues. Ownership question open
+      (file in BuildFlow tracker vs hand to the baseline session).
+- [ ] **⏳ crush-config lessons commit** — worktree placement for relative
+      replaces; result-cache masking; lossy-grep failures.
+
+## Hygiene (harvested 2026-10-03 from the 11-20 report §f)
+
+- [ ] Watch `http-cache-semantics` for a patched release → remove the
+      `ignoreGhsas` entry.
+- [ ] Lychee 99 findings triage (mostly sandboxed-network false positives in
+      BuildFlow runs; fix or archive genuinely dead links).
+- [ ] Evaluate knip adoption for the frozen public API surface.
+- [ ] Review nix-checker's 2 remaining info suggestions (cleaner diffs /
+      nvfetcher).
+- [ ] On-demand sweeps now the gate is green: gitleaks, codespell,
+      markdownlint.
+- [ ] Add `BUILDFLOW_NO_RESULT_CACHE=1` to the CI final-gate job
+      (cache-masking defense).
+- [ ] Trash `scripts/ns-test/` (113-byte scratch, not referenced; owner call).
+- [ ] Decide `global.out.css` policy (11-20 report g)3).
+- [ ] Harmonize AGENTS pin wording (`^6.0.3` prose vs exact `6.0.3` manifest).
+- [ ] Note or upstream: website `@astrojs/check` wants TS `^5||^6` while
+      website pins TS 7 (Astro-side mismatch, pre-existing).
+- [ ] Dependabot watch: config/lockfile divergence pattern recurred 2026-10-03
+      (pnpm-update manifest drift); consider a daemon/preflight guard.
+- [ ] Consider checkbox templates for ⏰ items so reports aren't the reminder
+      system.
+
 ## Test-Suite Integrity (residual)
 
 - [ ] Property-suite generator breadth — generators now cover model→model

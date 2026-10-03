@@ -1,5 +1,17 @@
 # SUPERB Plan — Mixed-Emitter Ownership: Evidence over Heuristics
 
+> **EXECUTION STATUS (annotated 2026-10-03 ~14:00 UTC — plan text below is
+> untouched):** M02–M13, M15+M16-prep, M17+F21, M18, M19, M21 DONE and
+> gate-green (cache-cold buildflow full exit 0; verify 1275 tests; 0 clones;
+> website builds 17 pages). Corrections made en route: diagnostic total is
+> **36 codes (20 error + 16 warning)** — the pre-session count had also
+> missed `protocol-model-fields-unplaced`. Still open: M01/M14/M16-post/M22
+> (✋ Lars), M20 (⏰ after 20:08 UTC), M23 (⏰ after BuildFlow baseline).
+> Full account: `docs/status/2026-10-03_13-27_mixed-emitter-ownership-execution.md`;
+> harvested remaining work: `TODO_LIST.md` (Mixed-Emitter Ownership Track +
+> Hygiene) and `ROADMAP.md` (Current State refresh, 2.0 strictness,
+> upstream watch).
+
 **Date:** 2026-10-03 11:53 CEST
 **Source:** "How can we be smarter?" session (post-#252-fix), tiers defined in
 conversation 2026-10-03; carried TODOs from `docs/status/2026-10-03_06-31_issue-252-mixed-emitter-support.md` §f

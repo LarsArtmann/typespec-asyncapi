@@ -73,12 +73,12 @@ options:
 
 The emitter consults http's route table for every operation it discovers:
 
-| Operation | Owner | Diagnostic |
-| ------------------------------- | ------------------------ | ------------------------------- |
-| Explicit `@publish`/`@subscribe`/`@channel` | AsyncAPI, always | none, never suppressed by routing |
-| Bare operation with an http route | REST (excluded from events) | `bare-op-assumed-rest`, cites the exact `VERB /path` |
-| Bare operation inside `@service`, event-decorated | AsyncAPI (warned) | `event-op-in-service-namespace`, cites the phantom REST route |
-| AsyncAPI operation under a server with `http`/`https` protocol | AsyncAPI (deliberate webhooks) | none — intentional AsyncAPI-over-HTTP stays silent |
+| Operation                                                      | Owner                          | Diagnostic                                                    |
+| -------------------------------------------------------------- | ------------------------------ | ------------------------------------------------------------- |
+| Explicit `@publish`/`@subscribe`/`@channel`                    | AsyncAPI, always               | none, never suppressed by routing                             |
+| Bare operation with an http route                              | REST (excluded from events)    | `bare-op-assumed-rest`, cites the exact `VERB /path`          |
+| Bare operation inside `@service`, event-decorated              | AsyncAPI (warned)              | `event-op-in-service-namespace`, cites the phantom REST route |
+| AsyncAPI operation under a server with `http`/`https` protocol | AsyncAPI (deliberate webhooks) | none — intentional AsyncAPI-over-HTTP stays silent            |
 
 Verb-less operations default to `GET` (or `POST` when they take a `@body`), matching http's own inference — so a bare `op ping(): Pong` under `@service` is reported as `GET` by the exclusion warning.
 
@@ -95,7 +95,7 @@ The `event-op-in-service-namespace` warning is deduplicated per namespace — if
 
 ## The duplicate-operation pitfall
 
-Declaring two operations on the same route inside `@service` makes **http itself** fail with duplicate-operation errors — and then *neither* emitter produces output ([#252](https://github.com/LarsArtmann/typespec-asyncapi/issues/252)). This is an upstream `@typespec/http` behavior, not something this emitter can bypass. If a mixed program compiles to nothing at all, look for two verb-less operations sharing an implicit route.
+Declaring two operations on the same route inside `@service` makes **http itself** fail with duplicate-operation errors — and then _neither_ emitter produces output ([#252](https://github.com/LarsArtmann/typespec-asyncapi/issues/252)). This is an upstream `@typespec/http` behavior, not something this emitter can bypass. If a mixed program compiles to nothing at all, look for two verb-less operations sharing an implicit route.
 
 ## Fallback inference is deprecated
 

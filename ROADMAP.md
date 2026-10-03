@@ -6,14 +6,14 @@
 
 ## Current State
 
-Beta (`0.3.0-beta.1`, live on npm with `latest` dist-tag; stable release
-pending maintainer decisions — see TODO_LIST). The emitter produces
-spec-compliant AsyncAPI 3.1 output validated against the official JSON
-Schema. **1259 tests** pass across 102 files (0 fail) with **98.1% average
-coverage**; oxlint and ESLint both clean (0 errors, 0 warnings); **0 code
-duplication** (jscpd, 0% threshold). **30 diagnostic codes** (20 error + 10
-warning), all compile-time validated. **30 decorators** declared in
-`lib/main.tsp` (19 core + 11 reusable-component), plus **16 TypeSpec stdlib
+v1.0.0 shipped 2026-09-30 (npm `latest`, provenance-attested; public API
+frozen under semver). The emitter produces spec-compliant AsyncAPI 3.1
+output validated against the official JSON Schema. **1275 tests** pass
+across 105 files (0 fail) with **97.8% average coverage**; oxlint and ESLint
+both clean (0 errors, 0 warnings); **0 code duplication** (jscpd, 0%
+threshold). **36 diagnostic codes** (20 error + 16 warning), all
+compile-time validated. **30 decorators** declared in `lib/main.tsp` (19
+core + 11 reusable-component), plus **16 TypeSpec stdlib
 constraint/metadata mappings** in `src/constraint-mapper.ts`. Full protocol
 binding support for all **22 AsyncAPI protocols** (auto-generated from
 `@asyncapi/specs`) with auto-versioning, key normalization, field-level
@@ -23,7 +23,9 @@ model-variant unions emit `oneOf`, `@discriminator` enables polymorphic
 patterns with auto-required enforcement, template instantiations emit under
 stable argument-derived names (`Page<User>` → `PageUser`). `@encodedName`,
 `@jsonSchemaExtension`, `@extension`, and `asyncapi-id` are supported.
-`@typespec/versioning` is integrated for `info.version`. Thirteen runnable
+`@typespec/versioning` is integrated for `info.version`. Mixed programs
+(REST via `@typespec/http`/openapi3 + events via this emitter) get
+route-table-based ownership with signaled exclusions. Fourteen runnable
 examples compile clean in CI (`pnpm run check-examples`), and a fast-check
 property suite locks emitter invariants. Cross-emitter shared module
 (`src/shared/`) exports `JsonSchema`, `extractValue`, `intrinsicToSchema`,
@@ -53,6 +55,8 @@ Make the emitter a joy to use and maintain.
 Raw ideas:
 
 - Add a docs-entropy CI guard that flags when living docs drift from code counts (e.g. test count in FEATURES.md vs `vitest run` output)
+- Mixed-program strictness (2.0): remove the namespace-geometry fallback for bare-operation ownership — route-table facts or explicit decoration only (`bare-op-inference-deprecated` is the removal signal)
+- Upstream watch: microsoft/typespec issue on verb-less implicit-GET ownership friction in mixed programs (draft ready; filed after release) — if http changes its fallback, our route-facts and warnings simplify
 - Split `./shared` subpath into neutral (`./shared`) vs AsyncAPI-bound (`./asyncapi`) entry points so neutral consumers pay zero AsyncAPI runtime cost
 - Document which `@parameter`/`@reusableBinding` config fields are unreachable via TypeSpec `#{}` syntax (`enum`, `const`, and other reserved keywords cannot be property keys in value literals)
 

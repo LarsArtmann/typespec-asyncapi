@@ -36,24 +36,24 @@ Compilation fails; no (or partial) output.
 
 Compilation succeeds; the flagged issue is skipped or normalized in output.
 
-| Code                                | Meaning                                                                                  |
-| ----------------------------------- | ---------------------------------------------------------------------------------------- |
-| `invalid-binding-version`           | Binding version not valid for the protocol (valid versions listed)                       |
-| `misplaced-binding`                 | Binding placed where the protocol defines none (e.g. Kafka channel binding on a message) |
-| `schema-generation-failed`          | A schema could not be generated                                                          |
-| `duplicate-schema-name`             | Model name collides with a generic instantiation name (last wins)                        |
-| `invalid-json-schema-extension-key` | `@jsonSchemaExtension` key failed validation                                             |
-| `invalid-extension-key`             | `@extension` key does not start with `x-`                                                |
-| `unknown-binding-protocol`          | Binding for a protocol with no generated binding spec                                    |
-| `invalid-binding-field`             | Binding field value failed spec-derived validation                                       |
-| `invalid-parameter-location`        | `@parameter` location is not a `$message.` JSON pointer                                  |
-| `invalid-default-content-type`      | Invalid `@defaultContentType` value                                                      |
-| `conflicting-default-content-type`  | Multiple namespaces declare different default content types                              |
-| `conflicting-api-version`           | Multiple namespaces declare different API versions                                       |
-| `protocol-model-fields-unplaced`    | `@protocol` fields on a model only apply to channel/operation bindings and were not attached to the message |
-| `event-op-in-service-namespace`     | AsyncAPI operation declared inside a `@service` namespace while `@typespec/http` is loaded (leaks into REST output) |
+| Code                                | Meaning                                                                                                                   |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| `invalid-binding-version`           | Binding version not valid for the protocol (valid versions listed)                                                        |
+| `misplaced-binding`                 | Binding placed where the protocol defines none (e.g. Kafka channel binding on a message)                                  |
+| `schema-generation-failed`          | A schema could not be generated                                                                                           |
+| `duplicate-schema-name`             | Model name collides with a generic instantiation name (last wins)                                                         |
+| `invalid-json-schema-extension-key` | `@jsonSchemaExtension` key failed validation                                                                              |
+| `invalid-extension-key`             | `@extension` key does not start with `x-`                                                                                 |
+| `unknown-binding-protocol`          | Binding for a protocol with no generated binding spec                                                                     |
+| `invalid-binding-field`             | Binding field value failed spec-derived validation                                                                        |
+| `invalid-parameter-location`        | `@parameter` location is not a `$message.` JSON pointer                                                                   |
+| `invalid-default-content-type`      | Invalid `@defaultContentType` value                                                                                       |
+| `conflicting-default-content-type`  | Multiple namespaces declare different default content types                                                               |
+| `conflicting-api-version`           | Multiple namespaces declare different API versions                                                                        |
+| `protocol-model-fields-unplaced`    | `@protocol` fields on a model only apply to channel/operation bindings and were not attached to the message               |
+| `event-op-in-service-namespace`     | AsyncAPI operation declared inside a `@service` namespace while `@typespec/http` is loaded (leaks into REST output)       |
 | `bare-op-assumed-rest`              | Bare operation excluded because `@typespec/http` routed it (cites `VERB /path`, or the owning namespace in fallback mode) |
-| `bare-op-inference-deprecated`      | Fallback namespace-geometry ownership was used because the route table was unreadable (deprecated, removed in 2.0) |
+| `bare-op-inference-deprecated`      | Fallback namespace-geometry ownership was used because the route table was unreadable (deprecated, removed in 2.0)        |
 
 :::tip
 In test assertions, diagnostic codes are library-prefixed: match with `d.code?.endsWith("<code>")` or the full `"@lars-artmann/typespec-asyncapi/<code>"` string.
