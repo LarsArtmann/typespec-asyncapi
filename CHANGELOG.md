@@ -6,6 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Fixed
+
+- **Bare REST operations no longer leak into the AsyncAPI document when
+  `@typespec/http` is loaded alongside this emitter** (#252) — `@typespec/http`
+  routes every operation under a `@service` namespace as a REST endpoint
+  (verb-less operations default to GET), and those bare REST operations
+  previously entered the AsyncAPI document alongside the event operations.
+  `discoverBareOps` (shared detection in `src/builders/cross-emitter-validation.ts`,
+  applied during operation discovery) now keeps them out.
+
+### Added
+
+- **`event-op-in-service-namespace` warning diagnostic** (#252) — emitted by a
+  library `$onValidate` hook (exported via `src/tsp-index.ts` from
+  `src/builders/cross-emitter-validation.ts`) that runs during program
+  validation, before emitters, so the warning surfaces even when
+  `@typespec/http`'s duplicate-operation errors make emitters skip output
+  entirely. Event operations living inside a `@service` namespace leak into
+  OpenAPI output as phantom GET endpoints and collide as duplicate routes;
+  the warning points at each offending operation.
+
+- **`examples/mixed-rest-events/`** — runnable example combining this emitter
+  with `@typespec/http`/`@typespec/openapi3` in one program, and
+  `test/integration/mixed-http-emitters.test.ts` locking the behavior,
+  including a verbatim reproduction of the issue's spec.
+
 ## [1.0.0] - 2026-09-30
 
 First stable release. The public API surface is now frozen under semantic versioning: the 30 decorator signatures declared in `lib/main.tsp`, the `EmitterOptions` model, the emitted AsyncAPI 3.1 document contract (byte-locked by golden files), and the `@lars-artmann/typespec-asyncapi/shared` subpath export. Breaking changes to any of these will only land in a new major version.
