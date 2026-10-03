@@ -627,4 +627,30 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
     expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(1);
     expect(asyncApiDoc).not.toBeNull();
   });
+
+  it("discovers bare operations in deeply nested namespaces", async () => {
+    const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.AsyncAPI;
+
+      @TypeSpec.AsyncAPI.server("Production", #{
+        url: "my.service.io",
+        protocol: "wss",
+      })
+      namespace Deep {
+        namespace Deeper {
+          namespace Deepest {
+            op grandchildEvent(): string;
+          }
+        }
+      }
+    `);
+    expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual([
+      "grandchildEvent",
+    ]);
+    expect(
+      countByCode(diagnostics, "bare-op-assumed-rest"),
+    ).toBe(0);
+  });
 });

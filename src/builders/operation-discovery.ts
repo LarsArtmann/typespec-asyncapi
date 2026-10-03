@@ -5,7 +5,7 @@
  * all AsyncAPI operations, their channels, and message types.
  */
 
-import { isStdNamespace, type Operation, type Type } from "@typespec/compiler";
+import { isStdNamespace, type Namespace, type Operation, type Type } from "@typespec/compiler";
 import {
   inferActionFromName,
   iterNamedTypes,
@@ -168,11 +168,8 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
       : findEnclosingServiceNamespace(ctx.program, op) !== undefined;
   let warnedAboutInference = false;
   const globalNs = ctx.program.getGlobalNamespaceType();
-  const namespaces = [globalNs, ...globalNs.namespaces.values()];
+  const namespaces = collectNonStdNamespaces(globalNs);
   for (const ns of namespaces) {
-    if (ns.name && isStdNamespace(ns)) {
-      continue;
-    }
     for (const [opName, op] of ns.operations) {
       if (allKnownOps.has(opName)) {
         continue;
@@ -209,6 +206,22 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
     }
   }
 };
+
+/** Every namespace in the subtree, with stdlib namespaces pruned. */
+function collectNonStdNamespaces(root: Namespace): Namespace[] {
+  const result: Namespace[] = [];
+  const visit = (ns: Namespace): void => {
+    if (ns.name && isStdNamespace(ns)) {
+      return;
+    }
+    result.push(ns);
+    for (const child of ns.namespaces.values()) {
+      visit(child);
+    }
+  };
+  visit(root);
+  return result;
+}
 
 /** Signal the ownership decision for a bare operation claimed by http. */
 function reportSkippedBareOp(
