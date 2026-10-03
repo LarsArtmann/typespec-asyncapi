@@ -5,18 +5,18 @@ import "@lars-artmann/typespec-asyncapi";
 using TypeSpec.Http;
 using TypeSpec.AsyncAPI;
 
-model HealthcheckPong {
-  status: string;
-}
-
-model Response {
-  payload: string;
-}
-
 @service(#{title: "Backend"})
 @TypeSpec.Http.server("https://my.service.io", "Production")
 @route("/api/v1")
 namespace Service.Backend;
+
+model HealthcheckPong {
+  status: string;
+}
+
+model ModuleResponse {
+  payload: string;
+}
 
 @TypeSpec.AsyncAPI.server("Production", #{
   url: "my.service.io",
@@ -30,8 +30,8 @@ namespace Service.Backend {
 
 namespace Service.Backend.Module {
   @get
-  op getThing(): Response;
+  op getThing(): ModuleResponse;
 
   @subscribe
-  op moduleOperation(): Response;
+  op moduleOperation(): ModuleResponse;
 }

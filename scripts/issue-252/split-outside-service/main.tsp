@@ -7,7 +7,6 @@ using TypeSpec.AsyncAPI;
 
 @service(#{title: "Backend"})
 @TypeSpec.Http.server("https://my.service.io", "Production")
-@route("/api/v1")
 namespace Service.Backend;
 
 model HealthcheckPong {
@@ -18,17 +17,23 @@ model ModuleResponse {
   payload: string;
 }
 
+@route("/api/v1")
+namespace Service.Backend.Rest {
+  @get
+  op getThing(): ModuleResponse;
+}
+
 @TypeSpec.AsyncAPI.server("Production", #{
   url: "my.service.io",
   protocol: "wss",
   pathname: "/api/v1/socket",
 })
-namespace Service.Backend {
+namespace Service.BackendEvents {
   @subscribe
   op receivePing(): HealthcheckPong;
-}
 
-namespace Service.Backend.Module {
-  @subscribe
-  op moduleOperation(): ModuleResponse;
+  namespace Module {
+    @subscribe
+    op moduleOperation(): ModuleResponse;
+  }
 }
