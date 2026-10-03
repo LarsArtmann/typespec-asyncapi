@@ -149,7 +149,7 @@ export async function validateCrossEmitterUsage(
       format: {
         additional:
           candidates.length > 1
-            ? ` ${candidates.length - 1} more operation(s) in this namespace are also affected.`
+            ? ` ${String(candidates.length - 1)} more operation(s) in this namespace are also affected.`
             : "",
         operationName: "name" in first.type ? String(first.type.name) : "operation",
         routeDetail:

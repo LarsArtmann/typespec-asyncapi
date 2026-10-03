@@ -41,9 +41,14 @@ interface Fixture {
   source: string;
 }
 
+// Failure-mode fixtures (deliberately invalid specs, emission skipped) are
+// Covered by their own dedicated suites and must not enter the healthy-doc loop.
+const FAILURE_MODE_FIXTURES = new Set(["issue-252"]);
+
 function loadFixtures(): Fixture[] {
   return readdirSync(fixturesDir)
     .filter((f) => f.endsWith(".tsp"))
+    .filter((f) => !FAILURE_MODE_FIXTURES.has(f.replace(/\.tsp$/, "")))
     .map((f) => ({
       name: f.replace(/\.tsp$/, ""),
       source: readFileSync(join(fixturesDir, f), "utf8"),
