@@ -1,12 +1,12 @@
 # Feature Inventory
 
-**Verified:** 2026-08-21 against actual code + full verify gate (1259 pass, 0 fail, 102 test files)
-**Project:** `@lars-artmann/typespec-asyncapi` v0.3.0-beta.1 (live on npm, `latest` dist-tag)
+**Verified:** 2026-10-03 against actual code + full verify gate (1275 pass, 0 fail, 105 test files)
+**Project:** `@lars-artmann/typespec-asyncapi` v1.1.0 (live on npm, `latest` dist-tag)
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 36 codes (20 error + 16 warning), all compile-time validated via `$lib.reportDiagnostic()`
 **Decorators:** 30 declared in `lib/main.tsp` (19 core + 11 reusable-component); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
 **Duplication:** 0% threshold enforced via jscpd (source files only), 0 clones
-**Coverage:** 98.1% average line coverage (42 source files, 75% per-file minimum gate)
+**Coverage:** 97.9% average line coverage (45 source files, 75% per-file minimum gate)
 
 ---
 

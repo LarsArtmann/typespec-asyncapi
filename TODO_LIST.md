@@ -52,10 +52,12 @@ What remains is the gated release chain and the tail:
       the 10-03 13-27 report does NOT contain the text) voice-checked at
       `docs/drafts/issue-252-reply.md`, cites 1.1.0 + upstream #12105. Post on
       Lars's explicit order (1.1.0 tagged 2026-10-03, so the draft's claims hold).
-- [ ] **⏳ Release 1.1.0** — new diagnostics + behavior refinement (rec: 1.1.0,
-      not patch). Ritual per AGENTS: `pnpm install --lockfile-only && pnpm
-install --frozen-lockfile && pnpm run verify` → `pnpm version` →
-      annotated tag → watch release.yml. FEATURES refresh after it ships.
+- [x] **Release 1.1.0** — DONE 2026-10-03: tagged `v1.1.0` (annotated, commit
+      `2d06b977`), pushed, release.yml green, npm `latest` → 1.1.0. The
+      pre-tag ritual caught a live manifest re-drift (BuildFlow pnpm-update
+      replay overwrote `typescript`/`eslint` pins minutes after a manual
+      restore — second occurrence 2026-10-03); restored + committed atomically
+      before tagging. Feeds the M22 BuildFlow handoff.
 - [x] **⏳ Post the upstream microsoft/typespec issue** — DONE 2026-10-03:
       filed as [microsoft/typespec#12105](https://github.com/microsoft/typespec/issues/12105)
       (NOTICE provenance banner + review ledger ticked; TL;DR asks for an
