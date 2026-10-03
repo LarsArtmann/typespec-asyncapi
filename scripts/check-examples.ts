@@ -44,25 +44,29 @@ function compileExample(name: string): void {
   }
 }
 
-function findEmittedDocument(name: string): string | null {
+function findEmittedDocuments(name: string): string[] {
   const dir = join(examplesRoot, name, "tsp-output");
   if (!existsSync(dir)) {
-    return null;
+    return [];
   }
-  const candidates: string[] = [];
+  const asyncApi: string[] = [];
+  const openApi: string[] = [];
   for (const entry of readdirSync(dir, { recursive: true })) {
     const file = String(entry);
-    if (file.endsWith(".yaml") || file.endsWith(".json")) {
-      candidates.push(join(dir, file));
+    if (!file.endsWith(".yaml") && !file.endsWith(".json")) {
+      continue;
+    }
+    const fullPath = join(dir, file);
+    const parsed = parseDocument(fullPath);
+    if (parsed !== null && typeof parsed === "object") {
+      if ("asyncapi" in parsed) {
+        asyncApi.push(fullPath);
+      } else if ("openapi" in parsed) {
+        openApi.push(fullPath);
+      }
     }
   }
-  for (const candidate of candidates) {
-    const parsed = parseDocument(candidate);
-    if (parsed !== null && typeof parsed === "object" && "asyncapi" in parsed) {
-      return candidate;
-    }
-  }
-  return null;
+  return [...asyncApi, ...openApi];
 }
 
 function parseDocument(file: string): unknown {
@@ -77,20 +81,58 @@ const exampleNames = readdirSync(examplesRoot).filter(
     existsSync(join(examplesRoot, entry, "tspconfig.yaml")),
 );
 
+/**
+ * Structural check for the OpenAPI side of mixed examples plus the core
+ * mixed-emitter guarantee: no event channel leaks into the REST document.
+ */
+function validateOpenApiDocument(
+  openApiPath: string,
+  asyncApiDocument: unknown,
+): void {
+  const openApi = parseDocument(openApiPath) as {
+    openapi?: unknown;
+    paths?: unknown;
+  };
+  if (
+    typeof openApi.openapi !== "string" ||
+    !openApi.openapi.startsWith("3")
+  ) {
+    throw new Error(`OpenAPI document missing a 3.x version: ${openApiPath}`);
+  }
+  if (openApi.paths === null || typeof openApi.paths !== "object") {
+    throw new Error(`OpenAPI document has no paths object: ${openApiPath}`);
+  }
+  const channels = Object.keys(
+    (asyncApiDocument as { channels?: Record<string, unknown> }).channels ?? {},
+  );
+  const paths = openApi.paths as Record<string, unknown>;
+  for (const channel of channels) {
+    if (channel in paths) {
+      throw new Error(
+        `Event channel '${channel}' leaked into the OpenAPI document: ${openApiPath}`,
+      );
+    }
+  }
+}
+
 for (const name of exampleNames) {
   try {
     compileExample(name);
-    const documentPath = findEmittedDocument(name);
-    if (documentPath === null) {
+    const documents = findEmittedDocuments(name);
+    const asyncApiPath = documents.find((d) => !d.includes("/rest/"));
+    if (asyncApiPath === undefined) {
       throw new Error("no AsyncAPI document emitted");
     }
-    const document: unknown = parseDocument(documentPath);
+    const document: unknown = parseDocument(asyncApiPath);
     if (!validateAsyncApi(document)) {
       throw new Error(
         `AsyncAPI 3.1 validation failed: ${JSON.stringify(validateAsyncApi.errors)}`,
       );
     }
-    console.log(`PASS ${name} (${documentPath.replace(examplesRoot, ".")})`);
+    for (const openApiPath of documents.filter((d) => d !== asyncApiPath)) {
+      validateOpenApiDocument(openApiPath, document);
+    }
+    console.log(`PASS ${name} (${asyncApiPath.replace(examplesRoot, ".")})`);
   } catch (error) {
     const detail = error instanceof Error ? error.message : String(error);
     failures.push({ name, status: "fail", detail });
