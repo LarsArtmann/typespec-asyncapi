@@ -258,9 +258,65 @@ enum Versions { v1: "1.0.0", v2: "2.0.0"; }
 
 The emitter reads the latest version enum value for `info.version`. Precedence: emitter `version` option > `@apiVersion` decorator > `@versioned` enum > `"1.0.0"`.
 
+### Mixing with OpenAPI (REST + Events)
+
+One TypeSpec program can serve both contracts: `@typespec/http` + `@typespec/openapi3`
+emit the REST document, this emitter emits the event document. Ownership is
+decided by `@typespec/http`'s resolved route table, so the two never collide:
+
+```typespec
+import "@typespec/http";
+import "@lars-artmann/typespec-asyncapi";
+using TypeSpec.Http;
+using TypeSpec.AsyncAPI;
+
+// REST operations live under the @service namespace: http routes them,
+// openapi3 publishes them, this emitter keeps them out of the event document.
+@service(#{title: "Backend"})
+@route("/api/v1")
+namespace Rest {
+  @get op healthcheck(): HealthStatus;
+}
+
+// Event operations live outside the @service subtree, with an AsyncAPI server.
+@TypeSpec.AsyncAPI.server("production", #{
+  url: "events.example.com",
+  protocol: "wss",
+})
+namespace Events {
+  @subscribe op orderShipped(): OrderShipped;
+}
+```
+
+The recommended layout is the one above: **REST under `@service`, events
+outside it**. When an event operation ends up inside the `@service` namespace
+anyway, the emitter warns (`event-op-in-service-namespace`) because http
+phantom-routes it as a REST endpoint (verb-less operations default to GET) —
+that collision is what causes `duplicate-operation` errors in mixed programs
+(see [#252](https://github.com/LarsArtmann/typespec-asyncapi/issues/252)).
+
+**Intentional exceptions stay silent:** if the nearest AsyncAPI server uses the
+`http`/`https` protocol, the operation is treated as a deliberate
+AsyncAPI-over-HTTP channel (webhooks over REST) and no warning fires.
+
+Bare operations (no `@publish`/`@subscribe`/`@channel`) that http routes are
+excluded from the event document with a `bare-op-assumed-rest` warning citing
+the exact route. Suppress it per operation when the classification needs
+overriding:
+
+```typespec
+#suppress "@lars-artmann/typespec-asyncapi/bare-op-assumed-rest" "intentional"
+op getThing(): Thing;
+```
+
+**Deprecation:** when the route table is unreadable and ownership must be
+inferred from namespace geometry, a `bare-op-inference-deprecated` warning
+fires — this inference is removed in 2.0. Explicit decoration
+(`@publish`/`@subscribe`/`@channel`) always wins and never warns.
+
 ### Validation
 
-The emitter provides 32 compile-time diagnostics (20 error + 12 warning) that catch invalid configurations before they reach your AsyncAPI output — unsupported protocols, invalid binding versions, missing channel paths, malformed server URLs, and more.
+The emitter provides 35 compile-time diagnostics (20 error + 15 warning) that catch invalid configurations before they reach your AsyncAPI output — unsupported protocols, invalid binding versions, missing channel paths, malformed server URLs, and more.
 
 ### Rigor
 

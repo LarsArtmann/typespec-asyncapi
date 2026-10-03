@@ -60,6 +60,13 @@ extern dec operationSecurity(target: Operation, config: {} | valueof Record<unkn
  *               `pathname`, `description`, `variables` (map of var name to
  *               `{enum?, default?, description?, examples?}`), and `security`
  *               (array of Security Requirement Objects)
+ *
+ * Escape hatch: a server with the `http` or `https` protocol marks the
+ * operations in its namespace as intentional AsyncAPI-over-HTTP channels
+ * (e.g. webhooks delivered over REST). In mixed programs that also load
+ * `@typespec/http`, such operations are exempt from the
+ * `event-op-in-service-namespace` warning because the REST routing is
+ * deliberate, not a leak.
  */
 extern dec server(target: Namespace, name: valueof string, config: valueof Record<unknown>);
 

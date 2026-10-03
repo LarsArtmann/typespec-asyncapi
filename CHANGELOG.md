@@ -13,8 +13,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   routes every operation under a `@service` namespace as a REST endpoint
   (verb-less operations default to GET), and those bare REST operations
   previously entered the AsyncAPI document alongside the event operations.
-  `discoverBareOps` (shared detection in `src/builders/cross-emitter-validation.ts`,
-  applied during operation discovery) now keeps them out.
+  Operation discovery now classifies ownership by http's resolved route table
+  (`src/builders/http-route-facts.ts`, applied in `discoverBareOps`) and keeps
+  routed operations out.
 
 ### Added
 
