@@ -62,6 +62,11 @@ any release.
 - **M13 — CHANGELOG + FEATURES.** Fixed entry rewritten to route-facts; 6 new
   Added entries; FEATURES diagnostics count 34 → **35 (20 error + 15
   warning)**.
+  > CORRECTION (2026-10-03, later session): recount of `src/lib.ts` — the
+  > authoritative source — yields **36 codes (20 error + 16 warning)**, not
+  > 35: the pre-session count had also missed
+  > `protocol-model-fields-unplaced`. FEATURES/README/AGENTS/website all
+  > corrected to 36.
 - **M15 + M16 prep — upstream evidence pack.** Http-only (no our-emitter)
   repro matrix; prior-art search on microsoft/typespec found NONE (closest:
   #2463 AsyncAPI POC, #4124 websockets — different topics); draft issue
@@ -93,6 +98,9 @@ any release.
 - **Website diagnostics reference:** `website/src/content/docs/reference/diagnostics.md`
   still lists 32 codes — the 3 new codes are missing. Discovered while
   surveying for M19; not yet fixed (fits M19/M21 scope).
+  > RESOLVED (2026-10-03, later session): doc now lists all 36 codes (20
+  > error + 16 warning), including `protocol-model-fields-unplaced` which was
+  > missing even before this feature work.
 
 ## c) Not started (remaining plan tasks)
 

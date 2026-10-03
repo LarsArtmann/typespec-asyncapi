@@ -314,9 +314,11 @@ inferred from namespace geometry, a `bare-op-inference-deprecated` warning
 fires — this inference is removed in 2.0. Explicit decoration
 (`@publish`/`@subscribe`/`@channel`) always wins and never warns.
 
+Full guide: [Mixing with OpenAPI](https://typespec-asyncapi.lars.software/guides/mixing-with-openapi/).
+
 ### Validation
 
-The emitter provides 35 compile-time diagnostics (20 error + 15 warning) that catch invalid configurations before they reach your AsyncAPI output — unsupported protocols, invalid binding versions, missing channel paths, malformed server URLs, and more.
+The emitter provides 36 compile-time diagnostics (20 error + 16 warning) that catch invalid configurations before they reach your AsyncAPI output — unsupported protocols, invalid binding versions, missing channel paths, malformed server URLs, and more.
 
 ### Rigor
 
@@ -422,7 +424,7 @@ The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publi
 | Build       | 0 TypeScript errors (strict mode)                     |
 | Lint        | 0 errors, 0 warnings (ESLint + oxlint)                |
 | Decorators  | 30                                                    |
-| Diagnostics | 32 codes (20 error + 12 warning)                      |
+| Diagnostics | 36 codes (20 error + 16 warning)                      |
 | Protocols   | 22 (auto-generated from `@asyncapi/specs`)            |
 | Duplication | 0% (jscpd, 0% threshold)                              |
 | Output      | Validates against official AsyncAPI 3.1.0 JSON Schema |

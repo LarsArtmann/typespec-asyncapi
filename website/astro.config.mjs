@@ -83,6 +83,10 @@ export default defineConfig({
             },
             { label: "Multi-File Output", slug: "guides/split-schemas" },
             { label: "Versioning", slug: "guides/versioning" },
+            {
+              label: "Mixing with OpenAPI",
+              slug: "guides/mixing-with-openapi",
+            },
           ],
         },
         {

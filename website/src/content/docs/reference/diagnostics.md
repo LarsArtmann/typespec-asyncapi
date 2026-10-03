@@ -1,6 +1,6 @@
 ---
 title: Diagnostics
-description: The 32 compile-time diagnostics (20 errors, 12 warnings) that catch invalid configuration before output.
+description: The 36 compile-time diagnostics (20 errors, 16 warnings) that catch invalid configuration before output.
 ---
 
 All diagnostics are prefixed `@lars-artmann/typespec-asyncapi/` in compiler output. They fire at compile time — invalid configurations never reach the emitted document.
@@ -32,7 +32,7 @@ Compilation fails; no (or partial) output.
 | `invalid-parameter-config`      | Invalid `@parameter` configuration                                 |
 | `invalid-channel-server-config` | Invalid `@useChannelServer` usage                                  |
 
-## Warnings (12)
+## Warnings (16)
 
 Compilation succeeds; the flagged issue is skipped or normalized in output.
 
@@ -50,6 +50,10 @@ Compilation succeeds; the flagged issue is skipped or normalized in output.
 | `invalid-default-content-type`      | Invalid `@defaultContentType` value                                                      |
 | `conflicting-default-content-type`  | Multiple namespaces declare different default content types                              |
 | `conflicting-api-version`           | Multiple namespaces declare different API versions                                       |
+| `protocol-model-fields-unplaced`    | `@protocol` fields on a model only apply to channel/operation bindings and were not attached to the message |
+| `event-op-in-service-namespace`     | AsyncAPI operation declared inside a `@service` namespace while `@typespec/http` is loaded (leaks into REST output) |
+| `bare-op-assumed-rest`              | Bare operation excluded because `@typespec/http` routed it (cites `VERB /path`, or the owning namespace in fallback mode) |
+| `bare-op-inference-deprecated`      | Fallback namespace-geometry ownership was used because the route table was unreadable (deprecated, removed in 2.0) |
 
 :::tip
 In test assertions, diagnostic codes are library-prefixed: match with `d.code?.endsWith("<code>")` or the full `"@lars-artmann/typespec-asyncapi/<code>"` string.
