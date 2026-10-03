@@ -6,5 +6,6 @@
  */
 
 export { $decorators } from "./decorators.js";
+export { $onValidate } from "./builders/cross-emitter-validation.js";
 export { $lib } from "./lib.js";
 export const namespace = "TypeSpec.AsyncAPI";
