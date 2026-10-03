@@ -115,8 +115,8 @@
     "@asyncapi/specs": "6.11.1",
     "@eslint/js": "^10.0.1",
     "@types/node": "^26.6.4",
-    "@typescript-eslint/eslint-plugin": "8.71.0",
-    "@typescript-eslint/parser": "8.71.0",
+    "@typescript-eslint/eslint-plugin": "8.70.1",
+    "@typescript-eslint/parser": "8.70.1",
     "@typespec/asset-emitter": "^0.79.2",
     "@typespec/compiler": "^1.16.0",
     "@typespec/http": "^1.16.0",
@@ -132,7 +132,7 @@
     "oxlint": "1.86.0",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
-    "typescript-eslint": "8.71.0",
+    "typescript-eslint": "8.70.1",
     "vitest": "^5.0.3"
   },
   "peerDependencies": {

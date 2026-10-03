@@ -10,3 +10,6 @@ allowBuilds:
   "@scarf/scarf": false
   esbuild: true
   sharp: true
+
+minimumReleaseAgeExclude:
+  - eslint@10.12.0
