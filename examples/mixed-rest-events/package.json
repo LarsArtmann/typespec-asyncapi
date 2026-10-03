@@ -1,0 +1,11 @@
+{
+  "name": "example-mixed-rest-events",
+  "version": "0.0.0",
+  "private": true,
+  "dependencies": {
+    "@lars-artmann/typespec-asyncapi": "workspace:*",
+    "@typespec/compiler": "^1.16.0",
+    "@typespec/http": "^1.16.0",
+    "@typespec/openapi3": "^1.16.0"
+  }
+}
