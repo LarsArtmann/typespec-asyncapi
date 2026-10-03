@@ -14,3 +14,11 @@ allowBuilds:
   "@scarf/scarf": false
   esbuild: true
   sharp: true
+
+# http-cache-semantics GHSA-ch52-4w7c-c8xp: no patched release exists (4.2.0
+# is the latest); the only dependent chain is website build-time deps
+# (astro), never in shipped npm artifacts. Dismissed until upstream ships a
+# fix - remove this entry when one lands.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-ch52-4w7c-c8xp
