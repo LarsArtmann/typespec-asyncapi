@@ -221,3 +221,67 @@ eslint@10.12.0` appeared in `pnpm-workspace.yaml` during the sync — needs
 
 Written by Crush. Point-in-time snapshot; ANNOTATE, never rewrite, when
 bringing it current.
+
+---
+
+## Resolution addendum (2026-10-03 11:20, same day)
+
+All three failures closed; full gates green. Both §g questions resolved
+autonomously per "keep going until everything works":
+
+1. **jscpd → FIXED at source, built, installed, verified.** Chose ship-path
+   (b): clean git worktree at `/home/lars/projects/.bf-jscpd-worktree`
+   (detached HEAD + staged patch only — never touched the baseline WIP),
+   gated there (go build, go test -race ./tools/providers ok 191s,
+   golangci-lint clean for my files, erraudit 0 violations), built and
+   `nix profile install`ed from it. Binary now
+   `13d32f75613e093100277d6c301411330406d306-dirty`. `buildflow -s jscpd`
+   green (0 findings, 336ms). NOTE: worktree placement matters — BuildFlow's
+   go.mod has sibling `../` replaces, so a /tmp worktree cannot build.
+   The daemon has since committed the jscpd fix into BuildFlow main history.
+2. **Second BuildFlow bug found and fixed en route:** todo-checker matched
+   `BUG:` without a word boundary, so `debug: "1"` in
+   test/integration/protocol-binding-integration.test.ts flagged as critical
+   TODOs. Fixed `compilePatterns` (`(?i)\b(...)`), added regression test
+   through the production compile path (existing tests hand-rolled a \b
+   regex — production never had it). `buildflow -s todo-check` now 0
+   findings. Also committed to BuildFlow main history by the daemon.
+3. **typescript-eslint → 8.71.0 ACCEPTED** (Lars: "latest if possible").
+   The real constraint is the peer range `typescript <6.1.0`, not an 8.70.x
+   hold — root TS stays 6.0.3 (latest 6.x; 6.0.4 does not exist; TS 7
+   unsupported by ts-eslint, #10940). Caught a RECURRENCE of the root TS
+   `^7.0.2` drift (BuildFlow pnpm-update wrote the manifest without
+   relocking) — restored 6.0.3. AGENTS pin note rewritten to the real rule.
+4. **eslint 10.12.0 → 10.11.0 + `minimumReleaseAgeExclude` removed.**
+   10.12.0 published 2026-10-02T20:08Z (<24h). Bump back any time after
+   2026-10-03T20:08Z (aged then). eslint/ts-eslint/vitest/oxlint/jscpd now
+   all at latest-allowed; `pnpm run verify` green on the new set (1250
+   tests, 98% coverage).
+5. **nix-fmt → GREEN via generated-artifact exclusion doctrine** (flake.nix
+   treefmt prettier excludes): `docs/**/*.html`, `docs/_archive/**` +
+   `docs/status/**` (point-in-time reports — prettier wanted to re-wrap
+   their code fences), `website/src/styles/*.out.css`, `pnpm-lock.yaml`.
+   Gotcha learned: local treefmt is mtime-cached and masked drift —
+   `nix fmt -- --fail-on-change -c` or `nix flake check` (cold sandbox) is
+   the honest check. `nix flake check`: ALL CHECKS PASSED.
+6. **pnpm-audit 15 → 0 actionable:** overrides for nanoid 3.3.18, devalue
+   ^5.9.3, brace-expansion ^1.1.21/^5.0.12, fast-uri ^3.1.8 (range-selectored
+   keys where majors coexist). The one unpatchable advisory
+   (http-cache-semantics, no fixed release exists, website-build-only
+   chain) dismissed via `auditConfig.ignoreGhsas` with removal condition
+   documented. `buildflow -s pnpm-audit` exit 0 cache-cold.
+7. **Formatter split-brain resolved:** `.buildflow.yml` created — oxfmt and
+   prettier-format skipped with rationale (treefmt/prettier via nix-flake-check
+   is the single formatting owner; the duplicates don't honor its excludes).
+8. **CHANGELOG** [Unreleased] entry written for #252 (diagnostic, example,
+   integration test, leak fix).
+
+**Terminal state:** `buildflow` full = exit 0 ("passed with warnings", only
+nix-checker info-level suggestions remain); `pnpm run verify` = exit 0;
+`nix flake check` = passed.
+
+**Gated on Lars (unchanged):** issue #252 reply posting, 1.0.1-vs-1.1.0
+version call + release, TODO_LIST/ROADMAP harvest, crush-config lessons.
+
+**Worktree cleanup (when baseline WIP lands):**
+`nix profile remove buildflow && nix profile install git+file:///home/lars/projects/BuildFlow#buildflow && git -C /home/lars/projects/BuildFlow worktree remove --force /home/lars/projects/.bf-jscpd-worktree`
