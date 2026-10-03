@@ -1,0 +1,70 @@
+asyncapi: 3.1.0
+info:
+  title: Backend
+  version: 1.0.0
+servers:
+  Production:
+    description: Server for Events
+    host: my.service.io
+    protocol: wss
+    pathname: /api/v1/socket
+channels:
+  health/pong:
+    address: health/pong
+    messages:
+      HealthcheckPong:
+        $ref: "#/components/messages/HealthcheckPong"
+  orders/created:
+    address: orders/created
+    messages:
+      OrderCreated:
+        $ref: "#/components/messages/OrderCreated"
+operations:
+  receivePing:
+    action: receive
+    channel:
+      $ref: "#/channels/health~1pong"
+    messages:
+      - $ref: "#/channels/health~1pong/messages/HealthcheckPong"
+  orderCreated:
+    action: send
+    channel:
+      $ref: "#/channels/orders~1created"
+    messages:
+      - $ref: "#/channels/orders~1created/messages/OrderCreated"
+components:
+  messages:
+    HealthcheckPong:
+      name: HealthcheckPong
+      contentType: application/json
+      title: HealthcheckPong
+      payload:
+        $ref: "#/components/schemas/HealthcheckPong"
+    OrderCreated:
+      name: OrderCreated
+      contentType: application/json
+      title: OrderCreated
+      payload:
+        $ref: "#/components/schemas/OrderCreated"
+  schemas:
+    OrderCreated:
+      properties:
+        orderId:
+          type: string
+        createdAt:
+          type: string
+      type: object
+      required:
+        - orderId
+        - createdAt
+    HealthcheckPong:
+      properties:
+        status:
+          type: string
+        latencyMs:
+          format: int32
+          type: integer
+      type: object
+      required:
+        - status
+        - latencyMs
