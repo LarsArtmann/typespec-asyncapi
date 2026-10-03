@@ -1,6 +1,6 @@
 {
   "name": "@lars-artmann/typespec-asyncapi",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": false,
   "description": "TypeSpec emitter for AsyncAPI 3.1 specifications",
   "keywords": [

@@ -48,9 +48,10 @@ Feature work (route-facts ownership, new diagnostics, docs, locks) is DONE
 and gate-green — see `docs/status/2026-10-03_13-27_mixed-emitter-ownership-execution.md`.
 What remains is the gated release chain and the tail:
 
-- [ ] **⏳ Post the #252 reply** — draft voice-checked at `/tmp/issue-252-reply.md`
-      (recreate from the 10-03 13-27 report if /tmp was cleared). Open question
-      for Lars: post now vs after 1.1.0 ships.
+- [ ] **⏳ Post the #252 reply** — fresh draft (the /tmp original was lost;
+      the 10-03 13-27 report does NOT contain the text) voice-checked at
+      `docs/drafts/issue-252-reply.md`, cites 1.1.0 + upstream #12105. Post on
+      Lars's explicit order (1.1.0 tagged 2026-10-03, so the draft's claims hold).
 - [ ] **⏳ Release 1.1.0** — new diagnostics + behavior refinement (rec: 1.1.0,
       not patch). Ritual per AGENTS: `pnpm install --lockfile-only && pnpm
   install --frozen-lockfile && pnpm run verify` → `pnpm version` →
