@@ -510,23 +510,23 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
       @service(#{title: "Outer"})
       @TypeSpec.Http.server("https://outer.service.io", "Production")
       @route("/outer")
-      namespace Service.Outer;
+      namespace Service.Outer {
+        model Pong {
+          status: string;
+        }
 
-      model Pong {
-        status: string;
-      }
-
-      @TypeSpec.AsyncAPI.server("Production", #{
-        url: "my.service.io",
-        protocol: "wss",
-        pathname: "/api/v1/socket",
-      })
-      namespace Service.Outer.Inner {
+        @TypeSpec.AsyncAPI.server("Production", #{
+          url: "my.service.io",
+          protocol: "wss",
+          pathname: "/api/v1/socket",
+        })
         @service(#{title: "Inner"})
         @TypeSpec.Http.server("https://inner.service.io", "Production")
         @route("/inner")
-        @subscribe
-        op receivePing(): Pong;
+        namespace Inner {
+          @subscribe
+          op receivePing(): Pong;
+        }
       }
     `);
     expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(1);
@@ -556,12 +556,12 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
           status: string;
         }
 
+        @TypeSpec.AsyncAPI.server("HttpEscape", #{
+          url: "my.service.io",
+          protocol: "https",
+          pathname: "/api/v1/socket",
+        })
         namespace Inner {
-          @TypeSpec.AsyncAPI.server("HttpEscape", #{
-            url: "my.service.io",
-            protocol: "https",
-            pathname: "/api/v1/socket",
-          })
           @subscribe
           op receivePing(): Pong;
         }
@@ -595,11 +595,11 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
           status: string;
         }
 
+        @TypeSpec.AsyncAPI.server("WssInner", #{
+          url: "socket.service.io",
+          protocol: "wss",
+        })
         namespace Inner {
-          @TypeSpec.AsyncAPI.server("WssInner", #{
-            url: "socket.service.io",
-            protocol: "wss",
-          })
           @subscribe
           op receivePing(): Pong;
         }
