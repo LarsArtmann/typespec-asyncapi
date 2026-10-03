@@ -20,7 +20,9 @@ const asyncApiSchemaUrl = new URL(
 );
 
 const ajv = new Ajv({ allErrors: true, strict: false });
-const validateAsyncApi = ajv.compile(JSON.parse(readFileSync(asyncApiSchemaUrl, "utf8")));
+const validateAsyncApi = ajv.compile(
+  JSON.parse(readFileSync(asyncApiSchemaUrl, "utf8")),
+);
 
 interface ExampleResult {
   name: string;
@@ -70,7 +72,9 @@ function parseDocument(file: string): unknown {
 
 const failures: ExampleResult[] = [];
 const exampleNames = readdirSync(examplesRoot).filter(
-  (entry) => !entry.endsWith(".md") && existsSync(join(examplesRoot, entry, "tspconfig.yaml")),
+  (entry) =>
+    !entry.endsWith(".md") &&
+    existsSync(join(examplesRoot, entry, "tspconfig.yaml")),
 );
 
 for (const name of exampleNames) {
@@ -82,7 +86,9 @@ for (const name of exampleNames) {
     }
     const document: unknown = parseDocument(documentPath);
     if (!validateAsyncApi(document)) {
-      throw new Error(`AsyncAPI 3.1 validation failed: ${JSON.stringify(validateAsyncApi.errors)}`);
+      throw new Error(
+        `AsyncAPI 3.1 validation failed: ${JSON.stringify(validateAsyncApi.errors)}`,
+      );
     }
     console.log(`PASS ${name} (${documentPath.replace(examplesRoot, ".")})`);
   } catch (error) {

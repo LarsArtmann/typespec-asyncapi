@@ -68,50 +68,50 @@
 
 ### Phase 1: Core Infrastructure (Tasks 1-8) - 4 hours
 
-| # | Task                                                               | Duration | Priority | Dependencies |
-| - | ------------------------------------------------------------------ | -------- | -------- | ------------ |
-| 1 | Fix test-helpers.ts path resolution                                | 30min    | CRITICAL | None         |
-| 2 | Update DocumentBuilder implementation to match test expectations   | 30min    | CRITICAL | 1            |
-| 3 | Update DiscoveryService implementation to match test expectations  | 30min    | CRITICAL | 1            |
-| 4 | Update ProcessingService implementation to match test expectations | 30min    | CRITICAL | 1            |
-| 5 | Fix AsyncAPI Emitter Core tests                                    | 30min    | HIGH     | 2,3,4        |
-| 6 | Fix Real Decorator Functionality tests                             | 30min    | HIGH     | 5            |
-| 7 | Fix @server decorator tests                                        | 30min    | HIGH     | 6            |
-| 8 | Fix Decorator Validation tests                                     | 30min    | MEDIUM   | 6            |
+| #   | Task                                                               | Duration | Priority | Dependencies |
+| --- | ------------------------------------------------------------------ | -------- | -------- | ------------ |
+| 1   | Fix test-helpers.ts path resolution                                | 30min    | CRITICAL | None         |
+| 2   | Update DocumentBuilder implementation to match test expectations   | 30min    | CRITICAL | 1            |
+| 3   | Update DiscoveryService implementation to match test expectations  | 30min    | CRITICAL | 1            |
+| 4   | Update ProcessingService implementation to match test expectations | 30min    | CRITICAL | 1            |
+| 5   | Fix AsyncAPI Emitter Core tests                                    | 30min    | HIGH     | 2,3,4        |
+| 6   | Fix Real Decorator Functionality tests                             | 30min    | HIGH     | 5            |
+| 7   | Fix @server decorator tests                                        | 30min    | HIGH     | 6            |
+| 8   | Fix Decorator Validation tests                                     | 30min    | MEDIUM   | 6            |
 
 ### Phase 2: Protocol Support (Tasks 9-16) - 4 hours
 
-| #  | Task                                   | Duration | Priority | Dependencies |
-| -- | -------------------------------------- | -------- | -------- | ------------ |
-| 9  | Fix Protocol Binding Integration tests | 30min    | HIGH     | 5            |
-| 10 | Fix EmitterTester API tests            | 30min    | HIGH     | 9            |
-| 11 | Fix Effect.TS Schema tests             | 30min    | MEDIUM   | 10           |
-| 12 | Fix Path Template Validation tests     | 30min    | MEDIUM   | 10           |
-| 13 | Fix CLI Tests                          | 30min    | MEDIUM   | 11           |
-| 14 | Fix Security Validation tests          | 30min    | MEDIUM   | 11           |
-| 15 | Fix Real-World AsyncAPI Scenarios      | 30min    | MEDIUM   | 12           |
-| 16 | Fix E2E Error Handling tests           | 30min    | MEDIUM   | 12           |
+| #   | Task                                   | Duration | Priority | Dependencies |
+| --- | -------------------------------------- | -------- | -------- | ------------ |
+| 9   | Fix Protocol Binding Integration tests | 30min    | HIGH     | 5            |
+| 10  | Fix EmitterTester API tests            | 30min    | HIGH     | 9            |
+| 11  | Fix Effect.TS Schema tests             | 30min    | MEDIUM   | 10           |
+| 12  | Fix Path Template Validation tests     | 30min    | MEDIUM   | 10           |
+| 13  | Fix CLI Tests                          | 30min    | MEDIUM   | 11           |
+| 14  | Fix Security Validation tests          | 30min    | MEDIUM   | 11           |
+| 15  | Fix Real-World AsyncAPI Scenarios      | 30min    | MEDIUM   | 12           |
+| 16  | Fix E2E Error Handling tests           | 30min    | MEDIUM   | 12           |
 
 ### Phase 3: Comprehensive Protocol Tests (Tasks 17-24) - 6 hours
 
-| #  | Task                                          | Duration | Priority | Dependencies |
-| -- | --------------------------------------------- | -------- | -------- | ------------ |
-| 17 | Analyze Security Schemes test infrastructure  | 30min    | MEDIUM   | Phase 2      |
-| 18 | Fix Security Schemes tests batch 1 (54 tests) | 45min    | MEDIUM   | 17           |
-| 19 | Fix Security Schemes tests batch 2 (54 tests) | 45min    | MEDIUM   | 18           |
-| 20 | Fix Security Schemes tests batch 3 (54 tests) | 45min    | MEDIUM   | 19           |
-| 21 | Analyze WebSocket & MQTT test infrastructure  | 30min    | MEDIUM   | Phase 2      |
-| 22 | Fix WebSocket & MQTT tests (100 tests)        | 90min    | MEDIUM   | 21           |
-| 23 | Analyze Kafka Protocol test infrastructure    | 30min    | MEDIUM   | Phase 2      |
-| 24 | Fix Kafka Protocol tests (100 tests)          | 90min    | MEDIUM   | 23           |
+| #   | Task                                          | Duration | Priority | Dependencies |
+| --- | --------------------------------------------- | -------- | -------- | ------------ |
+| 17  | Analyze Security Schemes test infrastructure  | 30min    | MEDIUM   | Phase 2      |
+| 18  | Fix Security Schemes tests batch 1 (54 tests) | 45min    | MEDIUM   | 17           |
+| 19  | Fix Security Schemes tests batch 2 (54 tests) | 45min    | MEDIUM   | 18           |
+| 20  | Fix Security Schemes tests batch 3 (54 tests) | 45min    | MEDIUM   | 19           |
+| 21  | Analyze WebSocket & MQTT test infrastructure  | 30min    | MEDIUM   | Phase 2      |
+| 22  | Fix WebSocket & MQTT tests (100 tests)        | 90min    | MEDIUM   | 21           |
+| 23  | Analyze Kafka Protocol test infrastructure    | 30min    | MEDIUM   | Phase 2      |
+| 24  | Fix Kafka Protocol tests (100 tests)          | 90min    | MEDIUM   | 23           |
 
 ### Phase 4: Polish & Documentation (Tasks 25-27) - 2 hours
 
-| #  | Task                                  | Duration | Priority | Dependencies |
-| -- | ------------------------------------- | -------- | -------- | ------------ |
-| 25 | Fix remaining scattered test failures | 30min    | LOW      | Phase 3      |
-| 26 | Update CRUSH.md with current status   | 30min    | LOW      | 25           |
-| 27 | Create comprehensive test report      | 30min    | LOW      | 26           |
+| #   | Task                                  | Duration | Priority | Dependencies |
+| --- | ------------------------------------- | -------- | -------- | ------------ |
+| 25  | Fix remaining scattered test failures | 30min    | LOW      | Phase 3      |
+| 26  | Update CRUSH.md with current status   | 30min    | LOW      | 25           |
+| 27  | Create comprehensive test report      | 30min    | LOW      | 26           |
 
 ---
 

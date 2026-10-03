@@ -170,33 +170,33 @@ The `validateAsyncAPIObjectComprehensive()` helper only checks `asyncapi` versio
 
 ## F) Top 25 Things to Get Done Next (Prioritized)
 
-| #  | Task                                                                         | Impact | Effort | Category       |
-| -- | ---------------------------------------------------------------------------- | ------ | ------ | -------------- |
-| 1  | **Extract `buildAsyncAPIDocument`** to `src/document-builder.ts`             | High   | Low    | Refactor       |
-| 2  | **Extract `AsyncAPISchemaEmitter`** to `src/schema-emitter.ts`               | High   | Low    | Refactor       |
-| 3  | **Replace `any` with TypeSpec types** in emitter methods                     | High   | Medium | Type Safety    |
-| 4  | **Audit all test TypeSpec syntax** (`{}`→`#{}`, string keys, reserved words) | High   | Medium | Test Quality   |
-| 5  | **Implement proper AsyncAPI 3.0 JSON Schema validation**                     | High   | Medium | Test Quality   |
-| 6  | **Add operation-level protocol bindings** to AsyncAPI output                 | Medium | Low    | Feature        |
-| 7  | **Add security requirements array** on operations/servers                    | Medium | Low    | Feature        |
-| 8  | **Fix state map overwrite pattern** for all multi-value decorators           | Medium | Low    | Bug Prevention |
-| 9  | **Implement 4 Kafka protocol todo tests**                                    | Medium | Medium | Test Coverage  |
-| 10 | **Add CI/CD pipeline** (GitHub Actions: build, test, lint)                   | Medium | Low    | Infrastructure |
-| 11 | **Add ESLint to CI** (currently manual)                                      | Medium | Low    | Infrastructure |
-| 12 | **Type check strict mode** — verify all files pass strict TS                 | Medium | Low    | Type Safety    |
-| 13 | **Add `$ref` deduplication** for referenced models                           | Medium | Medium | Feature        |
-| 14 | **Implement `@typespec/versioning` support**                                 | Medium | High   | Feature        |
-| 15 | **Add `@parameter` support** for channel parameters (`{userId}`)             | Medium | Medium | Feature        |
-| 16 | **Add message `examples`** field from TypeSpec model instances               | Low    | Low    | Feature        |
-| 17 | **Add `tags` to output** from `@tags` decorator state                        | Low    | Low    | Feature        |
-| 18 | **Add `correlationId` to output** from `@correlationId` decorator state      | Low    | Low    | Feature        |
-| 19 | **Add `externalDocs` support**                                               | Low    | Low    | Feature        |
-| 20 | **Add proper diagnostic reporting** in emitter (not silent catch)            | Medium | Medium | Quality        |
-| 21 | **Write usage documentation** (README, getting started guide)                | Medium | Medium | Docs           |
-| 22 | **Add integration test with `@typespec/http`** library                       | Low    | Medium | Integration    |
-| 23 | **pnpm publish pipeline** (semantic release or manual)                       | Low    | Low    | Infrastructure |
-| 24 | **Performance benchmarks** — measure emitter time on large specs             | Low    | Low    | Quality        |
-| 25 | **Plugin system re-enablement**                                              | Low    | High   | Feature        |
+| #   | Task                                                                         | Impact | Effort | Category       |
+| --- | ---------------------------------------------------------------------------- | ------ | ------ | -------------- |
+| 1   | **Extract `buildAsyncAPIDocument`** to `src/document-builder.ts`             | High   | Low    | Refactor       |
+| 2   | **Extract `AsyncAPISchemaEmitter`** to `src/schema-emitter.ts`               | High   | Low    | Refactor       |
+| 3   | **Replace `any` with TypeSpec types** in emitter methods                     | High   | Medium | Type Safety    |
+| 4   | **Audit all test TypeSpec syntax** (`{}`→`#{}`, string keys, reserved words) | High   | Medium | Test Quality   |
+| 5   | **Implement proper AsyncAPI 3.0 JSON Schema validation**                     | High   | Medium | Test Quality   |
+| 6   | **Add operation-level protocol bindings** to AsyncAPI output                 | Medium | Low    | Feature        |
+| 7   | **Add security requirements array** on operations/servers                    | Medium | Low    | Feature        |
+| 8   | **Fix state map overwrite pattern** for all multi-value decorators           | Medium | Low    | Bug Prevention |
+| 9   | **Implement 4 Kafka protocol todo tests**                                    | Medium | Medium | Test Coverage  |
+| 10  | **Add CI/CD pipeline** (GitHub Actions: build, test, lint)                   | Medium | Low    | Infrastructure |
+| 11  | **Add ESLint to CI** (currently manual)                                      | Medium | Low    | Infrastructure |
+| 12  | **Type check strict mode** — verify all files pass strict TS                 | Medium | Low    | Type Safety    |
+| 13  | **Add `$ref` deduplication** for referenced models                           | Medium | Medium | Feature        |
+| 14  | **Implement `@typespec/versioning` support**                                 | Medium | High   | Feature        |
+| 15  | **Add `@parameter` support** for channel parameters (`{userId}`)             | Medium | Medium | Feature        |
+| 16  | **Add message `examples`** field from TypeSpec model instances               | Low    | Low    | Feature        |
+| 17  | **Add `tags` to output** from `@tags` decorator state                        | Low    | Low    | Feature        |
+| 18  | **Add `correlationId` to output** from `@correlationId` decorator state      | Low    | Low    | Feature        |
+| 19  | **Add `externalDocs` support**                                               | Low    | Low    | Feature        |
+| 20  | **Add proper diagnostic reporting** in emitter (not silent catch)            | Medium | Medium | Quality        |
+| 21  | **Write usage documentation** (README, getting started guide)                | Medium | Medium | Docs           |
+| 22  | **Add integration test with `@typespec/http`** library                       | Low    | Medium | Integration    |
+| 23  | **pnpm publish pipeline** (semantic release or manual)                       | Low    | Low    | Infrastructure |
+| 24  | **Performance benchmarks** — measure emitter time on large specs             | Low    | Low    | Quality        |
+| 25  | **Plugin system re-enablement**                                              | Low    | High   | Feature        |
 
 ---
 

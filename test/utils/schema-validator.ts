@@ -95,7 +95,9 @@ export async function compileAndValidate(
  * (e.g. `compileAsyncAPISpecWithoutErrors` + `parseAsyncAPIOutput`) instead
  * of `compileAndValidateOrThrow`.
  */
-export function validateAsyncAPIDocument(document: ParsedAsyncAPIDocument): void {
+export function validateAsyncAPIDocument(
+  document: ParsedAsyncAPIDocument,
+): void {
   const valid = validateSchema(document);
   if (!valid) {
     throw new Error(
@@ -140,6 +142,9 @@ export function formatValidationErrors(errors: ErrorObject[] | null): string {
     return "(no errors)";
   }
   return errors
-    .map((e) => `  Path '${e.instancePath || "/"}': ${e.message ?? "unknown error"}`)
+    .map(
+      (e) =>
+        `  Path '${e.instancePath || "/"}': ${e.message ?? "unknown error"}`,
+    )
     .join("\n");
 }

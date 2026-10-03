@@ -38,7 +38,9 @@ describe("extractNestedConfig", () => {
   it("recurses into nested Model nodes", () => {
     const inner = {
       kind: "Model",
-      properties: new Map([["scopes", { type: { kind: "String", value: "read" } }]]),
+      properties: new Map([
+        ["scopes", { type: { kind: "String", value: "read" } }],
+      ]),
     };
     const outer = {
       kind: "Model",

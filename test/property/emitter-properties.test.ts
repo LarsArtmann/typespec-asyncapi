@@ -69,7 +69,14 @@ const fieldName = fc
   .stringMatching(/^[a-z][a-zA-Z0-9]{2,11}$/u)
   .filter((name) => !RESERVED.has(name));
 
-const scalarType = fc.constantFrom("string", "int32", "int64", "float64", "boolean", "utcDateTime");
+const scalarType = fc.constantFrom(
+  "string",
+  "int32",
+  "int64",
+  "float64",
+  "boolean",
+  "utcDateTime",
+);
 
 interface FieldSpec {
   name: string;
@@ -94,7 +101,11 @@ const fieldSpec = fc.record({
 
 /** Pair constraints are made CONSISTENT by construction (P2): min <= max etc. */
 const consistentFieldSpec: fc.Arbitrary<FieldSpec> = fc
-  .tuple(fieldSpec, fc.integer({ min: 0, max: 9 }), fc.integer({ min: 0, max: 9 }))
+  .tuple(
+    fieldSpec,
+    fc.integer({ min: 0, max: 9 }),
+    fc.integer({ min: 0, max: 9 }),
+  )
   .map(([base, spread, lenSpread]) => ({
     ...base,
     max: base.min + spread,
@@ -103,13 +114,20 @@ const consistentFieldSpec: fc.Arbitrary<FieldSpec> = fc
   }));
 
 function renderField(field: FieldSpec): string {
-  const numeric = field.type === "int32" || field.type === "int64" || field.type === "float64";
+  const numeric =
+    field.type === "int32" ||
+    field.type === "int64" ||
+    field.type === "float64";
   const rawConstraints = [
     numeric && !field.asArray ? `@minValue(${field.min})` : "",
     numeric && !field.asArray ? `@maxValue(${field.max})` : "",
     // Value/string constraints apply to the property itself; arrays carry only min/maxItems.
-    field.type === "string" && !field.asArray ? `@minLength(${field.minLen})` : "",
-    field.type === "string" && !field.asArray ? `@maxLength(${field.maxLen})` : "",
+    field.type === "string" && !field.asArray
+      ? `@minLength(${field.minLen})`
+      : "",
+    field.type === "string" && !field.asArray
+      ? `@maxLength(${field.maxLen})`
+      : "",
     field.asArray ? `@minItems(${field.min})` : "",
     field.asArray ? `@maxItems(${field.max})` : "",
   ];
@@ -142,7 +160,9 @@ const modelSpec = fc.record({
 
 function renderModel(model: ModelSpec): string {
   const enumBlock =
-    model.withEnum === null ? "" : `enum ${model.name}Status { ${model.withEnum.join(", ")} }\n\n`;
+    model.withEnum === null
+      ? ""
+      : `enum ${model.name}Status { ${model.withEnum.join(", ")} }\n\n`;
   const fields = model.fields.map(renderField).join("\n  ");
   return `${enumBlock}model ${model.name} {\n  ${fields}\n}`;
 }
@@ -160,18 +180,29 @@ const specArbitrary = fc.record({
 /** Render a model with one extra property referencing another named model. */
 function renderModelWithRef(model: ModelSpec, refTarget: string): string {
   const enumBlock =
-    model.withEnum === null ? "" : `enum ${model.name}Status { ${model.withEnum.join(", ")} }\n\n`;
-  const fields = [...model.fields.map(renderField), `related: ${refTarget};`].join("\n  ");
+    model.withEnum === null
+      ? ""
+      : `enum ${model.name}Status { ${model.withEnum.join(", ")} }\n\n`;
+  const fields = [
+    ...model.fields.map(renderField),
+    `related: ${refTarget};`,
+  ].join("\n  ");
   return `${enumBlock}model ${model.name} {\n  ${fields}\n}`;
 }
 
-function renderSpec(spec: { models: ModelSpec[]; opName: string; channelName: string }): string {
+function renderSpec(spec: {
+  models: ModelSpec[];
+  opName: string;
+  channelName: string;
+}): string {
   const payload = spec.models[0]!;
   const rest = spec.models.slice(1);
   // The payload model references the next model when one exists.
   // Single-model specs stay self-contained; this exercises model→model $refs.
   const payloadModel =
-    rest.length > 0 ? renderModelWithRef(payload, rest[0]!.name) : renderModel(payload);
+    rest.length > 0
+      ? renderModelWithRef(payload, rest[0]!.name)
+      : renderModel(payload);
   const others = rest.map(renderModel).join("\n\n");
   const body = [payloadModel, others].filter(Boolean).join("\n\n");
   return `
@@ -220,11 +251,14 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
       `;
       const result = await compileAndValidate(source);
       expect(result.valid).toBe(true);
-      const prop = result.document.components?.schemas?.Holder?.properties?.[field.name] as
-        | JsonSchema
-        | undefined;
+      const prop = result.document.components?.schemas?.Holder?.properties?.[
+        field.name
+      ] as JsonSchema | undefined;
       expect(prop).toBeDefined();
-      const numeric = field.type === "int32" || field.type === "int64" || field.type === "float64";
+      const numeric =
+        field.type === "int32" ||
+        field.type === "int64" ||
+        field.type === "float64";
       const wantValue = numeric && !field.asArray;
       const wantLength = field.type === "string" && !field.asArray;
       const wantItems = field.asArray;
@@ -259,7 +293,9 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
         minItems: wantItems ? field.min : undefined,
         maxItems: wantItems ? field.max : undefined,
       });
-      expect(lower === undefined || upper === undefined || lower <= upper).toBe(true);
+      expect(lower === undefined || upper === undefined || lower <= upper).toBe(
+        true,
+      );
     });
   });
 
@@ -300,7 +336,10 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
         "split-schemas": true,
         "file-type": "json",
       };
-      const { asyncApiDoc, allOutputFiles } = await compileAsyncAPI(renderSpec(spec), options);
+      const { asyncApiDoc, allOutputFiles } = await compileAsyncAPI(
+        renderSpec(spec),
+        options,
+      );
       expect(asyncApiDoc).not.toBeNull();
 
       const mainDoc = asyncApiDoc!;
@@ -340,7 +379,9 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
     await property("spec", specArbitrary, async (spec) => {
       const first = await compileAsyncAPI(renderSpec(spec), {});
       const second = await compileAsyncAPI(renderSpec(spec), {});
-      expect(JSON.stringify(second.asyncApiDoc)).toBe(JSON.stringify(first.asyncApiDoc));
+      expect(JSON.stringify(second.asyncApiDoc)).toBe(
+        JSON.stringify(first.asyncApiDoc),
+      );
     });
   });
 });

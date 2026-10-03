@@ -149,13 +149,16 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
     // Find generated AsyncAPI file
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
-      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     const content = host.fs.get(asyncApiFile!) as string;
-    const spec = content.startsWith("{") ? JSON.parse(content) : YAML.parse(content);
+    const spec = content.startsWith("{")
+      ? JSON.parse(content)
+      : YAML.parse(content);
 
     // Validate AsyncAPI 3.1
     expect(spec.asyncapi).toBe("3.1.0");
@@ -200,11 +203,17 @@ describe("e2E: Multi-Protocol Comprehensive Test", () => {
     // Validate protocol bindings are emitted
     const channels = spec.channels || {};
     expect(channels["user.lifecycle.created"]?.bindings?.kafka).toBeDefined();
-    expect(channels["user.lifecycle.created"].bindings.kafka.topic).toBe("user-events");
-    expect(channels["user.lifecycle.created"].bindings.kafka.groupId).toBe("user-service");
+    expect(channels["user.lifecycle.created"].bindings.kafka.topic).toBe(
+      "user-events",
+    );
+    expect(channels["user.lifecycle.created"].bindings.kafka.groupId).toBe(
+      "user-service",
+    );
 
     expect(channels["notifications.{userId}.live"]?.bindings?.ws).toBeDefined();
-    expect(channels["notifications.{userId}.live"].bindings.ws.method).toBe("GET");
+    expect(channels["notifications.{userId}.live"].bindings.ws.method).toBe(
+      "GET",
+    );
 
     // HTTP and MQTT only define operation-level bindings in this spec.
     const operations = spec.operations || {};

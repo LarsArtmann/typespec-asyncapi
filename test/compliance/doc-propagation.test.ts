@@ -135,7 +135,10 @@ describe("spec Compliance: @doc propagation", () => {
       op publishEvent(): AutoRegistered;
     `);
 
-    const msg = inlineObject(doc.components?.messages?.AutoRegistered, "message");
+    const msg = inlineObject(
+      doc.components?.messages?.AutoRegistered,
+      "message",
+    );
     expect(msg).toBeDefined();
     expect(msg.title).toBe("AutoRegistered");
   });

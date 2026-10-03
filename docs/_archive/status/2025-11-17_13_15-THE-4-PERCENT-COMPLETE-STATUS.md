@@ -431,54 +431,54 @@ function createChannel(id: ChannelId, path: ChannelPath): Channel;
 
 ### 🔥 CRITICAL (Do This Week) - 8-12 hours
 
-| # | Task                                 | Time   | Impact   | Priority | Phase   |
-| - | ------------------------------------ | ------ | -------- | -------- | ------- |
-| 1 | **Test Suite Triage**                | 120min | CRITICAL | P0       | THE 20% |
-| 2 | **Fix Top 5 Test Patterns**          | 60min  | CRITICAL | P0       | THE 20% |
-| 3 | **Fix Remaining Effect.runSync (7)** | 60min  | HIGH     | P1       | THE 20% |
-| 4 | **Apply Branded Types - ChannelId**  | 60min  | HIGH     | P1       | THE 20% |
-| 5 | **Replace Magic Strings → Enums**    | 30min  | MEDIUM   | P2       | THE 20% |
-| 6 | **Replace Booleans → Enums**         | 30min  | MEDIUM   | P2       | THE 20% |
+| #   | Task                                 | Time   | Impact   | Priority | Phase   |
+| --- | ------------------------------------ | ------ | -------- | -------- | ------- |
+| 1   | **Test Suite Triage**                | 120min | CRITICAL | P0       | THE 20% |
+| 2   | **Fix Top 5 Test Patterns**          | 60min  | CRITICAL | P0       | THE 20% |
+| 3   | **Fix Remaining Effect.runSync (7)** | 60min  | HIGH     | P1       | THE 20% |
+| 4   | **Apply Branded Types - ChannelId**  | 60min  | HIGH     | P1       | THE 20% |
+| 5   | **Replace Magic Strings → Enums**    | 30min  | MEDIUM   | P2       | THE 20% |
+| 6   | **Replace Booleans → Enums**         | 30min  | MEDIUM   | P2       | THE 20% |
 
 **Total:** 6 hours → Pass rate 70%+, types enforced, async correct
 
 ### ⚡ HIGH PRIORITY (Next Week) - 6-8 hours
 
-| #  | Task                                   | Time  | Impact | Priority | Phase   |
-| -- | -------------------------------------- | ----- | ------ | -------- | ------- |
-| 7  | **Split ValidationService.ts**         | 60min | MEDIUM | P2       | PHASE 3 |
-| 8  | **Split effect-helpers.ts**            | 45min | MEDIUM | P2       | PHASE 3 |
-| 9  | **Split PluginRegistry.ts**            | 60min | MEDIUM | P2       | PHASE 3 |
-| 10 | **Split standardized-errors.ts**       | 45min | LOW    | P3       | PHASE 3 |
-| 11 | **Fix ValidationService duplications** | 30min | MEDIUM | P2       | PHASE 5 |
-| 12 | **Fix mqtt-plugin duplications**       | 30min | MEDIUM | P2       | PHASE 5 |
-| 13 | **Apply OperationId branded type**     | 30min | MEDIUM | P2       | PHASE 5 |
-| 14 | **Apply MessageId branded type**       | 30min | MEDIUM | P2       | PHASE 5 |
+| #   | Task                                   | Time  | Impact | Priority | Phase   |
+| --- | -------------------------------------- | ----- | ------ | -------- | ------- |
+| 7   | **Split ValidationService.ts**         | 60min | MEDIUM | P2       | PHASE 3 |
+| 8   | **Split effect-helpers.ts**            | 45min | MEDIUM | P2       | PHASE 3 |
+| 9   | **Split PluginRegistry.ts**            | 60min | MEDIUM | P2       | PHASE 3 |
+| 10  | **Split standardized-errors.ts**       | 45min | LOW    | P3       | PHASE 3 |
+| 11  | **Fix ValidationService duplications** | 30min | MEDIUM | P2       | PHASE 5 |
+| 12  | **Fix mqtt-plugin duplications**       | 30min | MEDIUM | P2       | PHASE 5 |
+| 13  | **Apply OperationId branded type**     | 30min | MEDIUM | P2       | PHASE 5 |
+| 14  | **Apply MessageId branded type**       | 30min | MEDIUM | P2       | PHASE 5 |
 
 **Total:** 6 hours → Files <350 lines, more branded types
 
 ### 📋 MEDIUM PRIORITY (Week 3) - 4-6 hours
 
-| #  | Task                               | Time   | Impact | Priority | Phase   |
-| -- | ---------------------------------- | ------ | ------ | -------- | ------- |
-| 15 | **Implement BDD Framework**        | 120min | HIGH   | P1       | PHASE 5 |
-| 16 | **Add Test Coverage Reporting**    | 60min  | MEDIUM | P2       | PHASE 5 |
-| 17 | **Fix AsyncAPI 3.0 Generation**    | 120min | HIGH   | P1       | PHASE 4 |
-| 18 | **Fix OperationProcessingService** | 120min | HIGH   | P1       | PHASE 4 |
-| 19 | **Apply ServerId branded type**    | 15min  | LOW    | P3       | PHASE 5 |
-| 20 | **Apply SchemaId branded type**    | 15min  | LOW    | P3       | PHASE 5 |
+| #   | Task                               | Time   | Impact | Priority | Phase   |
+| --- | ---------------------------------- | ------ | ------ | -------- | ------- |
+| 15  | **Implement BDD Framework**        | 120min | HIGH   | P1       | PHASE 5 |
+| 16  | **Add Test Coverage Reporting**    | 60min  | MEDIUM | P2       | PHASE 5 |
+| 17  | **Fix AsyncAPI 3.0 Generation**    | 120min | HIGH   | P1       | PHASE 4 |
+| 18  | **Fix OperationProcessingService** | 120min | HIGH   | P1       | PHASE 4 |
+| 19  | **Apply ServerId branded type**    | 15min  | LOW    | P3       | PHASE 5 |
+| 20  | **Apply SchemaId branded type**    | 15min  | LOW    | P3       | PHASE 5 |
 
 **Total:** 6.5 hours → BDD tests, AsyncAPI fixes
 
 ### 🔧 FUTURE WORK (Sprint Planning) - 12+ hours
 
-| #  | Task                               | Time    | Impact | Priority | Phase   |
-| -- | ---------------------------------- | ------- | ------ | -------- | ------- |
-| 21 | **Implement Missing Decorators**   | 180min  | MEDIUM | P2       | PHASE 4 |
-| 22 | **Complete Value Objects**         | 300min  | MEDIUM | P2       | PHASE 4 |
-| 23 | **Implement TDD for New Features** | Ongoing | HIGH   | P1       | PHASE 5 |
-| 24 | **Add JSDoc to All Public APIs**   | 120min  | LOW    | P3       | Ongoing |
-| 25 | **Architecture Decision Records**  | 60min   | LOW    | P3       | Ongoing |
+| #   | Task                               | Time    | Impact | Priority | Phase   |
+| --- | ---------------------------------- | ------- | ------ | -------- | ------- |
+| 21  | **Implement Missing Decorators**   | 180min  | MEDIUM | P2       | PHASE 4 |
+| 22  | **Complete Value Objects**         | 300min  | MEDIUM | P2       | PHASE 4 |
+| 23  | **Implement TDD for New Features** | Ongoing | HIGH   | P1       | PHASE 5 |
+| 24  | **Add JSDoc to All Public APIs**   | 120min  | LOW    | P3       | Ongoing |
+| 25  | **Architecture Decision Records**  | 60min   | LOW    | P3       | Ongoing |
 
 ---
 

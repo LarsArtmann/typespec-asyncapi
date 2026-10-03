@@ -102,7 +102,8 @@ describe("adapted: DanSnow/typespec-events", () => {
 
   it("emits nested model as $ref", async () => {
     const result = await compileAsyncAPI(source);
-    const evt = result.asyncApiDoc?.components?.schemas?.UserAddressUpdatedEvent;
+    const evt =
+      result.asyncApiDoc?.components?.schemas?.UserAddressUpdatedEvent;
     expect(evt?.properties?.newAddress).toMatchObject({
       $ref: "#/components/schemas/Address",
     });

@@ -19,10 +19,9 @@ const reposDir = join(import.meta.dirname, "..", "repos");
 const goldenDir = join(import.meta.dirname);
 
 const source = readFileSync(join(reposDir, "livesession-xyd.tsp"), "utf8");
-const golden = JSON.parse(readFileSync(join(goldenDir, "livesession-xyd.json"), "utf8")) as Record<
-  string,
-  unknown
->;
+const golden = JSON.parse(
+  readFileSync(join(goldenDir, "livesession-xyd.json"), "utf8"),
+) as Record<string, unknown>;
 
 describe("golden: livesession/xyd output", () => {
   it("matches the golden file exactly", async () => {
@@ -38,7 +37,9 @@ describe("golden: livesession/xyd output", () => {
 
   it("contains 40+ schemas", async () => {
     const result = await compileAsyncAPI(source);
-    const schemaCount = Object.keys(result.asyncApiDoc?.components?.schemas ?? {}).length;
+    const schemaCount = Object.keys(
+      result.asyncApiDoc?.components?.schemas ?? {},
+    ).length;
     expect(schemaCount).toBeGreaterThanOrEqual(40);
   });
 });

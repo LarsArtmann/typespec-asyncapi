@@ -10,7 +10,10 @@
  */
 
 import { inlineObject } from "../utils/type-guards.js";
-import { compileAndValidate, validateAsyncAPIDocument } from "../utils/schema-validator.js";
+import {
+  compileAndValidate,
+  validateAsyncAPIDocument,
+} from "../utils/schema-validator.js";
 import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 
 describe("domain: @protocol on Model routes to message bindings", () => {
@@ -32,7 +35,10 @@ describe("domain: @protocol on Model routes to message bindings", () => {
 
     expect(diagnostics).toHaveLength(0);
     expect(valid).toBe(true);
-    const msg = inlineObject(doc.components!.messages!["OrderEvent"], "message");
+    const msg = inlineObject(
+      doc.components!.messages!["OrderEvent"],
+      "message",
+    );
     const bindings = inlineObject(msg.bindings, "message bindings");
     const kafka = inlineObject(bindings.kafka, "kafka binding");
     expect(kafka.bindingVersion).toBe(LATEST_BINDING_VERSIONS.kafka);
@@ -51,7 +57,9 @@ describe("domain: @protocol on Model routes to message bindings", () => {
       op place(): OrderEvent;
     `);
 
-    const warning = diagnostics.find((d) => d.code?.endsWith("protocol-model-fields-unplaced"));
+    const warning = diagnostics.find((d) =>
+      d.code?.endsWith("protocol-model-fields-unplaced"),
+    );
     expect(warning).toBeDefined();
     expect(warning?.message).toContain("partitions");
     for (const channel of Object.values(doc.channels!)) {
@@ -71,10 +79,15 @@ describe("domain: @protocol on Model routes to message bindings", () => {
       op send(): ChatMessage;
     `);
 
-    const warning = diagnostics.find((d) => d.code?.endsWith("protocol-model-fields-unplaced"));
+    const warning = diagnostics.find((d) =>
+      d.code?.endsWith("protocol-model-fields-unplaced"),
+    );
     expect(warning).toBeDefined();
     expect(warning?.message).toContain("maxPayload");
-    const msg = inlineObject(doc.components!.messages!["ChatMessage"], "message");
+    const msg = inlineObject(
+      doc.components!.messages!["ChatMessage"],
+      "message",
+    );
     expect(msg.bindings).toBeUndefined();
   });
 
@@ -90,7 +103,9 @@ describe("domain: @protocol on Model routes to message bindings", () => {
       op ping(): void;
     `);
 
-    const warning = diagnostics.find((d) => d.code?.endsWith("protocol-model-fields-unplaced"));
+    const warning = diagnostics.find((d) =>
+      d.code?.endsWith("protocol-model-fields-unplaced"),
+    );
     expect(warning).toBeDefined();
     expect(warning?.message).toContain("OrphanPayload");
   });
@@ -115,7 +130,10 @@ describe("domain: @protocol on Model routes to message bindings", () => {
     expect(diagnostics).toHaveLength(0);
     expect(valid).toBe(true);
     validateAsyncAPIDocument(doc);
-    const msg = inlineObject(doc.components!.messages!["OrderEvent"], "message");
+    const msg = inlineObject(
+      doc.components!.messages!["OrderEvent"],
+      "message",
+    );
     const bindings = inlineObject(msg.bindings, "message bindings");
     const kafka = inlineObject(bindings.kafka, "kafka binding");
     expect(kafka.schemaIdLocation).toBe("header");

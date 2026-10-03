@@ -97,58 +97,58 @@ Radical honesty — including my own failures this session:
 
 > Sorted by impact then effort. **This section is HARVEST input** — route actionable items (Critical/High, S/M) into `TODO_LIST.md`; the more speculative ones belong in `ROADMAP.md`. Effort: S <30min, M 30min–2h, L >2h.
 
-| #  | Task                                                                                                                                                             | Impact   | Effort | Category      |
-| -- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------- |
-| 1  | Confirm next scheduled Dependabot security run completes green (watch one full cycle)                                                                            | Critical | S      | Bug           |
-| 2  | Add `concurrency: group: ci-${{ github.ref }}, cancel-in-progress: true` to ci.yml — 6 redundant runs fired today from rapid auto-commits                        | High     | S      | Quality       |
-| 3  | Cut real tag `v0.3.0-beta.2` to exercise provenance/OIDC publish path end-to-end                                                                                 | High     | S      | Feature       |
-| 4  | Add website build job to CI (site is currently never built by CI — could rot silently)                                                                           | High     | S      | Bug           |
-| 5  | Root-cause the `reusable-components.test.ts:507` CI parse failure (`5c4caecf`/`cdd2f50b`) with a pinned repro; document in AGENTS.md                             | High     | M      | Bug           |
-| 6  | Codify `.github/dependabot.yml` (directories: `/` only; npm_and_yarn group) replacing the Settings-UI-only config                                                | High     | S      | Cleanup       |
-| 7  | HARVEST this report into `TODO_LIST.md` / `ROADMAP.md` (docs-health HARVEST mode)                                                                                | High     | S      | Documentation |
-| 8  | Write multi-agent coordination protocol into AGENTS.md (claims file or domain-scoped editing rules)                                                              | High     | S      | Documentation |
-| 9  | Weekly scheduled Release dry-run (`schedule:` + default `dry_run=true`) to catch publish rot                                                                     | Medium   | S      | Quality       |
-| 10 | Audit root `package.json` inert `overrides` block (`@asyncapi/specs`, `form-data`, `tough-cookie`) — remove or migrate verified entries to `pnpm-workspace.yaml` | Medium   | S      | Cleanup       |
-| 11 | Add override-expiry reminders: drop `fast-uri`/`js-yaml` overrides when `ajv`/`@asyncapi/parser` ship fixed ranges upstream                                      | Medium   | S      | Cleanup       |
-| 12 | Pin `minimumReleaseAge` explicitly in `pnpm-workspace.yaml` (make the 24h default an intentional, documented policy)                                             | Medium   | S      | Quality       |
-| 13 | Add pre-push cheap gate to daemon path or husky pre-push: `oxlint . --deny-warnings` (66ms)                                                                      | Medium   | S      | Quality       |
-| 14 | CHANGELOG entry: CI/CD recovery, dependency overrides, workspace unification, release fix                                                                        | Medium   | S      | Documentation |
-| 15 | ADR note: prerelease → `--tag latest` dist-tag decision (docs/planning/)                                                                                         | Medium   | S      | Documentation |
-| 16 | Extract shared action pins into a reusable workflow (ci.yml/release.yml duplicate 4 SHAs)                                                                        | Medium   | M      | Cleanup       |
-| 17 | Audit `website/video/package-lock.json` beyond js-yaml/fast-uri (full vulnerability sweep)                                                                       | Medium   | M      | Bug           |
-| 18 | Investigate CI runs `34755310254`/`34755416575` logs to confirm which stage failed (close the unverified claims)                                                 | Low      | S      | Documentation |
-| 19 | Flake detector job: run the compliance suite twice per CI run, diff results                                                                                      | Medium   | M      | Quality       |
-| 20 | Nightly FC_SEED-rotating property-test job (seed is currently pinned only)                                                                                       | Medium   | M      | Quality       |
-| 21 | Upload jscpd HTML report + coverage summary as workflow artifacts on failure                                                                                     | Medium   | S      | Quality       |
-| 22 | Add `node-version-file` (engines/.nvmrc) instead of hardcoded `"24"` in both workflows                                                                           | Low      | S      | Cleanup       |
-| 23 | Add dependabot config for GitHub Actions itself (action pin drift: checkout v7 today, v8 eventually)                                                             | Medium   | S      | Quality       |
-| 24 | Verify `NPM_TOKEN` secret is a granular token scoped to the package (release.yml comment recommends granular; actual state unknown)                              | Medium   | S      | Bug           |
-| 25 | Check whether branch protection requires the CI check on master (admin settings; not visible to me)                                                              | Medium   | S      | Quality       |
-| 26 | Investigate auto-commit daemon push lag (4 commits sat unpushed ~5 min today; I pushed manually)                                                                 | Medium   | S      | Quality       |
-| 27 | Improve daemon commit messages beyond "chore: auto-commit N file(s) (heuristic)" — today's history is unarchaeological                                           | Medium   | M      | Quality       |
-| 28 | Add GITHUB_STEP_SUMMARY to CI: test count, coverage %, duplication % per run                                                                                     | Low      | S      | Quality       |
-| 29 | Audit fixture fidelity of the 3 new golden lock tests (`d1230293`) vs `regenerate-golden.ts` output                                                              | Medium   | S      | Quality       |
-| 30 | Confirm Dependabot `/website` directory entry behavior post-unification after next run (drop it from Settings if it errors)                                      | Medium   | S      | Cleanup       |
-| 31 | Document the workspace unification decision in `website/` (README or ADR) so nobody recreates local lockfiles                                                    | Low      | S      | Documentation |
-| 32 | `astro check` (website typecheck) currently runs nowhere in CI — fold into the new website job (#4)                                                              | Medium   | S      | Bug           |
-| 33 | Video pipeline smoke test in CI (hono/sharp/adm-zip/svgo bumps from `cdd2f50b` land unvalidated)                                                                 | Low      | M      | Quality       |
-| 34 | Add `npm audit signatures` step after publish (verify provenance attestations)                                                                                   | Low      | S      | Quality       |
-| 35 | Document pnpm 11 `minimumReleaseAge` workaround (regenerate lockfile recipe) in AGENTS.md troubleshooting — partially done, add the exact command sequence       | Low      | S      | Documentation |
-| 36 | Consider `--frozen-lockfile` sanity check in pre-commit to catch daemon-committed package.json/lockfile desync (the `9ef32f63` class)                            | Medium   | M      | Quality       |
-| 37 | Refresh AGENTS.md compiler pin note (`@typespec/compiler` lockfile is on 1.16.0; docs say "check package.json")                                                  | Low      | S      | Documentation |
-| 38 | Coverage gate ratchet: raise per-file 75% floor or add a "may not decrease" rule                                                                                 | Low      | S      | Quality       |
-| 39 | Reorder verify gate fail-fast (lint+typecheck before tests? measure whether it shortens red feedback)                                                            | Low      | S      | Quality       |
-| 40 | Track CI wall-time trend (verify gate ~2min; examples stage adds more) — add timing summary                                                                      | Low      | S      | Quality       |
-| 41 | Bun cache for the coverage step (`setup-bun` has no cache today)                                                                                                 | Low      | S      | Quality       |
-| 42 | ROADMAP check-in: EFv1 direct-AST rewrite (v0.4.0 plan) still pending — unaffected by today, keep visible                                                        | Low      | L      | Feature       |
-| 43 | Decide fate of `alpha-release` npm script (it's just an alias for `pnpm run verify` — misleading name)                                                           | Low      | S      | Cleanup       |
-| 44 | Published package engines say `node >=20.11`; CI now runs 24, local runs 24 — align the floor intentionally (bump or document why 20)                            | Low      | S      | Cleanup       |
-| 45 | Add `docs/status/` index README listing reports newest-first (5+ reports exist, no index)                                                                        | Low      | S      | Documentation |
-| 46 | Prune/annotate stale status reports older than 30 days (2026-08-2x batch) per docs-health ANNOTATE mode                                                          | Low      | S      | Documentation |
-| 47 | Verify `pnpm peers check` warnings (install prints peer-issues warning every time) — triage to zero or suppress intentionally                                    | Low      | M      | Quality       |
-| 48 | Add expected-dist-tag assertion to Release workflow output (`npm view ... dist-tags` post-publish check)                                                         | Medium   | S      | Quality       |
-| 49 | Keep a session log convention for parallel agents (append-only `docs/sessions/` note per run) to end the archaeology problem                                     | Medium   | S      | Documentation |
-| 50 | Re-verify open-alert count stays 0 after the daily Dependabot rescan closes stale "fixed" entries permanently                                                    | Medium   | S      | Bug           |
+| #   | Task                                                                                                                                                             | Impact   | Effort | Category      |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------- |
+| 1   | Confirm next scheduled Dependabot security run completes green (watch one full cycle)                                                                            | Critical | S      | Bug           |
+| 2   | Add `concurrency: group: ci-${{ github.ref }}, cancel-in-progress: true` to ci.yml — 6 redundant runs fired today from rapid auto-commits                        | High     | S      | Quality       |
+| 3   | Cut real tag `v0.3.0-beta.2` to exercise provenance/OIDC publish path end-to-end                                                                                 | High     | S      | Feature       |
+| 4   | Add website build job to CI (site is currently never built by CI — could rot silently)                                                                           | High     | S      | Bug           |
+| 5   | Root-cause the `reusable-components.test.ts:507` CI parse failure (`5c4caecf`/`cdd2f50b`) with a pinned repro; document in AGENTS.md                             | High     | M      | Bug           |
+| 6   | Codify `.github/dependabot.yml` (directories: `/` only; npm_and_yarn group) replacing the Settings-UI-only config                                                | High     | S      | Cleanup       |
+| 7   | HARVEST this report into `TODO_LIST.md` / `ROADMAP.md` (docs-health HARVEST mode)                                                                                | High     | S      | Documentation |
+| 8   | Write multi-agent coordination protocol into AGENTS.md (claims file or domain-scoped editing rules)                                                              | High     | S      | Documentation |
+| 9   | Weekly scheduled Release dry-run (`schedule:` + default `dry_run=true`) to catch publish rot                                                                     | Medium   | S      | Quality       |
+| 10  | Audit root `package.json` inert `overrides` block (`@asyncapi/specs`, `form-data`, `tough-cookie`) — remove or migrate verified entries to `pnpm-workspace.yaml` | Medium   | S      | Cleanup       |
+| 11  | Add override-expiry reminders: drop `fast-uri`/`js-yaml` overrides when `ajv`/`@asyncapi/parser` ship fixed ranges upstream                                      | Medium   | S      | Cleanup       |
+| 12  | Pin `minimumReleaseAge` explicitly in `pnpm-workspace.yaml` (make the 24h default an intentional, documented policy)                                             | Medium   | S      | Quality       |
+| 13  | Add pre-push cheap gate to daemon path or husky pre-push: `oxlint . --deny-warnings` (66ms)                                                                      | Medium   | S      | Quality       |
+| 14  | CHANGELOG entry: CI/CD recovery, dependency overrides, workspace unification, release fix                                                                        | Medium   | S      | Documentation |
+| 15  | ADR note: prerelease → `--tag latest` dist-tag decision (docs/planning/)                                                                                         | Medium   | S      | Documentation |
+| 16  | Extract shared action pins into a reusable workflow (ci.yml/release.yml duplicate 4 SHAs)                                                                        | Medium   | M      | Cleanup       |
+| 17  | Audit `website/video/package-lock.json` beyond js-yaml/fast-uri (full vulnerability sweep)                                                                       | Medium   | M      | Bug           |
+| 18  | Investigate CI runs `34755310254`/`34755416575` logs to confirm which stage failed (close the unverified claims)                                                 | Low      | S      | Documentation |
+| 19  | Flake detector job: run the compliance suite twice per CI run, diff results                                                                                      | Medium   | M      | Quality       |
+| 20  | Nightly FC_SEED-rotating property-test job (seed is currently pinned only)                                                                                       | Medium   | M      | Quality       |
+| 21  | Upload jscpd HTML report + coverage summary as workflow artifacts on failure                                                                                     | Medium   | S      | Quality       |
+| 22  | Add `node-version-file` (engines/.nvmrc) instead of hardcoded `"24"` in both workflows                                                                           | Low      | S      | Cleanup       |
+| 23  | Add dependabot config for GitHub Actions itself (action pin drift: checkout v7 today, v8 eventually)                                                             | Medium   | S      | Quality       |
+| 24  | Verify `NPM_TOKEN` secret is a granular token scoped to the package (release.yml comment recommends granular; actual state unknown)                              | Medium   | S      | Bug           |
+| 25  | Check whether branch protection requires the CI check on master (admin settings; not visible to me)                                                              | Medium   | S      | Quality       |
+| 26  | Investigate auto-commit daemon push lag (4 commits sat unpushed ~5 min today; I pushed manually)                                                                 | Medium   | S      | Quality       |
+| 27  | Improve daemon commit messages beyond "chore: auto-commit N file(s) (heuristic)" — today's history is unarchaeological                                           | Medium   | M      | Quality       |
+| 28  | Add GITHUB_STEP_SUMMARY to CI: test count, coverage %, duplication % per run                                                                                     | Low      | S      | Quality       |
+| 29  | Audit fixture fidelity of the 3 new golden lock tests (`d1230293`) vs `regenerate-golden.ts` output                                                              | Medium   | S      | Quality       |
+| 30  | Confirm Dependabot `/website` directory entry behavior post-unification after next run (drop it from Settings if it errors)                                      | Medium   | S      | Cleanup       |
+| 31  | Document the workspace unification decision in `website/` (README or ADR) so nobody recreates local lockfiles                                                    | Low      | S      | Documentation |
+| 32  | `astro check` (website typecheck) currently runs nowhere in CI — fold into the new website job (#4)                                                              | Medium   | S      | Bug           |
+| 33  | Video pipeline smoke test in CI (hono/sharp/adm-zip/svgo bumps from `cdd2f50b` land unvalidated)                                                                 | Low      | M      | Quality       |
+| 34  | Add `npm audit signatures` step after publish (verify provenance attestations)                                                                                   | Low      | S      | Quality       |
+| 35  | Document pnpm 11 `minimumReleaseAge` workaround (regenerate lockfile recipe) in AGENTS.md troubleshooting — partially done, add the exact command sequence       | Low      | S      | Documentation |
+| 36  | Consider `--frozen-lockfile` sanity check in pre-commit to catch daemon-committed package.json/lockfile desync (the `9ef32f63` class)                            | Medium   | M      | Quality       |
+| 37  | Refresh AGENTS.md compiler pin note (`@typespec/compiler` lockfile is on 1.16.0; docs say "check package.json")                                                  | Low      | S      | Documentation |
+| 38  | Coverage gate ratchet: raise per-file 75% floor or add a "may not decrease" rule                                                                                 | Low      | S      | Quality       |
+| 39  | Reorder verify gate fail-fast (lint+typecheck before tests? measure whether it shortens red feedback)                                                            | Low      | S      | Quality       |
+| 40  | Track CI wall-time trend (verify gate ~2min; examples stage adds more) — add timing summary                                                                      | Low      | S      | Quality       |
+| 41  | Bun cache for the coverage step (`setup-bun` has no cache today)                                                                                                 | Low      | S      | Quality       |
+| 42  | ROADMAP check-in: EFv1 direct-AST rewrite (v0.4.0 plan) still pending — unaffected by today, keep visible                                                        | Low      | L      | Feature       |
+| 43  | Decide fate of `alpha-release` npm script (it's just an alias for `pnpm run verify` — misleading name)                                                           | Low      | S      | Cleanup       |
+| 44  | Published package engines say `node >=20.11`; CI now runs 24, local runs 24 — align the floor intentionally (bump or document why 20)                            | Low      | S      | Cleanup       |
+| 45  | Add `docs/status/` index README listing reports newest-first (5+ reports exist, no index)                                                                        | Low      | S      | Documentation |
+| 46  | Prune/annotate stale status reports older than 30 days (2026-08-2x batch) per docs-health ANNOTATE mode                                                          | Low      | S      | Documentation |
+| 47  | Verify `pnpm peers check` warnings (install prints peer-issues warning every time) — triage to zero or suppress intentionally                                    | Low      | M      | Quality       |
+| 48  | Add expected-dist-tag assertion to Release workflow output (`npm view ... dist-tags` post-publish check)                                                         | Medium   | S      | Quality       |
+| 49  | Keep a session log convention for parallel agents (append-only `docs/sessions/` note per run) to end the archaeology problem                                     | Medium   | S      | Documentation |
+| 50  | Re-verify open-alert count stays 0 after the daily Dependabot rescan closes stale "fixed" entries permanently                                                    | Medium   | S      | Bug           |
 
 ---
 

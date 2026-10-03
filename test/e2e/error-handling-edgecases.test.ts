@@ -43,13 +43,16 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
-      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     const content1 = host.fs.get(asyncApiFile!) as string;
-    const spec1 = content1.startsWith("{") ? JSON.parse(content1) : YAML.parse(content1);
+    const spec1 = content1.startsWith("{")
+      ? JSON.parse(content1)
+      : YAML.parse(content1);
 
     // Empty model should still generate valid schema
     expect(spec1.components?.schemas?.EmptyMessage).toBeDefined();
@@ -151,13 +154,16 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
-      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     const content3 = host.fs.get(asyncApiFile!) as string;
-    const spec3 = content3.startsWith("{") ? JSON.parse(content3) : YAML.parse(content3);
+    const spec3 = content3.startsWith("{")
+      ? JSON.parse(content3)
+      : YAML.parse(content3);
 
     const schema = spec3.components?.schemas?.EdgeCaseMessage;
     expect(schema).toBeDefined();
@@ -172,10 +178,16 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     // Validate arrays
     expect(schema.properties.numbers.type).toBe("array");
-    expect(asJsonSchema(schema.properties.numbers.items, "items").type).toBe("integer");
+    expect(asJsonSchema(schema.properties.numbers.items, "items").type).toBe(
+      "integer",
+    );
 
     // Validate unions become enums
-    expect(schema.properties.status.enum).toStrictEqual(["active", "inactive", "pending"]);
+    expect(schema.properties.status.enum).toStrictEqual([
+      "active",
+      "inactive",
+      "pending",
+    ]);
 
     // Validate optional fields
     expect(schema.required).not.toContain("optionalInt");
@@ -255,13 +267,16 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
-      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     const content5 = host.fs.get(asyncApiFile!) as string;
-    const spec5 = content5.startsWith("{") ? JSON.parse(content5) : YAML.parse(content5);
+    const spec5 = content5.startsWith("{")
+      ? JSON.parse(content5)
+      : YAML.parse(content5);
 
     const schema = spec5.components?.schemas?.StrictMessage;
     expect(schema).toBeDefined();
@@ -312,13 +327,16 @@ describe("e2E: Error Handling and Edge Cases", () => {
 
     const outputFiles = [...host.fs.keys()];
     const asyncApiFile = outputFiles.find(
-      (f) => f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
+      (f) =>
+        f.includes("asyncapi") && (f.endsWith(".json") || f.endsWith(".yaml")),
     );
 
     expect(asyncApiFile).toBeDefined();
 
     const content6 = host.fs.get(asyncApiFile!) as string;
-    const spec6 = content6.startsWith("{") ? JSON.parse(content6) : YAML.parse(content6);
+    const spec6 = content6.startsWith("{")
+      ? JSON.parse(content6)
+      : YAML.parse(content6);
 
     // Should have valid AsyncAPI without security
     expect(spec6.asyncapi).toBe("3.1.0");

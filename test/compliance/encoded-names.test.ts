@@ -82,7 +82,9 @@ describe("spec Compliance: @encodedName", () => {
     expect(event.discriminator).toBe("type");
     expect(event.required).toContain("type");
     const userCreated = doc.components!.schemas!.UserCreated;
-    expect(userCreated.allOf).toStrictEqual([{ $ref: "#/components/schemas/Event" }]);
+    expect(userCreated.allOf).toStrictEqual([
+      { $ref: "#/components/schemas/Event" },
+    ]);
   });
 
   it("resolves subtype MIME types to their JSON encoding", async () => {

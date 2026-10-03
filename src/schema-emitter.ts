@@ -20,7 +20,11 @@ import type {
   Type,
   Union,
 } from "@typespec/compiler";
-import { getDiscriminator, isTemplateInstance, resolveEncodedName } from "@typespec/compiler";
+import {
+  getDiscriminator,
+  isTemplateInstance,
+  resolveEncodedName,
+} from "@typespec/compiler";
 import { TypeEmitter } from "@typespec/asset-emitter";
 import type {
   Context,
@@ -34,9 +38,16 @@ import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
 import { extractValue } from "./extract-value.js";
 import { refForNamedType } from "./schema-ref.js";
-import { composeUnionVariants, constSchema, enumSchema } from "./schema-fragments.js";
+import {
+  composeUnionVariants,
+  constSchema,
+  enumSchema,
+} from "./schema-fragments.js";
 
-export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitterOptions> {
+export class AsyncAPISchemaEmitter extends TypeEmitter<
+  JsonSchema,
+  AsyncAPIEmitterOptions
+> {
   modelDeclaration(model: Model, name: string): EmitterOutput<JsonSchema> {
     return this.declareModelSchema(model, name);
   }
@@ -46,7 +57,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
    * (`Box<{ ... }>`, `Box<string | int32>`) inline; indexed ones
    * (`Record<string, T>`) inline as `additionalProperties`.
    */
-  modelInstantiation(model: Model, name: string | undefined): EmitterOutput<JsonSchema> {
+  modelInstantiation(
+    model: Model,
+    name: string | undefined,
+  ): EmitterOutput<JsonSchema> {
     if (model.indexer) {
       return this.indexedModelSchema(model);
     }
@@ -55,7 +69,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     }
     return this.declareModelSchema(model, name);
   }
-  private declareModelSchema(model: Model, name: string): EmitterOutput<JsonSchema> {
+  private declareModelSchema(
+    model: Model,
+    name: string,
+  ): EmitterOutput<JsonSchema> {
     const program = this.emitter.getProgram();
     const base = model.baseModel ? this.baseSchemaOf(model.baseModel) : null;
     const schema = this.collectPropertiesSchema(model, base === null);
@@ -77,7 +94,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     return this.collectPropertiesSchema(model, false);
   }
   /** Build `{ properties, type: "object" }` (plus required if any) from a model's properties. */
-  private collectPropertiesSchema(model: Model, includeRequired: boolean): JsonSchema {
+  private collectPropertiesSchema(
+    model: Model,
+    includeRequired: boolean,
+  ): JsonSchema {
     const collected = this.collectModelProperties(model, includeRequired);
     const schema: JsonSchema = {
       properties: collected.properties,
@@ -93,7 +113,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     return this.declareSchema(name, union, this.composedUnionSchema(union));
   }
   /** Template unions: speakable instantiations declare, unspeakable inline. */
-  unionInstantiation(union: Union, name: string | undefined): EmitterOutput<JsonSchema> {
+  unionInstantiation(
+    union: Union,
+    name: string | undefined,
+  ): EmitterOutput<JsonSchema> {
     const schema = this.composedUnionSchema(union);
     if (name === undefined) {
       return schema;
@@ -109,16 +132,23 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     return this.declareSchema(name, scalar, this.intrinsicSchema(scalar.name));
   }
 
-  scalarInstantiation = (s: Scalar, name: string | undefined): EmitterOutput<JsonSchema> =>
+  scalarInstantiation = (
+    s: Scalar,
+    name: string | undefined,
+  ): EmitterOutput<JsonSchema> =>
     name ? this.scalarDeclaration(s, name) : this.intrinsicSchema(s.name);
 
-  stringLiteral = (literal: StringLiteral): EmitterOutput<JsonSchema> => constSchema(literal.value);
+  stringLiteral = (literal: StringLiteral): EmitterOutput<JsonSchema> =>
+    constSchema(literal.value);
   numericLiteral = (literal: NumericLiteral): EmitterOutput<JsonSchema> =>
     constSchema(literal.value);
   booleanLiteral = (literal: BooleanLiteral): EmitterOutput<JsonSchema> =>
     constSchema(literal.value);
-  arrayDeclaration = (_array: Type, _name: string, elementType: Type): EmitterOutput<JsonSchema> =>
-    this.arraySchema(elementType);
+  arrayDeclaration = (
+    _array: Type,
+    _name: string,
+    elementType: Type,
+  ): EmitterOutput<JsonSchema> => this.arraySchema(elementType);
   arrayLiteral = (_array: Type, elementType: Type): EmitterOutput<JsonSchema> =>
     this.arraySchema(elementType);
   private arraySchema(elementType: Type): JsonSchema {
@@ -129,7 +159,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   private indexedModelSchema(model: Model): JsonSchema {
     const value = model.indexer?.value;
     return {
-      additionalProperties: value ? this.elementTypeToSchema(value) : { type: "string" },
+      additionalProperties: value
+        ? this.elementTypeToSchema(value)
+        : { type: "string" },
       type: "object",
     };
   }
@@ -144,8 +176,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   }
 
   /** Emit return types so op-return instantiations (`op x(): Page<User>`) get declared. */
-  operationReturnType = (_operation: Operation, returnType: Type): EmitterOutput<JsonSchema> =>
-    this.emitter.emitTypeReference(returnType);
+  operationReturnType = (
+    _operation: Operation,
+    returnType: Type,
+  ): EmitterOutput<JsonSchema> => this.emitter.emitTypeReference(returnType);
   interfaceDeclaration = (_iface: Interface): EmitterOutput<JsonSchema> =>
     this.emitter.result.none();
   enumDeclaration(en: Enum, name: string): EmitterOutput<JsonSchema> {
@@ -173,7 +207,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
 
   /** Compose a union's variants into an enum/oneOf/anyOf schema. */
   private composedUnionSchema(union: Union): JsonSchema {
-    return composeUnionVariants(this.mapUnionVariants(union), union, this.emitter.getProgram());
+    return composeUnionVariants(
+      this.mapUnionVariants(union),
+      union,
+      this.emitter.getProgram(),
+    );
   }
 
   /** Map union variants to schemas: named types → `$ref`, string literals → `const`, else intrinsic fallback. */
@@ -195,7 +233,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
    * (`Page<User>`) run `emitTypeReference` first so their declaration is
    * created; empty results fall through to the ref, then `typeToSchema`.
    */
-  private refOrFallback(elementType: Type, fallback: (t: Type) => JsonSchema): JsonSchema {
+  private refOrFallback(
+    elementType: Type,
+    fallback: (t: Type) => JsonSchema,
+  ): JsonSchema {
     const ref = refForNamedType(elementType);
     if (ref && !isTemplateInstance(elementType)) {
       return ref;
@@ -227,7 +268,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
   private baseSchemaOf(base: Model): JsonSchema | null {
     return (
       this.refEnsuringDeclaration(base) ??
-      (isTemplateInstance(base) ? this.collectPropertiesSchema(base, true) : null)
+      (isTemplateInstance(base)
+        ? this.collectPropertiesSchema(base, true)
+        : null)
     );
   }
 
@@ -265,7 +308,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
 
   /** Wire-format property name: `@encodedName("application/json", ...)` if set. */
   private wireNameOf(prop: ModelProperty): string {
-    return resolveEncodedName(this.emitter.getProgram(), prop, "application/json");
+    return resolveEncodedName(
+      this.emitter.getProgram(),
+      prop,
+      "application/json",
+    );
   }
 
   private propertyToSchema(prop: ModelProperty): JsonSchema {
@@ -281,24 +328,35 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<JsonSchema, AsyncAPIEmitt
     }
     if (kind === "Union") {
       const tUnion = t as Union;
-      const variants = [...tUnion.variants.values()].map((v): string | JsonSchema => {
-        const inner = v.type;
-        const innerKind = (inner as { kind: string }).kind;
-        if (innerKind === "String" && (inner as { value?: string }).value !== undefined) {
-          return (inner as { value: string }).value;
-        }
-        const ref = this.refEnsuringDeclaration(inner);
-        if (ref) {
-          return ref;
-        }
-        const s = this.typeToSchema(inner);
-        return Object.keys(s).length > 0 ? s : { type: "string" };
-      });
+      const variants = [...tUnion.variants.values()].map(
+        (v): string | JsonSchema => {
+          const inner = v.type;
+          const innerKind = (inner as { kind: string }).kind;
+          if (
+            innerKind === "String" &&
+            (inner as { value?: string }).value !== undefined
+          ) {
+            return (inner as { value: string }).value;
+          }
+          const ref = this.refEnsuringDeclaration(inner);
+          if (ref) {
+            return ref;
+          }
+          const s = this.typeToSchema(inner);
+          return Object.keys(s).length > 0 ? s : { type: "string" };
+        },
+      );
       if (variants.every((v) => typeof v === "string")) {
         return { enum: variants, type: "string" };
       }
-      const schemaVariants = variants.map((v) => (typeof v === "string" ? { const: v } : v));
-      return composeUnionVariants(schemaVariants, tUnion, this.emitter.getProgram());
+      const schemaVariants = variants.map((v) =>
+        typeof v === "string" ? { const: v } : v,
+      );
+      return composeUnionVariants(
+        schemaVariants,
+        tUnion,
+        this.emitter.getProgram(),
+      );
     }
     if (kind === "Model" && (t as Model).indexer) {
       return this.indexedModelSchema(t as Model);

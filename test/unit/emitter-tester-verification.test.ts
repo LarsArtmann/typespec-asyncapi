@@ -7,7 +7,10 @@
  * 3. Output files are generated with correct names
  */
 
-import { compileAsyncAPI, compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
+import {
+  compileAsyncAPI,
+  compileAsyncAPIWithoutErrors,
+} from "../utils/test-helpers.js";
 import { SERIALIZATION_FORMAT_OPTION_JSON } from "../utils/serialization-format-option.js";
 
 describe("emitterTester API Verification", () => {

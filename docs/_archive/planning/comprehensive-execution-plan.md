@@ -59,10 +59,10 @@ graph TD
 
 **Impact:** Unlocks 51% of emitter functionality
 
-| Task                   | ID | Priority       | Time                       | Deliverable |
-| ---------------------- | -- | -------------- | -------------------------- | ----------- |
-| Fix State Extraction   | T1 | CRITICAL 75min | Decorator data accessible  |             |
-| Verify State Lifecycle | T2 | CRITICAL 60min | State lifecycle documented |             |
+| Task                   | ID  | Priority       | Time                       | Deliverable |
+| ---------------------- | --- | -------------- | -------------------------- | ----------- |
+| Fix State Extraction   | T1  | CRITICAL 75min | Decorator data accessible  |             |
+| Verify State Lifecycle | T2  | CRITICAL 60min | State lifecycle documented |             |
 
 **Detailed Steps:** See `docs/planning/pareto-optimal-task-analysis.md` for full breakdown
 
@@ -72,12 +72,12 @@ graph TD
 
 **Impact:** Unlocks 64% of MVP functionality
 
-| Task                           | ID | Priority   | Time                   | Deliverable |
-| ------------------------------ | -- | ---------- | ---------------------- | ----------- |
-| Use emitFile API Correctly     | T3 | HIGH 60min | Proper file output     |             |
-| Fix Output Directory Structure | T4 | HIGH 30min | Correct file placement |             |
-| Add Basic Output Validation    | T5 | HIGH 45min | Quality gate           |             |
-| End-to-End Smoke Test          | T6 | HIGH 60min | Pipeline verified      |             |
+| Task                           | ID  | Priority   | Time                   | Deliverable |
+| ------------------------------ | --- | ---------- | ---------------------- | ----------- |
+| Use emitFile API Correctly     | T3  | HIGH 60min | Proper file output     |             |
+| Fix Output Directory Structure | T4  | HIGH 30min | Correct file placement |             |
+| Add Basic Output Validation    | T5  | HIGH 45min | Quality gate           |             |
+| End-to-End Smoke Test          | T6  | HIGH 60min | Pipeline verified      |             |
 
 **Detailed Steps:** See `docs/planning/pareto-optimal-task-analysis.md` for full breakdown
 

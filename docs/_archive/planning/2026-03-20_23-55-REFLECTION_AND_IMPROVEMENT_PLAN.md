@@ -110,13 +110,13 @@ export type SecurityScheme =
 
 ## Tier S (Critical - Do First)
 
-| #  | Task                                    | Impact | Effort | Score   | Description                              |
-| -- | --------------------------------------- | ------ | ------ | ------- | ---------------------------------------- |
-| S1 | Add integration test for @security      | 10     | 2      | **5.0** | Verify security schemes output correctly |
-| S2 | Add integration test for @tags          | 10     | 2      | **5.0** | Verify tags appear in messages           |
-| S3 | Add integration test for @correlationId | 10     | 2      | **5.0** | Verify correlationId format              |
-| S4 | Create usage examples                   | 9      | 2      | **4.5** | Document new decorators                  |
-| S5 | Validate AsyncAPI output                | 9      | 3      | **3.0** | Use official JSON schema                 |
+| #   | Task                                    | Impact | Effort | Score   | Description                              |
+| --- | --------------------------------------- | ------ | ------ | ------- | ---------------------------------------- |
+| S1  | Add integration test for @security      | 10     | 2      | **5.0** | Verify security schemes output correctly |
+| S2  | Add integration test for @tags          | 10     | 2      | **5.0** | Verify tags appear in messages           |
+| S3  | Add integration test for @correlationId | 10     | 2      | **5.0** | Verify correlationId format              |
+| S4  | Create usage examples                   | 9      | 2      | **4.5** | Document new decorators                  |
+| S5  | Validate AsyncAPI output                | 9      | 3      | **3.0** | Use official JSON schema                 |
 
 **Total Time:** ~60 minutes\
 **Value:** Critical verification + documentation
@@ -125,13 +125,13 @@ export type SecurityScheme =
 
 ## Tier A (High ROI)
 
-| #  | Task                          | Impact | Effort | Score    | Description                  |
-| -- | ----------------------------- | ------ | ------ | -------- | ---------------------------- |
-| A1 | Add protocol bindings output  | 8      | 3      | **2.67** | Complete Phase 1             |
-| A2 | Complete Phase 1 commits      | 8      | 2      | **4.0**  | Wrap up Phase 1              |
-| A3 | Add unit tests for builders   | 7      | 3      | **2.33** | Test individual functions    |
-| A4 | Add discriminated union types | 7      | 4      | **1.75** | Improve type safety          |
-| A5 | Extract builder modules       | 6      | 4      | **1.5**  | Refactor for maintainability |
+| #   | Task                          | Impact | Effort | Score    | Description                  |
+| --- | ----------------------------- | ------ | ------ | -------- | ---------------------------- |
+| A1  | Add protocol bindings output  | 8      | 3      | **2.67** | Complete Phase 1             |
+| A2  | Complete Phase 1 commits      | 8      | 2      | **4.0**  | Wrap up Phase 1              |
+| A3  | Add unit tests for builders   | 7      | 3      | **2.33** | Test individual functions    |
+| A4  | Add discriminated union types | 7      | 4      | **1.75** | Improve type safety          |
+| A5  | Extract builder modules       | 6      | 4      | **1.5**  | Refactor for maintainability |
 
 **Total Time:** ~120 minutes
 
@@ -139,13 +139,13 @@ export type SecurityScheme =
 
 ## Tier B (Medium ROI)
 
-| #  | Task                             | Impact | Effort | Score    | Description           |
-| -- | -------------------------------- | ------ | ------ | -------- | --------------------- |
-| B1 | Implement JSON Schema validation | 6      | 4      | **1.5**  | Validate output       |
-| B2 | Add error handling               | 6      | 3      | **2.0**  | Graceful degradation  |
-| B3 | Performance optimization         | 5      | 4      | **1.25** | Cache state           |
-| B4 | Add debugging utilities          | 5      | 2      | **2.5**  | Better dev experience |
-| B5 | Improve error messages           | 5      | 3      | **1.67** | Better UX             |
+| #   | Task                             | Impact | Effort | Score    | Description           |
+| --- | -------------------------------- | ------ | ------ | -------- | --------------------- |
+| B1  | Implement JSON Schema validation | 6      | 4      | **1.5**  | Validate output       |
+| B2  | Add error handling               | 6      | 3      | **2.0**  | Graceful degradation  |
+| B3  | Performance optimization         | 5      | 4      | **1.25** | Cache state           |
+| B4  | Add debugging utilities          | 5      | 2      | **2.5**  | Better dev experience |
+| B5  | Improve error messages           | 5      | 3      | **1.67** | Better UX             |
 
 **Total Time:** ~90 minutes
 
@@ -153,13 +153,13 @@ export type SecurityScheme =
 
 ## Tier C (Lower ROI - Nice to Have)
 
-| #  | Task                   | Impact | Effort | Score    | Description         |
-| -- | ---------------------- | ------ | ------ | -------- | ------------------- |
-| C1 | Add metrics collection | 4      | 4      | **1.0**  | Track performance   |
-| C2 | Add tracing            | 4      | 5      | **0.8**  | Debug support       |
-| C3 | Optimize bundle size   | 3      | 4      | **0.75** | Smaller output      |
-| C4 | Add benchmarks         | 3      | 3      | **1.0**  | Performance testing |
-| C5 | Refactor decorators    | 3      | 5      | **0.6**  | Code cleanup        |
+| #   | Task                   | Impact | Effort | Score    | Description         |
+| --- | ---------------------- | ------ | ------ | -------- | ------------------- |
+| C1  | Add metrics collection | 4      | 4      | **1.0**  | Track performance   |
+| C2  | Add tracing            | 4      | 5      | **0.8**  | Debug support       |
+| C3  | Optimize bundle size   | 3      | 4      | **0.75** | Smaller output      |
+| C4  | Add benchmarks         | 3      | 3      | **1.0**  | Performance testing |
+| C5  | Refactor decorators    | 3      | 5      | **0.6**  | Code cleanup        |
 
 **Total Time:** ~100 minutes
 

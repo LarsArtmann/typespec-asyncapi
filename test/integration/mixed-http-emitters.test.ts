@@ -13,14 +13,21 @@
  * - Pure minimal specs (bare ops, no decorators anywhere) keep working.
  */
 
-import { compileAsyncAPI, compileAsyncAPISpecRaw } from "../utils/test-helpers.js";
+import {
+  compileAsyncAPI,
+  compileAsyncAPISpecRaw,
+} from "../utils/test-helpers.js";
 import type { Diagnostic } from "@typespec/compiler";
 
-const hasWarning = (diagnostics: readonly Diagnostic[], code: string): boolean =>
-  diagnostics.some((d) => d.code?.endsWith(code));
+const hasWarning = (
+  diagnostics: readonly Diagnostic[],
+  code: string,
+): boolean => diagnostics.some((d) => d.code?.endsWith(code));
 
-const countByCode = (diagnostics: readonly Diagnostic[], code: string): number =>
-  diagnostics.filter((d) => d.code?.endsWith(code)).length;
+const countByCode = (
+  diagnostics: readonly Diagnostic[],
+  code: string,
+): number => diagnostics.filter((d) => d.code?.endsWith(code)).length;
 
 describe("mixed @typespec/http + AsyncAPI programs", () => {
   it("reports the issue #252 spec verbatim: http duplicate errors PLUS our explanatory warnings", async () => {
@@ -64,7 +71,9 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
         op moduleOperation(): Response;
       }
     `);
-    expect(countByCode(diagnostics, "@typespec/http/duplicate-operation")).toBe(2);
+    expect(countByCode(diagnostics, "@typespec/http/duplicate-operation")).toBe(
+      2,
+    );
     expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(2);
   });
 
@@ -130,8 +139,12 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
         op receivePing(): Pong;
       }
     `);
-    expect(hasWarning(diagnostics, "event-op-in-service-namespace")).toBeFalsy();
-    expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual(["receivePing"]);
+    expect(
+      hasWarning(diagnostics, "event-op-in-service-namespace"),
+    ).toBeFalsy();
+    expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual([
+      "receivePing",
+    ]);
     expect(asyncApiDoc.info.title).toBe("Backend");
   });
 
@@ -160,7 +173,9 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
         op receivePing(): Pong;
       }
     `);
-    expect(hasWarning(diagnostics, "event-op-in-service-namespace")).toBeFalsy();
+    expect(
+      hasWarning(diagnostics, "event-op-in-service-namespace"),
+    ).toBeFalsy();
   });
 
   it("does not warn without @typespec/http, even under a @service namespace", async () => {
@@ -185,7 +200,9 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
         op receivePing(): Pong;
       }
     `);
-    expect(hasWarning(diagnostics, "event-op-in-service-namespace")).toBeFalsy();
+    expect(
+      hasWarning(diagnostics, "event-op-in-service-namespace"),
+    ).toBeFalsy();
   });
 
   it("keeps bare REST operations under @service out of the AsyncAPI document", async () => {
@@ -217,7 +234,9 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
         op receivePing(): Pong;
       }
     `);
-    expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual(["receivePing"]);
+    expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual([
+      "receivePing",
+    ]);
   });
 
   it("still discovers bare operations in pure minimal specs without http", async () => {
@@ -228,7 +247,9 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
 
       op receivePing(): Pong;
     `);
-    expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual(["receivePing"]);
+    expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual([
+      "receivePing",
+    ]);
   });
 
   it("still discovers bare operations when http is loaded but no service exists", async () => {

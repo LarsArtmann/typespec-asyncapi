@@ -110,14 +110,20 @@ describe("canonical AsyncAPI Spec Ports", () => {
       const result = await compileAsyncAPI(loadFixture("streetlights-mqtt"));
       const channels = result.asyncApiDoc?.channels ?? {};
       const addresses = Object.values(channels).map((c) => c.address);
-      const hasParamChannel = addresses.some((a) => a.includes("{streetlightId}"));
+      const hasParamChannel = addresses.some((a) =>
+        a.includes("{streetlightId}"),
+      );
       expect(hasParamChannel).toBeTruthy();
     });
 
     it("should emit enum for LightMeasurementUnit", async () => {
       const result = await compileAsyncAPI(loadFixture("streetlights-mqtt"));
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
-      expect(schemas.LightMeasurementUnit?.enum).toStrictEqual(["lux", "watt", "lumen"]);
+      expect(schemas.LightMeasurementUnit?.enum).toStrictEqual([
+        "lux",
+        "watt",
+        "lumen",
+      ]);
     });
 
     it("should emit @minValue/@maxValue constraints on DimLightRequest", async () => {
@@ -155,26 +161,33 @@ describe("canonical AsyncAPI Spec Ports", () => {
       const result = await compileAsyncAPI(loadFixture("chat-websocket"));
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
       const reactions = schemas.ChatMessage?.properties?.reactions;
-      expect(asJsonSchema(reactions?.items, "reactions.items").$ref ?? "").toMatch(
-        /^#\/components\/schemas\//,
-      );
-      expect(asJsonSchema(reactions?.items, "reactions.items").$ref ?? "").toContain(
-        "MessageReaction",
-      );
+      expect(
+        asJsonSchema(reactions?.items, "reactions.items").$ref ?? "",
+      ).toMatch(/^#\/components\/schemas\//);
+      expect(
+        asJsonSchema(reactions?.items, "reactions.items").$ref ?? "",
+      ).toContain("MessageReaction");
     });
 
     it("should emit enum for user status field", async () => {
       const result = await compileAsyncAPI(loadFixture("chat-websocket"));
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
       const statusProp = schemas.User?.properties?.status;
-      expect(statusProp?.enum).toStrictEqual(["online", "away", "busy", "offline"]);
+      expect(statusProp?.enum).toStrictEqual([
+        "online",
+        "away",
+        "busy",
+        "offline",
+      ]);
     });
   });
 
   // --- Sensor IoT-specific assertions ---
   describe("sensor-iot-multi-protocol: detailed structure", () => {
     it("should have 3 servers with different protocols", async () => {
-      const result = await compileAsyncAPI(loadFixture("sensor-iot-multi-protocol"));
+      const result = await compileAsyncAPI(
+        loadFixture("sensor-iot-multi-protocol"),
+      );
       const servers = result.asyncApiDoc?.servers ?? {};
       const protocols = new Set(Object.values(servers).map((s) => s.protocol));
       expect(protocols.size).toBeGreaterThanOrEqual(3);
@@ -184,7 +197,9 @@ describe("canonical AsyncAPI Spec Ports", () => {
     });
 
     it("should emit nested anonymous model for sensor location", async () => {
-      const result = await compileAsyncAPI(loadFixture("sensor-iot-multi-protocol"));
+      const result = await compileAsyncAPI(
+        loadFixture("sensor-iot-multi-protocol"),
+      );
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
       const location = schemas.Sensor?.properties?.location;
       expect(location?.type).toBe("object");
@@ -193,15 +208,21 @@ describe("canonical AsyncAPI Spec Ports", () => {
     });
 
     it("should emit array of named model for batch readings", async () => {
-      const result = await compileAsyncAPI(loadFixture("sensor-iot-multi-protocol"));
+      const result = await compileAsyncAPI(
+        loadFixture("sensor-iot-multi-protocol"),
+      );
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
       const readings = schemas.SensorBatch?.properties?.readings;
       expect(readings?.type).toBe("array");
-      expect(asJsonSchema(readings?.items, "readings.items").$ref ?? "").toContain("SensorReading");
+      expect(
+        asJsonSchema(readings?.items, "readings.items").$ref ?? "",
+      ).toContain("SensorReading");
     });
 
     it("should emit string literal union for quality field", async () => {
-      const result = await compileAsyncAPI(loadFixture("sensor-iot-multi-protocol"));
+      const result = await compileAsyncAPI(
+        loadFixture("sensor-iot-multi-protocol"),
+      );
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
       const quality = schemas.SensorReading?.properties?.quality;
       expect(quality?.enum).toStrictEqual(["good", "questionable", "bad"]);
@@ -211,7 +232,9 @@ describe("canonical AsyncAPI Spec Ports", () => {
   // --- Notifications-specific assertions ---
   describe("notifications-enterprise: detailed structure", () => {
     it("should have AMQP and HTTPS servers", async () => {
-      const result = await compileAsyncAPI(loadFixture("notifications-enterprise"));
+      const result = await compileAsyncAPI(
+        loadFixture("notifications-enterprise"),
+      );
       const servers = result.asyncApiDoc?.servers ?? {};
       const protocols = Object.values(servers).map((s) => s.protocol);
       expect(protocols).toContain("amqp");
@@ -219,13 +242,19 @@ describe("canonical AsyncAPI Spec Ports", () => {
     });
 
     it("should emit default values for NotificationRequest", async () => {
-      const result = await compileAsyncAPI(loadFixture("notifications-enterprise"));
+      const result = await compileAsyncAPI(
+        loadFixture("notifications-enterprise"),
+      );
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
-      expect(schemas.NotificationRequest?.properties?.priority?.default).toBe("normal");
+      expect(schemas.NotificationRequest?.properties?.priority?.default).toBe(
+        "normal",
+      );
     });
 
     it("should emit nested retryPolicy with default values", async () => {
-      const result = await compileAsyncAPI(loadFixture("notifications-enterprise"));
+      const result = await compileAsyncAPI(
+        loadFixture("notifications-enterprise"),
+      );
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
       const webhook = schemas.WebhookConfig;
       const retryPolicy = webhook?.properties?.retryPolicy;
@@ -235,7 +264,9 @@ describe("canonical AsyncAPI Spec Ports", () => {
     });
 
     it("should emit enum for DeliveryStatus", async () => {
-      const result = await compileAsyncAPI(loadFixture("notifications-enterprise"));
+      const result = await compileAsyncAPI(
+        loadFixture("notifications-enterprise"),
+      );
       const schemas = result.asyncApiDoc?.components?.schemas ?? {};
       expect(schemas.DeliveryStatus?.enum).toStrictEqual([
         "queued",

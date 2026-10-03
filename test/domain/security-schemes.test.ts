@@ -14,7 +14,10 @@ import type { SecurityScheme } from "../../src/domain/models/asyncapi-document.j
 
 async function schemeOf(source: string, name: string): Promise<SecurityScheme> {
   const doc = await compileAndValidateOrThrow(source);
-  const scheme = inlineObject(doc.components!.securitySchemes![name], "security scheme");
+  const scheme = inlineObject(
+    doc.components!.securitySchemes![name],
+    "security scheme",
+  );
   expect(scheme).toBeDefined();
   return scheme;
 }
@@ -111,9 +114,10 @@ describe("http security schemes", () => {
       @channel("events")
       op send(): Msg;
     `);
-    expect(inlineObject(doc.components!.securitySchemes!.digest, "security scheme").scheme).toBe(
-      "digest",
-    );
+    expect(
+      inlineObject(doc.components!.securitySchemes!.digest, "security scheme")
+        .scheme,
+    ).toBe("digest");
   });
 });
 
@@ -264,8 +268,12 @@ describe("openIdConnect and asymmetric schemes", () => {
     `);
     const schemes = doc.components!.securitySchemes!;
     expect(inlineObject(schemes.plain, "plain scheme").type).toBe("plain");
-    expect(inlineObject(schemes.scram256, "scram256 scheme").type).toBe("scramSha256");
-    expect(inlineObject(schemes.scram512, "scram512 scheme").type).toBe("scramSha512");
+    expect(inlineObject(schemes.scram256, "scram256 scheme").type).toBe(
+      "scramSha256",
+    );
+    expect(inlineObject(schemes.scram512, "scram512 scheme").type).toBe(
+      "scramSha512",
+    );
   });
 
   it("asserts X509 and gssapi distinguishing type", async () => {
@@ -283,12 +291,14 @@ describe("openIdConnect and asymmetric schemes", () => {
       @channel("events")
       op send(): Msg;
     `);
-    expect(inlineObject(doc.components!.securitySchemes!.cert, "security scheme").type).toBe(
-      "X509",
-    );
-    expect(inlineObject(doc.components!.securitySchemes!.gss, "security scheme").type).toBe(
-      "gssapi",
-    );
+    expect(
+      inlineObject(doc.components!.securitySchemes!.cert, "security scheme")
+        .type,
+    ).toBe("X509");
+    expect(
+      inlineObject(doc.components!.securitySchemes!.gss, "security scheme")
+        .type,
+    ).toBe("gssapi");
   });
 });
 

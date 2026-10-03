@@ -29,9 +29,9 @@ The TypeSpec AsyncAPI project has successfully recovered from a critical Effect.
 | **Decorators**       | ✅ WORKING     | @channel, @publish storing state correctly       |
 | **State Management** | ✅ FUNCTIONAL  | TypeSpec 1.6.0+ compatible state access          |
 | **Validation**       | ✅ OPERATIONAL | AsyncAPI CLI + binding validation pipeline       |
-| **Type Safety**      | ⚠️ DEGRADED     | Console-based validation vs Effect.TS            |
-| **AsyncAPI 3.0**     | ⚠️ PARTIAL      | Basic structure, missing protocol bindings       |
-| **Error Handling**   | ⚠️ FRAGMENTED   | Multiple approaches, no centralization           |
+| **Type Safety**      | ⚠️ DEGRADED    | Console-based validation vs Effect.TS            |
+| **AsyncAPI 3.0**     | ⚠️ PARTIAL     | Basic structure, missing protocol bindings       |
+| **Error Handling**   | ⚠️ FRAGMENTED  | Multiple approaches, no centralization           |
 | **Testing**          | ❌ INCOMPLETE  | No comprehensive test suite                      |
 
 ---

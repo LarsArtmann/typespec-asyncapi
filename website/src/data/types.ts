@@ -1,4 +1,11 @@
-export const featureIconKeys = ["lightning", "shield", "glob", "layers", "code", "check"] as const;
+export const featureIconKeys = [
+  "lightning",
+  "shield",
+  "glob",
+  "layers",
+  "code",
+  "check",
+] as const;
 export type FeatureIcon = (typeof featureIconKeys)[number];
 
 export type AccentColor = "accent" | "amber" | "success";
@@ -23,7 +30,13 @@ export interface ComparisonRow {
   handwritten: string;
 }
 
-export const useCaseIconKeys = ["cog", "chart", "refresh", "bolt", "check"] as const;
+export const useCaseIconKeys = [
+  "cog",
+  "chart",
+  "refresh",
+  "bolt",
+  "check",
+] as const;
 export type UseCaseIcon = (typeof useCaseIconKeys)[number];
 
 export interface UseCase {

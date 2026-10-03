@@ -202,73 +202,73 @@ graph TD
 
 ### **🔴 EMERGENCY TASKS (Execute IMMEDIATELY)**
 
-| ID | Task                                              | Time   | Dependencies      | Priority |
-| -- | ------------------------------------------------- | ------ | ----------------- | -------- |
-| 1  | **#178 Research: Test Hanging Diagnosis**         | 90min  | Build working     | 🔴🔴🔴   |
-| 2  | **#178 Fix: Root Cause Resolution**               | 120min | Research complete | 🔴🔴🔴   |
-| 3  | **#178 Validate: Test Execution Working**         | 60min  | Fix complete      | 🔴🔴🔴   |
-| 4  | **Internal: Map CRITICAL-TODO-LIST.md to Issues** | 45min  | None              | 🔴🔴🔴   |
-| 5  | **Internal: Create Missing GitHub Issues**        | 60min  | Mapping complete  | 🔴🔴🔴   |
-| 6  | **Internal: Verify All Dependencies Mapped**      | 30min  | Issues created    | 🔴🔴🔴   |
+| ID  | Task                                              | Time   | Dependencies      | Priority |
+| --- | ------------------------------------------------- | ------ | ----------------- | -------- |
+| 1   | **#178 Research: Test Hanging Diagnosis**         | 90min  | Build working     | 🔴🔴🔴   |
+| 2   | **#178 Fix: Root Cause Resolution**               | 120min | Research complete | 🔴🔴🔴   |
+| 3   | **#178 Validate: Test Execution Working**         | 60min  | Fix complete      | 🔴🔴🔴   |
+| 4   | **Internal: Map CRITICAL-TODO-LIST.md to Issues** | 45min  | None              | 🔴🔴🔴   |
+| 5   | **Internal: Create Missing GitHub Issues**        | 60min  | Mapping complete  | 🔴🔴🔴   |
+| 6   | **Internal: Verify All Dependencies Mapped**      | 30min  | Issues created    | 🔴🔴🔴   |
 
 ### **🔥 HIGH PRIORITY TASKS (After Emergency)**
 
-| ID | Task                                             | Time   | Dependencies             | Priority |
-| -- | ------------------------------------------------ | ------ | ------------------------ | -------- |
-| 7  | **#176 Phase 1: Plugin System Files**            | 90min  | Test execution working   | 🔴 HIGH  |
-| 8  | **#176 Phase 2: Advanced Type Models**           | 180min | Plugin system complete   | 🔴 HIGH  |
-| 9  | **#176 Phase 3: Emitter Core Integration**       | 90min  | Type models complete     | 🔴 HIGH  |
-| 10 | **#176 Phase 4: Infrastructure Validation**      | 60min  | Integration complete     | 🔴 HIGH  |
-| 11 | **#172 Isolation: Create Minimal Test Case**     | 45min  | Infrastructure working   | 🔴 HIGH  |
-| 12 | **#172 Deep Debugging: Error Analysis**          | 90min  | Isolation complete       | 🔴 HIGH  |
-| 13 | **#172 Fix: Apply Resolution Strategy**          | 60min  | Debugging complete       | 🔴 HIGH  |
-| 14 | **#172 Validation: 100% Decorator Coverage**     | 30min  | Fix implemented          | 🔴 HIGH  |
-| 15 | **#128 Analysis: Master Ghost System Mapping**   | 60min  | Test execution working   | 🔴 HIGH  |
-| 16 | **#128 Elimination: Subsystem #145 Integration** | 45min  | Master analysis complete | 🔴 HIGH  |
-| 17 | **#128 Retrofit: 200+ Ghost Tests**              | 120min | Subsystems integrated    | 🔴 HIGH  |
-| 18 | **#128 Cleanup: Infrastructure Simplification**  | 60min  | Retrofitting complete    | 🔴 HIGH  |
+| ID  | Task                                             | Time   | Dependencies             | Priority |
+| --- | ------------------------------------------------ | ------ | ------------------------ | -------- |
+| 7   | **#176 Phase 1: Plugin System Files**            | 90min  | Test execution working   | 🔴 HIGH  |
+| 8   | **#176 Phase 2: Advanced Type Models**           | 180min | Plugin system complete   | 🔴 HIGH  |
+| 9   | **#176 Phase 3: Emitter Core Integration**       | 90min  | Type models complete     | 🔴 HIGH  |
+| 10  | **#176 Phase 4: Infrastructure Validation**      | 60min  | Integration complete     | 🔴 HIGH  |
+| 11  | **#172 Isolation: Create Minimal Test Case**     | 45min  | Infrastructure working   | 🔴 HIGH  |
+| 12  | **#172 Deep Debugging: Error Analysis**          | 90min  | Isolation complete       | 🔴 HIGH  |
+| 13  | **#172 Fix: Apply Resolution Strategy**          | 60min  | Debugging complete       | 🔴 HIGH  |
+| 14  | **#172 Validation: 100% Decorator Coverage**     | 30min  | Fix implemented          | 🔴 HIGH  |
+| 15  | **#128 Analysis: Master Ghost System Mapping**   | 60min  | Test execution working   | 🔴 HIGH  |
+| 16  | **#128 Elimination: Subsystem #145 Integration** | 45min  | Master analysis complete | 🔴 HIGH  |
+| 17  | **#128 Retrofit: 200+ Ghost Tests**              | 120min | Subsystems integrated    | 🔴 HIGH  |
+| 18  | **#128 Cleanup: Infrastructure Simplification**  | 60min  | Retrofitting complete    | 🔴 HIGH  |
 
 ### **🟡 MEDIUM PRIORITY TASKS (Production Readiness)**
 
-| ID | Task                                           | Time   | Dependencies            | Priority  |
-| -- | ---------------------------------------------- | ------ | ----------------------- | --------- |
-| 19 | **#136 Implementation: Type Caching System**   | 180min | Infrastructure complete | 🟡 MEDIUM |
-| 20 | **#167 Creation: Performance Benchmark Suite** | 120min | Type caching working    | 🟡 MEDIUM |
-| 21 | **#149 Extraction: Magic Numbers**             | 90min  | Benchmarks working      | 🟡 MEDIUM |
-| 22 | **#150 Implementation: Type Cache Clearing**   | 60min  | Magic numbers complete  | 🟡 MEDIUM |
-| 23 | **#34 Implementation: Test Coverage >80%**     | 180min | Performance working     | 🟡 MEDIUM |
-| 24 | **#54 Implementation: Error Type Hierarchy**   | 120min | Coverage working        | 🟡 MEDIUM |
-| 25 | **#168 Reduction: ESLint <50 Warnings**        | 240min | Errors complete         | 🟡 MEDIUM |
-| 26 | **#104 Implementation: Type Safety Roadmap**   | 180min | ESLint reduction        | 🟡 MEDIUM |
-| 27 | **#12 Validation: Production Readiness**       | 240min | All medium tasks        | 🟡 MEDIUM |
+| ID  | Task                                           | Time   | Dependencies            | Priority  |
+| --- | ---------------------------------------------- | ------ | ----------------------- | --------- |
+| 19  | **#136 Implementation: Type Caching System**   | 180min | Infrastructure complete | 🟡 MEDIUM |
+| 20  | **#167 Creation: Performance Benchmark Suite** | 120min | Type caching working    | 🟡 MEDIUM |
+| 21  | **#149 Extraction: Magic Numbers**             | 90min  | Benchmarks working      | 🟡 MEDIUM |
+| 22  | **#150 Implementation: Type Cache Clearing**   | 60min  | Magic numbers complete  | 🟡 MEDIUM |
+| 23  | **#34 Implementation: Test Coverage >80%**     | 180min | Performance working     | 🟡 MEDIUM |
+| 24  | **#54 Implementation: Error Type Hierarchy**   | 120min | Coverage working        | 🟡 MEDIUM |
+| 25  | **#168 Reduction: ESLint <50 Warnings**        | 240min | Errors complete         | 🟡 MEDIUM |
+| 26  | **#104 Implementation: Type Safety Roadmap**   | 180min | ESLint reduction        | 🟡 MEDIUM |
+| 27  | **#12 Validation: Production Readiness**       | 240min | All medium tasks        | 🟡 MEDIUM |
 
 ### **🟢 LOW PRIORITY TASKS (Can Defer)**
 
-| ID | Task                                                  | Time   | Dependencies               | Priority |
-| -- | ----------------------------------------------------- | ------ | -------------------------- | -------- |
-| 28 | **#170 Creation: Advanced Decorator Examples**        | 90min  | Core features working      | 🟢 LOW   |
-| 29 | **#164 Creation: Real-World Examples**                | 120min | Examples created           | 🟢 LOW   |
-| 30 | **#81 Implementation: Comprehensive JSDoc**           | 180min | Documentation working      | 🟢 LOW   |
-| 31 | **#171 Implementation: @effect/schema Integration**   | 120min | Schema working             | 🟢 LOW   |
-| 32 | **#159 Integration: Effect Schema Validation**        | 90min  | @effect/schema working     | 🟢 LOW   |
-| 33 | **#158 Implementation: Branded Types System**         | 120min | Effect validation working  | 🟢 LOW   |
-| 34 | **#131 Conversion: TODO Comments to Issues**          | 180min | Types implemented          | 🟢 LOW   |
-| 35 | **#145 Integration: Test Helper Cleanup**             | 60min  | TODO conversion complete   | 🟢 LOW   |
-| 36 | **#94 Implementation: Project Truth Validation**      | 90min  | Cleanup working            | 🟢 LOW   |
-| 37 | **#153 Documentation: lib/main.tsp Complete**         | 120min | Truth validation working   | 🟢 LOW   |
-| 38 | **#152 Research: OAuth/SASL/OpenID Libraries**        | 180min | Documentation complete     | 🟢 LOW   |
-| 39 | **#163 Implementation: Versioning Decorator Support** | 120min | Libraries researched       | 🟢 LOW   |
-| 40 | **#154 Migration: runPromise → runSync**              | 60min  | Versioning working         | 🟢 LOW   |
-| 41 | **#160 Implementation: Bun Test Patterns**            | 90min  | Migration working          | 🟢 LOW   |
-| 42 | **#148 Integration: File Discovery Enhancement**      | 60min  | Bun patterns working       | 🟢 LOW   |
-| 43 | **#147 Integration: Server Decorator Fix**            | 45min  | File discovery working     | 🟢 LOW   |
-| 44 | **#144 Integration: Type Cache AssetEmitter**         | 90min  | Server fix working         | 🟢 LOW   |
-| 45 | **#135 Implementation: Test Quality Gates**           | 90min  | AssetEmitter working       | 🟢 LOW   |
-| 46 | **#134 Analysis: Test Metrics Standardization**       | 60min  | Quality gates working      | 🟢 LOW   |
-| 47 | **#133 Optimization: Test Suite Performance**         | 90min  | Metrics standard working   | 🟢 LOW   |
-| 48 | **#132 Implementation: Code Coverage Reporting**      | 120min | Performance optimized      | 🟢 LOW   |
-| 49 | **#115 Enhancement: safeStringify() Utility**         | 60min  | Coverage reporting working | 🟢 LOW   |
-| 50 | **#103 Documentation: Session Insights**              | 90min  | Utility enhanced           | 🟢 LOW   |
+| ID  | Task                                                  | Time   | Dependencies               | Priority |
+| --- | ----------------------------------------------------- | ------ | -------------------------- | -------- |
+| 28  | **#170 Creation: Advanced Decorator Examples**        | 90min  | Core features working      | 🟢 LOW   |
+| 29  | **#164 Creation: Real-World Examples**                | 120min | Examples created           | 🟢 LOW   |
+| 30  | **#81 Implementation: Comprehensive JSDoc**           | 180min | Documentation working      | 🟢 LOW   |
+| 31  | **#171 Implementation: @effect/schema Integration**   | 120min | Schema working             | 🟢 LOW   |
+| 32  | **#159 Integration: Effect Schema Validation**        | 90min  | @effect/schema working     | 🟢 LOW   |
+| 33  | **#158 Implementation: Branded Types System**         | 120min | Effect validation working  | 🟢 LOW   |
+| 34  | **#131 Conversion: TODO Comments to Issues**          | 180min | Types implemented          | 🟢 LOW   |
+| 35  | **#145 Integration: Test Helper Cleanup**             | 60min  | TODO conversion complete   | 🟢 LOW   |
+| 36  | **#94 Implementation: Project Truth Validation**      | 90min  | Cleanup working            | 🟢 LOW   |
+| 37  | **#153 Documentation: lib/main.tsp Complete**         | 120min | Truth validation working   | 🟢 LOW   |
+| 38  | **#152 Research: OAuth/SASL/OpenID Libraries**        | 180min | Documentation complete     | 🟢 LOW   |
+| 39  | **#163 Implementation: Versioning Decorator Support** | 120min | Libraries researched       | 🟢 LOW   |
+| 40  | **#154 Migration: runPromise → runSync**              | 60min  | Versioning working         | 🟢 LOW   |
+| 41  | **#160 Implementation: Bun Test Patterns**            | 90min  | Migration working          | 🟢 LOW   |
+| 42  | **#148 Integration: File Discovery Enhancement**      | 60min  | Bun patterns working       | 🟢 LOW   |
+| 43  | **#147 Integration: Server Decorator Fix**            | 45min  | File discovery working     | 🟢 LOW   |
+| 44  | **#144 Integration: Type Cache AssetEmitter**         | 90min  | Server fix working         | 🟢 LOW   |
+| 45  | **#135 Implementation: Test Quality Gates**           | 90min  | AssetEmitter working       | 🟢 LOW   |
+| 46  | **#134 Analysis: Test Metrics Standardization**       | 60min  | Quality gates working      | 🟢 LOW   |
+| 47  | **#133 Optimization: Test Suite Performance**         | 90min  | Metrics standard working   | 🟢 LOW   |
+| 48  | **#132 Implementation: Code Coverage Reporting**      | 120min | Performance optimized      | 🟢 LOW   |
+| 49  | **#115 Enhancement: safeStringify() Utility**         | 60min  | Coverage reporting working | 🟢 LOW   |
+| 50  | **#103 Documentation: Session Insights**              | 90min  | Utility enhanced           | 🟢 LOW   |
 
 ---
 

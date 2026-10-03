@@ -94,7 +94,12 @@ describe("spec Compliance: Edge Cases", () => {
     `);
 
     const props = doc.components!.schemas!.Event.properties!;
-    expect(props.priority.enum).toStrictEqual(["low", "medium", "high", "critical"]);
+    expect(props.priority.enum).toStrictEqual([
+      "low",
+      "medium",
+      "high",
+      "critical",
+    ]);
   });
 
   it("handles optional fields in required array", async () => {
@@ -151,7 +156,9 @@ describe("spec Compliance: Edge Cases", () => {
       op publish(): Event;
     `);
 
-    expect(doc.components!.schemas!.Event.description).toBe("This is a test event");
+    expect(doc.components!.schemas!.Event.description).toBe(
+      "This is a test event",
+    );
   });
 
   it("handles tags on operations", async () => {

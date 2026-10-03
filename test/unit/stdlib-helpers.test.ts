@@ -29,7 +29,8 @@ describe("stdlib-helpers via compilation", () => {
       @channel("events")
       op publish(): Event;
     `);
-    const addrProp = asyncApiDoc?.components?.schemas?.Event?.properties?.address;
+    const addrProp =
+      asyncApiDoc?.components?.schemas?.Event?.properties?.address;
     expect(addrProp?.$ref).toBe("#/components/schemas/Address");
   });
 
@@ -66,7 +67,8 @@ describe("stdlib-helpers via compilation", () => {
       @channel("events")
       op publish(): Event;
     `);
-    const statusProp = asyncApiDoc?.components?.schemas?.Event?.properties?.status;
+    const statusProp =
+      asyncApiDoc?.components?.schemas?.Event?.properties?.status;
     expect(statusProp?.$ref).toBe("#/components/schemas/Status");
   });
 
@@ -90,7 +92,8 @@ describe("stdlib-helpers via compilation", () => {
       @channel("events")
       op publish(): Event;
     `);
-    const amountProp = asyncApiDoc?.components?.schemas?.Event?.properties?.amount;
+    const amountProp =
+      asyncApiDoc?.components?.schemas?.Event?.properties?.amount;
     expect(amountProp?.$ref).toBe("#/components/schemas/Currency");
   });
 });

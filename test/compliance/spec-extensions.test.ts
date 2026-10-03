@@ -9,7 +9,10 @@
  */
 
 import { inlineObject } from "../utils/type-guards.js";
-import { compileAndValidate, compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import {
+  compileAndValidate,
+  compileAndValidateOrThrow,
+} from "../utils/schema-validator.js";
 
 describe("spec Compliance: @extension", () => {
   it("extends the document root from a namespace target", async () => {

@@ -84,20 +84,20 @@ From `packages/json-schema/package.json` and the repo developer guide:
 
 Estimates assume solo work by someone who knows this codebase (i.e., us). "Days" = focused engineering days.
 
-| #  | Work item                                                                                                                                      | Effort         | Risk              |
-| -- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ----------------- |
-| 1  | Workspace plumbing: new `packages/asyncapi`, rename to `@typespec/asyncapi`, catalog versions, engines bump to Node 22, workspace registration | 0.5 to 1 d     | Low               |
-| 2  | Build pipeline swap: `gen-extern-signature` over 30 decorators, `tsconfig.build.json`, api-extractor, `.tspd` config                           | 1 to 2 d       | Low               |
-| 3  | Fix whatever `@typespec/library-linter` flags across `lib/main.tsp` (unknown until first run; decorator naming/declaration conventions)        | 0.5 to 2 d     | Medium            |
-| 4  | Port binding-spec codegen off bun (node-compatible script, keep output byte-identical)                                                         | 0.5 to 1 d     | Low               |
-| 5  | Lint consolidation: keep oxlint house config; retire or externalize the ESLint strict layer and jscpd gate                                     | 0.5 d          | Low               |
-| 6  | Test alignment: vitest config convergence, junit reporters, Node 22, fast-check + ajv into catalog; decide coverage story (see risk R3)        | 1 to 3 d       | Medium            |
-| 7  | Docs: house-style README, `regen-docs` target, website sidebar entry                                                                           | 0.5 to 1 d     | Low               |
-| 8  | Examples: trim 13 workspace examples to a canonical few under `samples/` conventions                                                           | 0.5 d          | Low               |
-| 9  | Release conversion: delete husky/postversion flow, adopt chronus change files                                                                  | 0.5 d          | Low               |
-| 10 | Maintainer review cycles and fixes                                                                                                             | 2 to 5 d       | **High variance** |
-| 11 | Optional: playground integration for a live AsyncAPI preview                                                                                   | 1 to 2 d       | Medium            |
-|    | **Total (active engineering)**                                                                                                                 | **~8 to 15 d** |                   |
+| #   | Work item                                                                                                                                      | Effort         | Risk              |
+| --- | ---------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ----------------- |
+| 1   | Workspace plumbing: new `packages/asyncapi`, rename to `@typespec/asyncapi`, catalog versions, engines bump to Node 22, workspace registration | 0.5 to 1 d     | Low               |
+| 2   | Build pipeline swap: `gen-extern-signature` over 30 decorators, `tsconfig.build.json`, api-extractor, `.tspd` config                           | 1 to 2 d       | Low               |
+| 3   | Fix whatever `@typespec/library-linter` flags across `lib/main.tsp` (unknown until first run; decorator naming/declaration conventions)        | 0.5 to 2 d     | Medium            |
+| 4   | Port binding-spec codegen off bun (node-compatible script, keep output byte-identical)                                                         | 0.5 to 1 d     | Low               |
+| 5   | Lint consolidation: keep oxlint house config; retire or externalize the ESLint strict layer and jscpd gate                                     | 0.5 d          | Low               |
+| 6   | Test alignment: vitest config convergence, junit reporters, Node 22, fast-check + ajv into catalog; decide coverage story (see risk R3)        | 1 to 3 d       | Medium            |
+| 7   | Docs: house-style README, `regen-docs` target, website sidebar entry                                                                           | 0.5 to 1 d     | Low               |
+| 8   | Examples: trim 13 workspace examples to a canonical few under `samples/` conventions                                                           | 0.5 d          | Low               |
+| 9   | Release conversion: delete husky/postversion flow, adopt chronus change files                                                                  | 0.5 d          | Low               |
+| 10  | Maintainer review cycles and fixes                                                                                                             | 2 to 5 d       | **High variance** |
+| 11  | Optional: playground integration for a live AsyncAPI preview                                                                                   | 1 to 2 d       | Medium            |
+|     | **Total (active engineering)**                                                                                                                 | **~8 to 15 d** |                   |
 
 Not included: the wall-clock cost of the maintainer decision itself (historically: unbounded, see Section 1) and ongoing first-party maintenance duties (see R5).
 

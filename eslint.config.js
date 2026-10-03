@@ -47,7 +47,11 @@ export default [
     },
   },
   {
-    files: ["src/schema-generator.ts", "src/schema-emitter.ts", "src/extract-value.ts"],
+    files: [
+      "src/schema-generator.ts",
+      "src/schema-emitter.ts",
+      "src/extract-value.ts",
+    ],
     rules: {
       "no-restricted-imports": "off",
     },

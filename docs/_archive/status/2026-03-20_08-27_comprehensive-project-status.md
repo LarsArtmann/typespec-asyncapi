@@ -199,48 +199,48 @@
 
 ### Immediate (Critical Path - Core Emitter Stabilization)
 
-| # | Task                                         | Impact | Effort | Priority |
-| - | -------------------------------------------- | ------ | ------ | -------- |
-| 1 | Fix test suite - categorize and update tests | HIGH   | HIGH   | P0       |
-| 2 | Consolidate type system - merge 3 type files | HIGH   | MEDIUM | P0       |
-| 3 | Add array type schema generation             | HIGH   | LOW    | P0       |
-| 4 | Add enum type schema generation              | HIGH   | LOW    | P0       |
-| 5 | Update basic-functionality test expectations | HIGH   | LOW    | P0       |
-| 6 | Clean up .disabled and .bak files            | MEDIUM | LOW    | P0       |
-| 7 | Update README.md with current status         | MEDIUM | LOW    | P1       |
+| #   | Task                                         | Impact | Effort | Priority |
+| --- | -------------------------------------------- | ------ | ------ | -------- |
+| 1   | Fix test suite - categorize and update tests | HIGH   | HIGH   | P0       |
+| 2   | Consolidate type system - merge 3 type files | HIGH   | MEDIUM | P0       |
+| 3   | Add array type schema generation             | HIGH   | LOW    | P0       |
+| 4   | Add enum type schema generation              | HIGH   | LOW    | P0       |
+| 5   | Update basic-functionality test expectations | HIGH   | LOW    | P0       |
+| 6   | Clean up .disabled and .bak files            | MEDIUM | LOW    | P0       |
+| 7   | Update README.md with current status         | MEDIUM | LOW    | P1       |
 
 ### Short Term (Week 1-2 - Feature Completion)
 
-| #  | Task                                        | Impact | Effort | Priority |
-| -- | ------------------------------------------- | ------ | ------ | -------- |
-| 8  | Add union type schema generation            | HIGH   | MEDIUM | P1       |
-| 9  | Add map type schema generation              | MEDIUM | MEDIUM | P1       |
-| 10 | Add nullable field handling                 | HIGH   | LOW    | P1       |
-| 11 | Implement basic protocol binding generation | HIGH   | HIGH   | P1       |
-| 12 | Add message traits support                  | MEDIUM | MEDIUM | P2       |
-| 13 | Add message examples support                | MEDIUM | MEDIUM | P2       |
-| 14 | Add message externalDocs support            | LOW    | MEDIUM | P2       |
-| 15 | Implement Kafka binding generation          | HIGH   | HIGH   | P2       |
-| 16 | Implement WebSocket binding generation      | MEDIUM | HIGH   | P2       |
+| #   | Task                                        | Impact | Effort | Priority |
+| --- | ------------------------------------------- | ------ | ------ | -------- |
+| 8   | Add union type schema generation            | HIGH   | MEDIUM | P1       |
+| 9   | Add map type schema generation              | MEDIUM | MEDIUM | P1       |
+| 10  | Add nullable field handling                 | HIGH   | LOW    | P1       |
+| 11  | Implement basic protocol binding generation | HIGH   | HIGH   | P1       |
+| 12  | Add message traits support                  | MEDIUM | MEDIUM | P2       |
+| 13  | Add message examples support                | MEDIUM | MEDIUM | P2       |
+| 14  | Add message externalDocs support            | LOW    | MEDIUM | P2       |
+| 15  | Implement Kafka binding generation          | HIGH   | HIGH   | P2       |
+| 16  | Implement WebSocket binding generation      | MEDIUM | HIGH   | P2       |
 
 ### Medium Term (Week 3-4 - Advanced Features)
 
-| #  | Task                                         | Impact | Effort | Priority |
-| -- | -------------------------------------------- | ------ | ------ | -------- |
-| 17 | Implement HTTP binding generation            | MEDIUM | MEDIUM | P2       |
-| 18 | Implement MQTT binding generation            | MEDIUM | MEDIUM | P2       |
-| 19 | Implement AMQP binding generation            | LOW    | MEDIUM | P3       |
-| 20 | Add security scheme generation (HTTP Bearer) | HIGH   | HIGH   | P2       |
-| 21 | Add security scheme generation (API Key)     | MEDIUM | MEDIUM | P2       |
-| 22 | Add security scheme generation (OAuth2)      | HIGH   | HIGH   | P3       |
-| 23 | Add security scheme generation (SASL)        | MEDIUM | MEDIUM | P3       |
+| #   | Task                                         | Impact | Effort | Priority |
+| --- | -------------------------------------------- | ------ | ------ | -------- |
+| 17  | Implement HTTP binding generation            | MEDIUM | MEDIUM | P2       |
+| 18  | Implement MQTT binding generation            | MEDIUM | MEDIUM | P2       |
+| 19  | Implement AMQP binding generation            | LOW    | MEDIUM | P3       |
+| 20  | Add security scheme generation (HTTP Bearer) | HIGH   | HIGH   | P2       |
+| 21  | Add security scheme generation (API Key)     | MEDIUM | MEDIUM | P2       |
+| 22  | Add security scheme generation (OAuth2)      | HIGH   | HIGH   | P3       |
+| 23  | Add security scheme generation (SASL)        | MEDIUM | MEDIUM | P3       |
 
 ### Long Term (Month 2+ - Polish & Production)
 
-| #  | Task                                       | Impact | Effort | Priority |
-| -- | ------------------------------------------ | ------ | ------ | -------- |
-| 24 | Comprehensive error handling with guidance | MEDIUM | MEDIUM | P3       |
-| 25 | Performance optimization and monitoring    | LOW    | HIGH   | P4       |
+| #   | Task                                       | Impact | Effort | Priority |
+| --- | ------------------------------------------ | ------ | ------ | -------- |
+| 24  | Comprehensive error handling with guidance | MEDIUM | MEDIUM | P3       |
+| 25  | Performance optimization and monitoring    | LOW    | HIGH   | P4       |
 
 ---
 

@@ -76,18 +76,18 @@ Based on smoke test results:
 
 ## 📋 COMPREHENSIVE PLAN (30-100 min tasks)
 
-| #  | Task                          | Time   | Impact      | Value% | Dependencies |
-| -- | ----------------------------- | ------ | ----------- | ------ | ------------ |
-| 1  | Create & run smoke test       | 30min  | 🔴 CRITICAL | 51%    | None         |
-| 2  | Fix file generation blocker   | 30min  | 🔴 CRITICAL | +13%   | Task 1       |
-| 3  | Document root cause & fix     | 30min  | 🟢 HIGH     | +5%    | Task 2       |
-| 4  | Fix 10 critical failing tests | 60min  | 🟢 HIGH     | +6%    | Task 2       |
-| 5  | Add CI/CD smoke test          | 40min  | 🟢 HIGH     | +5%    | Task 1,2     |
-| 6  | Delete 10 redundant tests     | 30min  | 🟡 MED      | +3%    | None         |
-| 7  | Consolidate test utilities    | 90min  | 🟡 MED      | +4%    | None         |
-| 8  | Fix remaining 136 tests       | 100min | 🟡 MED      | +8%    | Task 2,4     |
-| 9  | Performance optimization      | 60min  | ⚪ LOW      | +2%    | Task 8       |
-| 10 | Final documentation           | 30min  | ⚪ LOW      | +3%    | All          |
+| #   | Task                          | Time   | Impact      | Value% | Dependencies |
+| --- | ----------------------------- | ------ | ----------- | ------ | ------------ |
+| 1   | Create & run smoke test       | 30min  | 🔴 CRITICAL | 51%    | None         |
+| 2   | Fix file generation blocker   | 30min  | 🔴 CRITICAL | +13%   | Task 1       |
+| 3   | Document root cause & fix     | 30min  | 🟢 HIGH     | +5%    | Task 2       |
+| 4   | Fix 10 critical failing tests | 60min  | 🟢 HIGH     | +6%    | Task 2       |
+| 5   | Add CI/CD smoke test          | 40min  | 🟢 HIGH     | +5%    | Task 1,2     |
+| 6   | Delete 10 redundant tests     | 30min  | 🟡 MED      | +3%    | None         |
+| 7   | Consolidate test utilities    | 90min  | 🟡 MED      | +4%    | None         |
+| 8   | Fix remaining 136 tests       | 100min | 🟡 MED      | +8%    | Task 2,4     |
+| 9   | Performance optimization      | 60min  | ⚪ LOW      | +2%    | Task 8       |
+| 10  | Final documentation           | 30min  | ⚪ LOW      | +3%    | All          |
 
 **Total:** 10 tasks, 500 minutes (8.3 hours)
 **But:** First 5 tasks (3.5 hours) = 80% of value

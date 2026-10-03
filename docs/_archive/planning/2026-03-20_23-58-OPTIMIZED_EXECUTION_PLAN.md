@@ -12,49 +12,49 @@
 
 ## Tier S (Critical ROI > 4.0) - Execute First
 
-| #  | Task                                      | Impact | Effort (min) | Score   | Status       |
-| -- | ----------------------------------------- | ------ | ------------ | ------- | ------------ |
-| S1 | Add protocol bindings to channels         | 9      | 15           | **6.0** | 🔴 NOT DONE  |
-| S2 | Add security to operations                | 8      | 15           | **5.3** | 🔴 NOT DONE  |
-| S3 | Create integration test for security      | 10     | 20           | **5.0** | 🟡 ATTEMPTED |
-| S4 | Create integration test for tags          | 10     | 20           | **5.0** | 🔴 NOT DONE  |
-| S5 | Create integration test for correlationId | 10     | 20           | **5.0** | 🔴 NOT DONE  |
+| #   | Task                                      | Impact | Effort (min) | Score   | Status       |
+| --- | ----------------------------------------- | ------ | ------------ | ------- | ------------ |
+| S1  | Add protocol bindings to channels         | 9      | 15           | **6.0** | 🔴 NOT DONE  |
+| S2  | Add security to operations                | 8      | 15           | **5.3** | 🔴 NOT DONE  |
+| S3  | Create integration test for security      | 10     | 20           | **5.0** | 🟡 ATTEMPTED |
+| S4  | Create integration test for tags          | 10     | 20           | **5.0** | 🔴 NOT DONE  |
+| S5  | Create integration test for correlationId | 10     | 20           | **5.0** | 🔴 NOT DONE  |
 
 ---
 
 ## Tier A (High ROI 2.5-4.0)
 
-| #  | Task                                   | Impact | Effort (min) | Score   | Status       |
-| -- | -------------------------------------- | ------ | ------------ | ------- | ------------ |
-| A1 | Add message headers output             | 7      | 20           | **3.5** | 🔴 NOT DONE  |
-| A2 | Add protocol configs to state output   | 6      | 15           | **4.0** | 🔴 NOT DONE  |
-| A3 | Fix security decorator for Model types | 8      | 25           | **3.2** | 🟡 ATTEMPTED |
-| A4 | Complete Phase 1 commits               | 7      | 20           | **3.5** | 🟡 PARTIAL   |
-| A5 | Add usage examples                     | 6      | 15           | **4.0** | 🔴 NOT DONE  |
+| #   | Task                                   | Impact | Effort (min) | Score   | Status       |
+| --- | -------------------------------------- | ------ | ------------ | ------- | ------------ |
+| A1  | Add message headers output             | 7      | 20           | **3.5** | 🔴 NOT DONE  |
+| A2  | Add protocol configs to state output   | 6      | 15           | **4.0** | 🔴 NOT DONE  |
+| A3  | Fix security decorator for Model types | 8      | 25           | **3.2** | 🟡 ATTEMPTED |
+| A4  | Complete Phase 1 commits               | 7      | 20           | **3.5** | 🟡 PARTIAL   |
+| A5  | Add usage examples                     | 6      | 15           | **4.0** | 🔴 NOT DONE  |
 
 ---
 
 ## Tier B (Medium ROI 1.5-2.5)
 
-| #  | Task                           | Impact | Effort (min) | Score   | Status      |
-| -- | ------------------------------ | ------ | ------------ | ------- | ----------- |
-| B1 | Add AsyncAPI output validation | 6      | 30           | **2.0** | 🔴 NOT DONE |
-| B2 | Add discriminated union types  | 5      | 25           | **2.0** | 🔴 NOT DONE |
-| B3 | Extract builder modules        | 5      | 30           | **1.7** | 🔴 NOT DONE |
-| B4 | Add error handling             | 5      | 20           | **2.5** | 🔴 NOT DONE |
-| B5 | Performance optimization       | 4      | 30           | **1.3** | 🔴 NOT DONE |
+| #   | Task                           | Impact | Effort (min) | Score   | Status      |
+| --- | ------------------------------ | ------ | ------------ | ------- | ----------- |
+| B1  | Add AsyncAPI output validation | 6      | 30           | **2.0** | 🔴 NOT DONE |
+| B2  | Add discriminated union types  | 5      | 25           | **2.0** | 🔴 NOT DONE |
+| B3  | Extract builder modules        | 5      | 30           | **1.7** | 🔴 NOT DONE |
+| B4  | Add error handling             | 5      | 20           | **2.5** | 🔴 NOT DONE |
+| B5  | Performance optimization       | 4      | 30           | **1.3** | 🔴 NOT DONE |
 
 ---
 
 ## Tier C (Lower ROI < 1.5)
 
-| #  | Task                       | Impact | Effort (min) | Score    | Status      |
-| -- | -------------------------- | ------ | ------------ | -------- | ----------- |
-| C1 | Add metrics collection     | 3      | 30           | **1.0**  | 🔴 NOT DONE |
-| C2 | Add tracing                | 3      | 40           | **0.75** | 🔴 NOT DONE |
-| C3 | Documentation improvements | 4      | 60           | **0.67** | 🔴 NOT DONE |
-| C4 | Refactor decorators        | 3      | 45           | **0.67** | 🔴 NOT DONE |
-| C5 | Advanced optimizations     | 2      | 60           | **0.33** | 🔴 NOT DONE |
+| #   | Task                       | Impact | Effort (min) | Score    | Status      |
+| --- | -------------------------- | ------ | ------------ | -------- | ----------- |
+| C1  | Add metrics collection     | 3      | 30           | **1.0**  | 🔴 NOT DONE |
+| C2  | Add tracing                | 3      | 40           | **0.75** | 🔴 NOT DONE |
+| C3  | Documentation improvements | 4      | 60           | **0.67** | 🔴 NOT DONE |
+| C4  | Refactor decorators        | 3      | 45           | **0.67** | 🔴 NOT DONE |
+| C5  | Advanced optimizations     | 2      | 60           | **0.33** | 🔴 NOT DONE |
 
 ---
 

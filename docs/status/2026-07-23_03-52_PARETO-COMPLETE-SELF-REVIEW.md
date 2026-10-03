@@ -157,83 +157,83 @@ The original goal was "under 370 lines." I could have achieved that with fewer, 
 
 ### P0 — Fix Self-Inflicted Issues
 
-| # | Task                                                                              | Effort  |
-| - | --------------------------------------------------------------------------------- | ------- |
-| 1 | **Consolidate `JsonSchema` → `SchemaObject` alias or replace**                    | Low     |
-| 2 | **Rename `server-decorators.ts`** to `namespace-decorators.ts` or split correctly | Low     |
-| 3 | **Delete `generateFixtureMultiFile()`** dead code                                 | Trivial |
-| 4 | **Persist benchmark baselines** to `docs/benchmark-baselines.json`                | Low     |
-| 5 | **Test `"./shared"` subpath import** via package resolution                       | Low     |
+| #   | Task                                                                              | Effort  |
+| --- | --------------------------------------------------------------------------------- | ------- |
+| 1   | **Consolidate `JsonSchema` → `SchemaObject` alias or replace**                    | Low     |
+| 2   | **Rename `server-decorators.ts`** to `namespace-decorators.ts` or split correctly | Low     |
+| 3   | **Delete `generateFixtureMultiFile()`** dead code                                 | Trivial |
+| 4   | **Persist benchmark baselines** to `docs/benchmark-baselines.json`                | Low     |
+| 5   | **Test `"./shared"` subpath import** via package resolution                       | Low     |
 
 ### P1 — Coverage & Test Gaps
 
-| #  | Task                                                                                         | Effort |
-| -- | -------------------------------------------------------------------------------------------- | ------ |
-| 6  | Unit tests for `server-decorators.ts` (`$server` validation paths)                           | Low    |
-| 7  | Unit tests for `schema-generator.ts` (error handling path)                                   | Low    |
-| 8  | Unit tests for `stdlib-helpers.ts` (`isStdlibType`, `collectAllStdlibNames`)                 | Low    |
-| 9  | Unit tests for `schema-splitter.ts` (direct function tests, not through compiler)            | Low    |
-| 10 | CLI integration test for `split-schemas` option                                              | Medium |
-| 11 | Test split-schemas output still validates against AsyncAPI 3.1 (main doc with external refs) | Medium |
-| 12 | Negative test: `split-schemas` with circular `$ref` between schemas                          | Medium |
-| 13 | Test `split-schemas` with YAML output + round-trip parsing                                   | Low    |
+| #   | Task                                                                                         | Effort |
+| --- | -------------------------------------------------------------------------------------------- | ------ |
+| 6   | Unit tests for `server-decorators.ts` (`$server` validation paths)                           | Low    |
+| 7   | Unit tests for `schema-generator.ts` (error handling path)                                   | Low    |
+| 8   | Unit tests for `stdlib-helpers.ts` (`isStdlibType`, `collectAllStdlibNames`)                 | Low    |
+| 9   | Unit tests for `schema-splitter.ts` (direct function tests, not through compiler)            | Low    |
+| 10  | CLI integration test for `split-schemas` option                                              | Medium |
+| 11  | Test split-schemas output still validates against AsyncAPI 3.1 (main doc with external refs) | Medium |
+| 12  | Negative test: `split-schemas` with circular `$ref` between schemas                          | Medium |
+| 13  | Test `split-schemas` with YAML output + round-trip parsing                                   | Low    |
 
 ### P2 — Harden What Exists
 
-| #  | Task                                                                         | Effort  |
-| -- | ---------------------------------------------------------------------------- | ------- |
-| 14 | Proactively refactor `state-writers.ts` (340 lines, approaching limit)       | Medium  |
-| 15 | Add `@apiVersion` to decorators.ts `$decorators` map — verify it's there     | Trivial |
-| 16 | Add `@apiVersion` negative tests (non-string, empty, wrong target)           | Low     |
-| 17 | Document `tsconfig.json` `"types": ["node"]` constraint in AGENTS.md gotchas | Trivial |
-| 18 | Add CPU profiling to benchmarks (`bun --cpu-prof`)                           | Medium  |
-| 19 | Add memory profiling to benchmarks                                           | Medium  |
-| 20 | Benchmark with nested models (depth 5+)                                      | Low     |
-| 21 | Benchmark with large enums (100+ variants)                                   | Low     |
-| 22 | Benchmark with cross-file model references at scale                          | Low     |
+| #   | Task                                                                         | Effort  |
+| --- | ---------------------------------------------------------------------------- | ------- |
+| 14  | Proactively refactor `state-writers.ts` (340 lines, approaching limit)       | Medium  |
+| 15  | Add `@apiVersion` to decorators.ts `$decorators` map — verify it's there     | Trivial |
+| 16  | Add `@apiVersion` negative tests (non-string, empty, wrong target)           | Low     |
+| 17  | Document `tsconfig.json` `"types": ["node"]` constraint in AGENTS.md gotchas | Trivial |
+| 18  | Add CPU profiling to benchmarks (`bun --cpu-prof`)                           | Medium  |
+| 19  | Add memory profiling to benchmarks                                           | Medium  |
+| 20  | Benchmark with nested models (depth 5+)                                      | Low     |
+| 21  | Benchmark with large enums (100+ variants)                                   | Low     |
+| 22  | Benchmark with cross-file model references at scale                          | Low     |
 
 ### P3 — AsyncAPI Spec Compliance Deepening
 
-| #  | Task                                                                                         | Effort |
-| -- | -------------------------------------------------------------------------------------------- | ------ |
-| 23 | Validate `split-schemas` main document resolves all external `$ref`s                         | Medium |
-| 24 | Test `@server` with `variables` field                                                        | Low    |
-| 25 | Test `@server` with `security` field                                                         | Low    |
-| 26 | Test multi-server configurations (2+ servers per namespace)                                  | Low    |
-| 27 | Test `@protocol` on Models (message-level protocol)                                          | Low    |
-| 28 | Test `@bindings` on channels (not just operations/messages/servers)                          | Low    |
-| 29 | Verify Kafka message binding `schemaIdLocation` field validation                             | Low    |
-| 30 | Test OAuth2 with all 4 flow types (implicit, password, clientCredentials, authorizationCode) | Low    |
-| 31 | Test `@security` with `openIdConnect` type                                                   | Low    |
-| 32 | Test `@security` with `X509` type                                                            | Low    |
-| 33 | Add compliance test for `components.tags`                                                    | Low    |
+| #   | Task                                                                                         | Effort |
+| --- | -------------------------------------------------------------------------------------------- | ------ |
+| 23  | Validate `split-schemas` main document resolves all external `$ref`s                         | Medium |
+| 24  | Test `@server` with `variables` field                                                        | Low    |
+| 25  | Test `@server` with `security` field                                                         | Low    |
+| 26  | Test multi-server configurations (2+ servers per namespace)                                  | Low    |
+| 27  | Test `@protocol` on Models (message-level protocol)                                          | Low    |
+| 28  | Test `@bindings` on channels (not just operations/messages/servers)                          | Low    |
+| 29  | Verify Kafka message binding `schemaIdLocation` field validation                             | Low    |
+| 30  | Test OAuth2 with all 4 flow types (implicit, password, clientCredentials, authorizationCode) | Low    |
+| 31  | Test `@security` with `openIdConnect` type                                                   | Low    |
+| 32  | Test `@security` with `X509` type                                                            | Low    |
+| 33  | Add compliance test for `components.tags`                                                    | Low    |
 
 ### P4 — Developer Experience
 
-| #  | Task                                                                            | Effort |
-| -- | ------------------------------------------------------------------------------- | ------ |
-| 34 | Improve error messages for `split-schemas` (what if schemas dir is unwritable?) | Low    |
-| 35 | Add `--output-dir` support for split schemas                                    | Medium |
-| 36 | Create a `tspconfig.yaml` example with all emitter options                      | Low    |
-| 37 | Document all emitter options in README.md                                       | Low    |
-| 38 | Add `@deprecated` JSDoc to legacy test helpers                                  | Low    |
-| 39 | Consolidate `returnModelNames` and `returnModelTypes` in operation-discovery.ts | Low    |
-| 40 | Add IDE hover documentation for all decorators in `lib/main.tsp`                | Medium |
+| #   | Task                                                                            | Effort |
+| --- | ------------------------------------------------------------------------------- | ------ |
+| 34  | Improve error messages for `split-schemas` (what if schemas dir is unwritable?) | Low    |
+| 35  | Add `--output-dir` support for split schemas                                    | Medium |
+| 36  | Create a `tspconfig.yaml` example with all emitter options                      | Low    |
+| 37  | Document all emitter options in README.md                                       | Low    |
+| 38  | Add `@deprecated` JSDoc to legacy test helpers                                  | Low    |
+| 39  | Consolidate `returnModelNames` and `returnModelTypes` in operation-discovery.ts | Low    |
+| 40  | Add IDE hover documentation for all decorators in `lib/main.tsp`                | Medium |
 
 ### P5 — Future Features
 
-| #  | Task                                                               | Effort |
-| -- | ------------------------------------------------------------------ | ------ |
-| 41 | Message traits support (`@trait` decorator)                        | High   |
-| 42 | Operation traits support                                           | High   |
-| 43 | Server variables with enum/default validation                      | Medium |
-| 44 | Schema deduplication (identical inline schemas → `$ref`)           | High   |
-| 45 | AsyncAPI extensions (`x-*` fields) support                         | Medium |
-| 46 | Server-side schema filtering (include/exclude specific models)     | Medium |
-| 47 | Multi-namespace output (one AsyncAPI doc per namespace)            | High   |
-| 48 | Webhook channel support (`@channel` with HTTP protocol)            | Medium |
-| 49 | AsyncAPI 3.0 → 3.1 migration guide for users                       | Low    |
-| 50 | Real-time schema validation feedback in IDE (diagnostic pull mode) | High   |
+| #   | Task                                                               | Effort |
+| --- | ------------------------------------------------------------------ | ------ |
+| 41  | Message traits support (`@trait` decorator)                        | High   |
+| 42  | Operation traits support                                           | High   |
+| 43  | Server variables with enum/default validation                      | Medium |
+| 44  | Schema deduplication (identical inline schemas → `$ref`)           | High   |
+| 45  | AsyncAPI extensions (`x-*` fields) support                         | Medium |
+| 46  | Server-side schema filtering (include/exclude specific models)     | Medium |
+| 47  | Multi-namespace output (one AsyncAPI doc per namespace)            | High   |
+| 48  | Webhook channel support (`@channel` with HTTP protocol)            | Medium |
+| 49  | AsyncAPI 3.0 → 3.1 migration guide for users                       | Low    |
+| 50  | Real-time schema validation feedback in IDE (diagnostic pull mode) | High   |
 
 ---
 

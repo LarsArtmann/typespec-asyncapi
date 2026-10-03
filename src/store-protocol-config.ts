@@ -24,8 +24,12 @@ const RESERVED_CONFIG_KEYS: ReadonlySet<string> = new Set([
 ]);
 
 /** Collect non-reserved config keys as raw binding passthrough fields. */
-function topLevelPassthrough(config: Record<string, unknown>): Record<string, unknown> | undefined {
-  const entries = Object.entries(config).filter(([key]) => !RESERVED_CONFIG_KEYS.has(key));
+function topLevelPassthrough(
+  config: Record<string, unknown>,
+): Record<string, unknown> | undefined {
+  const entries = Object.entries(config).filter(
+    ([key]) => !RESERVED_CONFIG_KEYS.has(key),
+  );
   return entries.length > 0 ? Object.fromEntries(entries) : undefined;
 }
 
@@ -34,7 +38,10 @@ export const storeProtocolConfig = (
   target: Operation | Model,
   config: Record<string, unknown>,
 ): void => {
-  const map = getStateMap<ProtocolConfigData>(program, stateSymbols.protocolConfigs);
+  const map = getStateMap<ProtocolConfigData>(
+    program,
+    stateSymbols.protocolConfigs,
+  );
   const rawProtocol = (config.protocol as string | undefined) ?? "kafka";
   const protocolType = normalizeProtocol(rawProtocol);
 

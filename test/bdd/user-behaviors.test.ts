@@ -12,7 +12,10 @@ import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js
 import { inlineObject } from "../utils/type-guards.js";
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
-import { PROTOCOL_LIST, isSupportedProtocol } from "../../src/constants/protocols.js";
+import {
+  PROTOCOL_LIST,
+  isSupportedProtocol,
+} from "../../src/constants/protocols.js";
 import {
   normalizePathTemplate,
   parsePathTemplate,
@@ -99,9 +102,9 @@ describe("bdd: user configures protocol bindings", () => {
     const channel = Object.values(doc.channels!)[0]!;
     expect(channel.bindings).toBeDefined();
     expect(inlineObject(channel.bindings, "bindings").kafka).toBeDefined();
-    expect(inlineObject(channel.bindings, "bindings").kafka!.bindingVersion).toBe(
-      LATEST_BINDING_VERSIONS.kafka,
-    );
+    expect(
+      inlineObject(channel.bindings, "bindings").kafka!.bindingVersion,
+    ).toBe(LATEST_BINDING_VERSIONS.kafka);
   });
 });
 
@@ -150,7 +153,10 @@ describe("bdd: user defines security schemes", () => {
     `);
     expect(doc.components).toBeDefined();
     expect(doc.components!.securitySchemes).toBeDefined();
-    const scheme = inlineObject(doc.components!.securitySchemes!["api-key"], "security scheme");
+    const scheme = inlineObject(
+      doc.components!.securitySchemes!["api-key"],
+      "security scheme",
+    );
     expect(scheme).toBeDefined();
     expect(scheme.type).toBe("httpApiKey");
   });
@@ -216,7 +222,9 @@ describe("bdd: user provides invalid configuration", () => {
     `);
     const warnings = result.diagnostics.filter((d) => d.severity === "warning");
     expect(warnings.length).toBeGreaterThan(0);
-    expect(warnings.some((d) => d.code.includes("unknown-binding-protocol"))).toBe(true);
+    expect(
+      warnings.some((d) => d.code.includes("unknown-binding-protocol")),
+    ).toBe(true);
   });
 });
 
@@ -268,7 +276,11 @@ describe("bdd: user applies @bindings on Namespace for server bindings", () => {
       op publish(): Event;
     `);
     expect(doc.servers!.broker.bindings).toBeDefined();
-    expect(inlineObject(doc.servers!.broker.bindings, "bindings").mqtt).toBeDefined();
-    expect(inlineObject(doc.servers!.broker.bindings, "bindings").mqtt!.clientId).toBe("my-client");
+    expect(
+      inlineObject(doc.servers!.broker.bindings, "bindings").mqtt,
+    ).toBeDefined();
+    expect(
+      inlineObject(doc.servers!.broker.bindings, "bindings").mqtt!.clientId,
+    ).toBe("my-client");
   });
 });

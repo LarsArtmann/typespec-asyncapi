@@ -155,58 +155,58 @@ After committing, ran `git status --short | wc -l` and got 94 — panicked think
 
 ## f) UP TO 50 THINGS TO DO NEXT (sorted by impact/effort)
 
-| #  | Task                                                                                           | Impact | Effort |
-| -- | ---------------------------------------------------------------------------------------------- | ------ | ------ |
-| 1  | Move or delete `archive/` at repo root (62 files)                                              | HIGH   | 10 min |
-| 2  | Move `path-templates.ts` from `src/domain/models/` to `test/utils/`                            | MEDIUM | 10 min |
-| 3  | Move `serialization-format-option.ts` from `src/domain/models/` to `test/utils/`               | MEDIUM | 10 min |
-| 4  | Consolidate `test-helpers.ts` to single compilation API (remove `createAsyncAPITestHost`)      | HIGH   | 45 min |
-| 5  | Make security tests assert actual security scheme output (not just `asyncapi === "3.0.0"`)     | HIGH   | 60 min |
-| 6  | Split `security-comprehensive.test.ts` (2,783 lines) into focused files                        | MEDIUM | 30 min |
-| 7  | Split `emitter.ts` (830 lines) — extract schema emitter from document builder                  | HIGH   | 60 min |
-| 8  | Make `ProtocolConfigData` a discriminated union                                                | MEDIUM | 30 min |
-| 9  | Make `ServerConfigData` a proper interface                                                     | MEDIUM | 15 min |
-| 10 | Make `SecurityConfigData` a proper interface                                                   | MEDIUM | 15 min |
-| 11 | Add test verifying full `$ref` chain resolution (operation → channel → message → schema)       | HIGH   | 30 min |
-| 12 | Verify `@typespec/http` devDep is needed — remove if not                                       | LOW    | 5 min  |
-| 13 | Verify `@typespec/openapi3` devDep is needed — remove if not                                   | LOW    | 5 min  |
-| 14 | Verify `glob` devDep is needed — remove if not                                                 | LOW    | 5 min  |
-| 15 | Verify `@asyncapi/cli` devDep is needed — remove if not                                        | LOW    | 5 min  |
-| 16 | Verify `@asyncapi/parser` devDep is needed — remove if not                                     | LOW    | 5 min  |
-| 17 | Verify `@asyncapi/specs` is needed (used by schema-validation.test.ts) — move to devDeps if so | LOW    | 5 min  |
-| 18 | Add `tsp compile` smoke test to CI for `examples/`                                             | MEDIUM | 20 min |
-| 19 | Add coverage reporting to CI                                                                   | LOW    | 15 min |
-| 20 | Add test for `@security` output structure (currently no test checks securitySchemes)           | HIGH   | 20 min |
-| 21 | Add test for `@protocol` output structure (partially covered by new Kafka tests)               | MEDIUM | 15 min |
-| 22 | Add test for channel parameters with multiple params                                           | LOW    | 10 min |
-| 23 | Add test for server variables with multiple vars                                               | LOW    | 10 min |
-| 24 | Add test for `@message` contentType override                                                   | LOW    | 10 min |
-| 25 | Add test for `@header` with Model type                                                         | LOW    | 10 min |
-| 26 | Add `@doc` → `description` mapping for channels and operations                                 | MEDIUM | 20 min |
-| 27 | Add `@summary` → `summary` mapping                                                             | LOW    | 10 min |
-| 28 | Add `output-dir` option support in emitter                                                     | LOW    | 15 min |
-| 29 | Add `id` field support for AsyncAPI document                                                   | LOW    | 10 min |
-| 30 | Add `defaultContentType` field support                                                         | LOW    | 10 min |
-| 31 | Write integration test that compiles ALL examples and validates output                         | MEDIUM | 30 min |
-| 32 | Add proper README to each example directory                                                    | LOW    | 15 min |
-| 33 | Consider `@asyncapi/parser` for validation in CI instead of raw AJV                            | LOW    | 30 min |
-| 34 | Research if `@typespec/events` should be a dependency                                          | LOW    | 15 min |
-| 35 | Extract `buildAsyncAPIDocument` from `emitter.ts` into `src/document-builder.ts`               | HIGH   | 45 min |
-| 36 | Extract TypeEmitter schema methods from `emitter.ts` into `src/schema-emitter.ts`              | HIGH   | 45 min |
-| 37 | Clean up `lint-staged` config — verify it references correct files                             | LOW    | 5 min  |
-| 38 | Add `.editorconfig` for consistent formatting                                                  | LOW    | 5 min  |
-| 39 | Consider provenance for pnpm publish (supply chain security)                                   | LOW    | 15 min |
-| 40 | Remove `test/templates/` directory if empty                                                    | LOW    | 1 min  |
-| 41 | Update golden file test to cover nested `$ref` output                                          | MEDIUM | 15 min |
-| 42 | Add test for `@bindings` with HTTP protocol                                                    | LOW    | 10 min |
-| 43 | Add test for `@bindings` with WebSocket protocol                                               | LOW    | 10 min |
-| 44 | Add test for `@bindings` with MQTT protocol                                                    | LOW    | 10 min |
-| 45 | Verify husky pre-commit hook works on non-NixOS (currently `--no-verify` required)             | LOW    | 10 min |
-| 46 | Add `CHANGELOG.md` to `.npmignore` check (already in `files` — verify)                         | LOW    | 2 min  |
-| 47 | Consider splitting `lib/main.tsp` decorator declarations into logical groups                   | LOW    | 15 min |
-| 48 | Document the `EmitEntity<T>` discriminated union narrowing pattern in AGENTS.md                | MEDIUM | 10 min |
-| 49 | Add test for multiple servers in one namespace                                                 | LOW    | 10 min |
-| 50 | Add test for multiple channels with same message model                                         | LOW    | 10 min |
+| #   | Task                                                                                           | Impact | Effort |
+| --- | ---------------------------------------------------------------------------------------------- | ------ | ------ |
+| 1   | Move or delete `archive/` at repo root (62 files)                                              | HIGH   | 10 min |
+| 2   | Move `path-templates.ts` from `src/domain/models/` to `test/utils/`                            | MEDIUM | 10 min |
+| 3   | Move `serialization-format-option.ts` from `src/domain/models/` to `test/utils/`               | MEDIUM | 10 min |
+| 4   | Consolidate `test-helpers.ts` to single compilation API (remove `createAsyncAPITestHost`)      | HIGH   | 45 min |
+| 5   | Make security tests assert actual security scheme output (not just `asyncapi === "3.0.0"`)     | HIGH   | 60 min |
+| 6   | Split `security-comprehensive.test.ts` (2,783 lines) into focused files                        | MEDIUM | 30 min |
+| 7   | Split `emitter.ts` (830 lines) — extract schema emitter from document builder                  | HIGH   | 60 min |
+| 8   | Make `ProtocolConfigData` a discriminated union                                                | MEDIUM | 30 min |
+| 9   | Make `ServerConfigData` a proper interface                                                     | MEDIUM | 15 min |
+| 10  | Make `SecurityConfigData` a proper interface                                                   | MEDIUM | 15 min |
+| 11  | Add test verifying full `$ref` chain resolution (operation → channel → message → schema)       | HIGH   | 30 min |
+| 12  | Verify `@typespec/http` devDep is needed — remove if not                                       | LOW    | 5 min  |
+| 13  | Verify `@typespec/openapi3` devDep is needed — remove if not                                   | LOW    | 5 min  |
+| 14  | Verify `glob` devDep is needed — remove if not                                                 | LOW    | 5 min  |
+| 15  | Verify `@asyncapi/cli` devDep is needed — remove if not                                        | LOW    | 5 min  |
+| 16  | Verify `@asyncapi/parser` devDep is needed — remove if not                                     | LOW    | 5 min  |
+| 17  | Verify `@asyncapi/specs` is needed (used by schema-validation.test.ts) — move to devDeps if so | LOW    | 5 min  |
+| 18  | Add `tsp compile` smoke test to CI for `examples/`                                             | MEDIUM | 20 min |
+| 19  | Add coverage reporting to CI                                                                   | LOW    | 15 min |
+| 20  | Add test for `@security` output structure (currently no test checks securitySchemes)           | HIGH   | 20 min |
+| 21  | Add test for `@protocol` output structure (partially covered by new Kafka tests)               | MEDIUM | 15 min |
+| 22  | Add test for channel parameters with multiple params                                           | LOW    | 10 min |
+| 23  | Add test for server variables with multiple vars                                               | LOW    | 10 min |
+| 24  | Add test for `@message` contentType override                                                   | LOW    | 10 min |
+| 25  | Add test for `@header` with Model type                                                         | LOW    | 10 min |
+| 26  | Add `@doc` → `description` mapping for channels and operations                                 | MEDIUM | 20 min |
+| 27  | Add `@summary` → `summary` mapping                                                             | LOW    | 10 min |
+| 28  | Add `output-dir` option support in emitter                                                     | LOW    | 15 min |
+| 29  | Add `id` field support for AsyncAPI document                                                   | LOW    | 10 min |
+| 30  | Add `defaultContentType` field support                                                         | LOW    | 10 min |
+| 31  | Write integration test that compiles ALL examples and validates output                         | MEDIUM | 30 min |
+| 32  | Add proper README to each example directory                                                    | LOW    | 15 min |
+| 33  | Consider `@asyncapi/parser` for validation in CI instead of raw AJV                            | LOW    | 30 min |
+| 34  | Research if `@typespec/events` should be a dependency                                          | LOW    | 15 min |
+| 35  | Extract `buildAsyncAPIDocument` from `emitter.ts` into `src/document-builder.ts`               | HIGH   | 45 min |
+| 36  | Extract TypeEmitter schema methods from `emitter.ts` into `src/schema-emitter.ts`              | HIGH   | 45 min |
+| 37  | Clean up `lint-staged` config — verify it references correct files                             | LOW    | 5 min  |
+| 38  | Add `.editorconfig` for consistent formatting                                                  | LOW    | 5 min  |
+| 39  | Consider provenance for pnpm publish (supply chain security)                                   | LOW    | 15 min |
+| 40  | Remove `test/templates/` directory if empty                                                    | LOW    | 1 min  |
+| 41  | Update golden file test to cover nested `$ref` output                                          | MEDIUM | 15 min |
+| 42  | Add test for `@bindings` with HTTP protocol                                                    | LOW    | 10 min |
+| 43  | Add test for `@bindings` with WebSocket protocol                                               | LOW    | 10 min |
+| 44  | Add test for `@bindings` with MQTT protocol                                                    | LOW    | 10 min |
+| 45  | Verify husky pre-commit hook works on non-NixOS (currently `--no-verify` required)             | LOW    | 10 min |
+| 46  | Add `CHANGELOG.md` to `.npmignore` check (already in `files` — verify)                         | LOW    | 2 min  |
+| 47  | Consider splitting `lib/main.tsp` decorator declarations into logical groups                   | LOW    | 15 min |
+| 48  | Document the `EmitEntity<T>` discriminated union narrowing pattern in AGENTS.md                | MEDIUM | 10 min |
+| 49  | Add test for multiple servers in one namespace                                                 | LOW    | 10 min |
+| 50  | Add test for multiple channels with same message model                                         | LOW    | 10 min |
 
 ---
 

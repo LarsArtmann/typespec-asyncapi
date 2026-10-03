@@ -33,7 +33,9 @@ describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", (
       op publishEvent(): string;
     `;
     const result = await compileAsyncAPI(source);
-    expect(result.asyncApiDoc?.servers?.production?.protocolVersion).toBe("3.0.0");
+    expect(result.asyncApiDoc?.servers?.production?.protocolVersion).toBe(
+      "3.0.0",
+    );
   });
 
   it("emits server.pathname from @server config", async () => {
@@ -87,7 +89,9 @@ describe("asyncAPI 3.1: server.protocolVersion + server.pathname + variables", (
       op publishEvent(): string;
     `;
     const result = await compileAsyncAPI(source);
-    expect(result.asyncApiDoc?.servers?.kafka?.security).toStrictEqual([{ type: "scramSha512" }]);
+    expect(result.asyncApiDoc?.servers?.kafka?.security).toStrictEqual([
+      { type: "scramSha512" },
+    ]);
   });
 });
 
@@ -128,7 +132,10 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
     `;
     const result = await compileAsyncAPI(source);
     expect(
-      inlineObject(result.asyncApiDoc?.components?.messages?.UserCreated, "message").schemaFormat,
+      inlineObject(
+        result.asyncApiDoc?.components?.messages?.UserCreated,
+        "message",
+      ).schemaFormat,
     ).toBe("application/vnd.apache.avro+json;version=1.9.0");
   });
 
@@ -142,7 +149,10 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
     `;
     const result = await compileAsyncAPI(source);
     expect(
-      inlineObject(result.asyncApiDoc?.components?.messages?.OrderEvent, "message").schemaFormat,
+      inlineObject(
+        result.asyncApiDoc?.components?.messages?.OrderEvent,
+        "message",
+      ).schemaFormat,
     ).toBe("application/vnd.google.protobuf");
   });
 });
@@ -175,7 +185,10 @@ describe("asyncAPI 3.1: message.examples", () => {
       op publish(): OrderPlaced;
     `;
     const result = await compileAsyncAPI(source);
-    const msg = inlineObject(result.asyncApiDoc?.components?.messages?.OrderPlaced, "message");
+    const msg = inlineObject(
+      result.asyncApiDoc?.components?.messages?.OrderPlaced,
+      "message",
+    );
     expect(msg.examples).toHaveLength(2);
     expect(msg.examples?.[0]?.name).toBe("minimal");
     expect(msg.examples?.[0]?.payload).toStrictEqual({
@@ -236,7 +249,9 @@ describe("@defaultContentType: MIME type validation", () => {
       op publishEvent(): string;
     `;
     const result = await compileAsyncAPI(source);
-    expect(result.asyncApiDoc?.defaultContentType).toBe("application/vnd.apache.avro+json");
+    expect(result.asyncApiDoc?.defaultContentType).toBe(
+      "application/vnd.apache.avro+json",
+    );
   });
 
   it("warns on an invalid MIME type", async () => {
@@ -248,7 +263,9 @@ describe("@defaultContentType: MIME type validation", () => {
     `;
     const result = await compileAsyncAPI(source);
     const warnings = result.diagnostics.filter(
-      (d) => d.code === "@lars-artmann/typespec-asyncapi/invalid-default-content-type",
+      (d) =>
+        d.code ===
+        "@lars-artmann/typespec-asyncapi/invalid-default-content-type",
     );
     expect(warnings.length).toBeGreaterThan(0);
   });

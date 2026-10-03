@@ -297,16 +297,16 @@ I made `ProtocolConfigData` a discriminated union and `normalizeProtocol()` retu
 
 ### Section (f) high-priority items (1-10)
 
-| #  | Item                                        | Status                                     |
-| -- | ------------------------------------------- | ------------------------------------------ |
-| 1  | Test against external `.tsp` files          | PARTIALLY DONE — 16 patterns               |
-| 2  | Tighten `ServerObject.protocol`             | DONE                                       |
-| 3  | Tighten `ProtocolBindings` key type         | DONE                                       |
-| 4  | Tighten `OperationObject.bindings`          | DONE                                       |
-| 5  | Grep ALL examples for `apiKey`→`httpApiKey` | DONE — examples synced in commit `7376d34` |
-| 6  | Grep ALL tests for `type: "sasl"`           | DONE — rewritten in this session           |
-| 9  | Default `bindingVersion` per protocol       | DONE — commit `60b526c`                    |
-| 10 | Test `Map<T>` in `typeToSchema()`           | OPEN — still untested                      |
+| #   | Item                                        | Status                                     |
+| --- | ------------------------------------------- | ------------------------------------------ |
+| 1   | Test against external `.tsp` files          | PARTIALLY DONE — 16 patterns               |
+| 2   | Tighten `ServerObject.protocol`             | DONE                                       |
+| 3   | Tighten `ProtocolBindings` key type         | DONE                                       |
+| 4   | Tighten `OperationObject.bindings`          | DONE                                       |
+| 5   | Grep ALL examples for `apiKey`→`httpApiKey` | DONE — examples synced in commit `7376d34` |
+| 6   | Grep ALL tests for `type: "sasl"`           | DONE — rewritten in this session           |
+| 9   | Default `bindingVersion` per protocol       | DONE — commit `60b526c`                    |
+| 10  | Test `Map<T>` in `typeToSchema()`           | OPEN — still untested                      |
 
 ### Questions resolved
 

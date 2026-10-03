@@ -9,48 +9,48 @@
 
 ## 📊 TASK BREAKDOWN - ALL TASKS ≤12 MINUTES
 
-| #  | Task                                               | Time | Impact   | Effort | Score | Phase    | Status |
-| -- | -------------------------------------------------- | ---- | -------- | ------ | ----- | -------- | ------ |
-| 1  | Research TypeSpec decorator resolution docs        | 12m  | CRITICAL | 12m    | 10.0  | Research | ⏸️ TODO |
-| 2  | Find working TypeSpec libraries with decorators    | 12m  | CRITICAL | 12m    | 10.0  | Research | ⏸️ TODO |
-| 3  | Check our package.json vs TypeSpec template        | 8m   | HIGH     | 8m     | 7.5   | Research | ⏸️ TODO |
-| 4  | Read TypeSpec compiler decorator loader code       | 12m  | CRITICAL | 12m    | 10.0  | Research | ⏸️ TODO |
-| 5  | Document research findings                         | 8m   | HIGH     | 8m     | 7.5   | Research | ⏸️ TODO |
-| 6  | **HYPOTHESIS A: Remove lib.ts decorator export**   | 8m   | CRITICAL | 8m     | 10.0  | Test     | ⏸️ TODO |
-| 7  | Build and test Hypothesis A                        | 8m   | CRITICAL | 8m     | 10.0  | Test     | ⏸️ TODO |
-| 8  | **HYPOTHESIS B: Remove index.ts decorator export** | 8m   | CRITICAL | 8m     | 10.0  | Test     | ⏸️ TODO |
-| 9  | Build and test Hypothesis B                        | 8m   | CRITICAL | 8m     | 10.0  | Test     | ⏸️ TODO |
-| 10 | Check package.json exports field config            | 8m   | HIGH     | 8m     | 7.5   | Test     | ⏸️ TODO |
-| 11 | Create minimal decorator test library              | 12m  | CRITICAL | 12m    | 10.0  | Test     | ⏸️ TODO |
-| 12 | Test minimal library in isolation                  | 8m   | CRITICAL | 8m     | 10.0  | Test     | ⏸️ TODO |
-| 13 | Identify correct decorator export pattern          | 8m   | CRITICAL | 8m     | 10.0  | Analyze  | ⏸️ TODO |
-| 14 | Implement correct export structure                 | 10m  | CRITICAL | 10m    | 10.0  | Fix      | ⏸️ TODO |
-| 15 | Rebuild project                                    | 2m   | CRITICAL | 2m     | 10.0  | Fix      | ⏸️ TODO |
-| 16 | Verify dist/ has correct structure                 | 4m   | HIGH     | 4m     | 7.5   | Fix      | ⏸️ TODO |
-| 17 | Test single decorator (@channel)                   | 6m   | CRITICAL | 6m     | 10.0  | Verify   | ⏸️ TODO |
-| 18 | Test all 11 decorators                             | 10m  | CRITICAL | 10m    | 10.0  | Verify   | ⏸️ TODO |
-| 19 | Verify "missing implementation" errors gone        | 6m   | CRITICAL | 6m     | 10.0  | Verify   | ⏸️ TODO |
-| 20 | Commit decorator fix                               | 4m   | HIGH     | 4m     | 7.5   | Verify   | ⏸️ TODO |
-| 21 | **Fix channel ambiguity in lib/main.tsp**          | 6m   | HIGH     | 6m     | 8.3   | Fix      | ⏸️ TODO |
-| 22 | Test channel decorator usage                       | 6m   | HIGH     | 6m     | 8.3   | Verify   | ⏸️ TODO |
-| 23 | Commit channel ambiguity fix                       | 4m   | MEDIUM   | 4m     | 5.0   | Verify   | ⏸️ TODO |
-| 24 | Add debug logging to property enumeration          | 12m  | CRITICAL | 12m    | 10.0  | Debug    | ⏸️ TODO |
-| 25 | Test property enumeration with simple model        | 6m   | CRITICAL | 6m     | 10.0  | Debug    | ⏸️ TODO |
-| 26 | Check TypeSpec model lifecycle documentation       | 10m  | CRITICAL | 10m    | 10.0  | Research | ⏸️ TODO |
-| 27 | Identify why walkPropertiesInherited is empty      | 12m  | CRITICAL | 12m    | 10.0  | Debug    | ⏸️ TODO |
-| 28 | Implement property enumeration fix                 | 12m  | CRITICAL | 12m    | 10.0  | Fix      | ⏸️ TODO |
-| 29 | Test property enumeration returns properties       | 8m   | CRITICAL | 8m     | 10.0  | Verify   | ⏸️ TODO |
-| 30 | Commit property enumeration fix                    | 4m   | HIGH     | 4m     | 7.5   | Verify   | ⏸️ TODO |
-| 31 | Fix schema-conversion.ts line 218 split-brain      | 6m   | MEDIUM   | 6m     | 5.0   | Fix      | ⏸️ TODO |
-| 32 | Fix schema-conversion.ts line 304 split-brain      | 6m   | MEDIUM   | 6m     | 5.0   | Fix      | ⏸️ TODO |
-| 33 | Test schema conversion consistency                 | 6m   | MEDIUM   | 6m     | 5.0   | Verify   | ⏸️ TODO |
-| 34 | Commit split-brain fixes                           | 4m   | MEDIUM   | 4m     | 5.0   | Verify   | ⏸️ TODO |
-| 35 | Run full test suite                                | 12m  | CRITICAL | 12m    | 10.0  | Verify   | ⏸️ TODO |
-| 36 | Analyze test results                               | 8m   | HIGH     | 8m     | 7.5   | Verify   | ⏸️ TODO |
-| 37 | Document success metrics                           | 6m   | HIGH     | 6m     | 7.5   | Document | ⏸️ TODO |
-| 38 | Update GitHub issues with results                  | 8m   | HIGH     | 8m     | 7.5   | Document | ⏸️ TODO |
-| 39 | Final commit and push                              | 4m   | HIGH     | 4m     | 7.5   | Complete | ⏸️ TODO |
-| 40 | Create session summary                             | 8m   | MEDIUM   | 8m     | 5.0   | Complete | ⏸️ TODO |
+| #   | Task                                               | Time | Impact   | Effort | Score | Phase    | Status  |
+| --- | -------------------------------------------------- | ---- | -------- | ------ | ----- | -------- | ------- |
+| 1   | Research TypeSpec decorator resolution docs        | 12m  | CRITICAL | 12m    | 10.0  | Research | ⏸️ TODO |
+| 2   | Find working TypeSpec libraries with decorators    | 12m  | CRITICAL | 12m    | 10.0  | Research | ⏸️ TODO |
+| 3   | Check our package.json vs TypeSpec template        | 8m   | HIGH     | 8m     | 7.5   | Research | ⏸️ TODO |
+| 4   | Read TypeSpec compiler decorator loader code       | 12m  | CRITICAL | 12m    | 10.0  | Research | ⏸️ TODO |
+| 5   | Document research findings                         | 8m   | HIGH     | 8m     | 7.5   | Research | ⏸️ TODO |
+| 6   | **HYPOTHESIS A: Remove lib.ts decorator export**   | 8m   | CRITICAL | 8m     | 10.0  | Test     | ⏸️ TODO |
+| 7   | Build and test Hypothesis A                        | 8m   | CRITICAL | 8m     | 10.0  | Test     | ⏸️ TODO |
+| 8   | **HYPOTHESIS B: Remove index.ts decorator export** | 8m   | CRITICAL | 8m     | 10.0  | Test     | ⏸️ TODO |
+| 9   | Build and test Hypothesis B                        | 8m   | CRITICAL | 8m     | 10.0  | Test     | ⏸️ TODO |
+| 10  | Check package.json exports field config            | 8m   | HIGH     | 8m     | 7.5   | Test     | ⏸️ TODO |
+| 11  | Create minimal decorator test library              | 12m  | CRITICAL | 12m    | 10.0  | Test     | ⏸️ TODO |
+| 12  | Test minimal library in isolation                  | 8m   | CRITICAL | 8m     | 10.0  | Test     | ⏸️ TODO |
+| 13  | Identify correct decorator export pattern          | 8m   | CRITICAL | 8m     | 10.0  | Analyze  | ⏸️ TODO |
+| 14  | Implement correct export structure                 | 10m  | CRITICAL | 10m    | 10.0  | Fix      | ⏸️ TODO |
+| 15  | Rebuild project                                    | 2m   | CRITICAL | 2m     | 10.0  | Fix      | ⏸️ TODO |
+| 16  | Verify dist/ has correct structure                 | 4m   | HIGH     | 4m     | 7.5   | Fix      | ⏸️ TODO |
+| 17  | Test single decorator (@channel)                   | 6m   | CRITICAL | 6m     | 10.0  | Verify   | ⏸️ TODO |
+| 18  | Test all 11 decorators                             | 10m  | CRITICAL | 10m    | 10.0  | Verify   | ⏸️ TODO |
+| 19  | Verify "missing implementation" errors gone        | 6m   | CRITICAL | 6m     | 10.0  | Verify   | ⏸️ TODO |
+| 20  | Commit decorator fix                               | 4m   | HIGH     | 4m     | 7.5   | Verify   | ⏸️ TODO |
+| 21  | **Fix channel ambiguity in lib/main.tsp**          | 6m   | HIGH     | 6m     | 8.3   | Fix      | ⏸️ TODO |
+| 22  | Test channel decorator usage                       | 6m   | HIGH     | 6m     | 8.3   | Verify   | ⏸️ TODO |
+| 23  | Commit channel ambiguity fix                       | 4m   | MEDIUM   | 4m     | 5.0   | Verify   | ⏸️ TODO |
+| 24  | Add debug logging to property enumeration          | 12m  | CRITICAL | 12m    | 10.0  | Debug    | ⏸️ TODO |
+| 25  | Test property enumeration with simple model        | 6m   | CRITICAL | 6m     | 10.0  | Debug    | ⏸️ TODO |
+| 26  | Check TypeSpec model lifecycle documentation       | 10m  | CRITICAL | 10m    | 10.0  | Research | ⏸️ TODO |
+| 27  | Identify why walkPropertiesInherited is empty      | 12m  | CRITICAL | 12m    | 10.0  | Debug    | ⏸️ TODO |
+| 28  | Implement property enumeration fix                 | 12m  | CRITICAL | 12m    | 10.0  | Fix      | ⏸️ TODO |
+| 29  | Test property enumeration returns properties       | 8m   | CRITICAL | 8m     | 10.0  | Verify   | ⏸️ TODO |
+| 30  | Commit property enumeration fix                    | 4m   | HIGH     | 4m     | 7.5   | Verify   | ⏸️ TODO |
+| 31  | Fix schema-conversion.ts line 218 split-brain      | 6m   | MEDIUM   | 6m     | 5.0   | Fix      | ⏸️ TODO |
+| 32  | Fix schema-conversion.ts line 304 split-brain      | 6m   | MEDIUM   | 6m     | 5.0   | Fix      | ⏸️ TODO |
+| 33  | Test schema conversion consistency                 | 6m   | MEDIUM   | 6m     | 5.0   | Verify   | ⏸️ TODO |
+| 34  | Commit split-brain fixes                           | 4m   | MEDIUM   | 4m     | 5.0   | Verify   | ⏸️ TODO |
+| 35  | Run full test suite                                | 12m  | CRITICAL | 12m    | 10.0  | Verify   | ⏸️ TODO |
+| 36  | Analyze test results                               | 8m   | HIGH     | 8m     | 7.5   | Verify   | ⏸️ TODO |
+| 37  | Document success metrics                           | 6m   | HIGH     | 6m     | 7.5   | Document | ⏸️ TODO |
+| 38  | Update GitHub issues with results                  | 8m   | HIGH     | 8m     | 7.5   | Document | ⏸️ TODO |
+| 39  | Final commit and push                              | 4m   | HIGH     | 4m     | 7.5   | Complete | ⏸️ TODO |
+| 40  | Create session summary                             | 8m   | MEDIUM   | 8m     | 5.0   | Complete | ⏸️ TODO |
 
 **Total Tasks:** 40
 **Total Time:** ~5 hours

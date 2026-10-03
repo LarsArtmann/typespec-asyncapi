@@ -114,33 +114,33 @@ These should be refactored by extracting functions/modules.
 
 ## f) Top 25 Things to Get Done Next
 
-| #  | Task                                                                                                        | Impact | Effort | Rationale                                      |
-| -- | ----------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------------------------------------------- |
-| 1  | **Refactor `schema-emitter.ts`** under 370 lines                                                            | High   | Low    | File size violation, maintainability           |
-| 2  | **Refactor `minimal-decorators.ts`** under 370 lines                                                        | High   | Low    | File size violation, maintainability           |
-| 3  | **Task 17: Consolidate ESLint/oxlint**                                                                      | Medium | Medium | Resolve contradictions, document strategy      |
-| 4  | **Task 21: Multi-file TypeSpec input**                                                                      | Medium | Medium | Users need to split specs across files         |
-| 5  | **Task 18: Coverage tooling fix**                                                                           | Medium | Medium | Can't measure actual coverage accurately       |
-| 6  | **Task 22: AsyncAPI generator compatibility**                                                               | Medium | Medium | Verify output works with `@asyncapi/generator` |
-| 7  | **Task 24: Multi-file output**                                                                              | Medium | Medium | Large specs need file splitting                |
-| 8  | **Task 26: Performance profiling**                                                                          | Medium | Medium | Verify no O(n²) at scale                       |
-| 9  | **Task 19: Binding validation from specs**                                                                  | Medium | High   | Eliminate hand-maintained rules                |
-| 10 | **Task 23: `@typespec/versioning` support**                                                                 | Low    | High   | API versioning in AsyncAPI docs                |
-| 11 | **Task 25: OpenAPI cross-emitter**                                                                          | Low    | High   | Share types between AsyncAPI and OpenAPI       |
-| 12 | **Update AGENTS.md** with new decorator count, protocol count, file list                                    | Low    | Low    | Documentation accuracy                         |
-| 13 | **Add `@messageId` to `@publish`/`@subscribe` path** — Currently only works with `@channel` operations      | Low    | Low    | Completeness                                   |
-| 14 | **Add Redis binding support** when AsyncAPI specs publish definitions                                       | Low    | Low    | Future-proofing                                |
-| 15 | **Test `@operationId` with bare operations** (no decorators)                                                | Low    | Low    | Edge case coverage                             |
-| 16 | **Add compliance test for Namespace `@bindings` with multiple protocols**                                   | Low    | Low    | Edge case coverage                             |
-| 17 | **Consolidate `returnModelNames` and `returnModelTypes`** — remove dead code                                | Low    | Low    | Code cleanliness                               |
-| 18 | **Add `@doc` on operations** — verify it appears as description in output                                   | Low    | Low    | Feature completeness                           |
-| 19 | **Test server bindings validated against AsyncAPI 3.1 schema**                                              | Low    | Low    | Compliance                                     |
-| 20 | **Add `circular` kind handling in `extractValue()`** — currently returns `{}`                               | Low    | Low    | Edge case                                      |
-| 21 | **Document the `messageSchemaNames` field** in DiscoveredOp interface                                       | Low    | Low    | Code documentation                             |
-| 22 | **Add negative tests for `@operationId`/`@messageId`** — empty string, special chars                        | Low    | Low    | Error handling                                 |
-| 23 | **Verify YAML output** — all tests use JSON; YAML emitter path untested                                     | Low    | Low    | Output format coverage                         |
-| 24 | **Add integration test for all decorators combined** in one spec                                            | Low    | Low    | Integration confidence                         |
-| 25 | **Audit `message-builder.ts` for `messageId` consistency** — `applyAutoMessageDecorators` uses state lookup | Low    | Low    | Type safety                                    |
+| #   | Task                                                                                                        | Impact | Effort | Rationale                                      |
+| --- | ----------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------------------------------------------- |
+| 1   | **Refactor `schema-emitter.ts`** under 370 lines                                                            | High   | Low    | File size violation, maintainability           |
+| 2   | **Refactor `minimal-decorators.ts`** under 370 lines                                                        | High   | Low    | File size violation, maintainability           |
+| 3   | **Task 17: Consolidate ESLint/oxlint**                                                                      | Medium | Medium | Resolve contradictions, document strategy      |
+| 4   | **Task 21: Multi-file TypeSpec input**                                                                      | Medium | Medium | Users need to split specs across files         |
+| 5   | **Task 18: Coverage tooling fix**                                                                           | Medium | Medium | Can't measure actual coverage accurately       |
+| 6   | **Task 22: AsyncAPI generator compatibility**                                                               | Medium | Medium | Verify output works with `@asyncapi/generator` |
+| 7   | **Task 24: Multi-file output**                                                                              | Medium | Medium | Large specs need file splitting                |
+| 8   | **Task 26: Performance profiling**                                                                          | Medium | Medium | Verify no O(n²) at scale                       |
+| 9   | **Task 19: Binding validation from specs**                                                                  | Medium | High   | Eliminate hand-maintained rules                |
+| 10  | **Task 23: `@typespec/versioning` support**                                                                 | Low    | High   | API versioning in AsyncAPI docs                |
+| 11  | **Task 25: OpenAPI cross-emitter**                                                                          | Low    | High   | Share types between AsyncAPI and OpenAPI       |
+| 12  | **Update AGENTS.md** with new decorator count, protocol count, file list                                    | Low    | Low    | Documentation accuracy                         |
+| 13  | **Add `@messageId` to `@publish`/`@subscribe` path** — Currently only works with `@channel` operations      | Low    | Low    | Completeness                                   |
+| 14  | **Add Redis binding support** when AsyncAPI specs publish definitions                                       | Low    | Low    | Future-proofing                                |
+| 15  | **Test `@operationId` with bare operations** (no decorators)                                                | Low    | Low    | Edge case coverage                             |
+| 16  | **Add compliance test for Namespace `@bindings` with multiple protocols**                                   | Low    | Low    | Edge case coverage                             |
+| 17  | **Consolidate `returnModelNames` and `returnModelTypes`** — remove dead code                                | Low    | Low    | Code cleanliness                               |
+| 18  | **Add `@doc` on operations** — verify it appears as description in output                                   | Low    | Low    | Feature completeness                           |
+| 19  | **Test server bindings validated against AsyncAPI 3.1 schema**                                              | Low    | Low    | Compliance                                     |
+| 20  | **Add `circular` kind handling in `extractValue()`** — currently returns `{}`                               | Low    | Low    | Edge case                                      |
+| 21  | **Document the `messageSchemaNames` field** in DiscoveredOp interface                                       | Low    | Low    | Code documentation                             |
+| 22  | **Add negative tests for `@operationId`/`@messageId`** — empty string, special chars                        | Low    | Low    | Error handling                                 |
+| 23  | **Verify YAML output** — all tests use JSON; YAML emitter path untested                                     | Low    | Low    | Output format coverage                         |
+| 24  | **Add integration test for all decorators combined** in one spec                                            | Low    | Low    | Integration confidence                         |
+| 25  | **Audit `message-builder.ts` for `messageId` consistency** — `applyAutoMessageDecorators` uses state lookup | Low    | Low    | Type safety                                    |
 
 ---
 

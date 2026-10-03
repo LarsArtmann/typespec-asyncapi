@@ -344,33 +344,33 @@
 
 **Sorted by Impact/Effort (Pareto-Optimal Order)**
 
-| #  | Task                             | Priority | Effort  | Impact                 | Phase |
-| -- | -------------------------------- | -------- | ------- | ---------------------- | ----- |
-| 1  | Fix State Extraction             | CRITICAL | 75 min  | 51% value              | 1     |
-| 2  | Verify State Lifecycle           | CRITICAL | 60 min  | Understanding          | 1     |
-| 3  | Use emitFile API Correctly       | HIGH     | 60 min  | Proper integration     | 2     |
-| 4  | Fix Output Directory             | HIGH     | 30 min  | Correct file placement | 2     |
-| 5  | Add Basic Output Validation      | HIGH     | 45 min  | Quality gate           | 2     |
-| 6  | End-to-End Smoke Test            | HIGH     | 60 min  | Pipeline verified      | 2     |
-| 7  | Define AsyncAPI Domain Model     | HIGH     | 180 min | Type-safe foundation   | 3     |
-| 8  | Create Type-Safe Program Wrapper | HIGH     | 120 min | No casts               | 3     |
-| 9  | Replace All Type Casts           | HIGH     | 90 min  | Zero assertions        | 3     |
-| 10 | Implement Channel Generation     | HIGH     | 90 min  | Working output         | 3     |
-| 11 | Implement Message Generation     | HIGH     | 90 min  | Working output         | 3     |
-| 12 | Implement Schema Generation      | HIGH     | 120 min | Working output         | 3     |
-| 13 | Implement Operation Generation   | HIGH     | 75 min  | Working output         | 3     |
-| 14 | Implement YAML Generation        | HIGH     | 60 min  | File output            | 3     |
-| 15 | Add Integration Tests            | HIGH     | 240 min | Quality assurance      | 3     |
-| 16 | Add Validation Layer             | HIGH     | 120 min | Spec validation        | 3     |
-| 17 | Add Error Handling               | MEDIUM   | 120 min | Comprehensive errors   | 3     |
-| 18 | Split Large Files                | MEDIUM   | 60 min  | <350 lines             | 3     |
-| 19 | Remove Duplicate Code            | MEDIUM   | 60 min  | No duplication         | 3     |
-| 20 | Extract Adapters                 | MEDIUM   | 90 min  | Clean APIs             | 3     |
-| 21 | Centralize Errors                | MEDIUM   | 90 min  | Error types            | 3     |
-| 22 | Add Logging Layer                | LOW      | 60 min  | Structured logs        | 3     |
-| 23 | Improve Naming                   | LOW      | 60 min  | Descriptive names      | 3     |
-| 24 | Add Inline Docs                  | LOW      | 60 min  | Documentation          | 3     |
-| 25 | Implement Kafka Bindings         | MEDIUM   | 480 min | Protocol support       | 4     |
+| #   | Task                             | Priority | Effort  | Impact                 | Phase |
+| --- | -------------------------------- | -------- | ------- | ---------------------- | ----- |
+| 1   | Fix State Extraction             | CRITICAL | 75 min  | 51% value              | 1     |
+| 2   | Verify State Lifecycle           | CRITICAL | 60 min  | Understanding          | 1     |
+| 3   | Use emitFile API Correctly       | HIGH     | 60 min  | Proper integration     | 2     |
+| 4   | Fix Output Directory             | HIGH     | 30 min  | Correct file placement | 2     |
+| 5   | Add Basic Output Validation      | HIGH     | 45 min  | Quality gate           | 2     |
+| 6   | End-to-End Smoke Test            | HIGH     | 60 min  | Pipeline verified      | 2     |
+| 7   | Define AsyncAPI Domain Model     | HIGH     | 180 min | Type-safe foundation   | 3     |
+| 8   | Create Type-Safe Program Wrapper | HIGH     | 120 min | No casts               | 3     |
+| 9   | Replace All Type Casts           | HIGH     | 90 min  | Zero assertions        | 3     |
+| 10  | Implement Channel Generation     | HIGH     | 90 min  | Working output         | 3     |
+| 11  | Implement Message Generation     | HIGH     | 90 min  | Working output         | 3     |
+| 12  | Implement Schema Generation      | HIGH     | 120 min | Working output         | 3     |
+| 13  | Implement Operation Generation   | HIGH     | 75 min  | Working output         | 3     |
+| 14  | Implement YAML Generation        | HIGH     | 60 min  | File output            | 3     |
+| 15  | Add Integration Tests            | HIGH     | 240 min | Quality assurance      | 3     |
+| 16  | Add Validation Layer             | HIGH     | 120 min | Spec validation        | 3     |
+| 17  | Add Error Handling               | MEDIUM   | 120 min | Comprehensive errors   | 3     |
+| 18  | Split Large Files                | MEDIUM   | 60 min  | <350 lines             | 3     |
+| 19  | Remove Duplicate Code            | MEDIUM   | 60 min  | No duplication         | 3     |
+| 20  | Extract Adapters                 | MEDIUM   | 90 min  | Clean APIs             | 3     |
+| 21  | Centralize Errors                | MEDIUM   | 90 min  | Error types            | 3     |
+| 22  | Add Logging Layer                | LOW      | 60 min  | Structured logs        | 3     |
+| 23  | Improve Naming                   | LOW      | 60 min  | Descriptive names      | 3     |
+| 24  | Add Inline Docs                  | LOW      | 60 min  | Documentation          | 3     |
+| 25  | Implement Kafka Bindings         | MEDIUM   | 480 min | Protocol support       | 4     |
 
 ---
 

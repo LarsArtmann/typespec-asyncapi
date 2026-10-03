@@ -39,7 +39,10 @@ function getMainContent(source: MultiFileSource): string {
   return source["main.tsp"] ?? "";
 }
 
-async function createTesterInstance(source: MultiFileSource, options: AsyncAPIEmitterOptions = {}) {
+async function createTesterInstance(
+  source: MultiFileSource,
+  options: AsyncAPIEmitterOptions = {},
+) {
   const packageRoot = await findTestPackageRoot(import.meta.url);
   const mainContent = getMainContent(source);
   const hasOwnImport =
@@ -93,7 +96,9 @@ export async function compileAsyncAPI(
 ) {
   const tester = await createTesterInstance(source, options);
 
-  const [result, diagnostics] = (await tester.compileAndDiagnose(source as never)) as [
+  const [result, diagnostics] = (await tester.compileAndDiagnose(
+    source as never,
+  )) as [
     TestEmitterCompileResult & { fs?: { fs?: Map<string, string> } },
     readonly import("@typespec/compiler").Diagnostic[],
   ];
@@ -112,7 +117,11 @@ export async function compileAsyncAPI(
       continue;
     }
     const filename = virtualPath.split("/").pop() || "";
-    if (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml")) {
+    if (
+      filename.endsWith(".yaml") ||
+      filename.endsWith(".json") ||
+      filename.endsWith(".yml")
+    ) {
       if (content.startsWith("asyncapi") || content.includes('"asyncapi"')) {
         outputFile = filename;
         outputContent = content;
@@ -137,7 +146,11 @@ export async function compileAsyncAPI(
       continue;
     }
     const filename = virtualPath.split("/").pop() || "";
-    if (filename.endsWith(".yaml") || filename.endsWith(".json") || filename.endsWith(".yml")) {
+    if (
+      filename.endsWith(".yaml") ||
+      filename.endsWith(".json") ||
+      filename.endsWith(".yml")
+    ) {
       allOutputFiles.set(filename, content);
     }
   }
@@ -159,11 +172,15 @@ export async function compileAsyncAPIWithoutErrors(
   const result = await compileAsyncAPI(source, options);
   const errors = result.diagnostics.filter((d) => d.severity === "error");
   if (errors.length > 0) {
-    const errorMessages = errors.map((e) => `${e.code}: ${e.message}`).join("\n");
+    const errorMessages = errors
+      .map((e) => `${e.code}: ${e.message}`)
+      .join("\n");
     throw new Error(`Compilation failed with errors:\n${errorMessages}`);
   }
   if (!result.asyncApiDoc) {
-    throw new Error("Compilation succeeded but produced no AsyncAPI output document");
+    throw new Error(
+      "Compilation succeeded but produced no AsyncAPI output document",
+    );
   }
   return {
     ...result,
@@ -173,7 +190,10 @@ export async function compileAsyncAPIWithoutErrors(
 
 // === LEGACY COMPILATION WRAPPERS ===
 
-async function compileRaw(source: string, options: AsyncAPIEmitterOptions = {}) {
+async function compileRaw(
+  source: string,
+  options: AsyncAPIEmitterOptions = {},
+) {
   const result = await compileAsyncAPI(source, options);
   const outputFiles = new Map<string, string>();
   for (const [filename, content] of Object.entries(result.outputs)) {
@@ -279,7 +299,10 @@ export async function createAsyncAPITestHost() {
       return {};
     },
 
-    async compileAndDiagnose(_mainPath: string, _options?: AsyncAPIEmitterOptions) {
+    async compileAndDiagnose(
+      _mainPath: string,
+      _options?: AsyncAPIEmitterOptions,
+    ) {
       const source = files.get("main.tsp") ?? files.values().next().value;
       if (!source) {
         return [{}, []];
@@ -445,7 +468,10 @@ export const TestSources = {
 export const AsyncAPIAssertions = {
   hasChannel: (doc: AsyncAPIObject, channelName: string): boolean =>
     Boolean(doc.channels && channelName in doc.channels),
-  hasDocumentation: (obj: { description?: string }, expectedDoc: string): boolean => {
+  hasDocumentation: (
+    obj: { description?: string },
+    expectedDoc: string,
+  ): boolean => {
     if (!obj.description || !obj.description.includes(expectedDoc)) {
       throw new Error(
         `Expected documentation containing '${expectedDoc}', got: ${obj.description || "no description"}`,
@@ -465,7 +491,11 @@ export const AsyncAPIAssertions = {
     const d = doc as Record<string, unknown>;
     return typeof d.asyncapi === "string" && typeof d.info === "object";
   },
-  schemaHasProperty: (doc: AsyncAPIObject, schemaName: string, propertyName: string): boolean => {
+  schemaHasProperty: (
+    doc: AsyncAPIObject,
+    schemaName: string,
+    propertyName: string,
+  ): boolean => {
     const schema = doc.components?.schemas?.[schemaName];
     return schema?.properties && propertyName in schema.properties;
   },

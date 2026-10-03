@@ -53,7 +53,8 @@ describe("asyncAPI Decorator Validation", () => {
       });
 
       const channelErrors = diagnostics.filter(
-        (d) => d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
+        (d) =>
+          d.code === "@lars-artmann/typespec-asyncapi/missing-channel-path",
       );
       expect(channelErrors).toHaveLength(1);
     });
@@ -222,10 +223,12 @@ describe("asyncAPI Decorator Validation", () => {
       expect(errors).toHaveLength(0);
 
       const doc = JSON.parse(outputFiles.get("recursive-test.json")!);
-      expect(doc.components.schemas.TreeNode.properties.children).toStrictEqual({
-        type: "array",
-        items: { $ref: "#/components/schemas/TreeNode" },
-      });
+      expect(doc.components.schemas.TreeNode.properties.children).toStrictEqual(
+        {
+          type: "array",
+          items: { $ref: "#/components/schemas/TreeNode" },
+        },
+      );
     });
   });
 
@@ -269,11 +272,19 @@ describe("asyncAPI Decorator Validation", () => {
 
       // Validate documentation preservation
       const schema = asyncapiDoc.components?.schemas?.DocumentedEvent;
-      expect(schema?.description).toContain("Event model with comprehensive documentation");
+      expect(schema?.description).toContain(
+        "Event model with comprehensive documentation",
+      );
       expect(schema?.properties).toBeDefined();
-      expect(schema!.properties!.id?.description).toContain("Unique event identifier");
-      expect(schema!.properties!.name?.description).toContain("Human-readable event name");
-      expect(schema!.properties!.createdAt?.description).toContain("Event creation timestamp");
+      expect(schema!.properties!.id?.description).toContain(
+        "Unique event identifier",
+      );
+      expect(schema!.properties!.name?.description).toContain(
+        "Human-readable event name",
+      );
+      expect(schema!.properties!.createdAt?.description).toContain(
+        "Event creation timestamp",
+      );
 
       // Validate channel documentation
       const { channels } = asyncapiDoc;

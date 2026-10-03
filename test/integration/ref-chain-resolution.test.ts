@@ -64,7 +64,10 @@ describe("$ref Chain Resolution", () => {
     const spec = result.asyncApiDoc;
 
     expect(spec?.components?.messages).toBeDefined();
-    const msg = inlineObject(spec!.components!.messages!["OrderCreated"], "message");
+    const msg = inlineObject(
+      spec!.components!.messages!["OrderCreated"],
+      "message",
+    );
     expect(msg).toBeDefined();
     expect(msg.payload).toBeDefined();
     expect(msg.payload!.$ref).toBe("#/components/schemas/OrderCreated");

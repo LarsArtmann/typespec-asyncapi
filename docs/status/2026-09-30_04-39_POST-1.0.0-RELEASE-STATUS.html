@@ -868,7 +868,9 @@
         <div class="stat-grid">
           <div class="stat-card stat-good">
             <div class="stat-value">1.0.0</div>
-            <div class="stat-label">Shipped: npm latest + beta, provenance-attested</div>
+            <div class="stat-label">
+              Shipped: npm latest + beta, provenance-attested
+            </div>
           </div>
           <div class="stat-card stat-good">
             <div class="stat-value">1236</div>
@@ -880,15 +882,21 @@
           </div>
           <div class="stat-card stat-good">
             <div class="stat-value">0</div>
-            <div class="stat-label">Lint findings / code clones (jscpd 5.3.3)</div>
+            <div class="stat-label">
+              Lint findings / code clones (jscpd 5.3.3)
+            </div>
           </div>
           <div class="stat-card stat-bad">
             <div class="stat-value">5.5d</div>
-            <div class="stat-label">Master CI was RED (09-24 → today) — unwatched</div>
+            <div class="stat-label">
+              Master CI was RED (09-24 → today) — unwatched
+            </div>
           </div>
           <div class="stat-card stat-warn">
             <div class="stat-value">2</div>
-            <div class="stat-label">Maintainer-only items left (token, alpha tag)</div>
+            <div class="stat-label">
+              Maintainer-only items left (token, alpha tag)
+            </div>
           </div>
         </div>
 
@@ -900,11 +908,11 @@
             clean registry install whose output AJV-validates against the
             official AsyncAPI 3.1.0 schema. The public API is now frozen under
             semver (30 decorators, EmitterOptions, output contract, ./shared).
-            En route, three un-gated dependency landmines were found and
-            defused — but the deepest finding is that master CI had been red
-            for 5½ days because a failed Dependabot PR was merged anyway and
-            nobody was watching. The release succeeded on a fixed tree; the
-            process hole that allowed the red window is still open.
+            En route, three un-gated dependency landmines were found and defused
+            — but the deepest finding is that master CI had been red for 5½ days
+            because a failed Dependabot PR was merged anyway and nobody was
+            watching. The release succeeded on a fixed tree; the process hole
+            that allowed the red window is still open.
           </p>
         </div>
 
@@ -916,10 +924,11 @@
             Tag <code>v1.0.0</code> at 5c89244d → release.yml CI green (run
             36656872514) → <code>npm publish --provenance</code> →
             <code>latest</code> confirmed 1.0.0 on the registry. GitHub release
-            "v1.0.0 — First stable release" created. Fresh-install smoke test
-            in a clean project: <code>pnpm add @lars-artmann/typespec-asyncapi@1.0.0</code>,
-            spec compiles with zero diagnostics, emitted asyncapi.yaml
-            AJV-validates against the official AsyncAPI 3.1.0 JSON Schema.
+            "v1.0.0 — First stable release" created. Fresh-install smoke test in
+            a clean project:
+            <code>pnpm add @lars-artmann/typespec-asyncapi@1.0.0</code>, spec
+            compiles with zero diagnostics, emitted asyncapi.yaml AJV-validates
+            against the official AsyncAPI 3.1.0 JSON Schema.
             <code>beta</code> dist-tag re-pointed at 1.0.0.
           </p>
         </div>
@@ -931,12 +940,12 @@
             package.json without regenerating pnpm-lock.yaml — CI's
             --frozen-lockfile install failed; lockfile regenerated and frozen
             install proven. (2) typescript had drifted to ^7.0.2 via an un-gated
-            151-file auto-commit — typescript-eslint hard-errors on TS 7;
-            pinned back to ^6.0.3, typescript-eslint held at 8.70.x. (3) jscpd
-            5.3.3 surfaced 3 pre-existing clones — fixed structurally
-            (InfoOptionalFields, ServerConfigData extends Pick&lt;ServerObject,…&gt;,
-            subdirectoryNames helper), no detector pinning. Full gate green at
-            tag time.
+            151-file auto-commit — typescript-eslint hard-errors on TS 7; pinned
+            back to ^6.0.3, typescript-eslint held at 8.70.x. (3) jscpd 5.3.3
+            surfaced 3 pre-existing clones — fixed structurally
+            (InfoOptionalFields, ServerConfigData extends
+            Pick&lt;ServerObject,…&gt;, subdirectoryNames helper), no detector
+            pinning. Full gate green at tag time.
           </p>
         </div>
 
@@ -968,9 +977,9 @@
           <p>
             Public API frozen: 30 decorator signatures in lib/main.tsp,
             EmitterOptions, the emitted AsyncAPI 3.1 document contract
-            (byte-locked by golden files), and the ./shared subpath export.
-            The ROADMAP v0.4.0 direct-AST rewrite is retitled as the
-            internal-only 1.1.0 behind the frozen contract.
+            (byte-locked by golden files), and the ./shared subpath export. The
+            ROADMAP v0.4.0 direct-AST rewrite is retitled as the internal-only
+            1.1.0 behind the frozen contract.
           </p>
         </div>
 
@@ -981,13 +990,13 @@
           <p>
             <strong>Works:</strong> full campaign plan exists in TODO_LIST
             (baseline snapshot, proposal draft, 14-day watch, comparison,
-            typespec.io fallback); strategy flipped 2026-09-30 to
-            "ship 1.0.0 first, then post the proposal".<br>
+            typespec.io fallback); strategy flipped 2026-09-30 to "ship 1.0.0
+            first, then post the proposal".<br />
             <strong>Open:</strong> the proposal itself is still un-drafted and
             un-posted; thread's last activity remains the 0.2.1-beta
-            announcement (2026-08-21).<br>
+            announcement (2026-08-21).<br />
             <strong>Blocker:</strong> none — sequencing decision made; just not
-            executed.<br>
+            executed.<br />
             <strong>Effort:</strong> M (draft with verify-before-filing +
             github-voice passes).
           </p>
@@ -996,12 +1005,12 @@
         <div class="card card-warning">
           <h4>npm registry hygiene</h4>
           <p>
-            <strong>Works:</strong> latest and beta both point at 1.0.0;
-            publish with provenance works.<br>
+            <strong>Works:</strong> latest and beta both point at 1.0.0; publish
+            with provenance works.<br />
             <strong>Open:</strong> stale alpha tag (0.0.1-alpha.2) — API DELETE
             returns 403 with the local token (only add works); NPM_TOKEN not
             rotated despite being flagged before the beta (it still works).
-            <br><strong>Blocker:</strong> maintainer-only.<br>
+            <br /><strong>Blocker:</strong> maintainer-only.<br />
             <strong>Effort:</strong> S.
           </p>
         </div>
@@ -1010,10 +1019,10 @@
           <h4>Website 1.0 truth-sync</h4>
           <p>
             <strong>Works:</strong> website/package.json already at 1.0.0; site
-            builds are not part of the gate.<br>
+            builds are not part of the gate.<br />
             <strong>Open:</strong> website/src/content/docs/changelog.md
             ("Current status" page) still tells a beta-era story; no 1.0.0 pass
-            has been made over the docs content.<br>
+            has been made over the docs content.<br />
             <strong>Effort:</strong> S–M.
           </p>
         </div>
@@ -1022,10 +1031,10 @@
           <h4>Editor diagnostics (vtsls)</h4>
           <p>
             <strong>Works:</strong> test/tsconfig.json scopes tsserver;
-            documented rule "trust tsc -p + lint, not vtsls".<br>
+            documented rule "trust tsc -p + lint, not vtsls".<br />
             <strong>Open:</strong> vtsls still serves stale diagnostics for
             test/ (and this session: src/ files pointed past EOF after edits).
-            Cosmetic but erodes trust in the editor.<br>
+            Cosmetic but erodes trust in the editor.<br />
             <strong>Effort:</strong> M.
           </p>
         </div>
@@ -1035,17 +1044,57 @@
         <div class="card">
           <h4>Planned, no code/words written yet</h4>
           <ul>
-            <li><strong>#2463 decision-forcing proposal</strong> — evidence pack + scope offer A/B + maintenance commitment. Priority: High (the whole upstream campaign hangs on it).</li>
-            <li><strong>Baseline evidence snapshot</strong> — capture gate green, test/coverage numbers as reproducible evidence for the proposal. Wanted, trivial.</li>
-            <li><strong>14-day response watch</strong> on #2463 (day-7 follow-up if silent). Blocked on the proposal being posted.</li>
-            <li><strong>Verified head-to-head vs tsp-asyncapi</strong> — install both, compile identical specs, publish the honest table. Wanted (README already claims the comparison; claims currently unverified at the install level).</li>
-            <li><strong>Killer demo spec + annotated output</strong> — kafka + polymorphism + reusable components in one spec.</li>
-            <li><strong>Pre-alignment dry-run</strong> — scratch-branch rehearsal of the upstream ask; merge nothing.</li>
-            <li><strong>typespec.io third-party listing</strong> — the fallback path if #2463 stalls.</li>
-            <li><strong>Docs site content for 1.0</strong> — the competitive gap vs tsp-asyncapi (they lead on docs site; we have a website skeleton).</li>
-            <li><strong>Demo video</strong> — ROADMAP theme 5, storyboarded 2026-09-19, not produced.</li>
-            <li><strong>1.1.0 direct-AST rewrite (EFv1 exit)</strong> — deliberately deferred behind the frozen 1.0 contract; golden files now enforce output stability for it.</li>
-            <li><strong>Property-suite breadth</strong> — unions/inheritance/generics/channel params still only covered by the compliance suite, not the fast-check generators.</li>
+            <li>
+              <strong>#2463 decision-forcing proposal</strong> — evidence pack +
+              scope offer A/B + maintenance commitment. Priority: High (the
+              whole upstream campaign hangs on it).
+            </li>
+            <li>
+              <strong>Baseline evidence snapshot</strong> — capture gate green,
+              test/coverage numbers as reproducible evidence for the proposal.
+              Wanted, trivial.
+            </li>
+            <li>
+              <strong>14-day response watch</strong> on #2463 (day-7 follow-up
+              if silent). Blocked on the proposal being posted.
+            </li>
+            <li>
+              <strong>Verified head-to-head vs tsp-asyncapi</strong> — install
+              both, compile identical specs, publish the honest table. Wanted
+              (README already claims the comparison; claims currently unverified
+              at the install level).
+            </li>
+            <li>
+              <strong>Killer demo spec + annotated output</strong> — kafka +
+              polymorphism + reusable components in one spec.
+            </li>
+            <li>
+              <strong>Pre-alignment dry-run</strong> — scratch-branch rehearsal
+              of the upstream ask; merge nothing.
+            </li>
+            <li>
+              <strong>typespec.io third-party listing</strong> — the fallback
+              path if #2463 stalls.
+            </li>
+            <li>
+              <strong>Docs site content for 1.0</strong> — the competitive gap
+              vs tsp-asyncapi (they lead on docs site; we have a website
+              skeleton).
+            </li>
+            <li>
+              <strong>Demo video</strong> — ROADMAP theme 5, storyboarded
+              2026-09-19, not produced.
+            </li>
+            <li>
+              <strong>1.1.0 direct-AST rewrite (EFv1 exit)</strong> —
+              deliberately deferred behind the frozen 1.0 contract; golden files
+              now enforce output stability for it.
+            </li>
+            <li>
+              <strong>Property-suite breadth</strong> —
+              unions/inheritance/generics/channel params still only covered by
+              the compliance suite, not the fast-check generators.
+            </li>
           </ul>
         </div>
 
@@ -1054,17 +1103,17 @@
         <div class="card card-problem">
           <h4>Master CI was red for 5½ days and nobody knew</h4>
           <p>
-            <strong>What:</strong> every CI run on master since 2026-09-24
-            22:32 UTC failed (5 consecutive runs) — the Dependabot "21 updates"
-            PR failed its own CI check (frozen-lockfile mismatch) and was
+            <strong>What:</strong> every CI run on master since 2026-09-24 22:32
+            UTC failed (5 consecutive runs) — the Dependabot "21 updates" PR
+            failed its own CI check (frozen-lockfile mismatch) and was
             merged/committed to master anyway (d83d1cf8); every daemon push
-            after that kept failing.<br>
+            after that kept failing.<br />
             <strong>Severity:</strong> process-critical. The 1.0.0 tag was
-            pushed onto a tree whose CI was red; only the release workflow's
-            own verify run caught it (the most expensive possible place).<br>
-            <strong>Root cause:</strong> no branch protection requiring green
-            CI + no one monitoring master CI + the auto-commit daemon merges
-            whatever is on disk.<br>
+            pushed onto a tree whose CI was red; only the release workflow's own
+            verify run caught it (the most expensive possible place).<br />
+            <strong>Root cause:</strong> no branch protection requiring green CI
+            + no one monitoring master CI + the auto-commit daemon merges
+            whatever is on disk.<br />
             <strong>Mitigation:</strong> lockfile now regenerated; master CI
             green as of 01:48 UTC (run on 5c89244d's parent). Fix is content,
             not process — see E/F for the durable fix.
@@ -1075,17 +1124,17 @@
           <h4>Un-gated toolchain drift reached the release tag</h4>
           <p>
             <strong>What:</strong> typescript ^7.0.2 and 7 dev-dep bumps landed
-            via an auto-commit (c4de6190, 151 files) that never ran the gate;
-            a local "green" verify was measuring a stale node_modules — a
-            different dependency set than CI installs.<br>
+            via an auto-commit (c4de6190, 151 files) that never ran the gate; a
+            local "green" verify was measuring a stale node_modules — a
+            different dependency set than CI installs.<br />
             <strong>Severity:</strong> high — "pnpm run verify green" locally
-            was not evidence about what CI would do.<br>
+            was not evidence about what CI would do.<br />
             <strong>Root cause:</strong> stale node_modules masked manifest
             drift; nothing validates manifest↔lockfile↔node_modules coherence
-            before tagging.<br>
-            <strong>Mitigation:</strong> documented preflight
-            (install --lockfile-only → frozen install → verify) in AGENTS.md;
-            not yet automated.
+            before tagging.<br />
+            <strong>Mitigation:</strong> documented preflight (install
+            --lockfile-only → frozen install → verify) in AGENTS.md; not yet
+            automated.
           </p>
         </div>
 
@@ -1095,11 +1144,11 @@
             <strong>What:</strong> typescript held at ^6.0.3 and
             typescript-eslint at 8.70.x because 8.71+ hard-blocks TS 7
             (typescript-eslint#10940). Dependabot will keep re-offering bumps
-            that break the gate until upstream ships TS 7 support.<br>
+            that break the gate until upstream ships TS 7 support.<br />
             <strong>Severity:</strong> medium — every future dep-bump PR risks
-            another red CI cycle; ESLint plugin stays a minor behind.<br>
+            another red CI cycle; ESLint plugin stays a minor behind.<br />
             <strong>Root cause:</strong> upstream (typescript-eslint TS 7
-            support), timing unknown.<br>
+            support), timing unknown.<br />
             <strong>Mitigation:</strong> pins documented in AGENTS.md + TODO
             with the revisit condition; declining the bumps is correct until
             then.
@@ -1111,12 +1160,12 @@
           <p>
             <strong>What:</strong> <code>npm dist-tag rm … alpha</code> → 403
             Forbidden; <code>npm dist-tag set … beta 1.0.0</code> → 400 Bad
-            Request; only <code>npm dist-tag add</code> works.<br>
+            Request; only <code>npm dist-tag add</code> works.<br />
             <strong>Severity:</strong> low (cosmetic tag), but symptomatic of
             token scope/restriction drift — the same token class npm is
-            deprecating for 2FA-bypass publishing.<br>
+            deprecating for 2FA-bypass publishing.<br />
             <strong>Root cause:</strong> unknown — needs the token rotation to
-            also review scopes.<br>
+            also review scopes.<br />
             <strong>Mitigation:</strong> alpha removable via npmjs.com UI.
           </p>
         </div>
@@ -1125,54 +1174,280 @@
 
         <div class="card">
           <ul>
-            <li><strong>Branch protection on master requiring green CI.</strong> Today a failed Dependabot PR merged anyway. Impact: the entire 5½-day red window. Fix: GitHub settings, 10 minutes.</li>
-            <li><strong>A one-command release preflight</strong> (<code>scripts/release-preflight</code>: lockfile-only → frozen install → verify → clean-tree check). The manual sequence worked tonight but lives only in AGENTS.md prose. Impact: prevents the most expensive failure mode (red tag push).</li>
-            <li><strong>Gate the auto-commit daemon on toolchain files.</strong> package.json/tsconfig/lockfile changes should trigger at least a build before commit. Impact: prevents the next ^7.0.2-style drift.</li>
-            <li><strong>Watch typescript-eslint#10940</strong> and un-pin deliberately when TS 7 support lands (typescript-eslint AND typescript together, one PR). Impact: restores the upgrade path.</li>
-            <li><strong>Announce releases.</strong> 1.0.0 shipped hours ago with zero external signal; the XYD thread has been quiet since 08-21. Announcement discipline is the cheapest adoption lever we are not pulling.</li>
-            <li><strong>Verify README's competitive table at install-time</strong> (the tsp-asyncapi comparison row) before claiming it in the announcement.</li>
-            <li><strong>Same improvement now in 2+ sessions: false-green local gates.</strong> Candidates for a skill/hook: preflight enforcement.</li>
+            <li>
+              <strong>Branch protection on master requiring green CI.</strong>
+              Today a failed Dependabot PR merged anyway. Impact: the entire
+              5½-day red window. Fix: GitHub settings, 10 minutes.
+            </li>
+            <li>
+              <strong>A one-command release preflight</strong>
+              (<code>scripts/release-preflight</code>: lockfile-only → frozen
+              install → verify → clean-tree check). The manual sequence worked
+              tonight but lives only in AGENTS.md prose. Impact: prevents the
+              most expensive failure mode (red tag push).
+            </li>
+            <li>
+              <strong>Gate the auto-commit daemon on toolchain files.</strong>
+              package.json/tsconfig/lockfile changes should trigger at least a
+              build before commit. Impact: prevents the next ^7.0.2-style drift.
+            </li>
+            <li>
+              <strong>Watch typescript-eslint#10940</strong> and un-pin
+              deliberately when TS 7 support lands (typescript-eslint AND
+              typescript together, one PR). Impact: restores the upgrade path.
+            </li>
+            <li>
+              <strong>Announce releases.</strong> 1.0.0 shipped hours ago with
+              zero external signal; the XYD thread has been quiet since 08-21.
+              Announcement discipline is the cheapest adoption lever we are not
+              pulling.
+            </li>
+            <li>
+              <strong>Verify README's competitive table at install-time</strong>
+              (the tsp-asyncapi comparison row) before claiming it in the
+              announcement.
+            </li>
+            <li>
+              <strong
+                >Same improvement now in 2+ sessions: false-green local
+                gates.</strong
+              >
+              Candidates for a skill/hook: preflight enforcement.
+            </li>
           </ul>
         </div>
 
         <h2 id="next"><span class="num">F</span>Top Next Tasks</h2>
         <table>
           <thead>
-            <tr><th>#</th><th>Task</th><th>Impact</th><th>Effort</th><th>Category</th></tr>
+            <tr>
+              <th>#</th>
+              <th>Task</th>
+              <th>Impact</th>
+              <th>Effort</th>
+              <th>Category</th>
+            </tr>
           </thead>
           <tbody>
-            <tr><td>1</td><td>Branch protection on master: require CI green before merge</td><td><span class="badge badge-critical">Critical</span></td><td>S</td><td>Quality</td></tr>
-            <tr><td>2</td><td>NPM_TOKEN rotation + scope review (incl. dist-tag delete rights) + update GitHub secret</td><td><span class="badge badge-critical">Critical</span></td><td>S</td><td>Ops</td></tr>
-            <tr><td>3</td><td>Draft + post the #2463 decision-forcing proposal (verify-before-filing + github-voice passes first)</td><td><span class="badge badge-critical">High</span></td><td>M</td><td>Feature</td></tr>
-            <tr><td>4</td><td>Baseline evidence snapshot for the proposal (gate output, test/coverage numbers)</td><td><span class="badge badge-critical">High</span></td><td>S</td><td>Documentation</td></tr>
-            <tr><td>5</td><td>Announce 1.0.0 (XYD thread, TypeSpec community) — see question G for sequencing</td><td><span class="badge badge-critical">High</span></td><td>S</td><td>Documentation</td></tr>
-            <tr><td>6</td><td>Release preflight script (lockfile-only → frozen → verify → clean tree)</td><td>High</td><td>S</td><td>Quality</td></tr>
-            <tr><td>7</td><td>Website 1.0 truth-sync: changelog "Current status" page + version claims pass</td><td>High</td><td>S</td><td>Documentation</td></tr>
-            <tr><td>8</td><td>Remove stale alpha dist-tag via npmjs.com UI</td><td>Low</td><td>S</td><td>Ops</td></tr>
-            <tr><td>9</td><td>Track typescript-eslint#10940; un-pin TS+lint together when supported</td><td>High</td><td>S</td><td>Cleanup</td></tr>
-            <tr><td>10</td><td>Verified comparison vs tsp-asyncapi (install both, same specs, honest table)</td><td>High</td><td>M</td><td>Feature</td></tr>
-            <tr><td>11</td><td>14-day #2463 response watch (day-7 nudge) once proposal is posted</td><td>Medium</td><td>S</td><td>Feature</td></tr>
-            <tr><td>12</td><td>Killer demo spec + annotated output (kafka + polymorphism + components)</td><td>Medium</td><td>M</td><td>Documentation</td></tr>
-            <tr><td>13</td><td>Pre-alignment dry-run on a scratch branch (merge nothing)</td><td>Medium</td><td>M</td><td>Feature</td></tr>
-            <tr><td>14</td><td>typespec.io third-party listing PR (the fallback path)</td><td>Medium</td><td>S</td><td>Feature</td></tr>
-            <tr><td>15</td><td>Daemon guard: build check before auto-committing toolchain files</td><td>Medium</td><td>M</td><td>Quality</td></tr>
-            <tr><td>16</td><td>Property-suite generator breadth (unions, inheritance, generics, channel params)</td><td>Medium</td><td>M</td><td>Quality</td></tr>
-            <tr><td>17</td><td>Docs-site content push for 1.0 (close the gap vs tsp-asyncapi's site)</td><td>Medium</td><td>L</td><td>Documentation</td></tr>
-            <tr><td>18</td><td>Demo video production (storyboard exists from 2026-09-19)</td><td>Medium</td><td>L</td><td>Documentation</td></tr>
-            <tr><td>19</td><td>1.1.0 direct-AST rewrite kickoff under golden-file lock (EFv1 exit)</td><td>High</td><td>L</td><td>Feature</td></tr>
-            <tr><td>20</td><td>Root-cause transient bun/vitest exit-with-zero-failures race (last seen 09-13)</td><td>Low</td><td>M</td><td>Bug</td></tr>
-            <tr><td>21</td><td>vtsls stale-diagnostics cleanup for test/ (and post-edit src/ staleness)</td><td>Low</td><td>M</td><td>Cleanup</td></tr>
-            <tr><td>22</td><td>Add provenance/attestation verification instructions to README install section</td><td>Low</td><td>S</td><td>Documentation</td></tr>
+            <tr>
+              <td>1</td>
+              <td>
+                Branch protection on master: require CI green before merge
+              </td>
+              <td><span class="badge badge-critical">Critical</span></td>
+              <td>S</td>
+              <td>Quality</td>
+            </tr>
+            <tr>
+              <td>2</td>
+              <td>
+                NPM_TOKEN rotation + scope review (incl. dist-tag delete rights)
+                + update GitHub secret
+              </td>
+              <td><span class="badge badge-critical">Critical</span></td>
+              <td>S</td>
+              <td>Ops</td>
+            </tr>
+            <tr>
+              <td>3</td>
+              <td>
+                Draft + post the #2463 decision-forcing proposal
+                (verify-before-filing + github-voice passes first)
+              </td>
+              <td><span class="badge badge-critical">High</span></td>
+              <td>M</td>
+              <td>Feature</td>
+            </tr>
+            <tr>
+              <td>4</td>
+              <td>
+                Baseline evidence snapshot for the proposal (gate output,
+                test/coverage numbers)
+              </td>
+              <td><span class="badge badge-critical">High</span></td>
+              <td>S</td>
+              <td>Documentation</td>
+            </tr>
+            <tr>
+              <td>5</td>
+              <td>
+                Announce 1.0.0 (XYD thread, TypeSpec community) — see question G
+                for sequencing
+              </td>
+              <td><span class="badge badge-critical">High</span></td>
+              <td>S</td>
+              <td>Documentation</td>
+            </tr>
+            <tr>
+              <td>6</td>
+              <td>
+                Release preflight script (lockfile-only → frozen → verify →
+                clean tree)
+              </td>
+              <td>High</td>
+              <td>S</td>
+              <td>Quality</td>
+            </tr>
+            <tr>
+              <td>7</td>
+              <td>
+                Website 1.0 truth-sync: changelog "Current status" page +
+                version claims pass
+              </td>
+              <td>High</td>
+              <td>S</td>
+              <td>Documentation</td>
+            </tr>
+            <tr>
+              <td>8</td>
+              <td>Remove stale alpha dist-tag via npmjs.com UI</td>
+              <td>Low</td>
+              <td>S</td>
+              <td>Ops</td>
+            </tr>
+            <tr>
+              <td>9</td>
+              <td>
+                Track typescript-eslint#10940; un-pin TS+lint together when
+                supported
+              </td>
+              <td>High</td>
+              <td>S</td>
+              <td>Cleanup</td>
+            </tr>
+            <tr>
+              <td>10</td>
+              <td>
+                Verified comparison vs tsp-asyncapi (install both, same specs,
+                honest table)
+              </td>
+              <td>High</td>
+              <td>M</td>
+              <td>Feature</td>
+            </tr>
+            <tr>
+              <td>11</td>
+              <td>
+                14-day #2463 response watch (day-7 nudge) once proposal is
+                posted
+              </td>
+              <td>Medium</td>
+              <td>S</td>
+              <td>Feature</td>
+            </tr>
+            <tr>
+              <td>12</td>
+              <td>
+                Killer demo spec + annotated output (kafka + polymorphism +
+                components)
+              </td>
+              <td>Medium</td>
+              <td>M</td>
+              <td>Documentation</td>
+            </tr>
+            <tr>
+              <td>13</td>
+              <td>Pre-alignment dry-run on a scratch branch (merge nothing)</td>
+              <td>Medium</td>
+              <td>M</td>
+              <td>Feature</td>
+            </tr>
+            <tr>
+              <td>14</td>
+              <td>typespec.io third-party listing PR (the fallback path)</td>
+              <td>Medium</td>
+              <td>S</td>
+              <td>Feature</td>
+            </tr>
+            <tr>
+              <td>15</td>
+              <td>
+                Daemon guard: build check before auto-committing toolchain files
+              </td>
+              <td>Medium</td>
+              <td>M</td>
+              <td>Quality</td>
+            </tr>
+            <tr>
+              <td>16</td>
+              <td>
+                Property-suite generator breadth (unions, inheritance, generics,
+                channel params)
+              </td>
+              <td>Medium</td>
+              <td>M</td>
+              <td>Quality</td>
+            </tr>
+            <tr>
+              <td>17</td>
+              <td>
+                Docs-site content push for 1.0 (close the gap vs tsp-asyncapi's
+                site)
+              </td>
+              <td>Medium</td>
+              <td>L</td>
+              <td>Documentation</td>
+            </tr>
+            <tr>
+              <td>18</td>
+              <td>Demo video production (storyboard exists from 2026-09-19)</td>
+              <td>Medium</td>
+              <td>L</td>
+              <td>Documentation</td>
+            </tr>
+            <tr>
+              <td>19</td>
+              <td>
+                1.1.0 direct-AST rewrite kickoff under golden-file lock (EFv1
+                exit)
+              </td>
+              <td>High</td>
+              <td>L</td>
+              <td>Feature</td>
+            </tr>
+            <tr>
+              <td>20</td>
+              <td>
+                Root-cause transient bun/vitest exit-with-zero-failures race
+                (last seen 09-13)
+              </td>
+              <td>Low</td>
+              <td>M</td>
+              <td>Bug</td>
+            </tr>
+            <tr>
+              <td>21</td>
+              <td>
+                vtsls stale-diagnostics cleanup for test/ (and post-edit src/
+                staleness)
+              </td>
+              <td>Low</td>
+              <td>M</td>
+              <td>Cleanup</td>
+            </tr>
+            <tr>
+              <td>22</td>
+              <td>
+                Add provenance/attestation verification instructions to README
+                install section
+              </td>
+              <td>Low</td>
+              <td>S</td>
+              <td>Documentation</td>
+            </tr>
           </tbody>
         </table>
         <p class="text-muted">
-          22 honest items (not padded to 25). Items 1–7 are this week's work;
-          19 is the post-announcement quarter. Items 2 and 8 are maintainer-only.
+          22 honest items (not padded to 25). Items 1–7 are this week's work; 19
+          is the post-announcement quarter. Items 2 and 8 are maintainer-only.
         </p>
 
         <h2 id="question"><span class="num">G</span>Top Question</h2>
         <div class="card card-warning">
-          <h4>Announce 1.0.0 now, or bundle the announcement with the #2463 proposal?</h4>
+          <h4>
+            Announce 1.0.0 now, or bundle the announcement with the #2463
+            proposal?
+          </h4>
           <p>
             TODO_LIST settled "ship first, then propose" — but says nothing
             about the public announcement. Sequencing options I cannot decide
@@ -1186,9 +1461,7 @@
             answer in TODO_LIST, ROADMAP, or the 2026-09-13 adoption plan.
           </p>
         </div>
-
       </main>
     </div>
-
-</body>
+  </body>
 </html>

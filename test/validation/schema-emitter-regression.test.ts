@@ -33,11 +33,15 @@ describe("refForNamedType: arrays of named models", () => {
       model Matrix { grid: Item[][]; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const grid = result.asyncApiDoc?.components?.schemas?.Matrix?.properties?.grid;
+    const grid =
+      result.asyncApiDoc?.components?.schemas?.Matrix?.properties?.grid;
     expect(grid?.type).toBe("array");
     expect(asJsonSchema(grid?.items, "grid.items").type).toBe("array");
     expect(
-      asJsonSchema(asJsonSchema(grid?.items, "grid.items").items, "grid.items.items").$ref,
+      asJsonSchema(
+        asJsonSchema(grid?.items, "grid.items").items,
+        "grid.items.items",
+      ).$ref,
     ).toBe("#/components/schemas/Item");
   });
 
@@ -47,7 +51,8 @@ describe("refForNamedType: arrays of named models", () => {
       model User { name: string; address: Address; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const addr = result.asyncApiDoc?.components?.schemas?.User?.properties?.address;
+    const addr =
+      result.asyncApiDoc?.components?.schemas?.User?.properties?.address;
     expect(addr).toStrictEqual({ $ref: "#/components/schemas/Address" });
   });
 });
@@ -58,7 +63,8 @@ describe("record<string> mapping", () => {
       model Config { values: Record<string>; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const values = result.asyncApiDoc?.components?.schemas?.Config?.properties?.values;
+    const values =
+      result.asyncApiDoc?.components?.schemas?.Config?.properties?.values;
     expect(values).toStrictEqual({
       additionalProperties: { type: "string" },
       type: "object",
@@ -70,11 +76,13 @@ describe("record<string> mapping", () => {
       model Counts { data: Record<int32>; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const data = result.asyncApiDoc?.components?.schemas?.Counts?.properties?.data;
+    const data =
+      result.asyncApiDoc?.components?.schemas?.Counts?.properties?.data;
     expect(data?.type).toBe("object");
-    expect(asJsonSchema(data?.additionalProperties, "data.additionalProperties").type).toBe(
-      "integer",
-    );
+    expect(
+      asJsonSchema(data?.additionalProperties, "data.additionalProperties")
+        .type,
+    ).toBe("integer");
   });
 
   it("record of named model emits $ref in additionalProperties", async () => {
@@ -83,11 +91,12 @@ describe("record<string> mapping", () => {
       model Store { inventory: Record<Item>; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const inv = result.asyncApiDoc?.components?.schemas?.Store?.properties?.inventory;
+    const inv =
+      result.asyncApiDoc?.components?.schemas?.Store?.properties?.inventory;
     expect(inv?.type).toBe("object");
-    expect(asJsonSchema(inv?.additionalProperties, "inv.additionalProperties").$ref).toBe(
-      "#/components/schemas/Item",
-    );
+    expect(
+      asJsonSchema(inv?.additionalProperties, "inv.additionalProperties").$ref,
+    ).toBe("#/components/schemas/Item");
   });
 });
 
@@ -97,7 +106,8 @@ describe("typeToSchema: every branch", () => {
       model Event { status: "pending" | "active" | "closed"; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const status = result.asyncApiDoc?.components?.schemas?.Event?.properties?.status;
+    const status =
+      result.asyncApiDoc?.components?.schemas?.Event?.properties?.status;
     expect(status).toStrictEqual({
       enum: ["pending", "active", "closed"],
       type: "string",
@@ -109,7 +119,8 @@ describe("typeToSchema: every branch", () => {
       model Event { value: string | int32; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const value = result.asyncApiDoc?.components?.schemas?.Event?.properties?.value;
+    const value =
+      result.asyncApiDoc?.components?.schemas?.Event?.properties?.value;
     expect(value?.anyOf).toBeDefined();
     expect(value?.anyOf).toHaveLength(2);
   });
@@ -138,7 +149,8 @@ describe("typeToSchema: every branch", () => {
       }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const inner = result.asyncApiDoc?.components?.schemas?.Outer?.properties?.inner;
+    const inner =
+      result.asyncApiDoc?.components?.schemas?.Outer?.properties?.inner;
     expect(inner?.type).toBe("object");
     expect(inner?.properties?.x?.type).toBe("string");
     expect(inner?.properties?.y?.type).toBe("integer");
@@ -151,10 +163,13 @@ describe("typeToSchema: every branch", () => {
       }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const items = result.asyncApiDoc?.components?.schemas?.Outer?.properties?.items;
+    const items =
+      result.asyncApiDoc?.components?.schemas?.Outer?.properties?.items;
     expect(items?.type).toBe("array");
     expect(asJsonSchema(items?.items, "items.items").type).toBe("object");
-    expect(asJsonSchema(items?.items, "items.items").properties?.sku?.type).toBe("string");
+    expect(
+      asJsonSchema(items?.items, "items.items").properties?.sku?.type,
+    ).toBe("string");
   });
 
   it("array of scalar (string[]) → { type: array, items: { type: string } }", async () => {
@@ -162,7 +177,8 @@ describe("typeToSchema: every branch", () => {
       model List { tags: string[]; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const tags = result.asyncApiDoc?.components?.schemas?.List?.properties?.tags;
+    const tags =
+      result.asyncApiDoc?.components?.schemas?.List?.properties?.tags;
     expect(tags).toStrictEqual({ items: { type: "string" }, type: "array" });
   });
 
@@ -185,7 +201,8 @@ describe("typeToSchema: every branch", () => {
       model Item { color: Color; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const color = result.asyncApiDoc?.components?.schemas?.Item?.properties?.color;
+    const color =
+      result.asyncApiDoc?.components?.schemas?.Item?.properties?.color;
     expect(color?.$ref).toBe("#/components/schemas/Color");
     const colorSchema = result.asyncApiDoc?.components?.schemas?.Color;
     expect(colorSchema?.enum).toStrictEqual(["Red", "Green", "Blue"]);
@@ -196,7 +213,8 @@ describe("typeToSchema: every branch", () => {
       model Binary { data: bytes; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const data = result.asyncApiDoc?.components?.schemas?.Binary?.properties?.data;
+    const data =
+      result.asyncApiDoc?.components?.schemas?.Binary?.properties?.data;
     expect(data?.type).toBe("string");
     expect(data?.format).toBe("byte");
   });
@@ -206,7 +224,8 @@ describe("typeToSchema: every branch", () => {
       model Event { timestamp: utcDateTime; }
     `;
     const result = await compileAsyncAPIWithoutErrors(source);
-    const ts = result.asyncApiDoc?.components?.schemas?.Event?.properties?.timestamp;
+    const ts =
+      result.asyncApiDoc?.components?.schemas?.Event?.properties?.timestamp;
     expect(ts?.type).toBe("string");
     expect(ts?.format).toBe("date-time");
   });

@@ -6,10 +6,18 @@
  */
 
 import type { Type } from "@typespec/compiler";
-import type { ChannelObject, ProtocolBindings, Ref } from "../domain/models/asyncapi-document.js";
+import type {
+  ChannelObject,
+  ProtocolBindings,
+  Ref,
+} from "../domain/models/asyncapi-document.js";
 import type { ProtocolConfigData } from "../state.js";
 import { reportProgramDiagnostic } from "../decorator-helpers.js";
-import { escapeRefToken, ref, refMessage } from "../domain/models/asyncapi-document.js";
+import {
+  escapeRefToken,
+  ref,
+  refMessage,
+} from "../domain/models/asyncapi-document.js";
 import {
   normalizeBindingProtocol,
   supportsBindingPlacement,
@@ -29,7 +37,10 @@ import {
 } from "./shared-utils.js";
 
 /** Get or create a channel in the context. */
-export function ensureChannel(ctx: DocumentBuildContext, channelKey: string): ChannelObject {
+export function ensureChannel(
+  ctx: DocumentBuildContext,
+  channelKey: string,
+): ChannelObject {
   if (!ctx.channels[channelKey]) {
     const params = extractChannelParameters(channelKey);
     ctx.channels[channelKey] = {
@@ -64,8 +75,13 @@ export function registerMessage(
 }
 
 /** Build the messages ref array for an operation's channel. */
-export function buildOperationMessageRef(channelKey: string, messageName: string): Ref {
-  return ref(`#/channels/${escapeRefToken(channelKey)}/messages/${escapeRefToken(messageName)}`);
+export function buildOperationMessageRef(
+  channelKey: string,
+  messageName: string,
+): Ref {
+  return ref(
+    `#/channels/${escapeRefToken(channelKey)}/messages/${escapeRefToken(messageName)}`,
+  );
 }
 
 /** Apply @doc descriptions, @summary summaries, and @tags to channels from the context maps. */
@@ -97,14 +113,18 @@ export const attachChannelBindings: BuilderFn = (state, ctx) => {
       attachModelProtocolBindings(state, ctx, type, name, data);
       continue;
     }
-    const { channel: channelBinding, operation: operationBinding } = buildProtocolBindings(data);
+    const { channel: channelBinding, operation: operationBinding } =
+      buildProtocolBindings(data);
     const channel = channelForName(ctx, name);
     if (channel && channelBinding) {
       channel.bindings = channelBinding;
     }
     const operation = ctx.operations[name];
     if (operation && operationBinding && !isRef(operation.bindings)) {
-      operation.bindings = mergeProtocolBindings(operation.bindings, operationBinding);
+      operation.bindings = mergeProtocolBindings(
+        operation.bindings,
+        operationBinding,
+      );
     }
   }
 };
@@ -153,18 +173,25 @@ function attachModelProtocolBindings(
       code: "protocol-model-fields-unplaced",
       target: modelType,
       messageId:
-        message === undefined && Object.keys(bindingFields).length > 0 ? "no-message" : undefined,
+        message === undefined && Object.keys(bindingFields).length > 0
+          ? "no-message"
+          : undefined,
       format: { model: modelName, fields: unplaced.join(", ") },
     });
   }
 }
 
 /** `@protocol` config fields that can never attach to a message binding. */
-function modelConfigFieldsWithoutMessagePlacement(data: ProtocolConfigData): string[] {
+function modelConfigFieldsWithoutMessagePlacement(
+  data: ProtocolConfigData,
+): string[] {
   return Object.entries(data)
     .filter(
       ([key, value]) =>
-        key !== "protocol" && key !== "version" && key !== "binding" && value !== undefined,
+        key !== "protocol" &&
+        key !== "version" &&
+        key !== "binding" &&
+        value !== undefined,
     )
     .map(([key]) => key);
 }

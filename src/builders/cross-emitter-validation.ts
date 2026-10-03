@@ -25,7 +25,9 @@ import { reportProgramDiagnostic } from "../decorator-helpers.js";
 
 /** True when the program has loaded the `@typespec/http` library. */
 export function isHttpLibraryLoaded(program: Program): boolean {
-  const typeSpecNs = program.getGlobalNamespaceType().namespaces.get("TypeSpec");
+  const typeSpecNs = program
+    .getGlobalNamespaceType()
+    .namespaces.get("TypeSpec");
   return typeSpecNs?.namespaces.has("Http") ?? false;
 }
 
@@ -38,7 +40,10 @@ function namespaceOf(type: Type): Namespace | undefined {
  * The `@service` namespace containing `type` in its subtree, if any
  * (operations in a service subtree are HTTP-routed by `@typespec/http`).
  */
-export function findEnclosingServiceNamespace(program: Program, type: Type): Namespace | undefined {
+export function findEnclosingServiceNamespace(
+  program: Program,
+  type: Type,
+): Namespace | undefined {
   const services = listServices(program).map((service) => service.type);
   if (services.length === 0) {
     return undefined;
@@ -53,11 +58,16 @@ export function findEnclosingServiceNamespace(program: Program, type: Type): Nam
 }
 
 /** True when the nearest AsyncAPI server in scope uses the http(s) protocol. */
-function isAsyncApiOverHttp(state: AsyncAPIConsolidatedState, type: Type): boolean {
+function isAsyncApiOverHttp(
+  state: AsyncAPIConsolidatedState,
+  type: Type,
+): boolean {
   for (let ns = namespaceOf(type); ns !== undefined; ns = namespaceOf(ns)) {
     const servers = state.servers.get(ns);
     if (servers !== undefined) {
-      return servers.some((server) => server.protocol === "http" || server.protocol === "https");
+      return servers.some(
+        (server) => server.protocol === "http" || server.protocol === "https",
+      );
     }
   }
   return false;
@@ -81,7 +91,10 @@ export function validateCrossEmitterUsage(
   if (!isHttpLibraryLoaded(program)) {
     return;
   }
-  const eventTypes = new Set<Type>([...state.channels.keys(), ...state.operations.keys()]);
+  const eventTypes = new Set<Type>([
+    ...state.channels.keys(),
+    ...state.operations.keys(),
+  ]);
   for (const type of eventTypes) {
     const service = findEnclosingServiceNamespace(program, type);
     if (service === undefined) {

@@ -86,7 +86,9 @@ describe("multi-file imports", () => {
     expect(asyncApiDoc!.components?.schemas?.Order).toBeTruthy();
     expect(asyncApiDoc!.components?.schemas?.Customer).toBeTruthy();
     const orderSchema = asyncApiDoc!.components?.schemas?.Order;
-    expect(orderSchema?.properties?.customer?.$ref).toBe("#/components/schemas/Customer");
+    expect(orderSchema?.properties?.customer?.$ref).toBe(
+      "#/components/schemas/Customer",
+    );
   });
 
   it("handles shared enum definitions across files", async () => {
@@ -125,7 +127,9 @@ describe("multi-file imports", () => {
     expect(asyncApiDoc!.components?.schemas?.Status).toBeTruthy();
     expect(asyncApiDoc!.components?.schemas?.Event).toBeTruthy();
     const eventSchema = asyncApiDoc!.components?.schemas?.Event;
-    expect(eventSchema?.properties?.status?.$ref).toBe("#/components/schemas/Status");
+    expect(eventSchema?.properties?.status?.$ref).toBe(
+      "#/components/schemas/Status",
+    );
   });
 
   it("handles cross-file model arrays", async () => {
@@ -160,7 +164,9 @@ describe("multi-file imports", () => {
     expect(batchSchema).toBeTruthy();
     const itemsArray = batchSchema?.properties?.items;
     expect(itemsArray?.type).toBe("array");
-    expect(asJsonSchema(itemsArray?.items, "batch items").$ref).toBe("#/components/schemas/Item");
+    expect(asJsonSchema(itemsArray?.items, "batch items").$ref).toBe(
+      "#/components/schemas/Item",
+    );
   });
 
   it("handles @doc on imported models", async () => {

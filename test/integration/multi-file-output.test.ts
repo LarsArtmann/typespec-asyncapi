@@ -95,7 +95,11 @@ describe("schema splitting (split-schemas option)", () => {
     expect(orderSchema.type).toBe("object");
     expect(orderSchema.properties.orderId).toBeDefined();
     expect(orderSchema.properties.status).toBeDefined();
-    expect(orderSchema.properties.status.enum).toStrictEqual(["pending", "shipped", "delivered"]);
+    expect(orderSchema.properties.status.enum).toStrictEqual([
+      "pending",
+      "shipped",
+      "delivered",
+    ]);
   });
 
   it("works with YAML file type", async () => {
@@ -151,7 +155,9 @@ describe("schema splitting (split-schemas option)", () => {
       "file-type": "json",
     } as AsyncAPIEmitterOptions);
 
-    expect(result.diagnostics.filter((d) => d.severity === "error")).toStrictEqual([]);
+    expect(
+      result.diagnostics.filter((d) => d.severity === "error"),
+    ).toStrictEqual([]);
     const outputFiles = [...result.allOutputFiles.keys()];
     expect(outputFiles).toStrictEqual(["asyncapi.json"]);
   });

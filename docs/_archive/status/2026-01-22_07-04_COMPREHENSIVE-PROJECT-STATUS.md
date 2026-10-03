@@ -33,38 +33,38 @@ The TypeSpec AsyncAPI emitter project has successfully completed TypeSpec 1.8.0 
 
 ### Core Infrastructure (10 items)
 
-| #  | Task                          | Status      | Notes                                                              |
-| -- | ----------------------------- | ----------- | ------------------------------------------------------------------ |
-| 1  | Dependency Updates            | ✅ Complete | All 13 packages updated, 0 outdated remaining                      |
-| 2  | TypeSpec 1.8.0 Compatibility  | ✅ Complete | EmitContext pattern, test infrastructure, stateMap access fixed    |
-| 3  | Effect.TS 3.19.14 Integration | ✅ Complete | Railway patterns, error boundaries, logging functional             |
-| 4  | Virtual Filesystem Issue      | ✅ Complete | Files stored with full project paths, test was checking wrong path |
-| 5  | Emitter Error Handling        | ✅ Complete | Diagnostics validation, try/catch with clear errors                |
-| 6  | State Map Compatibility Layer | ✅ Complete | Improved for TypeSpec 1.8.0 API changes                            |
-| 7  | Build System                  | ✅ Complete | TypeScript compilation (62 files, 572K)                            |
-| 8  | ESLint Compliance             | ✅ Complete | All no-console violations removed, clean passes                    |
-| 9  | Test Infrastructure           | ✅ Complete | Updated test host usage for TypeSpec 1.8.0                         |
-| 10 | Git Workflow                  | ✅ Complete | 2 commits with descriptive messages, pre-commit hooks functional   |
+| #   | Task                          | Status      | Notes                                                              |
+| --- | ----------------------------- | ----------- | ------------------------------------------------------------------ |
+| 1   | Dependency Updates            | ✅ Complete | All 13 packages updated, 0 outdated remaining                      |
+| 2   | TypeSpec 1.8.0 Compatibility  | ✅ Complete | EmitContext pattern, test infrastructure, stateMap access fixed    |
+| 3   | Effect.TS 3.19.14 Integration | ✅ Complete | Railway patterns, error boundaries, logging functional             |
+| 4   | Virtual Filesystem Issue      | ✅ Complete | Files stored with full project paths, test was checking wrong path |
+| 5   | Emitter Error Handling        | ✅ Complete | Diagnostics validation, try/catch with clear errors                |
+| 6   | State Map Compatibility Layer | ✅ Complete | Improved for TypeSpec 1.8.0 API changes                            |
+| 7   | Build System                  | ✅ Complete | TypeScript compilation (62 files, 572K)                            |
+| 8   | ESLint Compliance             | ✅ Complete | All no-console violations removed, clean passes                    |
+| 9   | Test Infrastructure           | ✅ Complete | Updated test host usage for TypeSpec 1.8.0                         |
+| 10  | Git Workflow                  | ✅ Complete | 2 commits with descriptive messages, pre-commit hooks functional   |
 
 ### Critical Functionality Tests (15 items)
 
-| #  | Test Suite                 | Pass Rate  | Status      |
-| -- | -------------------------- | ---------- | ----------- |
-| 1  | Effect.TS Railway Patterns | 12/12 PASS | ✅ Complete |
-| 2  | Effect.TS Error Boundaries | 3/3 PASS   | ✅ Complete |
-| 3  | Effect.TS Logging          | 3/3 PASS   | ✅ Complete |
-| 4  | Effect.TS Performance      | 2/2 PASS   | ✅ Complete |
-| 5  | Effect.TS Integration      | 1/1 PASS   | ✅ Complete |
-| 6  | Minimal Decorators         | 1/1 PASS   | ✅ Complete |
-| 7  | Library Structure          | 1/1 PASS   | ✅ Complete |
-| 8  | Performance Benchmarks     | 6/6 PASS   | ✅ Complete |
-| 9  | Real Emitter Functionality | 1/1 PASS   | ✅ Complete |
-| 10 | Diagnostic Isolation       | 2/2 PASS   | ✅ Complete |
-| 11 | Import Tests               | 1/1 PASS   | ✅ Complete |
-| 12 | Effect Pattern Coverage    | 1/1 PASS   | ✅ Complete |
-| 13 | TypeSpec Compilation       | Verified   | ✅ Complete |
-| 14 | Virtual Filesystem Write   | Verified   | ✅ Complete |
-| 15 | Emitter Diagnostics Check  | Verified   | ✅ Complete |
+| #   | Test Suite                 | Pass Rate  | Status      |
+| --- | -------------------------- | ---------- | ----------- |
+| 1   | Effect.TS Railway Patterns | 12/12 PASS | ✅ Complete |
+| 2   | Effect.TS Error Boundaries | 3/3 PASS   | ✅ Complete |
+| 3   | Effect.TS Logging          | 3/3 PASS   | ✅ Complete |
+| 4   | Effect.TS Performance      | 2/2 PASS   | ✅ Complete |
+| 5   | Effect.TS Integration      | 1/1 PASS   | ✅ Complete |
+| 6   | Minimal Decorators         | 1/1 PASS   | ✅ Complete |
+| 7   | Library Structure          | 1/1 PASS   | ✅ Complete |
+| 8   | Performance Benchmarks     | 6/6 PASS   | ✅ Complete |
+| 9   | Real Emitter Functionality | 1/1 PASS   | ✅ Complete |
+| 10  | Diagnostic Isolation       | 2/2 PASS   | ✅ Complete |
+| 11  | Import Tests               | 1/1 PASS   | ✅ Complete |
+| 12  | Effect Pattern Coverage    | 1/1 PASS   | ✅ Complete |
+| 13  | TypeSpec Compilation       | Verified   | ✅ Complete |
+| 14  | Virtual Filesystem Write   | Verified   | ✅ Complete |
+| 15  | Emitter Diagnostics Check  | Verified   | ✅ Complete |
 
 ---
 
@@ -72,23 +72,23 @@ The TypeSpec AsyncAPI emitter project has successfully completed TypeSpec 1.8.0 
 
 ### Core Functionality (6 items)
 
-| # | Task                         | Progress                                    | Remaining                              |
-| - | ---------------------------- | ------------------------------------------- | -------------------------------------- |
-| 1 | Real Emitter Test            | Works, missing FS verification in prod test | Add proper file existence check        |
-| 2 | AsyncAPI 3.0 YAML Generation | Basic structure works                       | Fill channels, messages, schemas       |
-| 3 | Decorator State Extraction   | Runs but returns minimal state              | Extract @channel, @publish, @subscribe |
-| 4 | Test Suite Health            | 247/606 PASS (40.6%)                        | Investigate 330 failures               |
-| 5 | Error Handling               | Basic try/catch                             | Add structured error types             |
-| 6 | Logging Strategy             | Mix of console.log/Effect.log               | Standardize on Effect.log              |
+| #   | Task                         | Progress                                    | Remaining                              |
+| --- | ---------------------------- | ------------------------------------------- | -------------------------------------- |
+| 1   | Real Emitter Test            | Works, missing FS verification in prod test | Add proper file existence check        |
+| 2   | AsyncAPI 3.0 YAML Generation | Basic structure works                       | Fill channels, messages, schemas       |
+| 3   | Decorator State Extraction   | Runs but returns minimal state              | Extract @channel, @publish, @subscribe |
+| 4   | Test Suite Health            | 247/606 PASS (40.6%)                        | Investigate 330 failures               |
+| 5   | Error Handling               | Basic try/catch                             | Add structured error types             |
+| 6   | Logging Strategy             | Mix of console.log/Effect.log               | Standardize on Effect.log              |
 
 ### Test Coverage (4 items)
 
-| # | Task                       | Status                          | Issue                                  |
-| - | -------------------------- | ------------------------------- | -------------------------------------- |
-| 1 | Effect.TS Schema Tests     | Patterns work, validation fails | Effect.TS 3.19.14 API breaking changes |
-| 2 | AsyncAPI Integration Tests | Basic emitter works             | 300+ failures (feature gaps)           |
-| 3 | Debug Tests                | Some remain                     | Need cleanup vs. production tests      |
-| 4 | Test Documentation         | No explanation                  | Add test expectations doc              |
+| #   | Task                       | Status                          | Issue                                  |
+| --- | -------------------------- | ------------------------------- | -------------------------------------- |
+| 1   | Effect.TS Schema Tests     | Patterns work, validation fails | Effect.TS 3.19.14 API breaking changes |
+| 2   | AsyncAPI Integration Tests | Basic emitter works             | 300+ failures (feature gaps)           |
+| 3   | Debug Tests                | Some remain                     | Need cleanup vs. production tests      |
+| 4   | Test Documentation         | No explanation                  | Add test expectations doc              |
 
 ---
 
@@ -240,47 +240,47 @@ components:
 
 ### 🔥 CRITICAL (This Week)
 
-| # | Task                          | Estimated Time |
-| - | ----------------------------- | -------------- |
-| 1 | Investigate 330 test failures | 4h             |
-| 2 | Create test baseline          | 2h             |
-| 3 | Implement channel extraction  | 8h             |
-| 4 | Implement message extraction  | 8h             |
-| 5 | Implement schema extraction   | 8h             |
-| 6 | Write end-to-end test         | 2h             |
-| 7 | Fix Effect.TS schema tests    | 4h             |
+| #   | Task                          | Estimated Time |
+| --- | ----------------------------- | -------------- |
+| 1   | Investigate 330 test failures | 4h             |
+| 2   | Create test baseline          | 2h             |
+| 3   | Implement channel extraction  | 8h             |
+| 4   | Implement message extraction  | 8h             |
+| 5   | Implement schema extraction   | 8h             |
+| 6   | Write end-to-end test         | 2h             |
+| 7   | Fix Effect.TS schema tests    | 4h             |
 
 **Total:** 36 hours (4.5 days)
 
 ### 🎯 HIGH PRIORITY (Next 2 Weeks)
 
-| #  | Task                              | Estimated Time |
-| -- | --------------------------------- | -------------- |
-| 8  | Implement publish/subscribe       | 8h             |
-| 9  | Add server configuration          | 4h             |
-| 10 | Implement basic security          | 6h             |
-| 11 | Add protocol bindings (HTTP)      | 8h             |
-| 12 | Create comprehensive examples     | 4h             |
-| 13 | Write migration guide             | 4h             |
-| 14 | Update README                     | 2h             |
-| 15 | Establish test pass/fail criteria | 2h             |
+| #   | Task                              | Estimated Time |
+| --- | --------------------------------- | -------------- |
+| 8   | Implement publish/subscribe       | 8h             |
+| 9   | Add server configuration          | 4h             |
+| 10  | Implement basic security          | 6h             |
+| 11  | Add protocol bindings (HTTP)      | 8h             |
+| 12  | Create comprehensive examples     | 4h             |
+| 13  | Write migration guide             | 4h             |
+| 14  | Update README                     | 2h             |
+| 15  | Establish test pass/fail criteria | 2h             |
 
 **Total:** 38 hours (4.75 days)
 
 ### 📋 MEDIUM PRIORITY (Next Month)
 
-| #  | Task                          | Estimated Time |
-| -- | ----------------------------- | -------------- |
-| 16 | Implement WebSocket binding   | 12h            |
-| 17 | Add correlation IDs           | 4h             |
-| 18 | Implement tags                | 2h             |
-| 19 | Add retry policies            | 6h             |
-| 20 | Create integration test suite | 8h             |
-| 21 | Implement CI/CD pipeline      | 4h             |
-| 22 | Write contributor guide       | 4h             |
-| 23 | Add performance benchmarks    | 4h             |
-| 24 | Create troubleshooting guide  | 4h             |
-| 25 | Document error types          | 4h             |
+| #   | Task                          | Estimated Time |
+| --- | ----------------------------- | -------------- |
+| 16  | Implement WebSocket binding   | 12h            |
+| 17  | Add correlation IDs           | 4h             |
+| 18  | Implement tags                | 2h             |
+| 19  | Add retry policies            | 6h             |
+| 20  | Create integration test suite | 8h             |
+| 21  | Implement CI/CD pipeline      | 4h             |
+| 22  | Write contributor guide       | 4h             |
+| 23  | Add performance benchmarks    | 4h             |
+| 24  | Create troubleshooting guide  | 4h             |
+| 25  | Document error types          | 4h             |
 
 **Total:** 52 hours (6.5 days)
 
@@ -358,12 +358,12 @@ This answer determines:
 
 ## 9. Quality Metrics
 
-| Metric         | Current         | Target        | Status         |
-| -------------- | --------------- | ------------- | -------------- |
-| Build Status   | ✅ Passing      | ✅ Passing    | ✅ OK          |
-| Lint Status    | ✅ Passing      | ✅ Passing    | ✅ OK          |
+| Metric         | Current         | Target        | Status          |
+| -------------- | --------------- | ------------- | --------------- |
+| Build Status   | ✅ Passing      | ✅ Passing    | ✅ OK           |
+| Lint Status    | ✅ Passing      | ✅ Passing    | ✅ OK           |
 | Test Pass Rate | 40.6% (247/606) | 80%           | ⚠️ Below Target |
-| Dependencies   | 0 outdated      | 0 outdated    | ✅ OK          |
+| Dependencies   | 0 outdated      | 0 outdated    | ✅ OK           |
 | Test Coverage  | Unknown         | 70%           | ⚠️ Unknown      |
 | Documentation  | Minimal         | Comprehensive | ⚠️ Below Target |
 | Code Quality   | Good            | Excellent     | ⚠️ Good         |

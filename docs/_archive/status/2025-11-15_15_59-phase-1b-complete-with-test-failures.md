@@ -439,33 +439,33 @@ yield *
 
 **Sorted by Impact vs Effort:**
 
-| #  | Task                          | Time   | Impact   | Priority |
-| -- | ----------------------------- | ------ | -------- | -------- |
-| 1  | Fix 348 failing tests         | 30min  | CRITICAL | 🔴 NOW   |
-| 2  | Fix Effect.runSync forEach    | 20min  | CRITICAL | 🔴 NOW   |
-| 3  | Delete ghost imports          | 5min   | HIGH     | 🟡 SOON  |
-| 4  | Fix summary split brain       | 10min  | MEDIUM   | 🟡 SOON  |
-| 5  | Fix metrics split brain       | 15min  | MEDIUM   | 🟡 SOON  |
-| 6  | Create ValidationError helper | 15min  | HIGH     | 🟡 SOON  |
-| 7  | Split ValidationService.ts    | 45min  | HIGH     | 🟢 LATER |
-| 8  | Fix remaining Effect.runSync  | 60min  | HIGH     | 🟢 LATER |
-| 9  | Add const enums               | 20min  | MEDIUM   | 🟢 LATER |
-| 10 | Consolidate metrics types     | 30min  | MEDIUM   | 🟢 LATER |
-| 11 | Add branded types             | 45min  | MEDIUM   | 🟢 LATER |
-| 12 | Add pre-commit hook           | 10min  | LOW      | 🔵 MAYBE |
-| 13 | Write migration guide         | 30min  | LOW      | 🔵 MAYBE |
-| 14 | Split effect-helpers.ts       | 30min  | MEDIUM   | 🟢 LATER |
-| 15 | Split PluginRegistry.ts       | 30min  | MEDIUM   | 🟢 LATER |
-| 16 | Split standardized-errors.ts  | 30min  | MEDIUM   | 🟢 LATER |
-| 17 | Split lib.ts                  | 30min  | MEDIUM   | 🟢 LATER |
-| 18 | Triage 305 TODOs              | 60min  | MEDIUM   | 🟢 LATER |
-| 19 | Complete PHASE 1C             | 120min | HIGH     | 🟢 LATER |
-| 20 | Complete PHASE 1D             | 60min  | HIGH     | 🟢 LATER |
-| 21 | Add integration tests         | 45min  | LOW      | 🔵 MAYBE |
-| 22 | Document discriminated unions | 20min  | LOW      | 🔵 MAYBE |
-| 23 | Extract decorator utils       | 30min  | LOW      | 🔵 MAYBE |
-| 24 | Add performance benchmarks    | 60min  | LOW      | 🔵 MAYBE |
-| 25 | Improve error messages        | 30min  | LOW      | 🔵 MAYBE |
+| #   | Task                          | Time   | Impact   | Priority |
+| --- | ----------------------------- | ------ | -------- | -------- |
+| 1   | Fix 348 failing tests         | 30min  | CRITICAL | 🔴 NOW   |
+| 2   | Fix Effect.runSync forEach    | 20min  | CRITICAL | 🔴 NOW   |
+| 3   | Delete ghost imports          | 5min   | HIGH     | 🟡 SOON  |
+| 4   | Fix summary split brain       | 10min  | MEDIUM   | 🟡 SOON  |
+| 5   | Fix metrics split brain       | 15min  | MEDIUM   | 🟡 SOON  |
+| 6   | Create ValidationError helper | 15min  | HIGH     | 🟡 SOON  |
+| 7   | Split ValidationService.ts    | 45min  | HIGH     | 🟢 LATER |
+| 8   | Fix remaining Effect.runSync  | 60min  | HIGH     | 🟢 LATER |
+| 9   | Add const enums               | 20min  | MEDIUM   | 🟢 LATER |
+| 10  | Consolidate metrics types     | 30min  | MEDIUM   | 🟢 LATER |
+| 11  | Add branded types             | 45min  | MEDIUM   | 🟢 LATER |
+| 12  | Add pre-commit hook           | 10min  | LOW      | 🔵 MAYBE |
+| 13  | Write migration guide         | 30min  | LOW      | 🔵 MAYBE |
+| 14  | Split effect-helpers.ts       | 30min  | MEDIUM   | 🟢 LATER |
+| 15  | Split PluginRegistry.ts       | 30min  | MEDIUM   | 🟢 LATER |
+| 16  | Split standardized-errors.ts  | 30min  | MEDIUM   | 🟢 LATER |
+| 17  | Split lib.ts                  | 30min  | MEDIUM   | 🟢 LATER |
+| 18  | Triage 305 TODOs              | 60min  | MEDIUM   | 🟢 LATER |
+| 19  | Complete PHASE 1C             | 120min | HIGH     | 🟢 LATER |
+| 20  | Complete PHASE 1D             | 60min  | HIGH     | 🟢 LATER |
+| 21  | Add integration tests         | 45min  | LOW      | 🔵 MAYBE |
+| 22  | Document discriminated unions | 20min  | LOW      | 🔵 MAYBE |
+| 23  | Extract decorator utils       | 30min  | LOW      | 🔵 MAYBE |
+| 24  | Add performance benchmarks    | 60min  | LOW      | 🔵 MAYBE |
+| 25  | Improve error messages        | 30min  | LOW      | 🔵 MAYBE |
 
 **Execution Order:**
 

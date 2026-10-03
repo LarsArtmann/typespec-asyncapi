@@ -46,18 +46,18 @@ The TypeSpec AsyncAPI project has successfully transitioned from crisis recovery
 
 ## 📊 COMPREHENSIVE STATUS MATRIX
 
-| Component               | Status          | Details                                | Production Readiness |
-| ----------------------- | --------------- | -------------------------------------- | -------------------- |
-| **Core Emitter**        | ✅ OPERATIONAL  | Basic AsyncAPI 3.0 generation          | 40%                  |
-| **Decorators**          | ✅ WORKING      | @channel, @publish storing state       | 80%                  |
-| **State Management**    | ✅ FUNCTIONAL   | TypeSpec 1.6.0+ compatible             | 90%                  |
-| **Validation Pipeline** | ✅ OPERATIONAL  | AsyncAPI CLI + binding validation      | 70%                  |
+| Component               | Status           | Details                                | Production Readiness |
+| ----------------------- | ---------------- | -------------------------------------- | -------------------- |
+| **Core Emitter**        | ✅ OPERATIONAL   | Basic AsyncAPI 3.0 generation          | 40%                  |
+| **Decorators**          | ✅ WORKING       | @channel, @publish storing state       | 80%                  |
+| **State Management**    | ✅ FUNCTIONAL    | TypeSpec 1.6.0+ compatible             | 90%                  |
+| **Validation Pipeline** | ✅ OPERATIONAL   | AsyncAPI CLI + binding validation      | 70%                  |
 | **Type Safety**         | ⚠️ DEGRADED      | Console-based vs proper validation     | 60%                  |
 | **AsyncAPI 3.0**        | ⚠️ NON-COMPLIANT | Validation errors in output            | 30%                  |
-| **Protocol Bindings**   | ❌ MISSING      | No Kafka/WebSocket/MQTT support        | 0%                   |
-| **Security Schemes**    | ❌ MISSING      | No OAuth2/API Keys/mTLS support        | 0%                   |
+| **Protocol Bindings**   | ❌ MISSING       | No Kafka/WebSocket/MQTT support        | 0%                   |
+| **Security Schemes**    | ❌ MISSING       | No OAuth2/API Keys/mTLS support        | 0%                   |
 | **Error Handling**      | ⚠️ FRAGMENTED    | Multiple approaches, no centralization | 50%                  |
-| **Testing**             | ❌ INCOMPLETE   | No comprehensive test suite            | 10%                  |
+| **Testing**             | ❌ INCOMPLETE    | No comprehensive test suite            | 10%                  |
 
 ---
 

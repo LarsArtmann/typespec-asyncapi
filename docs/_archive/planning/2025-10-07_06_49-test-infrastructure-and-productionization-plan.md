@@ -32,11 +32,11 @@ The test infrastructure failure is a **TEST PROBLEM**, not an **EMITTER PROBLEM*
 
 **Theme**: Ship What Works
 
-| # | Task                                                    | Effort | Value | Impact                                     |
-| - | ------------------------------------------------------- | ------ | ----- | ------------------------------------------ |
-| 1 | Document known test infrastructure limitation in README | 15min  | 51%   | Users know emitter works, tests are WIP    |
-| 2 | Create production usage guide with CLI examples         | 30min  | 48%   | Users can immediately use working emitter  |
-| 3 | Add smoke test to CI/CD (proves emitter works)          | 20min  | 45%   | Automated validation of core functionality |
+| #   | Task                                                    | Effort | Value | Impact                                     |
+| --- | ------------------------------------------------------- | ------ | ----- | ------------------------------------------ |
+| 1   | Document known test infrastructure limitation in README | 15min  | 51%   | Users know emitter works, tests are WIP    |
+| 2   | Create production usage guide with CLI examples         | 30min  | 48%   | Users can immediately use working emitter  |
+| 3   | Add smoke test to CI/CD (proves emitter works)          | 20min  | 45%   | Automated validation of core functionality |
 
 **Total**: 65 minutes for 51% value delivery
 
@@ -44,12 +44,12 @@ The test infrastructure failure is a **TEST PROBLEM**, not an **EMITTER PROBLEM*
 
 **Theme**: Fix High-Impact Test Infrastructure
 
-| # | Task                                            | Effort | Value | Impact                                   |
-| - | ----------------------------------------------- | ------ | ----- | ---------------------------------------- |
-| 4 | Convert integration tests to CLI-based approach | 90min  | 40%   | Tests actually work (2/7 already proven) |
-| 5 | Create `testCLICompilation()` helper function   | 30min  | 35%   | Reusable test infrastructure             |
-| 6 | Update 5 critical integration test files        | 60min  | 30%   | Core test coverage restored              |
-| 7 | Document AssetEmitter limitation in ADR         | 20min  | 25%   | Future developers understand tradeoff    |
+| #   | Task                                            | Effort | Value | Impact                                   |
+| --- | ----------------------------------------------- | ------ | ----- | ---------------------------------------- |
+| 4   | Convert integration tests to CLI-based approach | 90min  | 40%   | Tests actually work (2/7 already proven) |
+| 5   | Create `testCLICompilation()` helper function   | 30min  | 35%   | Reusable test infrastructure             |
+| 6   | Update 5 critical integration test files        | 60min  | 30%   | Core test coverage restored              |
+| 7   | Document AssetEmitter limitation in ADR         | 20min  | 25%   | Future developers understand tradeoff    |
 
 **Total**: 200 minutes (3.3 hours) for additional 13% value (cumulative 64%)
 
@@ -57,16 +57,16 @@ The test infrastructure failure is a **TEST PROBLEM**, not an **EMITTER PROBLEM*
 
 **Theme**: Production-Ready Release
 
-| #  | Task                                          | Effort | Value | Impact                         |
-| -- | --------------------------------------------- | ------ | ----- | ------------------------------ |
-| 8  | Update all 25+ integration tests to CLI-based | 180min | 15%   | Full test suite working        |
-| 9  | Add TypeSpec version compatibility testing    | 45min  | 12%   | Prevent breaking changes       |
-| 10 | Create comprehensive example repository       | 90min  | 10%   | Developers can clone and learn |
-| 11 | Write migration guide from other emitters     | 60min  | 8%    | Easy adoption path             |
-| 12 | Performance benchmarking suite                | 45min  | 7%    | Quantify improvements          |
-| 13 | Security audit (dependency scanning)          | 30min  | 6%    | Production confidence          |
-| 14 | Create troubleshooting guide                  | 45min  | 5%    | Reduce support burden          |
-| 15 | Set up automated releases                     | 60min  | 4%    | Streamlined deployment         |
+| #   | Task                                          | Effort | Value | Impact                         |
+| --- | --------------------------------------------- | ------ | ----- | ------------------------------ |
+| 8   | Update all 25+ integration tests to CLI-based | 180min | 15%   | Full test suite working        |
+| 9   | Add TypeSpec version compatibility testing    | 45min  | 12%   | Prevent breaking changes       |
+| 10  | Create comprehensive example repository       | 90min  | 10%   | Developers can clone and learn |
+| 11  | Write migration guide from other emitters     | 60min  | 8%    | Easy adoption path             |
+| 12  | Performance benchmarking suite                | 45min  | 7%    | Quantify improvements          |
+| 13  | Security audit (dependency scanning)          | 30min  | 6%    | Production confidence          |
+| 14  | Create troubleshooting guide                  | 45min  | 5%    | Reduce support burden          |
+| 15  | Set up automated releases                     | 60min  | 4%    | Streamlined deployment         |
 
 **Total**: 555 minutes (9.25 hours) for additional 16% value (cumulative 80%)
 

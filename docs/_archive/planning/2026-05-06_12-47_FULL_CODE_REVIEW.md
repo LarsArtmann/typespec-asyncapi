@@ -56,33 +56,33 @@
 
 ### The 1% that delivers 51% of the result
 
-| # | Task                                                             | Impact                       | Effort |
-| - | ---------------------------------------------------------------- | ---------------------------- | ------ |
-| 1 | Fix tsconfig.json (add `"node"`, `"dom"`)                        | Fixes 7 build errors         | 5 min  |
-| 2 | Delete `emitter-alloy.tsx`                                       | Removes 15 errors, dead code | 2 min  |
-| 3 | Delete `PerformanceMonitor.ts`, `PerformanceRegressionTester.ts` | Removes dead code            | 2 min  |
-| 4 | Delete `PluginSystem.ts`                                         | Removes dead code            | 1 min  |
-| 5 | Fix `config.ts` hard-coded paths                                 | Security + correctness       | 5 min  |
+| #   | Task                                                             | Impact                       | Effort |
+| --- | ---------------------------------------------------------------- | ---------------------------- | ------ |
+| 1   | Fix tsconfig.json (add `"node"`, `"dom"`)                        | Fixes 7 build errors         | 5 min  |
+| 2   | Delete `emitter-alloy.tsx`                                       | Removes 15 errors, dead code | 2 min  |
+| 3   | Delete `PerformanceMonitor.ts`, `PerformanceRegressionTester.ts` | Removes dead code            | 2 min  |
+| 4   | Delete `PluginSystem.ts`                                         | Removes dead code            | 1 min  |
+| 5   | Fix `config.ts` hard-coded paths                                 | Security + correctness       | 5 min  |
 
 ### The 4% that delivers 64% of the result
 
-| #  | Task                                         | Impact                      | Effort |
-| -- | -------------------------------------------- | --------------------------- | ------ |
-| 6  | Remove debug Effect.log from emitter.ts      | Clean output                | 10 min |
-| 7  | Consolidate config into single file          | Eliminates split brain      | 45 min |
-| 8  | Remove `lib.ts` excessive comments           | Readability                 | 20 min |
-| 9  | Fix tags storage (array not comma-separated) | Correctness                 | 15 min |
-| 10 | Add `"dom"` to tsconfig lib                  | Fixes logger console errors | 2 min  |
+| #   | Task                                         | Impact                      | Effort |
+| --- | -------------------------------------------- | --------------------------- | ------ |
+| 6   | Remove debug Effect.log from emitter.ts      | Clean output                | 10 min |
+| 7   | Consolidate config into single file          | Eliminates split brain      | 45 min |
+| 8   | Remove `lib.ts` excessive comments           | Readability                 | 20 min |
+| 9   | Fix tags storage (array not comma-separated) | Correctness                 | 15 min |
+| 10  | Add `"dom"` to tsconfig lib                  | Fixes logger console errors | 2 min  |
 
 ### The 20% that delivers 80% of the result
 
-| #  | Task                                                    | Impact                       | Effort |
-| -- | ------------------------------------------------------- | ---------------------------- | ------ |
-| 11 | Split `minimal-decorators.ts` into domain modules       | Testability, maintainability | 4 hrs  |
-| 12 | Extract protocol handler strategy pattern               | Extensibility                | 4 hrs  |
-| 13 | Delete 200+ stale docs/status/planning files            | Cognitive load               | 30 min |
-| 14 | Fix broken tests (remove references to deleted modules) | Test suite green             | 2 hrs  |
-| 15 | Use `yaml` library for YAML serialization               | Correctness                  | 30 min |
+| #   | Task                                                    | Impact                       | Effort |
+| --- | ------------------------------------------------------- | ---------------------------- | ------ |
+| 11  | Split `minimal-decorators.ts` into domain modules       | Testability, maintainability | 4 hrs  |
+| 12  | Extract protocol handler strategy pattern               | Extensibility                | 4 hrs  |
+| 13  | Delete 200+ stale docs/status/planning files            | Cognitive load               | 30 min |
+| 14  | Fix broken tests (remove references to deleted modules) | Test suite green             | 2 hrs  |
+| 15  | Use `yaml` library for YAML serialization               | Correctness                  | 30 min |
 
 ---
 

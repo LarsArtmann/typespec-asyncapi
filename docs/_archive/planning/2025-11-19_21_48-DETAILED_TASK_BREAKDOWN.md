@@ -147,7 +147,7 @@
 97. **[15min]** Implement OAuth2 security scheme generation
 98. **[15min]** Implement API Key security scheme generation
 99. **[15min]** Implement JWT security scheme generation
-100. **[15min]** Test security scheme integration
+100.  **[15min]** Test security scheme integration
 
 ### Test Suite Tasks (101-115)
 

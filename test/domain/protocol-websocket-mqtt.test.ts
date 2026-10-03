@@ -9,7 +9,10 @@
  */
 
 import { inlineObject } from "../utils/type-guards.js";
-import { compileAndValidate, compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import {
+  compileAndValidate,
+  compileAndValidateOrThrow,
+} from "../utils/schema-validator.js";
 import { LATEST_BINDING_VERSIONS } from "../../src/constants/binding-versions.js";
 import type {
   OperationObject,
@@ -100,9 +103,9 @@ describe("webSocket & MQTT bindingVersion injection", () => {
       @protocol(#{ protocol: "ws", method: "POST" })
       op send(): Msg;
     `);
-    expect(inlineObject(doc.channels!.events.bindings, "bindings").ws.bindingVersion).toBe(
-      LATEST_BINDING_VERSIONS.ws,
-    );
+    expect(
+      inlineObject(doc.channels!.events.bindings, "bindings").ws.bindingVersion,
+    ).toBe(LATEST_BINDING_VERSIONS.ws);
   });
 
   it("auto-injects mqtt operation bindingVersion 0.2.0", async () => {
@@ -113,9 +116,9 @@ describe("webSocket & MQTT bindingVersion injection", () => {
       @bindings(#{ mqtt: #{ retain: true } })
       op send(): Msg;
     `);
-    expect(inlineObject(opOf(doc).bindings, "bindings").mqtt.bindingVersion).toBe(
-      LATEST_BINDING_VERSIONS.mqtt,
-    );
+    expect(
+      inlineObject(opOf(doc).bindings, "bindings").mqtt.bindingVersion,
+    ).toBe(LATEST_BINDING_VERSIONS.mqtt);
   });
 
   it("preserves an explicit bindingVersion", async () => {
@@ -239,6 +242,8 @@ describe("webSocket & MQTT placement matrix", () => {
       op send(): Msg;
     `);
     expect(doc.channels!.sensor.bindings).toBeUndefined();
-    expect(inlineObject(opOf(doc).bindings, "bindings").mqtt.retain).toBeFalsy();
+    expect(
+      inlineObject(opOf(doc).bindings, "bindings").mqtt.retain,
+    ).toBeFalsy();
   });
 });
