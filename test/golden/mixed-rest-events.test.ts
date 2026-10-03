@@ -15,7 +15,10 @@ import YAML from "yaml";
 import { compileAsyncAPI } from "../utils/test-helpers";
 import type { ParsedAsyncAPIDocument } from "../../src/domain/models/asyncapi-document.js";
 
-const GOLDEN_FILE = join(import.meta.dirname, "mixed-rest-events.expected.yaml");
+const GOLDEN_FILE = join(
+  import.meta.dirname,
+  "mixed-rest-events.expected.yaml",
+);
 const EXAMPLE_FILE = join(
   import.meta.dirname,
   "../../examples/mixed-rest-events/main.tsp",

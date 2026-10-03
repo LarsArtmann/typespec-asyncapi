@@ -74,16 +74,14 @@ function renderSpec(spec: MixedSpec): string {
   );
 
   if (spec.serviceExists) {
-    lines.push("@service(#{title: \"Mixed\"})");
+    lines.push('@service(#{title: "Mixed"})');
     if (spec.httpLoaded) {
       lines.push('@route("/api")');
     }
     lines.push("namespace Svc {");
     for (let i = 1; i <= spec.restOps; i++) {
       lines.push(
-        ...(spec.httpLoaded
-          ? ['  @route("/rest")', "  @get"]
-          : []),
+        ...(spec.httpLoaded ? ['  @route("/rest")', "  @get"] : []),
         `  op restOp${spec.restOps > 1 ? i : ""}(): string;`,
       );
       break;
@@ -137,14 +135,10 @@ function expectedChannels(spec: MixedSpec): string[] {
   const decoratedOps = spec.eventsInside + spec.eventsOutside;
   const channels: string[] = [];
   for (let i = 1; i <= spec.eventsInside; i++) {
-    channels.push(
-      spec.channelOnlyEvents ? `/events/evIn${i}` : `evIn${i}`,
-    );
+    channels.push(spec.channelOnlyEvents ? `/events/evIn${i}` : `evIn${i}`);
   }
   for (let i = 1; i <= spec.eventsOutside; i++) {
-    channels.push(
-      spec.channelOnlyEvents ? `/events/evOut${i}` : `evOut${i}`,
-    );
+    channels.push(spec.channelOnlyEvents ? `/events/evOut${i}` : `evOut${i}`);
   }
   for (let i = 1; i <= spec.bareInside; i++) {
     // O3: excluded iff http is loaded and decorated event ops exist.
@@ -165,36 +159,38 @@ function expectedChannels(spec: MixedSpec): string[] {
 }
 
 describe("property: mixed-emitter ownership invariants", () => {
-  it(
-    "random mixed specs: channels == decorated events + unclaimed bare ops",
-    async () => {
-      await fc.assert(
-        fc.asyncProperty(mixedSpecArbitrary, async (spec) => {
-          const { asyncApiDoc, diagnostics } = await compileAsyncAPI(
-            renderSpec(spec),
-          );
-          const actual = Object.keys(asyncApiDoc?.channels ?? {}).toSorted();
-          expect(actual).toStrictEqual(expectedChannels(spec));
+  it("random mixed specs: channels == decorated events + unclaimed bare ops", async () => {
+    await fc.assert(
+      fc.asyncProperty(mixedSpecArbitrary, async (spec) => {
+        const { asyncApiDoc, diagnostics } = await compileAsyncAPI(
+          renderSpec(spec),
+        );
+        const actual = Object.keys(asyncApiDoc?.channels ?? {}).toSorted();
+        expect(actual).toStrictEqual(expectedChannels(spec));
 
-          const countByCode = (code: string): number =>
-            diagnostics.filter((d) => d.code?.endsWith(code)).length;
+        const countByCode = (code: string): number =>
+          diagnostics.filter((d) => d.code?.endsWith(code)).length;
 
-          // O1 complement: every excluded bare op is signaled.
-          const excludedCount =
-            spec.bareInside * (spec.httpLoaded && spec.eventsInside + spec.eventsOutside > 0 ? 1 : 0) +
-            spec.restOps * (spec.httpLoaded && spec.eventsInside + spec.eventsOutside > 0 ? 1 : 0);
-          expect(countByCode("bare-op-assumed-rest")).toBe(excludedCount);
+        // O1 complement: every excluded bare op is signaled.
+        const excludedCount =
+          spec.bareInside *
+            (spec.httpLoaded && spec.eventsInside + spec.eventsOutside > 0
+              ? 1
+              : 0) +
+          spec.restOps *
+            (spec.httpLoaded && spec.eventsInside + spec.eventsOutside > 0
+              ? 1
+              : 0);
+        expect(countByCode("bare-op-assumed-rest")).toBe(excludedCount);
 
-          // Event-op warning: one per affected namespace.
-          const eventWarningExpected =
-            spec.httpLoaded && spec.eventsInside > 0 ? 1 : 0;
-          expect(countByCode("event-op-in-service-namespace")).toBe(
-            eventWarningExpected,
-          );
-        }),
-        { seed: SEED, numRuns: RUNS },
-      );
-    },
-    120_000,
-  );
+        // Event-op warning: one per affected namespace.
+        const eventWarningExpected =
+          spec.httpLoaded && spec.eventsInside > 0 ? 1 : 0;
+        expect(countByCode("event-op-in-service-namespace")).toBe(
+          eventWarningExpected,
+        );
+      }),
+      { seed: SEED, numRuns: RUNS },
+    );
+  }, 120_000);
 });

@@ -212,7 +212,7 @@ export const $lib = createTypeSpecLibrary({
     "bare-op-assumed-rest": {
       messages: {
         default: paramMessage`Operation '${"operationName"}' was routed by @typespec/http as ${"verb"} ${"path"} and is therefore excluded from the AsyncAPI document. Rename it or add @publish/@subscribe if it is meant to be an event operation.`,
-        "assumed": paramMessage`Operation '${"operationName"}' is assumed to be a REST operation because it is declared under the @service namespace '${"serviceName"}' and therefore excluded from the AsyncAPI document. Add @publish/@subscribe if it is meant to be an event operation.`,
+        assumed: paramMessage`Operation '${"operationName"}' is assumed to be a REST operation because it is declared under the @service namespace '${"serviceName"}' and therefore excluded from the AsyncAPI document. Add @publish/@subscribe if it is meant to be an event operation.`,
       },
       severity: "warning",
     },

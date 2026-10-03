@@ -117,9 +117,7 @@ export async function validateCrossEmitterUsage(
       continue;
     }
     const route =
-      type.kind === "Operation"
-        ? httpRouteFacts?.routeOf(type)
-        : undefined;
+      type.kind === "Operation" ? httpRouteFacts?.routeOf(type) : undefined;
     // Exact evidence when the route table is readable: warn only for
     // Operations http actually routes. Geometry containment is the fallback.
     if (httpRouteFacts !== undefined && route === undefined) {
@@ -151,7 +149,8 @@ export async function validateCrossEmitterUsage(
           candidates.length > 1
             ? ` ${String(candidates.length - 1)} more operation(s) in this namespace are also affected.`
             : "",
-        operationName: "name" in first.type ? String(first.type.name) : "operation",
+        operationName:
+          "name" in first.type ? String(first.type.name) : "operation",
         routeDetail:
           first.route === undefined
             ? ""

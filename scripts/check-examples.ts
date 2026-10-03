@@ -93,10 +93,7 @@ function validateOpenApiDocument(
     openapi?: unknown;
     paths?: unknown;
   };
-  if (
-    typeof openApi.openapi !== "string" ||
-    !openApi.openapi.startsWith("3")
-  ) {
+  if (typeof openApi.openapi !== "string" || !openApi.openapi.startsWith("3")) {
     throw new Error(`OpenAPI document missing a 3.x version: ${openApiPath}`);
   }
   if (openApi.paths === null || typeof openApi.paths !== "object") {

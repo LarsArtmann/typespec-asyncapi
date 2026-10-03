@@ -12,10 +12,7 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import {
-  createTester,
-  findTestPackageRoot,
-} from "@typespec/compiler/testing";
+import { createTester, findTestPackageRoot } from "@typespec/compiler/testing";
 import { compileAsyncAPI } from "../utils/test-helpers.js";
 
 const fixture = readFileSync(
@@ -31,12 +28,10 @@ const countByCode = (
 describe("issue #252: mixed openapi3 + asyncapi program", () => {
   it("verbatim reporter spec: http duplicate errors + our warnings, emission skipped", async () => {
     const { asyncApiDoc, diagnostics } = await compileAsyncAPI(fixture);
-    expect(
-      countByCode(diagnostics, "@typespec/http/duplicate-operation"),
-    ).toBe(2);
-    expect(
-      countByCode(diagnostics, "event-op-in-service-namespace"),
-    ).toBe(2);
+    expect(countByCode(diagnostics, "@typespec/http/duplicate-operation")).toBe(
+      2,
+    );
+    expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(2);
     expect(asyncApiDoc).toBeNull();
   });
 
@@ -77,9 +72,7 @@ describe("issue #252: mixed openapi3 + asyncapi program", () => {
         op moduleOperation(): ModuleResponse;
       }
     `);
-    expect(
-      countByCode(diagnostics, "event-op-in-service-namespace"),
-    ).toBe(0);
+    expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(0);
     expect(countByCode(diagnostics, "bare-op-assumed-rest")).toBe(1);
     expect(asyncApiDoc).not.toBeNull();
     expect(Object.keys(asyncApiDoc?.channels ?? {}).toSorted()).toStrictEqual([

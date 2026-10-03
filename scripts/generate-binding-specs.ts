@@ -158,7 +158,7 @@ function generate(): void {
     " * Source: @asyncapi/specs/bindings/ JSON Schemas",
     " */",
     "",
-    `export const GENERATED_BINDING_PROTOCOLS = ${JSON.stringify(Object.keys(latestVersions).toSorted())} as const;`,
+    `export const GENERATED_BINDING_PROTOCOLS = ${JSON.stringify(Object.keys(latestVersions).toSorted(), null, 2)} as const;`,
     "",
     `export const GENERATED_LATEST_VERSIONS: Record<string, string> = ${JSON.stringify(latestVersions, null, 2)};`,
     "",

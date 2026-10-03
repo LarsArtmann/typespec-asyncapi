@@ -35,8 +35,7 @@ const countByCode = (
 const findByCode = (
   diagnostics: readonly Diagnostic[],
   code: string,
-): Diagnostic | undefined =>
-  diagnostics.find((d) => d.code?.endsWith(code));
+): Diagnostic | undefined => diagnostics.find((d) => d.code?.endsWith(code));
 
 describe("mixed @typespec/http + AsyncAPI programs", () => {
   it("reports the issue #252 spec verbatim: http duplicate errors PLUS our explanatory warnings", async () => {
@@ -461,9 +460,7 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
         op receivePing(): Pong;
       }
     `);
-    expect(
-      countByCode(diagnostics, "event-op-in-service-namespace"),
-    ).toBe(0);
+    expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(0);
     expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual([
       "receivePing",
     ]);
@@ -649,8 +646,6 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
     expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual([
       "grandchildEvent",
     ]);
-    expect(
-      countByCode(diagnostics, "bare-op-assumed-rest"),
-    ).toBe(0);
+    expect(countByCode(diagnostics, "bare-op-assumed-rest")).toBe(0);
   });
 });

@@ -22,14 +22,18 @@ describe("loadHttpRouteFacts", () => {
         op doThing(): string;
       }
     `);
-    await expect(loadHttpRouteFacts(program as Program)).resolves.toBeUndefined();
+    await expect(
+      loadHttpRouteFacts(program as Program),
+    ).resolves.toBeUndefined();
   });
 
   it("returns undefined for an empty program", async () => {
     const { program } = await compileAsyncAPI(`
       namespace Nothing;
     `);
-    await expect(loadHttpRouteFacts(program as Program)).resolves.toBeUndefined();
+    await expect(
+      loadHttpRouteFacts(program as Program),
+    ).resolves.toBeUndefined();
   });
 
   it("caches facts per program", async () => {

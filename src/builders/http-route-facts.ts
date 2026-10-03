@@ -31,10 +31,7 @@ export interface HttpRouteFacts {
   readonly routeOf: (operation: Operation) => HttpRoute | undefined;
 }
 
-const factsCache = new WeakMap<
-  Program,
-  Promise<HttpRouteFacts | undefined>
->();
+const factsCache = new WeakMap<Program, Promise<HttpRouteFacts | undefined>>();
 
 /**
  * Load the program's HTTP route table, or `undefined` when `@typespec/http`
