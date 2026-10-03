@@ -432,4 +432,199 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
       "receivePing",
     ]);
   });
+
+  it("silences event-op-in-service-namespace via #suppress", async () => {
+    const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      @service(#{title: "Backend"})
+      @TypeSpec.Http.server("https://my.service.io", "Production")
+      @route("/api/v1")
+      namespace Service.Backend;
+
+      model Pong {
+        status: string;
+      }
+
+      @TypeSpec.AsyncAPI.server("Production", #{
+        url: "my.service.io",
+        protocol: "wss",
+        pathname: "/api/v1/socket",
+      })
+      namespace Service.Backend {
+        #suppress "@lars-artmann/typespec-asyncapi/event-op-in-service-namespace" "intentional"
+        @subscribe
+        op receivePing(): Pong;
+      }
+    `);
+    expect(
+      countByCode(diagnostics, "event-op-in-service-namespace"),
+    ).toBe(0);
+    expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual([
+      "receivePing",
+    ]);
+  });
+
+  it("warns for @channel-only operations (no @publish/@subscribe)", async () => {
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      @service(#{title: "Backend"})
+      @TypeSpec.Http.server("https://my.service.io", "Production")
+      @route("/api/v1")
+      namespace Service.Backend;
+
+      model Pong {
+        status: string;
+      }
+
+      @TypeSpec.AsyncAPI.server("Production", #{
+        url: "my.service.io",
+        protocol: "wss",
+        pathname: "/api/v1/socket",
+      })
+      namespace Service.Backend {
+        @channel("pong")
+        op pong(): Pong;
+      }
+    `);
+    expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(1);
+  });
+
+  it("names the innermost @service namespace for nested services", async () => {
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      @service(#{title: "Outer"})
+      @TypeSpec.Http.server("https://outer.service.io", "Production")
+      @route("/outer")
+      namespace Service.Outer;
+
+      model Pong {
+        status: string;
+      }
+
+      @TypeSpec.AsyncAPI.server("Production", #{
+        url: "my.service.io",
+        protocol: "wss",
+        pathname: "/api/v1/socket",
+      })
+      namespace Service.Outer.Inner {
+        @service(#{title: "Inner"})
+        @TypeSpec.Http.server("https://inner.service.io", "Production")
+        @route("/inner")
+        @subscribe
+        op receivePing(): Pong;
+      }
+    `);
+    expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(1);
+    const warning = findByCode(diagnostics, "event-op-in-service-namespace");
+    expect(warning?.message).toContain("'Inner'");
+  });
+
+  it("nearest-ancestor server wins: http AsyncAPI server escapes the warning", async () => {
+    const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      @service(#{title: "Backend"})
+      @TypeSpec.Http.server("https://my.service.io", "Production")
+      @route("/api/v1")
+      namespace Service.Backend;
+
+      @TypeSpec.AsyncAPI.server("Root", #{
+        url: "root.service.io",
+        protocol: "wss",
+      })
+      namespace Service.Backend {
+        model Pong {
+          status: string;
+        }
+
+        namespace Inner {
+          @TypeSpec.AsyncAPI.server("HttpEscape", #{
+            url: "my.service.io",
+            protocol: "https",
+            pathname: "/api/v1/socket",
+          })
+          @subscribe
+          op receivePing(): Pong;
+        }
+      }
+    `);
+    expect(
+      hasWarning(diagnostics, "event-op-in-service-namespace"),
+    ).toBeFalsy();
+    expect(asyncApiDoc).not.toBeNull();
+  });
+
+  it("nearest-ancestor server wins: wss server under http ancestor still warns", async () => {
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      @service(#{title: "Backend"})
+      @TypeSpec.Http.server("https://my.service.io", "Production")
+      @route("/api/v1")
+      namespace Service.Backend;
+
+      @TypeSpec.AsyncAPI.server("HttpAncestor", #{
+        url: "my.service.io",
+        protocol: "https",
+      })
+      namespace Service.Backend {
+        model Pong {
+          status: string;
+        }
+
+        namespace Inner {
+          @TypeSpec.AsyncAPI.server("WssInner", #{
+            url: "socket.service.io",
+            protocol: "wss",
+          })
+          @subscribe
+          op receivePing(): Pong;
+        }
+      }
+    `);
+    expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(1);
+  });
+
+  it("warns for a @service namespace with no AsyncAPI server anywhere", async () => {
+    const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      @service(#{title: "Backend"})
+      @TypeSpec.Http.server("https://my.service.io", "Production")
+      @route("/api/v1")
+      namespace Service.Backend {
+        @channel("pong")
+        op pong(): string;
+      }
+    `);
+    expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(1);
+    expect(asyncApiDoc).not.toBeNull();
+  });
 });
