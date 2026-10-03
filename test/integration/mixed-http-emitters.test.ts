@@ -22,7 +22,55 @@ import type { Diagnostic } from "@typespec/compiler";
 const hasWarning = (diagnostics: readonly Diagnostic[], code: string): boolean =>
   diagnostics.some((d) => d.code?.endsWith(code));
 
+const countByCode = (diagnostics: readonly Diagnostic[], code: string): number =>
+  diagnostics.filter((d) => d.code?.endsWith(code)).length;
+
 describe("mixed @typespec/http + AsyncAPI programs", () => {
+  it("reports the issue #252 spec verbatim: http duplicate errors PLUS our explanatory warnings", async () => {
+    // Exact structure from https://github.com/LarsArtmann/typespec-asyncapi/issues/252
+    // Model bodies that the issue elided with "{...}" are filled in.
+    // Both @subscribe ops land inside the @route("/api/v1") service namespace.
+    // @typespec/http routes both as GET /api/v1 and raises duplicate-operation errors.
+    // Our warning must still surface ALONGSIDE those errors because the http errors skip emission.
+    const { diagnostics } = await compileAsyncAPISpecRaw(`
+      import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
+      @service(#{title: "Backend"})
+      @TypeSpec.Http.server("https://my.service.io", "Production")
+      @route("/api/v1")
+      namespace Service.Backend;
+
+      @TypeSpec.AsyncAPI.server("Production", #{
+        url: "my.service.io",
+        protocol: "wss",
+        pathname: "/api/v1/socket",
+      })
+      namespace Service.Backend {
+        model HealthcheckPong {
+          status: string;
+        }
+
+        @subscribe
+        op receivePing(): HealthcheckPong;
+      }
+
+      namespace Service.Backend.Module {
+        model Response {
+          payload: string;
+        }
+
+        @subscribe
+        op moduleOperation(): Response;
+      }
+    `);
+    expect(countByCode(diagnostics, "@typespec/http/duplicate-operation")).toBe(2);
+    expect(countByCode(diagnostics, "event-op-in-service-namespace")).toBe(2);
+  });
+
   it("warns when a @subscribe operation lives inside the @service namespace", async () => {
     const { diagnostics } = await compileAsyncAPISpecRaw(`
       import "@typespec/http";
