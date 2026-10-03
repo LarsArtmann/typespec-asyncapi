@@ -55,11 +55,11 @@ What remains is the gated release chain and the tail:
       not patch). Ritual per AGENTS: `pnpm install --lockfile-only && pnpm
     install --frozen-lockfile && pnpm run verify` → `pnpm version` →
       annotated tag → watch release.yml. FEATURES refresh after it ships.
-- [ ] **⏳ Post the upstream microsoft/typespec issue** — verb-less implicit-GET
-      friction in mixed programs; draft voice-checked (0 FAIL 0 WARN) at
-      `/tmp/typespec-upstream-issue.md`; prior-art search found none (closest:
-      #2463 AsyncAPI POC, #4124 websockets). Open question: post as drafted
-      (bug evidence) vs rescoped proposal.
+- [x] **⏳ Post the upstream microsoft/typespec issue** — DONE 2026-10-03:
+      filed as [microsoft/typespec#12105](https://github.com/microsoft/typespec/issues/12105)
+      (NOTICE provenance banner + review ledger ticked; TL;DR asks for an
+      implicit-verb warning AND duplicate-operation errors that name the
+      operations). Remaining: watch for maintainer response.
 - [ ] **⏰ eslint 10.12.0 bump** — after the 20:08 UTC soak on 2026-10-03;
       relock, frozen-lockfile proof, quick lint.
 - [ ] **⏰ After the BuildFlow baseline WIP lands** — remove

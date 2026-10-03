@@ -56,7 +56,7 @@ Raw ideas:
 
 - Add a docs-entropy CI guard that flags when living docs drift from code counts (e.g. test count in FEATURES.md vs `vitest run` output)
 - Mixed-program strictness (2.0): remove the namespace-geometry fallback for bare-operation ownership — route-table facts or explicit decoration only (`bare-op-inference-deprecated` is the removal signal)
-- Upstream watch: microsoft/typespec issue on verb-less implicit-GET ownership friction in mixed programs (draft ready; filed after release) — if http changes its fallback, our route-facts and warnings simplify
+- Upstream watch: [microsoft/typespec#12105](https://github.com/microsoft/typespec/issues/12105) (filed 2026-10-03) — verb-less implicit-GET friction in mixed programs; if http adds a warning or changes its fallback, our route-facts and warnings simplify
 - Split `./shared` subpath into neutral (`./shared`) vs AsyncAPI-bound (`./asyncapi`) entry points so neutral consumers pay zero AsyncAPI runtime cost
 - Document which `@parameter`/`@reusableBinding` config fields are unreachable via TypeSpec `#{}` syntax (`enum`, `const`, and other reserved keywords cannot be property keys in value literals)
 
