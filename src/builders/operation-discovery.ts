@@ -222,7 +222,11 @@ function reportSkippedBareOp(
     reportProgramDiagnostic(ctx.program, {
       code: "bare-op-assumed-rest",
       target: op,
-      format: { operationName: opName, path: route.path, verb: route.verb },
+      format: {
+        operationName: opName,
+        path: route.path,
+        verb: route.verb.toUpperCase(),
+      },
     });
     return;
   }

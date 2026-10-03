@@ -374,8 +374,11 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
       @service(#{title: "Backend"})
       @TypeSpec.Http.server("https://my.service.io", "Production")
       namespace Rest {
+        @route("/things")
         op getThing(): Pong;
 
+        @route("/stuff")
+        @post
         op putThing(): Pong;
       }
 
@@ -390,7 +393,7 @@ describe("mixed @typespec/http + AsyncAPI programs", () => {
     `);
     expect(countByCode(diagnostics, "bare-op-assumed-rest")).toBe(2);
     const warning = findByCode(diagnostics, "bare-op-assumed-rest");
-    expect(warning?.message).toMatch(/GET \/|POST \//);
+    expect(warning?.message).toContain("GET /things");
     expect(Object.keys(asyncApiDoc.channels ?? {})).toStrictEqual([
       "receivePing",
     ]);
