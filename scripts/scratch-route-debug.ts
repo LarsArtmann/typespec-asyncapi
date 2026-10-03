@@ -14,7 +14,6 @@ const tester = createTester(packageRoot, {
   .using("TypeSpec.AsyncAPI");
 
 const source = `
-  import "@typespec/http";
   @service(#{title: "Backend"})
   namespace Service {
     op verblessNoBody(): string;

@@ -23,10 +23,8 @@ import {
   type DocumentBuildContext,
 } from "./_imports.js";
 import { schemaNameForType } from "../schema-ref.js";
-import {
-  findEnclosingServiceNamespace,
-  isHttpLibraryLoaded,
-} from "./cross-emitter-validation.js";
+import { findEnclosingServiceNamespace } from "./cross-emitter-validation.js";
+import { type HttpRouteFacts, isHttpLibraryLoaded } from "./http-route-facts.js";
 
 /**
  * Discover all operations from three sources:
@@ -156,6 +154,14 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
   const restOpsAreInPlay =
     isHttpLibraryLoaded(ctx.program) &&
     (state.operations.size > 0 || state.channels.size > 0);
+  // Ownership evidence: the resolved HTTP route table when readable, else the
+  // service-containment heuristic. A routed operation belongs to the REST
+  // contract, never to the event document.
+  const httpRouteFacts = ctx.httpRouteFacts;
+  const isHttpOwned = (op: Type): boolean =>
+    httpRouteFacts
+      ? httpRouteFacts.isRouted(op)
+      : findEnclosingServiceNamespace(ctx.program, op) !== undefined;
   const globalNs = ctx.program.getGlobalNamespaceType();
   const namespaces = [globalNs, ...globalNs.namespaces.values()];
   for (const ns of namespaces) {
@@ -166,10 +172,7 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
       if (allKnownOps.has(opName)) {
         continue;
       }
-      if (
-        restOpsAreInPlay &&
-        findEnclosingServiceNamespace(ctx.program, op) !== undefined
-      ) {
+      if (restOpsAreInPlay && isHttpOwned(op)) {
         continue;
       }
       const effectiveName = resolveOpName(state, op, opName);

@@ -13,10 +13,14 @@ import type { Program } from "@typespec/compiler";
 describe("loadHttpRouteFacts", () => {
   it("returns undefined when @typespec/http is not loaded", async () => {
     const { program } = await compileAsyncAPI(`
-      @service(#{title: "Backend"})
-      namespace Service;
+      import "@lars-artmann/typespec-asyncapi";
 
-      op doThing(): string;
+      using TypeSpec.AsyncAPI;
+
+      @service(#{title: "Backend"})
+      namespace Service {
+        op doThing(): string;
+      }
     `);
     await expect(loadHttpRouteFacts(program as Program)).resolves.toBeUndefined();
   });
@@ -31,9 +35,15 @@ describe("loadHttpRouteFacts", () => {
   it("caches facts per program", async () => {
     const { program } = await compileAsyncAPI(`
       import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
       @service(#{title: "Backend"})
-      namespace Service;
-      op doThing(): string;
+      namespace Service {
+        op doThing(): string;
+      }
     `);
     const first = await loadHttpRouteFacts(program as Program);
     const second = await loadHttpRouteFacts(program as Program);
@@ -44,6 +54,11 @@ describe("loadHttpRouteFacts", () => {
   it("classifies verb-less operations without a body as GET routes", async () => {
     const { program } = await compileAsyncAPI(`
       import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
       @service(#{title: "Backend"})
       namespace Service {
         op verblessNoBody(): string;
@@ -63,6 +78,11 @@ describe("loadHttpRouteFacts", () => {
   it("classifies verb-less operations with a body as POST routes", async () => {
     const { program } = await compileAsyncAPI(`
       import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
       @service(#{title: "Backend"})
       namespace Service {
         op verblessWithBody(@body body: string): string;
@@ -70,17 +90,24 @@ describe("loadHttpRouteFacts", () => {
     `);
     const facts = await loadHttpRouteFacts(program as Program);
     const routed = [...(facts?.routes.keys() ?? [])];
+    expect(routed).toHaveLength(1);
     expect(facts?.routeOf(routed[0]!)).toMatchObject({ verb: "post" });
   });
 
   it("reports explicit verbs and @route paths exactly", async () => {
     const { program } = await compileAsyncAPI(`
       import "@typespec/http";
+      import "@lars-artmann/typespec-asyncapi";
+
+      using TypeSpec.Http;
+      using TypeSpec.AsyncAPI;
+
       @service(#{title: "Backend"})
       @route("/api/v1")
       namespace Service {
         @get
         op explicitGet(): string;
+
         @route("/custom")
         @put
         op customPut(): string;
@@ -110,6 +137,7 @@ describe("loadHttpRouteFacts", () => {
     const { program } = await compileAsyncAPI(`
       import "@typespec/http";
       import "@lars-artmann/typespec-asyncapi";
+
       using TypeSpec.Http;
       using TypeSpec.AsyncAPI;
 
@@ -145,10 +173,9 @@ describe("loadHttpRouteFacts", () => {
     const { program } = await compileAsyncAPI(`
       import "@typespec/http";
       import "@lars-artmann/typespec-asyncapi";
+
       using TypeSpec.Http;
       using TypeSpec.AsyncAPI;
-
-      namespace Events;
 
       model Pong { status: string; }
 
