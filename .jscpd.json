@@ -18,6 +18,8 @@
     "**/*.config.js",
     "**/*.config.ts",
     "**/docs/**",
-    "**/examples/**"
+    "**/examples/**",
+    "**/test/**",
+    "**/website/**"
   ]
 }

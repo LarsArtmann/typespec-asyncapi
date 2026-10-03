@@ -43,7 +43,13 @@
             projectRootFile = "flake.nix";
             programs = {
               nixfmt.enable = true;
-              prettier.enable = true;
+              prettier = {
+                enable = true;
+                # Generated report artifacts (review dashboards under docs/)
+                # contain malformed HTML that crashes the prettier parser;
+                # archives are point-in-time exports, never formatted.
+                excludes = [ "docs/**/*.html" ];
+              };
             };
           };
 
