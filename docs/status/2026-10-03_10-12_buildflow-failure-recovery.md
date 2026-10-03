@@ -33,10 +33,10 @@ break it down and fix everything.
    `node_modules/.bin`.
 3. **BuildFlow provider fixed at root cause** — `jscpdMajorVersion()` probe
    (parses `jscpd 5.3.3` and bare `4.0.9`; falls back to v5 on error/garbage)
-   + `jscpdBaseArgs()` version-gated arg construction. v4 behavior byte-
-   identical to before; v5 gets `--reporters json --output <tmp> --exit-code`.
-   6 new unit tests (parse variants + v4/v5 arg sets). Existing integration
-   tests untouched and passing: `ok github.com/larsartmann/buildflow/tools/providers 2.702s`.
+   - `jscpdBaseArgs()` version-gated arg construction. v4 behavior byte-
+     identical to before; v5 gets `--reporters json --output <tmp> --exit-code`.
+     6 new unit tests (parse variants + v4/v5 arg sets). Existing integration
+     tests untouched and passing: `ok github.com/larsartmann/buildflow/tools/providers 2.702s`.
 4. **nix-fmt failure root-caused after discarding a wrong hypothesis** — the
    real culprit: two archived **generated** HTML reports with malformed markup
    (`docs/planning/2026-08-14_21-20_POST-REVIEW-PARETO-PLAN.html`,
@@ -46,7 +46,7 @@ break it down and fix everything.
    generated point-in-time artifacts are never formatted (matches the policy
    BuildFlow's own feedback docs established for report artifacts).
 5. **nix-fmt VERIFIED GREEN** — `buildflow -s nix-fmt --fix` → `✔ nix-fmt
-   26.3s`, "1 success, 0 failed" (635 files traversed, 2 changed). The
+26.3s`, "1 success, 0 failed" (635 files traversed, 2 changed). The
    4-run failure loop is broken.
 6. **Scratch junk removed** — committed repro outputs `rest/openapi.yaml` +
    `websocket/asyncapi.yaml` (phantom-GET repro artifacts from the issue-252
@@ -76,7 +76,7 @@ break it down and fix everything.
 ## b) PARTIALLY DONE
 
 1. **BuildFlow binary reinstall — blocked by foreign WIP.** `nix build
-   git+file:///home/lars/projects/BuildFlow#buildflow` FAILS: another
+git+file:///home/lars/projects/BuildFlow#buildflow` FAILS: another
    in-flight session's baseline-command work modified
    `internal/cli/root.go` (references `createBaselineCommand`) but its
    definition lives in **untracked** `internal/cli/baseline_cmd.go`, which
@@ -97,9 +97,9 @@ break it down and fix everything.
    happily locked 8.71.0 because package.json was already bumped by
    BuildFlow's pnpm-update; AGENTS deliberately holds **8.70.x** (exact pin,
    after the TS-7 drift incident). Needs `pnpm -w update
-   typescript-eslint@8.70.1` + relock, or an explicit decision to accept
+typescript-eslint@8.70.1` + relock, or an explicit decision to accept
    8.71.0 and update AGENTS. Unattributed `minimumReleaseAgeExclude:
-   eslint@10.12.0` appeared in `pnpm-workspace.yaml` during the sync — needs
+eslint@10.12.0` appeared in `pnpm-workspace.yaml` during the sync — needs
    review/ownership.
 6. **Full gates not yet run this session** — neither `buildflow` (full) nor
    `pnpm run verify` after today's changes (flake, .jscpd.json, workflows,
@@ -171,37 +171,37 @@ break it down and fix everything.
 
 ## f) Next things (impact-ordered)
 
-| #  | Task                                                                  | Route        |
-| -- | --------------------------------------------------------------------- | ------------ |
-| 1  | Restore typescript-eslint 8.70.1 pin (`pnpm -w update …`) + relock, or decide to accept 8.71.0 and update AGENTS | DO NOW |
-| 2  | Resolve BuildFlow ship path: wait for baseline WIP commit, or clean-rev build with only the jscpd patch → `nix profile install` | DO NOW (decision) |
-| 3  | Verify `buildflow -s jscpd` green in this repo with the new binary     | DO NOW       |
-| 4  | BuildFlow gates for my change: golangci-lint (tools/providers), erraudit, workspace tests | DO NOW |
-| 5  | CHANGELOG `[Unreleased]` entry (issue #252 warning + guard + example + tests) | DO NOW |
-| 6  | Full `buildflow` run in this repo → expect steps green; residual findings audit/lychee only | DO NOW |
-| 7  | Full `pnpm run verify` after today's flake/.jscpd.json/workflow/lockfile changes | DO NOW |
-| 8  | Review/own the `minimumReleaseAgeExclude: eslint@10.12.0` entry in pnpm-workspace.yaml | DO NOW |
-| 9  | AGENTS.md gotchas: jscpd scope policy, prettier HTML exclusion, pnpm-update drift | DO NOW |
-| 10 | `nix flake check` (checks.format with exclusion)                       | DO NOW       |
-| 11 | Re-run github-actions-pinning detect (confirm v2.2.0 comment)          | DO NOW       |
-| 12 | Confirm global.out.css prettier finding cleared                        | DO NOW       |
-| 13 | pnpm-audit triage; overrides for patched transitive deps (nanoid ≥3.3.18, brace-expansion, devalue ≥5.9.3); document unpatchable (http-cache-semantics) | TODO_LIST |
-| 14 | Lychee: root-dir config for website root-relative links; exclude `docs/_archive`; consider devShell membership | TODO_LIST |
-| 15 | Upstream BuildFlow: pnpm-update lockfile regeneration (issue or fix)   | TODO_LIST    |
-| 16 | Upstream BuildFlow: registration-time CLI-dialect probe for jscpd      | TODO_LIST    |
-| 17 | Guard: fail `pnpm run verify` early if lockfile ≠ manifest (pre-push check) | TODO_LIST |
-| 18 | Post issue #252 reply (final wording incl. $onValidate addendum)      | Gated: Lars  |
-| 19 | Version call 1.0.1 vs 1.1.0 → release (pre-tag frozen-lockfile ritual now partially pre-verified) | Gated: Lars |
-| 20 | TODO_LIST/ROADMAP harvest from the 06-31 report (f)-list              | Gated: Lars  |
-| 21 | crush-config `references/lessons.md`: add "grep the full log before theorizing" + "pin the invocation before comparing verdicts" | Gated: Lars |
-| 22 | Issue-252 test gaps (from 06-31 report f 6–12): @channel-only, #suppress, nested @service, nearest-server escape, no-server FP, guard-without-decorated-ops, phase-ran assertions | TODO_LIST |
-| 23 | Golden-file locks for the mixed example's two outputs                 | TODO_LIST    |
-| 24 | README + examples/README count audit (34 diagnostics, 15 examples)     | TODO_LIST    |
-| 25 | AGENTS "Key Tests" list: add mixed-http-emitters.test.ts              | TODO_LIST    |
-| 26 | Website "Mixing with OpenAPI" docs page                                | ROADMAP      |
-| 27 | Warning dedupe per (service, namespace)                                | TODO_LIST    |
-| 28 | Memoize `listServices` in discovery loop if benchmarks regress         | ROADMAP      |
-| 29 | lsp_restart at session start when stale-file diagnostics appear (this session's tool noise) | Process note |
+| #   | Task                                                                                                                                                                              | Route             |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| 1   | Restore typescript-eslint 8.70.1 pin (`pnpm -w update …`) + relock, or decide to accept 8.71.0 and update AGENTS                                                                  | DO NOW            |
+| 2   | Resolve BuildFlow ship path: wait for baseline WIP commit, or clean-rev build with only the jscpd patch → `nix profile install`                                                   | DO NOW (decision) |
+| 3   | Verify `buildflow -s jscpd` green in this repo with the new binary                                                                                                                | DO NOW            |
+| 4   | BuildFlow gates for my change: golangci-lint (tools/providers), erraudit, workspace tests                                                                                         | DO NOW            |
+| 5   | CHANGELOG `[Unreleased]` entry (issue #252 warning + guard + example + tests)                                                                                                     | DO NOW            |
+| 6   | Full `buildflow` run in this repo → expect steps green; residual findings audit/lychee only                                                                                       | DO NOW            |
+| 7   | Full `pnpm run verify` after today's flake/.jscpd.json/workflow/lockfile changes                                                                                                  | DO NOW            |
+| 8   | Review/own the `minimumReleaseAgeExclude: eslint@10.12.0` entry in pnpm-workspace.yaml                                                                                            | DO NOW            |
+| 9   | AGENTS.md gotchas: jscpd scope policy, prettier HTML exclusion, pnpm-update drift                                                                                                 | DO NOW            |
+| 10  | `nix flake check` (checks.format with exclusion)                                                                                                                                  | DO NOW            |
+| 11  | Re-run github-actions-pinning detect (confirm v2.2.0 comment)                                                                                                                     | DO NOW            |
+| 12  | Confirm global.out.css prettier finding cleared                                                                                                                                   | DO NOW            |
+| 13  | pnpm-audit triage; overrides for patched transitive deps (nanoid ≥3.3.18, brace-expansion, devalue ≥5.9.3); document unpatchable (http-cache-semantics)                           | TODO_LIST         |
+| 14  | Lychee: root-dir config for website root-relative links; exclude `docs/_archive`; consider devShell membership                                                                    | TODO_LIST         |
+| 15  | Upstream BuildFlow: pnpm-update lockfile regeneration (issue or fix)                                                                                                              | TODO_LIST         |
+| 16  | Upstream BuildFlow: registration-time CLI-dialect probe for jscpd                                                                                                                 | TODO_LIST         |
+| 17  | Guard: fail `pnpm run verify` early if lockfile ≠ manifest (pre-push check)                                                                                                       | TODO_LIST         |
+| 18  | Post issue #252 reply (final wording incl. $onValidate addendum)                                                                                                                  | Gated: Lars       |
+| 19  | Version call 1.0.1 vs 1.1.0 → release (pre-tag frozen-lockfile ritual now partially pre-verified)                                                                                 | Gated: Lars       |
+| 20  | TODO_LIST/ROADMAP harvest from the 06-31 report (f)-list                                                                                                                          | Gated: Lars       |
+| 21  | crush-config `references/lessons.md`: add "grep the full log before theorizing" + "pin the invocation before comparing verdicts"                                                  | Gated: Lars       |
+| 22  | Issue-252 test gaps (from 06-31 report f 6–12): @channel-only, #suppress, nested @service, nearest-server escape, no-server FP, guard-without-decorated-ops, phase-ran assertions | TODO_LIST         |
+| 23  | Golden-file locks for the mixed example's two outputs                                                                                                                             | TODO_LIST         |
+| 24  | README + examples/README count audit (34 diagnostics, 15 examples)                                                                                                                | TODO_LIST         |
+| 25  | AGENTS "Key Tests" list: add mixed-http-emitters.test.ts                                                                                                                          | TODO_LIST         |
+| 26  | Website "Mixing with OpenAPI" docs page                                                                                                                                           | ROADMAP           |
+| 27  | Warning dedupe per (service, namespace)                                                                                                                                           | TODO_LIST         |
+| 28  | Memoize `listServices` in discovery loop if benchmarks regress                                                                                                                    | ROADMAP           |
+| 29  | lsp_restart at session start when stale-file diagnostics appear (this session's tool noise)                                                                                       | Process note      |
 
 ## g) Questions I cannot answer myself
 

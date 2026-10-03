@@ -53,6 +53,7 @@
                 excludes = [
                   "docs/**/*.html"
                   "website/src/styles/*.out.css"
+                  "pnpm-lock.yaml"
                 ];
               };
             };
