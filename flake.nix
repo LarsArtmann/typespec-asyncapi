@@ -52,6 +52,9 @@
                 #   formatting it churns on every website build
                 # - pnpm-lock.yaml: pnpm owns its style; prettier reformatting
                 #   causes pnpm<->treefmt ping-pong
+                # - src/constants/generated-bindings.ts is generator output
+                #   (scripts/generate-binding-specs.ts); prettier reformatting
+                #   ping-pongs against every regeneration
                 # Archived reports (docs/_archive, docs/status) are point-in-time
                 # records — annotate, never rewrite/reformat.
                 excludes = [
@@ -60,6 +63,7 @@
                   "docs/status/**"
                   "website/src/styles/*.out.css"
                   "pnpm-lock.yaml"
+                  "src/constants/generated-bindings.ts"
                 ];
               };
             };
