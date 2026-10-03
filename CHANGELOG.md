@@ -18,6 +18,36 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **Route-table ownership for mixed `@typespec/http` programs** — operation
+  ownership is now decided by `@typespec/http`'s resolved routing table
+  (guarded dynamic access; `@typespec/http` remains an optional runtime
+  concern) instead of namespace-geometry inference. When the route table is
+  unreadable, the previous containment heuristic still applies as a fallback.
+  Bare operations that http routes are excluded from the AsyncAPI document and
+  bare operations outside any service stay; event operations are unaffected.
+
+- **`bare-op-assumed-rest` warning diagnostic** — every excluded bare
+  operation is now signaled (no silent vanishing): the message cites the
+  exact route (`GET /api/v1`) when the route table is readable, and the
+  containing `@service` namespace when falling back to containment.
+  Suppressible via `#suppress "@lars-artmann/typespec-asyncapi/bare-op-assumed-rest" "reason"`.
+
+- **`bare-op-inference-deprecated` warning diagnostic** — emitted (once per
+  program) when the containment fallback is used in a mixed program, because
+  heuristic ownership is deprecated and will be removed in 2.0. Explicit
+  ownership (route table, or `@publish`/`@subscribe`/`@channel` decoration)
+  is unaffected.
+
+- **Exact `event-op-in-service-namespace` evidence + dedup** — the conflict
+  warning now fires only when `@typespec/http` actually routes the event
+  operation and cites the concrete route (`GET /api/v1`); when several event
+  operations share a namespace, one warning names the first and reports
+  `N more operation(s) in this namespace are also affected.`
+
+- **Deep bare-operation discovery** — bare operations in arbitrarily nested
+  namespaces (e.g. `A.B.C`) are now discovered; previously only the global
+  namespace and its direct children were scanned.
+
 - **`event-op-in-service-namespace` warning diagnostic** (#252) — emitted by a
   library `$onValidate` hook (exported via `src/tsp-index.ts` from
   `src/builders/cross-emitter-validation.ts`) that runs during program
@@ -31,6 +61,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   with `@typespec/http`/`@typespec/openapi3` in one program, and
   `test/integration/mixed-http-emitters.test.ts` locking the behavior,
   including a verbatim reproduction of the issue's spec.
+
+- **Property-based ownership invariants** — `test/property/mixed-ownership-properties.test.ts`
+  compiles random mixed specs (seed-pinned, `FC_SEED` to reproduce) and locks
+  the full ownership oracle: channels equal decorated events plus unclaimed
+  bare ops, every exclusion is signaled, and the conflict warning dedupes per
+  namespace.
 
 ## [1.0.0] - 2026-09-30
 
