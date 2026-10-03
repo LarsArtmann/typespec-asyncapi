@@ -1,0 +1,30 @@
+openapi: 3.0.0
+info:
+  title: Backend
+  version: 0.0.0
+tags: []
+paths:
+  /api/v1:
+    get:
+      operationId: Events_receivePing
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Service.Backend.HealthcheckPong'
+components:
+  schemas:
+    Service.Backend.HealthcheckPong:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+servers:
+  - url: https://my.service.io
+    description: Production
+    variables: {}

@@ -1,0 +1,46 @@
+asyncapi: 3.1.0
+info:
+  title: Backend
+  version: 1.0.0
+servers:
+  Production:
+    description: Server for Events
+    host: my.service.io
+    protocol: wss
+    pathname: /api/v1/socket
+channels:
+  receivePing:
+    address: receivePing
+    messages:
+      HealthcheckPong:
+        $ref: "#/components/messages/HealthcheckPong"
+operations:
+  receivePing:
+    action: receive
+    channel:
+      $ref: "#/channels/receivePing"
+    messages:
+      - $ref: "#/channels/receivePing/messages/HealthcheckPong"
+components:
+  messages:
+    HealthcheckPong:
+      name: HealthcheckPong
+      contentType: application/json
+      title: HealthcheckPong
+      payload:
+        $ref: "#/components/schemas/HealthcheckPong"
+  schemas:
+    HealthcheckPong:
+      properties:
+        status:
+          type: string
+      type: object
+      required:
+        - status
+    ModuleResponse:
+      properties:
+        payload:
+          type: string
+      type: object
+      required:
+        - payload
