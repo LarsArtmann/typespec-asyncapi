@@ -5,7 +5,13 @@
  * all AsyncAPI operations, their channels, and message types.
  */
 
-import { isStdNamespace, type Namespace, type Operation, type Type } from "@typespec/compiler";
+import {
+  isStdNamespace,
+  type Namespace,
+  type Operation,
+  type Program,
+  type Type,
+} from "@typespec/compiler";
 import {
   inferActionFromName,
   iterNamedTypes,
@@ -186,7 +192,6 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
             "bare-op-inference-deprecated",
             op,
             opName,
-            findEnclosingServiceNamespace(ctx.program, op),
           );
         }
         continue;
@@ -249,7 +254,6 @@ function reportSkippedBareOp(
     "bare-op-assumed-rest",
     op,
     opName,
-    findEnclosingServiceNamespace(ctx.program, op),
     "assumed",
   );
 }
@@ -260,9 +264,9 @@ function reportBareOpServiceDiagnostic(
   code: ProgramDiagnostic["code"],
   op: Operation,
   opName: string,
-  service: Namespace | undefined,
   messageId?: string,
 ): void {
+  const service = findEnclosingServiceNamespace(program, op);
   reportProgramDiagnostic(program, {
     code,
     target: op,
