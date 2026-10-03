@@ -48,10 +48,11 @@ Feature work (route-facts ownership, new diagnostics, docs, locks) is DONE
 and gate-green — see `docs/status/2026-10-03_13-27_mixed-emitter-ownership-execution.md`.
 What remains is the gated release chain and the tail:
 
-- [ ] **⏳ Post the #252 reply** — fresh draft (the /tmp original was lost;
-      the 10-03 13-27 report does NOT contain the text) voice-checked at
-      `docs/drafts/issue-252-reply.md`, cites 1.1.0 + upstream #12105. Post on
-      Lars's explicit order (1.1.0 tagged 2026-10-03, so the draft's claims hold).
+- [x] **Post the #252 reply** — DONE 2026-10-03 on Lars's explicit order:
+      [issuecomment-5970180678](https://github.com/LarsArtmann/typespec-asyncapi/issues/252#issuecomment-5970180678)
+      (fresh draft, voice-checked 0/0, `--kind comment`; the lost /tmp original
+      was unrecoverable and the 13-27 report never contained its text). Draft
+      kept at `docs/drafts/issue-252-reply.md`.
 - [x] **Release 1.1.0** — DONE 2026-10-03: tagged `v1.1.0` (annotated, commit
       `2d06b977`), pushed, release.yml green, npm `latest` → 1.1.0. The
       pre-tag ritual caught a live manifest re-drift (BuildFlow pnpm-update
