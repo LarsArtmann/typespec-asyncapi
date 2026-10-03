@@ -95,6 +95,21 @@ importers:
         specifier: ^1.16.0
         version: 1.16.0(@types/node@26.6.3)
 
+  examples/mixed-rest-events:
+    dependencies:
+      '@lars-artmann/typespec-asyncapi':
+        specifier: workspace:*
+        version: link:../..
+      '@typespec/compiler':
+        specifier: ^1.16.0
+        version: 1.16.0(@types/node@26.6.3)
+      '@typespec/http':
+        specifier: ^1.16.0
+        version: 1.16.0(@typespec/compiler@1.16.0(@types/node@26.6.3))
+      '@typespec/openapi3':
+        specifier: ^1.16.0
+        version: 1.16.0(@typespec/compiler@1.16.0(@types/node@26.6.3))(@typespec/http@1.16.0(@typespec/compiler@1.16.0(@types/node@26.6.3)))(@typespec/json-schema@1.16.0(@typespec/compiler@1.16.0(@types/node@26.6.3)))(@typespec/openapi@1.16.0(@typespec/compiler@1.16.0(@types/node@26.6.3))(@typespec/http@1.16.0(@typespec/compiler@1.16.0(@types/node@26.6.3))))(@typespec/versioning@0.86.0(@typespec/compiler@1.16.0(@types/node@26.6.3)))
+
   examples/reusable-components:
     dependencies:
       '@lars-artmann/typespec-asyncapi':

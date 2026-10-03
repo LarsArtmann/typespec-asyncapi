@@ -49,6 +49,6 @@ namespace Events {
   namespace Module {
     @publish
     @channel("orders/created")
-    op orderCreated(): Module.OrderCreated;
+    op orderCreated(): Service.Backend.Module.OrderCreated;
   }
 }

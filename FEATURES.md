@@ -3,7 +3,7 @@
 **Verified:** 2026-08-21 against actual code + full verify gate (1259 pass, 0 fail, 102 test files)
 **Project:** `@lars-artmann/typespec-asyncapi` v0.3.0-beta.1 (live on npm, `latest` dist-tag)
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
-**Diagnostics:** 30 codes (20 error + 10 warning), all compile-time validated via `$lib.reportDiagnostic()`
+**Diagnostics:** 31 codes (20 error + 11 warning), all compile-time validated via `$lib.reportDiagnostic()`
 **Decorators:** 30 declared in `lib/main.tsp` (19 core + 11 reusable-component); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
 **Duplication:** 0% threshold enforced via jscpd (source files only), 0 clones
 **Coverage:** 98.1% average line coverage (42 source files, 75% per-file minimum gate)
@@ -161,7 +161,8 @@
 | External spec tests   | FULLY_FUNCTIONAL | `test/external/` — 16 patterns from 5 external projects                                                                                              |
 | Real-world fixtures   | FULLY_FUNCTIONAL | `test/realworld/` — 10 `.tsp` fixtures from GitHub repos + canonical AsyncAPI specs (146 tests)                                                      |
 | Studio compatibility  | FULLY_FUNCTIONAL | `test/validation/studio-compatibility.test.ts` — parses via `@asyncapi/parser` (runs under Node/vitest; NOT Bun)                                     |
-| Examples gate         | FULLY_FUNCTIONAL | `pnpm run check-examples` — compiles all 14 `examples/` with 0 diagnostics + AJV-validates each; enforced in CI                                      |
+| Mixed-emitter support | FULLY_FUNCTIONAL | Combining with `@typespec/openapi3` in one program: `event-op-in-service-namespace` warning catches event ops accidentally HTTP-routed by `@typespec/http` (issue #252); bare REST ops under `@service` stay out of the AsyncAPI document; `examples/mixed-rest-events/` demonstrates the supported namespace split. Locked by `test/integration/mixed-http-emitters.test.ts` |
+| Examples gate         | FULLY_FUNCTIONAL | `pnpm run check-examples` — compiles all 15 `examples/` with 0 diagnostics + AJV-validates each; enforced in CI                                      |
 | Performance benchmark | FULLY_FUNCTIONAL | `test/benchmark/` — measures compilation time + scaling metrics, 15s/30s time budget                                                                 |
 | Deduplication gate    | FULLY_FUNCTIONAL | `jscpd src scripts` — 0% threshold, 0 clones                                                                                                         |
 | Negative tests        | FULLY_FUNCTIONAL | `test/integration/negative-tests.test.ts` — error handling                                                                                           |
