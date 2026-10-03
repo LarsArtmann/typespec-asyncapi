@@ -24,7 +24,6 @@ import type {
 } from "./domain/models/asyncapi-document.js";
 import type { DocumentBuildContext } from "./builders/types.js";
 import { discoverOperations } from "./builders/operation-discovery.js";
-import { validateCrossEmitterUsage } from "./builders/cross-emitter-validation.js";
 import { reportProgramDiagnostic } from "./decorator-helpers.js";
 import {
   applyChannelDocs,
@@ -75,7 +74,6 @@ export function buildAsyncAPIDocument(
   };
 
   discoverOperations(state, ctx);
-  validateCrossEmitterUsage(state, ctx);
   buildOperations(state, ctx);
   applyChannelDocs(ctx);
   mergeExplicitMessages(state, ctx);

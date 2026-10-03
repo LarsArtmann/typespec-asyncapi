@@ -10,16 +10,18 @@
  * inside the service namespace therefore leak into OpenAPI output as phantom
  * GET endpoints and collide as duplicate routes.
  *
- * Emits the `event-op-in-service-namespace` warning for that case and exposes
- * the shared detection helpers used to keep bare REST operations out of the
- * AsyncAPI document (see `discoverBareOps`).
+ * Runs as a library `$onValidate` hook — during program validation, BEFORE
+ * emitters — so the `event-op-in-service-namespace` warning surfaces even
+ * when `@typespec/http`'s duplicate-operation errors skip emission entirely.
+ * Also exposes the shared detection helpers used to keep bare REST operations
+ * out of the AsyncAPI document (see `discoverBareOps`).
  */
 
 import { listServices } from "@typespec/compiler";
 import type { Namespace, Program, Type } from "@typespec/compiler";
 import type { AsyncAPIConsolidatedState } from "../state.js";
+import { consolidateAsyncAPIState } from "../state.js";
 import { reportProgramDiagnostic } from "../decorator-helpers.js";
-import type { BuilderFn } from "./types.js";
 
 /** True when the program has loaded the `@typespec/http` library. */
 export function isHttpLibraryLoaded(program: Program): boolean {
@@ -69,21 +71,34 @@ function isAsyncApiOverHttp(
   return false;
 }
 
+/**
+ * Library validation hook: warn about AsyncAPI event operations that
+ * `@typespec/http` will route as REST endpoints. Runs during program
+ * validation (before emitters) so the warning accompanies — rather than
+ * disappears under — http's duplicate-operation errors.
+ */
+export function $onValidate(program: Program): void {
+  validateCrossEmitterUsage(program, consolidateAsyncAPIState(program));
+}
+
 /** Warn about AsyncAPI event operations routed by `@typespec/http`. */
-export const validateCrossEmitterUsage: BuilderFn = (state, ctx) => {
-  if (!isHttpLibraryLoaded(ctx.program)) {
+export function validateCrossEmitterUsage(
+  program: Program,
+  state: AsyncAPIConsolidatedState,
+): void {
+  if (!isHttpLibraryLoaded(program)) {
     return;
   }
   const eventTypes = new Set<Type>([...state.channels.keys(), ...state.operations.keys()]);
   for (const type of eventTypes) {
-    const service = findEnclosingServiceNamespace(ctx.program, type);
+    const service = findEnclosingServiceNamespace(program, type);
     if (service === undefined) {
       continue;
     }
     if (isAsyncApiOverHttp(state, type)) {
       continue;
     }
-    reportProgramDiagnostic(ctx.program, {
+    reportProgramDiagnostic(program, {
       code: "event-op-in-service-namespace",
       target: type,
       format: {
@@ -92,4 +107,4 @@ export const validateCrossEmitterUsage: BuilderFn = (state, ctx) => {
       },
     });
   }
-};
+}

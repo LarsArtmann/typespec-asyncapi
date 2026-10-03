@@ -13,6 +13,9 @@ export * from "./state.js";
 
 export { $decorators } from "./decorators.js";
 
+// Library validation hook: cross-emitter warnings (runs before emitters).
+export { $onValidate } from "./builders/cross-emitter-validation.js";
+
 // Cross-emitter shared schema API
 export type { JsonSchema, SchemaRef, SchemaMap } from "./shared/json-schema.js";
 export { generateSchemas } from "./schema-generator.js";
