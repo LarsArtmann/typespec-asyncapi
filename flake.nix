@@ -50,8 +50,14 @@
                 #   crashes the prettier parser (point-in-time exports)
                 # - website global.out.css is Tailwind-generated and tracked;
                 #   formatting it churns on every website build
+                # - pnpm-lock.yaml: pnpm owns its style; prettier reformatting
+                #   causes pnpm<->treefmt ping-pong
+                # Archived reports (docs/_archive, docs/status) are point-in-time
+                # records — annotate, never rewrite/reformat.
                 excludes = [
                   "docs/**/*.html"
+                  "docs/_archive/**"
+                  "docs/status/**"
                   "website/src/styles/*.out.css"
                   "pnpm-lock.yaml"
                 ];
