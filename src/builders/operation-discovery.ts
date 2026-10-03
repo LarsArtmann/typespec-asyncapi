@@ -28,7 +28,10 @@ import {
   type HttpRouteFacts,
   isHttpLibraryLoaded,
 } from "./http-route-facts.js";
-import { reportProgramDiagnostic } from "../decorator-helpers.js";
+import {
+  type ProgramDiagnostic,
+  reportProgramDiagnostic,
+} from "../decorator-helpers.js";
 
 /**
  * Discover all operations from three sources:
@@ -178,15 +181,13 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
         reportSkippedBareOp(ctx, op, opName, httpRouteFacts);
         if (httpRouteFacts === undefined && !warnedAboutInference) {
           warnedAboutInference = true;
-          const service = findEnclosingServiceNamespace(ctx.program, op);
-          reportProgramDiagnostic(ctx.program, {
-            code: "bare-op-inference-deprecated",
-            target: op,
-            format: {
-              operationName: opName,
-              serviceName: service?.name ?? "",
-            },
-          });
+          reportBareOpServiceDiagnostic(
+            ctx.program,
+            "bare-op-inference-deprecated",
+            op,
+            opName,
+            findEnclosingServiceNamespace(ctx.program, op),
+          );
         }
         continue;
       }
@@ -243,11 +244,29 @@ function reportSkippedBareOp(
     });
     return;
   }
-  const service = findEnclosingServiceNamespace(ctx.program, op);
-  reportProgramDiagnostic(ctx.program, {
-    code: "bare-op-assumed-rest",
+  reportBareOpServiceDiagnostic(
+    ctx.program,
+    "bare-op-assumed-rest",
+    op,
+    opName,
+    findEnclosingServiceNamespace(ctx.program, op),
+    "assumed",
+  );
+}
+
+/** Report a bare-op diagnostic with operationName/serviceName interpolation. */
+function reportBareOpServiceDiagnostic(
+  program: Program,
+  code: ProgramDiagnostic["code"],
+  op: Operation,
+  opName: string,
+  service: Namespace | undefined,
+  messageId?: string,
+): void {
+  reportProgramDiagnostic(program, {
+    code,
     target: op,
     format: { operationName: opName, serviceName: service?.name ?? "" },
-    messageId: "assumed",
+    messageId,
   });
 }
