@@ -45,10 +45,15 @@
               nixfmt.enable = true;
               prettier = {
                 enable = true;
-                # Generated report artifacts (review dashboards under docs/)
-                # contain malformed HTML that crashes the prettier parser;
-                # archives are point-in-time exports, never formatted.
-                excludes = [ "docs/**/*.html" ];
+                # Generated artifacts are never formatted:
+                # - review dashboards under docs/ contain malformed HTML that
+                #   crashes the prettier parser (point-in-time exports)
+                # - website global.out.css is Tailwind-generated and tracked;
+                #   formatting it churns on every website build
+                excludes = [
+                  "docs/**/*.html"
+                  "website/src/styles/*.out.css"
+                ];
               };
             };
           };
