@@ -54,7 +54,7 @@ What remains is the gated release chain and the tail:
       Lars's explicit order (1.1.0 tagged 2026-10-03, so the draft's claims hold).
 - [ ] **⏳ Release 1.1.0** — new diagnostics + behavior refinement (rec: 1.1.0,
       not patch). Ritual per AGENTS: `pnpm install --lockfile-only && pnpm
-  install --frozen-lockfile && pnpm run verify` → `pnpm version` →
+install --frozen-lockfile && pnpm run verify` → `pnpm version` →
       annotated tag → watch release.yml. FEATURES refresh after it ships.
 - [x] **⏳ Post the upstream microsoft/typespec issue** — DONE 2026-10-03:
       filed as [microsoft/typespec#12105](https://github.com/microsoft/typespec/issues/12105)

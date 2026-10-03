@@ -1,5 +1,6 @@
 <!-- Canonical local copy of the posted upstream filing (the /tmp draft was disposable). -->
 <!-- Posted: https://github.com/microsoft/typespec/issues/12105 (2026-10-03T12:34:33Z) -->
+
 > [!NOTE]
 > This filing was drafted by GLM-5.3-flash and GLM-5.3 via Crush, with multiple rounds of feedback from me. The failure behind it was found and reported by a user in [LarsArtmann/typespec-asyncapi#252](https://github.com/LarsArtmann/typespec-asyncapi/issues/252).
 >
@@ -29,12 +30,12 @@ namespace Demo {
 
 Resolved via `getAllHttpServices` (verified empirically, zero diagnostics emitted):
 
-| operation            | declared              | resolved route |
-| -------------------- | --------------------- | -------------- |
-| `explicitGet`        | `@get`                | GET (expected) |
-| `verblessNoBody`     | nothing               | **GET**        |
-| `verblessWithBody`   | `@body`               | **POST**       |
-| `verblessQueryOnly`  | `@query`              | **GET**        |
+| operation           | declared | resolved route |
+| ------------------- | -------- | -------------- |
+| `explicitGet`       | `@get`   | GET (expected) |
+| `verblessNoBody`    | nothing  | **GET**        |
+| `verblessWithBody`  | `@body`  | **POST**       |
+| `verblessQueryOnly` | `@query` | **GET**        |
 
 Source of the fallback: `@typespec/http` `dist/src/parameters.js` `getOperationParameters` — verb selector → `getOperationVerb` → overload base → "POST if there is a body and GET otherwise". The real-world trigger: a TypeSpec program authored for both OpenAPI and AsyncAPI (community `@lars-artmann/typespec-asyncapi` emitter, [LarsArtmann/typespec-asyncapi#252](https://github.com/LarsArtmann/typespec-asyncapi/issues/252)) — event operations are verb-less by design, so all of them phantom-route as REST and the OpenAPI output breaks with duplicate-operation errors.
 
@@ -61,4 +62,3 @@ Smallest correct change: extend the existing route-uniqueness validation to also
 ---
 
 💘 Generated with Crush
-
