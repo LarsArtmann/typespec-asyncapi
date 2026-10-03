@@ -9,18 +9,18 @@
 
 ### The 1% that delivers 51% of the result
 
-| #   | Task                                                                                                         | Why                                                               |
-| --- | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
-| 1   | Remove debug `appendFileSync` + `console.error` from `src/minimal-decorators.ts` and `src/schema-emitter.ts` | Fixes 14 test failures instantly. This is a production crash bug. |
+| # | Task                                                                                                         | Why                                                               |
+| - | ------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+| 1 | Remove debug `appendFileSync` + `console.error` from `src/minimal-decorators.ts` and `src/schema-emitter.ts` | Fixes 14 test failures instantly. This is a production crash bug. |
 
 ### The 4% that delivers 64% of the result
 
-| #   | Task                                               | Why                                      |
-| --- | -------------------------------------------------- | ---------------------------------------- |
-| 1   | Remove debug logging (above)                       | 14 tests → green                         |
-| 2   | Delete empty `test/realworld/fixtures/github/` dir | Dead artifact from deleted fake fixtures |
-| 3   | Verify full suite passes                           | Confirm we're back to a clean state      |
-| 4   | Commit and push everything                         | Lock in the honest testing + bug fix     |
+| # | Task                                               | Why                                      |
+| - | -------------------------------------------------- | ---------------------------------------- |
+| 1 | Remove debug logging (above)                       | 14 tests → green                         |
+| 2 | Delete empty `test/realworld/fixtures/github/` dir | Dead artifact from deleted fake fixtures |
+| 3 | Verify full suite passes                           | Confirm we're back to a clean state      |
+| 4 | Commit and push everything                         | Lock in the honest testing + bug fix     |
 
 ### The 20% that delivers 80% of the result
 
@@ -34,12 +34,12 @@
 
 ### The remaining 20% to reach 100%
 
-| #   | Task                                                                                       | Why                                                                             |
-| --- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
-| 9   | Create adapted wrapper for Azure EventGrid models                                          | Enterprise-grade CloudEvents schema. Tests `unknown`, `bytes`, recursive models |
-| 10  | Create adapted wrapper for DanSnow/typespec-events                                         | Tests nested models, int64 timestamps, arrays of named models                   |
-| 11  | Update AGENTS.md with findings (decorator API differences, TypeSpec v1.14 breaking change) | Knowledge preservation                                                          |
-| 12  | Commit and push all work                                                                   | Lock in                                                                         |
+| #  | Task                                                                                       | Why                                                                             |
+| -- | ------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------- |
+| 9  | Create adapted wrapper for Azure EventGrid models                                          | Enterprise-grade CloudEvents schema. Tests `unknown`, `bytes`, recursive models |
+| 10 | Create adapted wrapper for DanSnow/typespec-events                                         | Tests nested models, int64 timestamps, arrays of named models                   |
+| 11 | Update AGENTS.md with findings (decorator API differences, TypeSpec v1.14 breaking change) | Knowledge preservation                                                          |
+| 12 | Commit and push all work                                                                   | Lock in                                                                         |
 
 ---
 

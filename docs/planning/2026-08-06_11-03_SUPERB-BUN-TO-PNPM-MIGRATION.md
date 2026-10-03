@@ -63,23 +63,23 @@ The codebase uses **zero Bun-specific runtime APIs** — all imports are `node:f
 
 ## Phase Plan (Tasks 10–30 min each)
 
-| #   | Task                                                                                                       | Phase    | Impact   | Effort  | Priority |
-| --- | ---------------------------------------------------------------------------------------------------------- | -------- | -------- | ------- | -------- |
-| 1   | Replace all bun/bunx/bun x in package.json scripts with pnpm equivalents                                   | Core     | Critical | Low     | P0       |
-| 2   | Add `tsx` and `@vitest/coverage-v8` to devDependencies                                                     | Core     | Critical | Low     | P0       |
-| 3   | Delete `bun.lock`, run `pnpm install`, verify resolution                                                   | Core     | Critical | Low     | P0       |
-| 4   | Update `flake.nix` (pkgs.bun → pkgs.pnpm)                                                                  | Core     | High     | Low     | P1       |
-| 5   | Configure vitest V8 coverage in `vitest.config.ts`                                                         | Coverage | Critical | Medium  | P0       |
-| 6   | Update `test:coverage` and `test:coverage:gate` scripts                                                    | Coverage | Critical | Low     | P0       |
-| 7   | Verify coverage gate produces lcov.info and passes                                                         | Coverage | Critical | Medium  | P0       |
-| 8   | Update `.pre-commit-config.yaml` (bunx → pnpm exec, bun test → pnpm test, bun.lockb → pnpm-lock.yaml)      | Tooling  | High     | Low     | P1       |
-| 9   | Update `.gitignore` comment (bun install → pnpm install)                                                   | Tooling  | Low      | Low     | P2       |
-| 10  | Update `AGENTS.md` — quick start commands, constraints, coverage explanation                               | Docs     | High     | Low     | P1       |
-| 11  | Update `README.md` — install/usage instructions                                                            | Docs     | Medium   | Low     | P1       |
-| 12  | Update script comments (`generate-binding-specs.ts`, `coverage-gate.ts`)                                   | Docs     | Low      | Low     | P2       |
-| 13  | Update source file comments (`generated-bindings.ts`, `binding-versions.ts`, `binding-field-validator.ts`) | Docs     | Low      | Low     | P2       |
-| 14  | Full verification: `pnpm verify` (build + lint + test + coverage:gate + duplicate)                         | Verify   | Critical | Medium  | P0       |
-| 15  | Fix any issues found during verification                                                                   | Verify   | Critical | Unknown | P0       |
+| #  | Task                                                                                                       | Phase    | Impact   | Effort  | Priority |
+| -- | ---------------------------------------------------------------------------------------------------------- | -------- | -------- | ------- | -------- |
+| 1  | Replace all bun/bunx/bun x in package.json scripts with pnpm equivalents                                   | Core     | Critical | Low     | P0       |
+| 2  | Add `tsx` and `@vitest/coverage-v8` to devDependencies                                                     | Core     | Critical | Low     | P0       |
+| 3  | Delete `bun.lock`, run `pnpm install`, verify resolution                                                   | Core     | Critical | Low     | P0       |
+| 4  | Update `flake.nix` (pkgs.bun → pkgs.pnpm)                                                                  | Core     | High     | Low     | P1       |
+| 5  | Configure vitest V8 coverage in `vitest.config.ts`                                                         | Coverage | Critical | Medium  | P0       |
+| 6  | Update `test:coverage` and `test:coverage:gate` scripts                                                    | Coverage | Critical | Low     | P0       |
+| 7  | Verify coverage gate produces lcov.info and passes                                                         | Coverage | Critical | Medium  | P0       |
+| 8  | Update `.pre-commit-config.yaml` (bunx → pnpm exec, bun test → pnpm test, bun.lockb → pnpm-lock.yaml)      | Tooling  | High     | Low     | P1       |
+| 9  | Update `.gitignore` comment (bun install → pnpm install)                                                   | Tooling  | Low      | Low     | P2       |
+| 10 | Update `AGENTS.md` — quick start commands, constraints, coverage explanation                               | Docs     | High     | Low     | P1       |
+| 11 | Update `README.md` — install/usage instructions                                                            | Docs     | Medium   | Low     | P1       |
+| 12 | Update script comments (`generate-binding-specs.ts`, `coverage-gate.ts`)                                   | Docs     | Low      | Low     | P2       |
+| 13 | Update source file comments (`generated-bindings.ts`, `binding-versions.ts`, `binding-field-validator.ts`) | Docs     | Low      | Low     | P2       |
+| 14 | Full verification: `pnpm verify` (build + lint + test + coverage:gate + duplicate)                         | Verify   | Critical | Medium  | P0       |
+| 15 | Fix any issues found during verification                                                                   | Verify   | Critical | Unknown | P0       |
 
 ---
 
