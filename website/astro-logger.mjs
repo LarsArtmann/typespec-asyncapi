@@ -24,7 +24,9 @@ export default function astroLogger(options) {
   return {
     write(event) {
       const message = event.message ?? "";
-      if (SUPPRESSED_MESSAGES.some((fragment) => message.startsWith(fragment))) {
+      if (
+        SUPPRESSED_MESSAGES.some((fragment) => message.startsWith(fragment))
+      ) {
         return;
       }
       destination.write(event);

@@ -21,7 +21,8 @@ const EMPTY_STRING_HASH =
 const INLINE_SCRIPT_RE =
   /<script(?![^>]*\btype\s*=\s*["']module["'])(?![^>]*\bsrc\s*=)([^>]*)>([\s\S]*?)<\/script>/g;
 
-const CSP_META_RE = /(<meta[^>]*content-security-policy[^>]*content=")([^"]*)(")/i;
+const CSP_META_RE =
+  /(<meta[^>]*content-security-policy[^>]*content=")([^"]*)(")/i;
 
 async function findHtmlFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -51,8 +52,7 @@ function addScriptHashes(policy, hashes) {
 
   return policy.replace(
     /(^|;\s*)(script-src(?!-)[^;]*)/,
-    (_match, lead, directive) =>
-      `${lead}${[directive, ...missing].join(" ")}`,
+    (_match, lead, directive) => `${lead}${[directive, ...missing].join(" ")}`,
   );
 }
 

@@ -190,8 +190,8 @@ Working list for `typespec-asyncapi.lars.software`. 144 ideas, grouped by the jo
 
 | #   | Idea                                                                                                | Impact | Effort | Status |
 | --- | --------------------------------------------------------------------------------------------------- | ------ | ------ | ------ |
-| 141 | Scope `'unsafe-inline'` to `style-src-attr` so inline `<style>` blocks stay hash-controlled          | H      | S      | Done   |
-| 142 | Validate the emitted CSP on every build: directive names, hash coverage, no `unsafe-inline` scripts  | H      | M      | Done   |
+| 141 | Scope `'unsafe-inline'` to `style-src-attr` so inline `<style>` blocks stay hash-controlled         | H      | S      | Done   |
+| 142 | Validate the emitted CSP on every build: directive names, hash coverage, no `unsafe-inline` scripts | H      | M      | Done   |
 | 143 | Verify inline `<style>` and `<script>` hashes per page instead of trusting the build                | M      | S      | Done   |
 | 144 | Filter the two expected upstream Astro warnings through a narrow logger allowlist                   | L      | S      | Done   |
 

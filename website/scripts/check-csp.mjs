@@ -105,7 +105,9 @@ function checkFile(file, html) {
   const usesStyleAttributes = STYLE_ATTRIBUTE_RE.test(html);
   const styleAttr = directives.get("style-src-attr");
   if (usesStyleAttributes && styleAttr === undefined) {
-    errors.push(`${file}: inline style attributes are used but style-src-attr is missing`);
+    errors.push(
+      `${file}: inline style attributes are used but style-src-attr is missing`,
+    );
   }
   if (styleAttr !== undefined && !styleAttr.includes("'unsafe-inline'")) {
     errors.push(`${file}: style-src-attr must allow 'unsafe-inline'`);
