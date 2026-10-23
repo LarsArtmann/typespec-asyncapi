@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/reference/architecture.png"
-
 ---
 
 This page is for contributors and for anyone deciding whether to depend on the internals. The public contract is the decorator surface and the emitted document; everything below is implementation.
@@ -77,13 +76,13 @@ Notable behaviors:
 
 ## Testing layers
 
-| Layer       | What it protects                                                        |
-| ----------- | ----------------------------------------------------------------------- |
+| Layer       | What it protects                                                                            |
+| ----------- | ------------------------------------------------------------------------------------------- |
 | Compliance  | AJV validation against the official AsyncAPI 3.1.0 schema, plus `$ref` and shape assertions |
-| Golden      | Byte-level locks on representative documents                            |
-| Property    | fast-check invariants over generated specs                              |
-| Integration | Mixed emitters, multi-namespace isolation, CLI behavior                 |
-| Examples    | Every repository example compiles clean and validates in CI             |
+| Golden      | Byte-level locks on representative documents                                                |
+| Property    | fast-check invariants over generated specs                                                  |
+| Integration | Mixed emitters, multi-namespace isolation, CLI behavior                                     |
+| Examples    | Every repository example compiles clean and validates in CI                                 |
 
 Coverage runs through Bun's native runtime coverage because the compiler loads `dist/` through a virtual filesystem that vitest's transform never sees.
 

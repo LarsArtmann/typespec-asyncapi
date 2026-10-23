@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/guides/reusable-components.png"
-
 ---
 
 AsyncAPI 3.1's `components.*` slots let you define an operation trait, message trait, parameter, correlation ID, or binding once and reference it everywhere. The emitter populates all of them.

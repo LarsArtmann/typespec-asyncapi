@@ -14,7 +14,9 @@ const diagnosticsSource = await read("src/lib.ts");
 const protocolsSource = await read("src/constants/protocols.ts");
 const bindingsSource = await read("src/constants/generated-bindings.ts");
 
-const protocolBlock = protocolsSource.match(/const PROTOCOLS = \[([\s\S]*?)\] as const;/u);
+const protocolBlock = protocolsSource.match(
+  /const PROTOCOLS = \[([\s\S]*?)\] as const;/u,
+);
 const bindingsBlock = bindingsSource.match(
   /export const GENERATED_LATEST_VERSIONS: Record<string, string> = \{([\s\S]*?)\};/u,
 );
@@ -23,9 +25,9 @@ if (!protocolBlock || !bindingsBlock) {
   throw new Error("Could not locate protocol or binding registries");
 }
 
-const examples = (await readdir(join(repo, "examples"), { withFileTypes: true }))
-  .filter((entry) => entry.isDirectory())
-  .length;
+const examples = (
+  await readdir(join(repo, "examples"), { withFileTypes: true })
+).filter((entry) => entry.isDirectory()).length;
 
 const stats = {
   version: packageJson.version,

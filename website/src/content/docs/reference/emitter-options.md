@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/reference/emitter-options.png"
-
 ---
 
 All options live under `options."@lars-artmann/typespec-asyncapi"` in `tspconfig.yaml`, or on the command line via `--option @lars-artmann/typespec-asyncapi.<option>=<value>`.

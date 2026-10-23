@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/guides/bindings.png"
-
 ---
 
 All 19 bindings are auto-generated from `@asyncapi/specs/bindings/` — the same source the AsyncAPI project publishes. That gives you field-level validation, correct binding versions, and placement checks without any hand-written protocol tables.

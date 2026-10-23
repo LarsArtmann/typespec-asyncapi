@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/getting-started/installation.png"
-
 ---
 
 **Who is this for?** Event-driven API architects, platform engineers, and backend teams already using TypeSpec who want a typed, validated AsyncAPI 3.1 source of truth instead of hand-written YAML.

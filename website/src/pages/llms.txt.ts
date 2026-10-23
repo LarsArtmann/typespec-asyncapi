@@ -3,7 +3,9 @@ import { siteConfig } from "../data/config";
 
 export const prerender = true;
 
-const docs = (await getCollection("docs")).sort((a, b) => a.id.localeCompare(b.id));
+const docs = (await getCollection("docs"))
+  .filter((entry) => entry.id !== "404")
+  .sort((a, b) => a.id.localeCompare(b.id));
 
 const lines = [
   `# ${siteConfig.name}`,
@@ -12,6 +14,7 @@ const lines = [
   "",
   "Documentation:",
   "",
+  `- [Home](${siteConfig.siteUrl}/): Overview and feature summary.`,
   ...docs.map(
     (entry) =>
       `- [${entry.data.title}](${siteConfig.siteUrl}/${entry.id}/): ${entry.data.description ?? ""}`,

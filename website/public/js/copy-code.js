@@ -19,20 +19,26 @@ async function copyText(text) {
   return legacyCopy(text);
 }
 
-document.querySelectorAll("[data-copy], #copy-btn").forEach((button) => {
-  button.addEventListener("click", async () => {
-    const text = button.dataset.copy ?? button.dataset.code ?? "";
-    const original = button.textContent.trim();
-    try {
-      await copyText(text);
-      button.textContent = "Copied";
-      button.classList.add("text-success");
-    } catch {
-      button.textContent = "Copy failed";
-    }
-    setTimeout(() => {
-      button.textContent = original;
-      button.classList.remove("text-success");
-    }, 2000);
+document
+  .querySelectorAll("[data-copy], [data-copy-target], #copy-btn")
+  .forEach((button) => {
+    button.addEventListener("click", async () => {
+      const target = button.dataset.copyTarget
+        ? document.getElementById(button.dataset.copyTarget)
+        : null;
+      const text =
+        button.dataset.copy ?? button.dataset.code ?? target?.textContent ?? "";
+      const original = button.textContent.trim();
+      try {
+        await copyText(text);
+        button.textContent = "Copied";
+        button.classList.add("text-success");
+      } catch {
+        button.textContent = "Copy failed";
+      }
+      setTimeout(() => {
+        button.textContent = original;
+        button.classList.remove("text-success");
+      }, 2000);
+    });
   });
-});

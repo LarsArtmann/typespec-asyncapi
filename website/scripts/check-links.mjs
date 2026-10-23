@@ -87,6 +87,8 @@ for (const required of [
   "llms.txt",
   "llms-full.txt",
   "manifest.json",
+  "opensearch.xml",
+  "rss.xml",
   "favicon.svg",
   ".well-known/security.txt",
 ]) {
@@ -103,4 +105,6 @@ if (missing.length > 0) {
   process.exit(1);
 }
 
-console.log(`links: ${checked} internal references across ${htmlFiles.length} pages are valid`);
+console.log(
+  `links: ${checked} internal references across ${htmlFiles.length} pages are valid`,
+);

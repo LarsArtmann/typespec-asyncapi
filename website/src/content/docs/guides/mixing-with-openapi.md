@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/guides/mixing-with-openapi.png"
-
 ---
 
 One TypeSpec program can produce both contracts: `@typespec/http` + `@typespec/openapi3` emit the REST document, and this emitter emits the event document. Ownership of every operation is decided by `@typespec/http`'s resolved route table, so the two emitters never claim the same operation.

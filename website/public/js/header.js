@@ -95,7 +95,9 @@ if (toggle && navLinks) {
     closeNav(false);
   });
 
-  window.matchMedia("(min-width: 1024px)").addEventListener("change", (event) => {
-    if (event.matches) closeNav(false);
-  });
+  window
+    .matchMedia("(min-width: 1024px)")
+    .addEventListener("change", (event) => {
+      if (event.matches) closeNav(false);
+    });
 }

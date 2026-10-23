@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/guides/decorators.png"
-
 ---
 
 Every AsyncAPI-specific decorator is declared in `lib/main.tsp` and accepts both `{}` (model expression) and `#{}` (value literal) syntax. Decorators that misconfigure emit compile-time diagnostics — see [Diagnostics](/reference/diagnostics/).

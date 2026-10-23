@@ -45,8 +45,9 @@ const yamlCode = `<span class="text-text-muted">asyncapi:</span> <span class="te
         <span class="w-2.5 h-2.5 rounded-full bg-code-dot"></span>
       ))}
       <span class="ml-3 text-xs text-text-muted font-mono">api.tsp — TypeSpec input</span>
+      <button type="button" data-copy-target="showcase-tsp" class="ml-auto text-xs font-mono text-text-muted hover:text-text-primary border border-border rounded px-2 py-1 transition-colors" aria-label="Copy TypeSpec input">Copy</button>
     </div>
-    <pre tabindex="0" class="p-4 text-left text-sm font-mono leading-relaxed overflow-x-auto"><code set:html={tspCode} /></pre>
+    <pre tabindex="0" class="p-4 text-left text-sm font-mono leading-relaxed overflow-x-auto"><code id="showcase-tsp" set:html={tspCode} /></pre>
   </div>
 
   <div class="flex items-center justify-center py-2 md:py-0">
@@ -62,8 +63,9 @@ const yamlCode = `<span class="text-text-muted">asyncapi:</span> <span class="te
         <span class="w-2.5 h-2.5 rounded-full bg-code-dot"></span>
       ))}
       <span class="ml-3 text-xs text-text-muted font-mono">asyncapi.yaml — validated ✓ (abridged)</span>
+      <button type="button" data-copy-target="showcase-yaml" class="ml-auto text-xs font-mono text-text-muted hover:text-text-primary border border-border rounded px-2 py-1 transition-colors" aria-label="Copy AsyncAPI output">Copy</button>
     </div>
-    <pre tabindex="0" class="p-4 text-left text-sm font-mono leading-relaxed overflow-x-auto"><code set:html={yamlCode} /></pre>
+    <pre tabindex="0" class="p-4 text-left text-sm font-mono leading-relaxed overflow-x-auto"><code id="showcase-yaml" set:html={yamlCode} /></pre>
   </div>
 </div>
 

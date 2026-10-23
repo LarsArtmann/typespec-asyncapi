@@ -9,7 +9,7 @@ export default defineConfig({
   security: {
     csp: {
       scriptDirective: {
-        resources: ["'self'"],
+        resources: ["'self'", "'wasm-unsafe-eval'"],
       },
       styleDirective: {
         resources: ["'self'", "'unsafe-inline'"],
@@ -146,6 +146,24 @@ export default defineConfig({
             type: "text/plain",
             href: "/llms.txt",
             title: "LLM documentation index",
+          },
+        },
+        {
+          tag: "link",
+          attrs: {
+            rel: "search",
+            type: "application/opensearchdescription+xml",
+            href: "/opensearch.xml",
+            title: "Search typespec-asyncapi",
+          },
+        },
+        {
+          tag: "link",
+          attrs: {
+            rel: "alternate",
+            type: "application/rss+xml",
+            href: "/rss.xml",
+            title: "typespec-asyncapi releases",
           },
         },
       ],

@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/reference/diagnostics.png"
-
 ---
 
 All diagnostics are prefixed `@lars-artmann/typespec-asyncapi/` in compiler output. They fire at compile time — invalid configurations never reach the emitted document.

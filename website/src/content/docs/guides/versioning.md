@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/guides/versioning.png"
-
 ---
 
 The emitter integrates with [`@typespec/versioning`](https://typespec.io/docs/libraries/versioning/overview/):

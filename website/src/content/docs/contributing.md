@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/contributing.png"
-
 ---
 
 Contributions are welcome — issues, docs improvements, and PRs.

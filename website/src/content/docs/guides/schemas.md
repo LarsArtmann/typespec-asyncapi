@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/guides/schemas.png"
-
 ---
 
 Every TypeSpec scalar maps to the correct JSON Schema type and format. Named models, enums, and scalars are emitted as reusable `components.schemas` entries referenced by `$ref`.

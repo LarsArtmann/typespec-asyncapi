@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/getting-started/migration.png"
-
 ---
 
 There is no YAML importer. Migration is a modeling exercise: describe the same channels, operations, messages, and servers in TypeSpec, then diff the emitted document against the one you have today. The diff is the review artifact.
@@ -47,16 +46,16 @@ There is no YAML importer. Migration is a modeling exercise: describe the same c
 
 ## Checklist
 
-| Step                | Done when                                                              |
-| ------------------- | ---------------------------------------------------------------------- |
-| Payloads modeled    | Every message payload is a named model or an explicit inline schema     |
-| Channels mapped     | Every channel address appears exactly once in the output               |
-| Actions explicit    | Every operation has `@publish` or `@subscribe`                         |
-| Servers on namespace| `@server` decorates the namespace, and `protocol` is supported         |
-| Bindings placed     | No `misplaced-binding` warning; `bindingVersion` is present            |
-| Security declared   | Schemes exist in `components.securitySchemes` and requirements resolve |
-| Validation clean    | `tsp compile` emits no errors and no unexpected warnings               |
-| Consumer verified   | AsyncAPI Studio or the parser accepts the document                     |
+| Step                 | Done when                                                              |
+| -------------------- | ---------------------------------------------------------------------- |
+| Payloads modeled     | Every message payload is a named model or an explicit inline schema    |
+| Channels mapped      | Every channel address appears exactly once in the output               |
+| Actions explicit     | Every operation has `@publish` or `@subscribe`                         |
+| Servers on namespace | `@server` decorates the namespace, and `protocol` is supported         |
+| Bindings placed      | No `misplaced-binding` warning; `bindingVersion` is present            |
+| Security declared    | Schemes exist in `components.securitySchemes` and requirements resolve |
+| Validation clean     | `tsp compile` emits no errors and no unexpected warnings               |
+| Consumer verified    | AsyncAPI Studio or the parser accepts the document                     |
 
 ## Common pitfalls
 

@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/guides/security.png"
-
 ---
 
 `@security` on a namespace declares schemes in `components.securitySchemes`; `@operationSecurity` attaches requirements to one operation as `$ref` pointers.

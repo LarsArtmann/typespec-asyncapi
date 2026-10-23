@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/faq.png"
-
 ---
 
 ## Is this production-ready?

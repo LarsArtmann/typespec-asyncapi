@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/guides/split-schemas.png"
-
 ---
 
 For large specs, enable `split-schemas` to emit every schema into its own file under `schemas/`:

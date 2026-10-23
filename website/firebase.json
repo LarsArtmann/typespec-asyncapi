@@ -2,7 +2,7 @@
   "hosting": {
     "target": "typespec-asyncapi",
     "public": "dist",
-    "ignore": ["firebase.json", "**/.*", "**/node_modules/**", "**/src/**"],
+    "ignore": ["firebase.json", "**/node_modules/**", "**/src/**"],
     "cleanUrls": true,
     "trailingSlash": true,
     "redirects": [

@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/getting-started/quick-start.png"
-
 ---
 
 This page walks the shortest path from zero to a validated AsyncAPI 3.1 document.

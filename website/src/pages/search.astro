@@ -7,7 +7,7 @@ import LandingLayout from '../layouts/LandingLayout.astro';
   canonicalPath="/search/"
   robots="noindex, follow"
 >
-  <section class="pt-36 pb-24">
+  <section class="pt-36 pb-24" data-pagefind-ignore>
     <div class="max-w-3xl mx-auto px-6">
       <h1 class="text-4xl font-bold tracking-tight text-text-primary mb-3">Search the documentation</h1>
       <p class="text-text-muted mb-8">Find installation steps, decorator references, binding rules, and diagnostics.</p>
@@ -35,90 +35,114 @@ import LandingLayout from '../layouts/LandingLayout.astro';
 </LandingLayout>
 
 <script>
+  interface PagefindResult {
+    url: string;
+    excerpt: string;
+    meta: { title?: string };
+  }
+
+  interface PagefindModule {
+    init: () => Promise<void>;
+    search: (query: string) => Promise<{
+      results: Array<{ data: () => Promise<PagefindResult> }>;
+    }>;
+  }
+
+  function mountSearch(
+    form: HTMLFormElement,
+    input: HTMLInputElement,
+    status: HTMLElement,
+    results: HTMLOListElement,
+  ) {
+    let pagefind: PagefindModule | undefined;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    async function loadPagefind(): Promise<PagefindModule> {
+      if (pagefind) return pagefind;
+      const url = "/pagefind/pagefind.js";
+      const module = (await import(/* @vite-ignore */ url)) as PagefindModule;
+      await module.init();
+      pagefind = module;
+      return pagefind;
+    }
+
+    function render(items: PagefindResult[]) {
+      results.replaceChildren();
+      for (const item of items) {
+        const li = document.createElement("li");
+        li.className = "rounded-xl border border-border bg-bg-card p-4";
+
+        const link = document.createElement("a");
+        link.href = item.url;
+        link.className = "text-accent hover:text-accent-hover font-semibold";
+        link.textContent = item.meta.title ?? item.url;
+
+        const excerpt = document.createElement("p");
+        excerpt.className = "text-sm text-text-secondary mt-1";
+        excerpt.innerHTML = item.excerpt;
+
+        li.append(link, excerpt);
+        results.append(li);
+      }
+    }
+
+    async function run(query: string) {
+      const trimmed = query.trim();
+      if (trimmed.length < 2) {
+        results.replaceChildren();
+        status.textContent = "Type at least two characters.";
+        return;
+      }
+      status.textContent = "Searching…";
+      try {
+        const instance = await loadPagefind();
+        const search = await instance.search(trimmed);
+        const items = await Promise.all(
+          search.results.slice(0, 12).map((result) => result.data()),
+        );
+        if (items.length === 0) {
+          status.textContent = `No results for “${trimmed}”.`;
+          results.replaceChildren();
+          return;
+        }
+        status.textContent = `${search.results.length} result${search.results.length === 1 ? "" : "s"} for “${trimmed}”.`;
+        render(items);
+      } catch {
+        results.replaceChildren();
+        status.textContent =
+          "The search index is only built for production. Run pnpm run build and pnpm run preview.";
+      }
+    }
+
+    const initial = new URLSearchParams(window.location.search).get("q") ?? "";
+    input.value = initial;
+    if (initial) run(initial);
+
+    input.addEventListener("input", () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => {
+        const query = input.value;
+        const url = new URL(window.location.href);
+        if (query) url.searchParams.set("q", query);
+        else url.searchParams.delete("q");
+        window.history.replaceState({}, "", url);
+        run(query);
+      }, 180);
+    });
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      if (timer) clearTimeout(timer);
+      run(input.value);
+    });
+  }
+
   const form = document.getElementById("search-form");
   const input = document.getElementById("search-input");
   const status = document.getElementById("search-status");
   const results = document.getElementById("search-results");
 
-  let pagefind;
-  let timer;
-
-  async function loadPagefind() {
-    if (pagefind) return pagefind;
-    const url = "/pagefind/pagefind.js";
-    const module = await import(/* @vite-ignore */ url);
-    await module.init();
-    pagefind = module;
-    return pagefind;
+  if (form instanceof HTMLFormElement && input instanceof HTMLInputElement && status && results instanceof HTMLOListElement) {
+    mountSearch(form, input, status, results);
   }
-
-  function render(items) {
-    results.replaceChildren();
-    for (const item of items) {
-      const li = document.createElement("li");
-      li.className = "rounded-xl border border-border bg-bg-card p-4";
-
-      const link = document.createElement("a");
-      link.href = item.url;
-      link.className = "text-accent hover:text-accent-hover font-semibold";
-      link.textContent = item.meta.title || item.url;
-
-      const excerpt = document.createElement("p");
-      excerpt.className = "text-sm text-text-secondary mt-1";
-      excerpt.innerHTML = item.excerpt;
-
-      li.append(link, excerpt);
-      results.append(li);
-    }
-  }
-
-  async function run(query) {
-    const trimmed = query.trim();
-    if (trimmed.length < 2) {
-      results.replaceChildren();
-      status.textContent = "Type at least two characters.";
-      return;
-    }
-    status.textContent = "Searching…";
-    try {
-      const instance = await loadPagefind();
-      const search = await instance.search(trimmed);
-      const items = await Promise.all(
-        search.results.slice(0, 12).map((result) => result.data()),
-      );
-      if (items.length === 0) {
-        status.textContent = `No results for “${trimmed}”.`;
-        results.replaceChildren();
-        return;
-      }
-      status.textContent = `${search.results.length} result${search.results.length === 1 ? "" : "s"} for “${trimmed}”.`;
-      render(items);
-    } catch {
-      results.replaceChildren();
-      status.textContent =
-        "The search index is only built for production. Run pnpm run build and pnpm run preview.";
-    }
-  }
-
-  const initial = new URLSearchParams(window.location.search).get("q") ?? "";
-  input.value = initial;
-  if (initial) run(initial);
-
-  input.addEventListener("input", () => {
-    clearTimeout(timer);
-    timer = setTimeout(() => {
-      const query = input.value;
-      const url = new URL(window.location.href);
-      if (query) url.searchParams.set("q", query);
-      else url.searchParams.delete("q");
-      window.history.replaceState({}, "", url);
-      run(query);
-    }, 180);
-  });
-
-  form.addEventListener("submit", (event) => {
-    event.preventDefault();
-    clearTimeout(timer);
-    run(input.value);
-  });
 </script>

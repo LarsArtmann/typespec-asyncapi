@@ -22,7 +22,6 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/changelog.png"
-
 ---
 
 The full changelog lives in the repository:
