@@ -5,10 +5,12 @@ description: Install the typespec-asyncapi emitter and wire it into your TypeSpe
 
 **Who is this for?** Event-driven API architects, platform engineers, and backend teams already using TypeSpec who want a typed, validated AsyncAPI 3.1 source of truth instead of hand-written YAML.
 
+**When not to use it:** if your team does not use TypeSpec, or you only need a one-off AsyncAPI document, hand-written YAML plus the [AsyncAPI Studio](https://studio.asyncapi.com/) is simpler. This emitter pays off when the spec is generated repeatedly and must stay in lockstep with typed source.
+
 ## Requirements
 
 - Node.js 20.11 or newer
-- The [TypeSpec compiler](https://typespec.io/docs/) (`tsp` CLI)
+- The [TypeSpec compiler](https://typespec.io/docs/) (`tsp` CLI), 1.15 or newer
 - A package manager: pnpm, npm, yarn, or bun
 
 ## Install the emitter

@@ -83,12 +83,16 @@ The reference chain is spec-correct: operations point at `#/channels/{id}/messag
 
 ## 4. Add a server and protocol
 
+`@server` targets a **namespace**, so it goes above `namespace MyAPI;` (replace the plain namespace line from step 1). Remember that `#{}` value literals are comma-separated:
+
 ```typespec
 @server("production", #{
-  url: "broker.example.com:9092"
-  protocol: "kafka"
-  description: "Production Kafka broker"
+  url: "broker.example.com:9092",
+  protocol: "kafka",
+  description: "Production Kafka broker",
 })
+namespace MyAPI;
+
 @channel("events")
 @protocol(#{ protocol: "kafka", partitions: 3, replicationFactor: 2 })
 @publish
@@ -102,4 +106,4 @@ The Kafka binding is auto-versioned (`bindingVersion: 0.5.0`), field-validated, 
 - [Decorators](/guides/decorators/) — the full 30-decorator reference
 - [Schema Generation](/guides/schemas/) — scalars, constraints, unions, generics
 - [Security](/guides/security/) — OAuth2, API keys, SASL schemes
-- [Examples in the repo](https://github.com/LarsArtmann/typespec-asyncapi/tree/master/examples) — 13 runnable examples, all CI-validated
+- [Examples in the repo](https://github.com/LarsArtmann/typespec-asyncapi/tree/master/examples) — 15 runnable examples, all CI-validated

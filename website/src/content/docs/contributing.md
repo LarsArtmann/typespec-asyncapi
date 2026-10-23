@@ -23,7 +23,7 @@ Run all commands inside `nix develop .#default` to get the pinned toolchain (pnp
 pnpm run verify
 ```
 
-Runs the full gate: build, lint, test typecheck, 1259 tests, coverage gate (75% minimum per file), and clone detection (0% threshold). The CI runs exactly this — if it passes locally, it passes in CI.
+Runs the full gate: build, lint, test typecheck, 1275 tests (105 files), coverage gate (75% minimum per file), and clone detection (0% threshold). The CI runs exactly this — if it passes locally, it passes in CI.
 
 :::note
 Tests run via vitest, but coverage runs via `bun test --coverage`: the TypeSpec compiler loads the emitter from `dist/` through a virtual filesystem, and only Bun's native runtime coverage sees those dynamically loaded files.
@@ -34,7 +34,7 @@ Tests run via vitest, but coverage runs via `bun test --coverage`: the TypeSpec 
 - `src/` — the emitter (schema generation, document builders, decorators, validation)
 - `lib/main.tsp` — the TypeSpec library surface (30 decorators, `EmitterOptions` model)
 - `test/` — compliance, golden, property, integration, e2e, realworld suites
-- `examples/` — 13 runnable examples, all CI-validated
+- `examples/` — 15 runnable examples, all CI-validated
 - `website/` — this documentation site (Astro + Starlight)
 
 ## Releasing
