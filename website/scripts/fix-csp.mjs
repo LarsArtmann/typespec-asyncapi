@@ -5,36 +5,23 @@ import { createHash } from "node:crypto";
 const DIST = "dist";
 
 /**
- * Per the CSP specification, when a `style-src` (or `default-src`) source list
- * contains ANY hash or nonce source, the `'unsafe-inline'` keyword is IGNORED
- * entirely. Starlight and Expressive Code rely on inline `style` attributes
- * (e.g. expressive-code tokens: `style="--0:#color;--1:#color"`), so we must
- * strip every hash/nonce source from the style-src directive to keep
- * `'unsafe-inline'` effective. Astro regenerates these hashes on every build,
- * in any order, so we strip them defensively regardless of position/type.
+ * Astro hashes the scripts it generates, but raw inline `<script>` blocks that a
+ * component injects into the final HTML can survive unhashed, and CSP then blocks
+ * them. This pass adds a sha256 hash for every inline script that the page's
+ * `script-src` policy does not already permit. It is idempotent: hashes that are
+ * already present are not duplicated, and a second run changes nothing.
+ *
+ * Style directives are NOT touched. `style-src-attr 'unsafe-inline'` covers the
+ * inline `style` attributes written by Expressive Code/Shiki, and `style-src`
+ * keeps Astro's element hashes so inline `<style>` blocks stay hash-controlled.
  */
-const STYLE_HASH_TOKEN_RE = /'sha\d{3}-[^']+'|'nonce-[^']+'/g;
-
-function stripStyleHashes(cspContent) {
-  return cspContent.replace(/style-src[^;"]*/g, (directive) => {
-    const sources = directive
-      .slice("style-src".length)
-      .replace(STYLE_HASH_TOKEN_RE, "")
-      .trim()
-      .replace(/\s{2,}/g, " ");
-    return `style-src ${sources}`.trim();
-  });
-}
-
 const EMPTY_STRING_HASH =
   "'sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU='";
 
-function stripEmptyScriptHash(cspContent) {
-  return cspContent.replaceAll(` ${EMPTY_STRING_HASH}`, "");
-}
-
 const INLINE_SCRIPT_RE =
   /<script(?![^>]*\btype\s*=\s*["']module["'])(?![^>]*\bsrc\s*=)([^>]*)>([\s\S]*?)<\/script>/g;
+
+const CSP_META_RE = /(<meta[^>]*content-security-policy[^>]*content=")([^"]*)(")/i;
 
 async function findHtmlFiles(dir) {
   const entries = await readdir(dir, { withFileTypes: true });
@@ -56,31 +43,45 @@ function sha256Base64(content) {
   );
 }
 
+function addScriptHashes(policy, hashes) {
+  if (hashes.length === 0) return policy;
+  const known = new Set(policy.match(/'sha(?:256|384|512)-[^']+'/g) ?? []);
+  const missing = hashes.filter((hash) => !known.has(hash));
+  if (missing.length === 0) return policy;
+
+  return policy.replace(
+    /(^|;\s*)(script-src(?!-)[^;]*)/,
+    (_match, lead, directive) =>
+      `${lead}${[directive, ...missing].join(" ")}`,
+  );
+}
+
 async function main() {
   const files = await findHtmlFiles(DIST);
   let patched = 0;
 
   for (const file of files) {
     const html = await readFile(file, "utf-8");
-    let fixed = stripStyleHashes(html);
-    fixed = stripEmptyScriptHash(fixed);
+    const match = html.match(CSP_META_RE);
+    if (!match) continue;
 
-    const missingHashes = new Set();
-    for (const [, , body] of fixed.matchAll(INLINE_SCRIPT_RE)) {
+    const hashes = new Set();
+    for (const [, , body] of html.matchAll(INLINE_SCRIPT_RE)) {
       const trimmed = body.trim();
-      if (!trimmed) continue;
-      const hash = sha256Base64(trimmed);
-      missingHashes.add(`'${hash}'`);
+      if (trimmed) hashes.add(`'${sha256Base64(trimmed)}'`);
     }
 
-    if (missingHashes.size > 0) {
-      const hashList = [...missingHashes].join(" ");
-      fixed = fixed.replace(
-        /script-src ('self'(?: 'sha256-[^']+')*)/,
-        `script-src $1 ${hashList}`,
-      );
-    }
+    const policy = addScriptHashes(match[2], [...hashes]).replaceAll(
+      ` ${EMPTY_STRING_HASH}`,
+      "",
+    );
 
+    if (policy === match[2]) continue;
+
+    const fixed = html.replace(
+      CSP_META_RE,
+      (_m, prefix, _old, suffix) => `${prefix}${policy}${suffix}`,
+    );
     if (fixed !== html) {
       await writeFile(file, fixed);
       patched++;

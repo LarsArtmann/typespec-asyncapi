@@ -6,6 +6,8 @@ import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
   site: "https://typespec-asyncapi.lars.software",
+  // Drops two known-benign upstream warnings; see astro-logger.mjs.
+  logger: { entrypoint: "./astro-logger.mjs" },
   security: {
     csp: {
       scriptDirective: {
@@ -15,13 +17,10 @@ export default defineConfig({
         // Starlight renders code blocks with Expressive Code, which highlights
         // through Shiki by writing token colors to style attributes. CSP has no
         // hash/nonce form for attributes, so 'unsafe-inline' is scoped to
-        // style-src-attr only; inline <style> elements stay hash-controlled by
-        // style-src. Astro warns that Shiki is "not compatible with CSP" at
-        // build time; this split is the supported mitigation.
-        resources: [
-          { resource: "'self'", kind: "default" },
-          { resource: "'unsafe-inline'", kind: "attribute" },
-        ],
+        // style-src-attr only; `style-src` keeps Astro's element hashes, so inline
+        // <style> blocks stay hash-controlled. Declaring only the attribute entry
+        // also avoids the `style-src`/`style-src-attr` shadowing warning.
+        resources: [{ resource: "'unsafe-inline'", kind: "attribute" }],
       },
     },
   },
@@ -60,6 +59,10 @@ export default defineConfig({
     }),
     starlight({
       title: "typespec-asyncapi",
+      // The custom 404 lives at src/content/docs/404.md. Starlight injects its own
+      // static /404 route otherwise, which shadows the content page and logs
+      // `Could not render /404 ... conflicts with higher priority route`.
+      disable404Route: true,
       favicon: "/favicon.svg",
       customCss: ["./src/styles/starlight.css"],
       lastUpdated: true,
