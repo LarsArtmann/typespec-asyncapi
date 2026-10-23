@@ -81,7 +81,7 @@
                 name = "deploy-website";
                 runtimeInputs = [
                   pkgs.pnpm
-                  pkgs.nodejs_22
+                  pkgs.nodejs_24
                   pkgs.firebase-tools
                   pkgs.git
                   pkgs.coreutils
@@ -133,7 +133,7 @@
               packages = [
                 pkgs.pnpm
                 pkgs.bun
-                pkgs.nodejs_22
+                pkgs.nodejs_24
                 pkgs.typescript
               ];
             };
@@ -142,7 +142,7 @@
               packages = [
                 pkgs.pnpm
                 pkgs.bun
-                pkgs.nodejs_22
+                pkgs.nodejs_24
               ];
             };
           };
