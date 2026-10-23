@@ -1,6 +1,7 @@
 import { defineConfig, fontProviders } from "astro/config";
 import starlight from "@astrojs/starlight";
 import sitemap from "@astrojs/sitemap";
+import starlightLlmsTxt from "starlight-llms-txt";
 
 import tailwindcss from "@tailwindcss/vite";
 
@@ -59,6 +60,35 @@ export default defineConfig({
     }),
     starlight({
       title: "typespec-asyncapi",
+      plugins: [
+        starlightLlmsTxt({
+          description:
+            "TypeSpec AsyncAPI emitter: define event channels, messages, and operations in TypeSpec, then generate AsyncAPI 3.1 YAML or JSON validated against the official AsyncAPI JSON Schema.",
+          details:
+            "Install with `pnpm add @lars-artmann/typespec-asyncapi` and add it to your `tspconfig.yaml` emitter list. Every documented decorator and emitter option applies to the generated document.",
+          optionalLinks: [
+            {
+              label: "GitHub repository",
+              url: "https://github.com/LarsArtmann/typespec-asyncapi",
+              description: "Source code and issue tracker",
+            },
+            {
+              label: "npm package",
+              url: "https://www.npmjs.com/package/@lars-artmann/typespec-asyncapi",
+              description: "Published releases",
+            },
+          ],
+          promote: [
+            "getting-started/**",
+            "guides/**",
+            "reference/**",
+            "examples",
+            "faq",
+          ],
+          demote: ["404"],
+          exclude: ["404"],
+        }),
+      ],
       // The custom 404 lives at src/content/docs/404.md. Starlight injects its own
       // static /404 route otherwise, which shadows the content page and logs
       // `Could not render /404 ... conflicts with higher priority route`.

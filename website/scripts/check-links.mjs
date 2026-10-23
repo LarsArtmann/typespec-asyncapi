@@ -86,6 +86,7 @@ for (const required of [
   "robots.txt",
   "llms.txt",
   "llms-full.txt",
+  "llms-small.txt",
   "manifest.json",
   "opensearch.xml",
   "rss.xml",
