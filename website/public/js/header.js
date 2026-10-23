@@ -31,8 +31,8 @@ if (themeToggle) {
       "aria-label",
       "Current: " + stored + " (click to cycle)",
     );
-    const color = visual === "light" ? "#fafaf9" : "#0c0a09";
-    themeColorMetas.forEach((m) => m.setAttribute("content", color));
+    const color = visual === "light" ? "#faf8f5" : "#0a0908";
+    themeColorMetas.forEach((meta) => meta.setAttribute("content", color));
   }
 
   applyTheme();
@@ -62,19 +62,40 @@ if (toggle && navLinks) {
   const menuIcon = toggle.querySelector(".menu-icon");
   const closeIcon = toggle.querySelector(".close-icon");
 
-  toggle.addEventListener("click", function () {
-    const isOpen = navLinks.classList.toggle("open");
+  function setOpen(isOpen) {
+    navLinks.classList.toggle("open", isOpen);
     if (menuIcon) menuIcon.classList.toggle("hidden", isOpen);
     if (closeIcon) closeIcon.classList.toggle("hidden", !isOpen);
     toggle.setAttribute("aria-expanded", String(isOpen));
+  }
+
+  function closeNav(returnFocus) {
+    if (!navLinks.classList.contains("open")) return;
+    setOpen(false);
+    if (returnFocus) toggle.focus();
+  }
+
+  toggle.addEventListener("click", () => {
+    setOpen(!navLinks.classList.contains("open"));
   });
 
-  navLinks.querySelectorAll(".nav-link").forEach((link) => {
-    link.addEventListener("click", () => {
-      navLinks.classList.remove("open");
-      if (menuIcon) menuIcon.classList.remove("hidden");
-      if (closeIcon) closeIcon.classList.add("hidden");
-      toggle.setAttribute("aria-expanded", "false");
-    });
+  navLinks.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", () => closeNav(false));
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeNav(true);
+  });
+
+  document.addEventListener("click", (event) => {
+    if (!navLinks.classList.contains("open")) return;
+    const target = event.target;
+    if (!(target instanceof Node)) return;
+    if (navLinks.contains(target) || toggle.contains(target)) return;
+    closeNav(false);
+  });
+
+  window.matchMedia("(min-width: 1024px)").addEventListener("change", (event) => {
+    if (event.matches) closeNav(false);
   });
 }

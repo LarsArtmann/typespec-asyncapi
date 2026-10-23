@@ -1,19 +1,24 @@
 ---
 import Logo from './Logo.astro';
 import { siteConfig } from '../data/config';
+import { stats } from '../data/stats';
+
+const year = new Date().getFullYear();
 ---
 
 <footer role="contentinfo" class="border-t border-border mt-32" data-animate>
   <div class="max-w-6xl mx-auto px-6 py-12 flex flex-col md:flex-row items-center justify-between gap-4">
     <div class="flex items-center gap-2.5">
       <Logo width={28} height={28} />
-      <span class="text-sm text-text-muted">typespec-asyncapi — MIT License — Built by <a href={siteConfig.author.url} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-primary transition-colors duration-150 underline">{siteConfig.author.name}</a></span>
+      <span class="text-sm text-text-muted">typespec-asyncapi v{stats.version} — MIT License — Built by <a href={siteConfig.author.url} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-primary transition-colors duration-150 underline">{siteConfig.author.name}</a> &copy; {year}</span>
     </div>
-    <div class="flex items-center gap-6 text-sm">
-      <a href="/getting-started/installation/" data-astro-prefetch class="text-text-muted hover:text-text-primary transition-colors duration-150">Documentation</a>
+    <nav aria-label="Footer" class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm">
+      <a href="/getting-started/installation/" data-astro-prefetch class="text-text-muted hover:text-text-primary transition-colors duration-150">Docs</a>
+      <a href="/examples/" data-astro-prefetch class="text-text-muted hover:text-text-primary transition-colors duration-150">Examples</a>
+      <a href="/faq/" data-astro-prefetch class="text-text-muted hover:text-text-primary transition-colors duration-150">FAQ</a>
+      <a href="/changelog/" data-astro-prefetch class="text-text-muted hover:text-text-primary transition-colors duration-150">Changelog</a>
       <a href={siteConfig.github} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-primary transition-colors duration-150">GitHub</a>
       <a href={siteConfig.npm} target="_blank" rel="noopener noreferrer" class="text-text-muted hover:text-text-primary transition-colors duration-150">npm</a>
-      <a href="/changelog/" data-astro-prefetch class="text-text-muted hover:text-text-primary transition-colors duration-150">Changelog</a>
-    </div>
+    </nav>
   </div>
 </footer>

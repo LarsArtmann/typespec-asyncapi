@@ -1,5 +1,6 @@
 ---
 import SectionHeader from './SectionHeader.astro';
+import { stats } from '../data/stats';
 
 const tspCode = `<span class="text-text-muted">import</span> <span class="text-amber">"@lars-artmann/typespec-asyncapi"</span>;
 <span class="text-text-muted">using</span> TypeSpec.AsyncAPI;
@@ -60,10 +61,10 @@ const yamlCode = `<span class="text-text-muted">asyncapi:</span> <span class="te
       {Array(3).fill(null).map(() => (
         <span class="w-2.5 h-2.5 rounded-full bg-code-dot"></span>
       ))}
-      <span class="ml-3 text-xs text-text-muted font-mono">asyncapi.yaml — validated ✓</span>
+      <span class="ml-3 text-xs text-text-muted font-mono">asyncapi.yaml — validated ✓ (abridged)</span>
     </div>
     <pre tabindex="0" class="p-4 text-left text-sm font-mono leading-relaxed overflow-x-auto"><code set:html={yamlCode} /></pre>
   </div>
 </div>
 
-<p class="text-center text-sm text-text-muted">Real example output — every emitted document is checked against the official AsyncAPI 3.1.0 JSON Schema.</p>
+<p class="text-center text-sm text-text-muted">Abridged from real emitted output — every document is checked against the official AsyncAPI 3.1.0 JSON Schema. <a href="/examples/" data-astro-prefetch class="text-accent hover:text-accent-hover underline">{stats.examples} runnable examples</a> ship in the repo.</p>
