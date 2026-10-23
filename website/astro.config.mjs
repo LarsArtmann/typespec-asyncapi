@@ -12,7 +12,16 @@ export default defineConfig({
         resources: ["'self'", "'wasm-unsafe-eval'"],
       },
       styleDirective: {
-        resources: ["'self'", "'unsafe-inline'"],
+        // Starlight renders code blocks with Expressive Code, which highlights
+        // through Shiki by writing token colors to style attributes. CSP has no
+        // hash/nonce form for attributes, so 'unsafe-inline' is scoped to
+        // style-src-attr only; inline <style> elements stay hash-controlled by
+        // style-src. Astro warns that Shiki is "not compatible with CSP" at
+        // build time; this split is the supported mitigation.
+        resources: [
+          { resource: "'self'", kind: "default" },
+          { resource: "'unsafe-inline'", kind: "attribute" },
+        ],
       },
     },
   },
