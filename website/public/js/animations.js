@@ -1,4 +1,13 @@
-if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+const root = document.documentElement;
+const prefersReducedMotion = window.matchMedia(
+  "(prefers-reduced-motion: reduce)",
+).matches;
+const targets = document.querySelectorAll("[data-animate]");
+
+if (prefersReducedMotion || !("IntersectionObserver" in window)) {
+  targets.forEach((el) => el.classList.add("animate-fade-in"));
+} else {
+  root.classList.add("js");
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -10,11 +19,5 @@ if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     },
     { threshold: 0.1 },
   );
-  document
-    .querySelectorAll("[data-animate]")
-    .forEach((el) => observer.observe(el));
-} else {
-  document
-    .querySelectorAll("[data-animate]")
-    .forEach((el) => el.classList.add("animate-fade-in"));
+  targets.forEach((el) => observer.observe(el));
 }

@@ -78,15 +78,17 @@
   }
 }
 
-[data-animate]:not(.animate-fade-in) {
+html.js [data-animate]:not(.animate-fade-in) {
   opacity: 0;
   transform: translateY(20px);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  [data-animate]:not(.animate-fade-in) {
+  html.js [data-animate],
+  html.js [data-animate]:not(.animate-fade-in) {
     opacity: 1;
     transform: none;
+    animation: none;
     transition: none;
   }
 }
