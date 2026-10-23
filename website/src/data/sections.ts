@@ -1,3 +1,4 @@
+import { stats } from "./stats";
 import type { ComparisonRow, PipelineStep, UseCase } from "./types";
 
 export const pipelineSteps: PipelineStep[] = [
@@ -9,7 +10,7 @@ export const pipelineSteps: PipelineStep[] = [
   {
     step: "02",
     title: "Compile with tsp",
-    desc: "tsp compile resolves imports, checks 30 diagnostics, and hands the type graph to the emitter — invalid protocols and misplaced bindings never reach the output.",
+    desc: `tsp compile resolves imports, checks ${stats.diagnostics} diagnostics, and hands the type graph to the emitter — invalid protocols and misplaced bindings never reach the output.`,
   },
   {
     step: "03",
@@ -38,7 +39,7 @@ export const comparisonRows: ComparisonRow[] = [
   },
   {
     feature: "Protocols",
-    emitter: "22, bindings spec-generated",
+    emitter: `${stats.protocols}, bindings spec-generated`,
     tspAsyncapi: "13, hand-written",
     handwritten: "manual per protocol",
   },
@@ -56,7 +57,7 @@ export const comparisonRows: ComparisonRow[] = [
   },
   {
     feature: "Compile-time diagnostics",
-    emitter: "30 codes",
+    emitter: `${stats.diagnostics} codes`,
     tspAsyncapi: "deferred",
     handwritten: "lint only",
   },
@@ -77,7 +78,7 @@ export const useCases: UseCase[] = [
   },
   {
     title: "Multi-protocol estates",
-    desc: "One TypeSpec namespace, Kafka + MQTT + WebSocket bindings with auto-injected versions and spec-checked placements across 22 protocols.",
+    desc: `One TypeSpec namespace, Kafka + MQTT + WebSocket bindings with auto-injected versions and spec-checked placements across ${stats.protocols} protocols.`,
     icon: "refresh",
     accent: "accent",
   },

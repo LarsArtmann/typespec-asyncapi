@@ -3,22 +3,22 @@ import SectionHeader from './SectionHeader.astro';
 import { comparisonRows } from '../data/sections';
 ---
 
-<SectionHeader eyebrow="Comparison" title="This emitter vs the alternatives" subtitle="Measured against the other TypeSpec AsyncAPI emitter and the hand-written YAML status quo (August 2026)." />
+<SectionHeader eyebrow="Comparison" title="This emitter vs the alternatives" subtitle="A capability snapshot against the other TypeSpec AsyncAPI emitter and hand-written YAML (checked October 2026)." />
 
-<div class="overflow-x-auto rounded-xl border border-border">
+<div class="hidden md:block overflow-x-auto rounded-xl border border-border">
   <table class="w-full text-sm">
     <thead>
       <tr class="border-b border-border bg-bg-card">
-        <th class="text-left px-4 py-3 font-semibold text-text-primary">Capability</th>
-        <th class="text-left px-4 py-3 font-semibold text-accent">typespec-asyncapi</th>
-        <th class="text-left px-4 py-3 font-semibold text-text-secondary">tsp-asyncapi</th>
-        <th class="text-left px-4 py-3 font-semibold text-text-secondary">Hand-written YAML</th>
+        <th scope="col" class="text-left px-4 py-3 font-semibold text-text-primary">Capability</th>
+        <th scope="col" class="text-left px-4 py-3 font-semibold text-accent">typespec-asyncapi</th>
+        <th scope="col" class="text-left px-4 py-3 font-semibold text-text-secondary">tsp-asyncapi</th>
+        <th scope="col" class="text-left px-4 py-3 font-semibold text-text-secondary">Hand-written YAML</th>
       </tr>
     </thead>
     <tbody>
       {comparisonRows.map((row) => (
         <tr class="border-b border-border last:border-b-0">
-          <td class="px-4 py-3 text-text-secondary">{row.feature}</td>
+          <th scope="row" class="text-left px-4 py-3 font-normal text-text-secondary">{row.feature}</th>
           <td class="px-4 py-3 text-text-primary font-medium">{row.emitter}</td>
           <td class="px-4 py-3 text-text-muted">{row.tspAsyncapi}</td>
           <td class="px-4 py-3 text-text-muted">{row.handwritten}</td>
@@ -28,4 +28,20 @@ import { comparisonRows } from '../data/sections';
   </table>
 </div>
 
-<p class="text-center text-xs text-text-muted mt-4 max-w-2xl mx-auto">The real differentiator is the first two rows: no other workflow proves, on every build, that the emitted document passes the official AsyncAPI 3.1.0 JSON Schema.</p>
+<div class="md:hidden grid gap-3 text-left">
+  {comparisonRows.map((row) => (
+    <div class="rounded-xl border border-border bg-bg-card p-4">
+      <h3 class="text-sm font-semibold text-text-primary mb-3">{row.feature}</h3>
+      <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-xs">
+        <dt class="text-accent">typespec-asyncapi</dt>
+        <dd class="text-text-primary font-medium">{row.emitter}</dd>
+        <dt class="text-text-muted">tsp-asyncapi</dt>
+        <dd class="text-text-secondary">{row.tspAsyncapi}</dd>
+        <dt class="text-text-muted">Hand-written</dt>
+        <dd class="text-text-secondary">{row.handwritten}</dd>
+      </dl>
+    </div>
+  ))}
+</div>
+
+<p class="text-center text-xs text-text-muted mt-4 max-w-2xl mx-auto">The real differentiator is the first two rows: no other workflow proves, on every build, that the emitted document passes the official AsyncAPI 3.1.0 JSON Schema. <a href="/related-tools/" data-astro-prefetch class="text-accent hover:text-accent-hover underline">More on the ecosystem</a>.</p>

@@ -1,6 +1,7 @@
 ---
 import { siteConfig } from '../data/config';
 import { heroCode } from '../data/hero-code';
+import { stats } from '../data/stats';
 import Icon from './Icon.astro';
 
 async function getGitHubStars(): Promise<number | null> {
@@ -19,7 +20,7 @@ async function getGitHubStars(): Promise<number | null> {
 }
 
 const stars = await getGitHubStars();
-const starsText = stars !== null ? `${stars} Stars` : 'Star on GitHub';
+const starsText = stars === null ? 'Star on GitHub' : `${stars} stars`;
 
 const highlightedCode = `<span class="text-[#bd93f9]">import</span> <span class="text-[#f1fa8c]">"@lars-artmann/typespec-asyncapi"</span>;
 <span class="text-[#bd93f9]">using</span> <span class="text-[#8be9fd]">TypeSpec.AsyncAPI</span>;
@@ -33,6 +34,8 @@ const highlightedCode = `<span class="text-[#bd93f9]">import</span> <span class=
 
 <span class="text-[#ff79c6]">@channel</span>(<span class="text-[#f1fa8c]">"events"</span>)
 <span class="text-[#ff79c6]">op</span> <span class="text-[#50fa7b]">publishEvent</span>(): <span class="text-[#8be9fd]">Event</span>;`;
+
+const installCommand = 'pnpm add @lars-artmann/typespec-asyncapi';
 ---
 
 <section class="relative flex items-center justify-center overflow-hidden pt-36 pb-20">
@@ -44,6 +47,9 @@ const highlightedCode = `<span class="text-[#bd93f9]">import</span> <span class=
         <Icon name="star" size={14} />
         {starsText}
       </a>
+      <a class="inline-flex items-center gap-1.5 px-3.5 py-1.5 border border-border rounded-md text-text-secondary text-sm font-medium no-underline hover:border-accent hover:text-accent transition-all duration-150" href={siteConfig.npm} target="_blank" rel="noopener">
+        v{stats.version} on npm
+      </a>
       <span class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-md text-accent-text text-sm font-medium bg-accent/10">
         <Icon name="check" size={14} />
         AsyncAPI 3.1.0 &middot; AJV-validated
@@ -54,20 +60,25 @@ const highlightedCode = `<span class="text-[#bd93f9]">import</span> <span class=
     </h1>
 
     <p class="text-[clamp(1.125rem,2.5vw,1.35rem)] text-text-secondary max-w-3xl mx-auto mb-4 leading-relaxed">
-      Model your event schemas, channels, and operations in TypeSpec &mdash; compile to AsyncAPI 3.1 specifications that validate against the official JSON Schema, for 22 protocols.
+      Model your event schemas, channels, and operations in TypeSpec &mdash; compile to AsyncAPI 3.1 specifications that validate against the official JSON Schema, for {stats.protocols} protocols.
     </p>
 
     <p class="text-sm text-text-muted max-w-2xl mx-auto mb-10 leading-relaxed">
-      One typed source of truth for Kafka, MQTT, AMQP, WebSocket, and 18 more &mdash; with 30 decorators, spec-generated protocol bindings, and a 270+-test compliance suite.
+      One typed source of truth for Kafka, MQTT, AMQP, WebSocket, and {stats.protocols - 4} more &mdash; with {stats.decorators} decorators, spec-generated protocol bindings, and a 270+-test compliance suite.
     </p>
 
-    <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-      <a href="/getting-started/installation/" data-astro-prefetch class="px-6 py-3 bg-accent text-on-accent font-semibold rounded-lg text-base hover:bg-accent-hover transition-colors duration-150 inline-flex items-center gap-2 border-none cursor-pointer">Get Started &rarr;</a>
-      <div class="flex items-center gap-2 py-2.5 px-4 rounded-lg bg-bg-card-solid border border-border font-mono text-sm text-text-primary select-all">pnpm add @lars-artmann/typespec-asyncapi</div>
+    <div class="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
+      <a href="/getting-started/quick-start/" data-astro-prefetch class="px-6 py-3 bg-accent text-on-accent font-semibold rounded-lg text-base hover:bg-accent-hover transition-colors duration-150 inline-flex items-center gap-2 border-none cursor-pointer">Start in 5 minutes &rarr;</a>
+      <a href="#demo" class="px-6 py-3 border border-border rounded-lg text-base font-semibold text-text-secondary hover:text-text-primary hover:border-border-hover transition-all duration-150 inline-flex items-center gap-2">See the output</a>
+    </div>
+
+    <div class="flex items-center justify-center gap-2 mb-16 text-sm">
+      <code class="font-mono text-text-muted">{installCommand}</code>
+      <button type="button" data-copy={installCommand} class="bg-transparent border border-border rounded-md text-text-muted px-2 py-1 cursor-pointer text-xs font-mono hover:text-text-primary hover:border-border-hover transition-all duration-150" aria-label="Copy install command">Copy</button>
     </div>
 
     <div class="relative max-w-xl mx-auto">
-      <div class="absolute -inset-4 bg-gradient-to-r from-accent/10 via-accent/8 to-accent/10 rounded-2xl blur-6 pointer-events-none"></div>
+      <div class="absolute -inset-4 bg-gradient-to-r from-accent/10 via-accent/8 to-accent/10 rounded-2xl blur-lg pointer-events-none"></div>
       <div class="relative rounded-xl border border-border bg-bg-code shadow-2xl overflow-hidden code-preview">
         <div class="flex items-center gap-1.5 px-4 py-3 border-b border-border">
           {Array(3).fill(null).map(() => (
@@ -76,7 +87,7 @@ const highlightedCode = `<span class="text-[#bd93f9]">import</span> <span class=
           <span class="ml-3 text-xs text-text-muted font-mono">api.tsp</span>
         </div>
         <pre tabindex="0" class="p-4 text-left text-sm font-mono leading-relaxed overflow-x-auto relative"><code id="hero-code" set:html={highlightedCode} /></pre>
-        <button class="absolute top-2 right-2 bg-code-inline-bg/80 border border-border rounded-md text-text-muted px-1.5 py-1.5 cursor-pointer text-xs font-mono hover:text-text-primary hover:border-border-hover transition-all duration-150 opacity-0 [.code-preview:hover_&]:opacity-100" id="copy-btn" data-code={heroCode} aria-label="Copy code to clipboard">Copy</button>
+        <button class="absolute top-2 right-2 bg-code-inline-bg/80 border border-border rounded-md text-text-muted px-1.5 py-1.5 cursor-pointer text-xs font-mono hover:text-text-primary hover:border-border-hover transition-all duration-150 opacity-0 [.code-preview:hover_&]:opacity-100 focus-visible:opacity-100" id="copy-btn" data-code={heroCode} aria-label="Copy TypeSpec example to clipboard">Copy</button>
       </div>
     </div>
   </div>

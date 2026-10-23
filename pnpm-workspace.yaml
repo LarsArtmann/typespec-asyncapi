@@ -9,16 +9,9 @@ overrides:
   "devalue@<=5.9.2": "^5.9.3"
   "brace-expansion@^1": "^1.1.21"
   "brace-expansion@^5": "^5.0.12"
+  "postcss-selector-parser@<7.1.6": "7.1.6"
 
 allowBuilds:
   "@scarf/scarf": false
   esbuild: true
   sharp: true
-
-# http-cache-semantics GHSA-ch52-4w7c-c8xp: no patched release exists (4.2.0
-# is the latest); the only dependent chain is website build-time deps
-# (astro), never in shipped npm artifacts. Dismissed until upstream ships a
-# fix - remove this entry when one lands.
-auditConfig:
-  ignoreGhsas:
-    - GHSA-ch52-4w7c-c8xp

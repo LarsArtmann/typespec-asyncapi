@@ -27,9 +27,13 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/fix-csp.mjs",
+    "stats": "node scripts/sync-stats.mjs",
+    "build": "node scripts/sync-stats.mjs && astro build && node scripts/fix-csp.mjs",
     "preview": "astro preview",
     "typecheck": "astro check",
+    "check:html": "html-validate \"dist/**/*.html\"",
+    "check:links": "node scripts/check-links.mjs",
+    "check": "pnpm run typecheck && pnpm run build && pnpm run check:html && pnpm run check:links",
     "clean": "rm -rf dist .astro node_modules/.cache",
     "astro": "astro"
   },

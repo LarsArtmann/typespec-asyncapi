@@ -1,3 +1,4 @@
+import { stats } from "./stats";
 import type { Feature } from "./types";
 
 export const features: Feature[] = [
@@ -9,13 +10,13 @@ export const features: Feature[] = [
   },
   {
     icon: "glob",
-    title: "22 protocols, 19 bindings",
+    title: `${stats.protocols} protocols, ${stats.bindings} bindings`,
     desc: "Kafka, MQTT, AMQP, WebSocket, NATS, and more. All bindings auto-generated from @asyncapi/specs with version auto-injection and placement checking.",
     accent: "accent",
   },
   {
     icon: "code",
-    title: "30 typed decorators",
+    title: `${stats.decorators} typed decorators`,
     desc: "Channels, messages, servers, security schemes, traits, parameters, and protocol bindings — declared in TypeSpec with compile-time validation, not YAML indentation.",
     accent: "accent",
   },
@@ -33,7 +34,7 @@ export const features: Feature[] = [
   },
   {
     icon: "check",
-    title: "30 compile-time diagnostics",
+    title: `${stats.diagnostics} compile-time diagnostics`,
     desc: "Unsupported protocols, misplaced bindings, malformed server URLs, and invalid security schemes are caught in your editor before they reach the output.",
     accent: "accent",
   },
