@@ -11,6 +11,6 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "hyperframes": "^0.8.105"
+    "hyperframes": "^0.8.186"
   }
 }

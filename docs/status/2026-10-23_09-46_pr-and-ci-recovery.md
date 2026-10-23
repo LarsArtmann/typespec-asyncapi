@@ -11,16 +11,16 @@
 
 The repo had been **red on master since 2026-10-04** (10 consecutive failed pushes plus 10 failed PR runs). Every open PR inherited that failure, which is why all 12 looked independently broken. Fixing master unblocked 8 of them instantly; the rest needed one real fix (a half-finished TypeSpec family bump).
 
-| Metric | Before | After |
-| --- | --- | --- |
-| Open PRs | 12 (all failing `build-and-test`) | 0 |
-| master CI | failing since 2026-10-04 | green (last 12 runs success) |
-| `pnpm install --frozen-lockfile` | `ERR_PNPM_OUTDATED_LOCKFILE` | passes |
-| `pnpm run lint` | hard error (`typescript-eslint does not support TS 7.0`) | passes |
-| `pnpm audit` | 15 findings (1 ignored) | **0 findings, 0 ignored** |
-| `website` `astro check` | broken (TS 7 rejected) | 0 errors / 0 warnings / 0 hints |
-| Tests / coverage / clones | n/a (gate never ran) | 1275 pass, 97.9% line, 0 clones |
-| Examples | n/a | 15/15 compile + AJV-validate |
+| Metric                           | Before                                                   | After                           |
+| -------------------------------- | -------------------------------------------------------- | ------------------------------- |
+| Open PRs                         | 12 (all failing `build-and-test`)                        | 0                               |
+| master CI                        | failing since 2026-10-04                                 | green (last 12 runs success)    |
+| `pnpm install --frozen-lockfile` | `ERR_PNPM_OUTDATED_LOCKFILE`                             | passes                          |
+| `pnpm run lint`                  | hard error (`typescript-eslint does not support TS 7.0`) | passes                          |
+| `pnpm audit`                     | 15 findings (1 ignored)                                  | **0 findings, 0 ignored**       |
+| `website` `astro check`          | broken (TS 7 rejected)                                   | 0 errors / 0 warnings / 0 hints |
+| Tests / coverage / clones        | n/a (gate never ran)                                     | 1275 pass, 97.9% line, 0 clones |
+| Examples                         | n/a                                                      | 15/15 compile + AJV-validate    |
 
 ---
 
@@ -30,7 +30,7 @@ The repo had been **red on master since 2026-10-04** (10 consecutive failed push
 2. **Fixed master's dependency drift.** `typescript@7.0.2` (manifest) vs `6.0.3` (lockfile) and `eslint@10.12.0` vs `10.11.0`. Restored `typescript@6.0.3` via `pnpm -w update` (the documented recovery), let the lockfile catch up to the now-aged `eslint@10.12.0`, regenerated `pnpm-lock.yaml`.
 3. **Verified master before pushing** — full `pnpm run verify` inside `nix develop .#default` (build, lint, typecheck:test, 1275 tests, coverage gate 97.9%, jscpd 0 clones) plus `pnpm run check-examples` (15/15).
 4. **Completed PR #271 properly.** Dependabot bumped `@typespec/rest`/`@typespec/versioning` to 0.87.0 without `@typespec/compiler`/`@typespec/http`, which 0.87.0 declares as peers (`^1.17.0`). Finished the family bump (compiler, http, json-schema, openapi3 → 1.17.0; asset-emitter → 0.79.3; matching `peerDependencies`), kept TypeScript at 6.0.3, regenerated the lockfile. Merged.
-5. **Handled every remaining PR on evidence, not on optimism.** Each lockfile PR was re-inspected *after* Dependabot rebased it, so the three that became pure dedupes (`smol-toml`, `source-map-js`) and the two that were real bumps (`sharp`, `postcss-selector-parser`) were judged on their actual post-rebase diff.
+5. **Handled every remaining PR on evidence, not on optimism.** Each lockfile PR was re-inspected _after_ Dependabot rebased it, so the three that became pure dedupes (`smol-toml`, `source-map-js`) and the two that were real bumps (`sharp`, `postcss-selector-parser`) were judged on their actual post-rebase diff.
 6. **Verified the npm-managed `website/video` PRs separately.** That directory is npm (not pnpm) and is invisible to CI, so `npm ci` + `npm ls` was run for all three branches before merging. Final state: hyperframes 0.8.134, sharp 0.35.5, source-map-js 1.2.2, `npm ci` clean.
 7. **Merged without a single force-push** (including the hand-edited Dependabot branch — resolved with a normal merge commit instead of a rebase+`--force-with-lease`).
 8. **Security: `pnpm audit` to zero.**
@@ -44,8 +44,8 @@ The repo had been **red on master since 2026-10-04** (10 consecutive failed push
 
 ## (b) PARTIALLY DONE
 
-1. **Local master is 4 commits ahead of `origin/master`.** The auto-commit daemon kept committing *another editor's* in-flight website work (`header.js`, Hero/Comparison/FeatureGrid/Footer/Header components, new `sync-stats.mjs` and `check-links.mjs`) while I worked. Those 4 commits are unpushed, so **CI has never seen them**. I deliberately did not force the issue while someone else is mid-edit — flagged, not resolved.
-2. **Commit hygiene of my own work is poor.** My dependency/security/website-TS changes were swept into three `chore: auto-commit N changed file(s) (heuristic)` commits mixed with the concurrent editor's files. The *content* is correct and pushed; the *history* is opaque — "why did typescript go back to 6.0.3" is not answerable from `git log`.
+1. **Local master is 4 commits ahead of `origin/master`.** The auto-commit daemon kept committing _another editor's_ in-flight website work (`header.js`, Hero/Comparison/FeatureGrid/Footer/Header components, new `sync-stats.mjs` and `check-links.mjs`) while I worked. Those 4 commits are unpushed, so **CI has never seen them**. I deliberately did not force the issue while someone else is mid-edit — flagged, not resolved.
+2. **Commit hygiene of my own work is poor.** My dependency/security/website-TS changes were swept into three `chore: auto-commit N changed file(s) (heuristic)` commits mixed with the concurrent editor's files. The _content_ is correct and pushed; the _history_ is opaque — "why did typescript go back to 6.0.3" is not answerable from `git log`.
 3. **`postcss-selector-parser@7.1.6` override is verified for build + typecheck + HTML, not for CSS output equivalence.** It crosses `postcss-nested@6`'s declared `^6.1.1` range. I proved the site builds and validates; I did not diff rendered CSS or run `check:links` (network-dependent).
 4. **`release.yml` was edited (setup-node 7.1.0) but never executed.** Only a real tag push proves it; the change is one SHA so risk is low, but it is unverified.
 5. **Dependabot's two auto-closed PRs (#270 vite, #262 http-cache-semantics) were never confirmed by me directly** — I inferred the closure from their disappearance plus the presence of the target versions in master's lockfile.

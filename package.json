@@ -111,10 +111,10 @@
     "yaml": "^2.9.1"
   },
   "devDependencies": {
-    "@asyncapi/parser": "^3.6.3",
+    "@asyncapi/parser": "^3.6.6",
     "@asyncapi/specs": "6.11.1",
     "@eslint/js": "^10.0.1",
-    "@types/node": "^26.6.4",
+    "@types/node": "^26.6.5",
     "@typescript-eslint/eslint-plugin": "8.72.0",
     "@typescript-eslint/parser": "8.72.0",
     "@typespec/asset-emitter": "^0.79.3",
@@ -125,15 +125,15 @@
     "@typespec/rest": "^0.87.0",
     "@typespec/versioning": "^0.87.0",
     "ajv": "^8.20.0",
-    "eslint": "10.12.0",
+    "eslint": "10.13.0",
     "fast-check": "^4.10.2",
     "husky": "^9.1.7",
-    "jscpd": "5.4.1",
+    "jscpd": "5.4.2",
     "oxlint": "1.89.0",
     "tsx": "^4.23.15",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "typescript-eslint": "8.72.0",
-    "vitest": "^5.0.3"
+    "vitest": "^5.0.5"
   },
   "peerDependencies": {
     "@typespec/asset-emitter": "^0.79.3",
