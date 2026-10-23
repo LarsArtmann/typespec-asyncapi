@@ -4,10 +4,11 @@ const prefersReducedMotion = window.matchMedia(
 ).matches;
 const targets = document.querySelectorAll("[data-animate]");
 
+root.classList.add("js");
+
 if (prefersReducedMotion || !("IntersectionObserver" in window)) {
   targets.forEach((el) => el.classList.add("animate-fade-in"));
 } else {
-  root.classList.add("js");
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
