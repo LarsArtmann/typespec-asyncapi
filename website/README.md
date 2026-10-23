@@ -65,12 +65,14 @@ nix run .#deploy-website
 
 The flake app finds the repo root, builds this site, checks internal links, and deploys `hosting:typespec-asyncapi` to the `lars-software` project. Useful overrides:
 
-| Env var / arg                | Effect                                                    |
-| ---------------------------- | --------------------------------------------------------- |
-| `FIREBASE_TARGET=<channel>`  | deploy a preview channel instead of the production target |
-| `FIREBASE_PROJECT=<project>` | deploy to another Firebase project                        |
-| `SKIP_CHECK=1`               | skip the internal link check before deploy                |
-| `-- <flags>`                 | forwarded to `firebase deploy`                            |
+| Env var / arg                | Effect                                                       |
+| ---------------------------- | ------------------------------------------------------------ |
+| `FIREBASE_TARGET=<target>`   | deploy a different Hosting target defined in `firebase.json` |
+| `FIREBASE_PROJECT=<project>` | deploy to another Firebase project                           |
+| `SKIP_CHECK=1`               | skip the internal link check before deploy                   |
+| `-- <flags>`                 | forwarded to `firebase deploy`                               |
+
+Preview channels are a different command (the app does not create them): `firebase hosting:channel:deploy <channel> --project lars-software` after a build. `--only hosting:<name>` selects a Hosting _target_, not a preview channel.
 
 Equivalent manual form, if you need it: `nix shell nixpkgs#nodejs -c pnpm run build` then `nix shell nixpkgs#nodejs nixpkgs#firebase-tools -c firebase deploy --only hosting:typespec-asyncapi --project lars-software`, run from `website/` (the Firebase CLI rejects the repo root — `firebase.json` lives here).
 
