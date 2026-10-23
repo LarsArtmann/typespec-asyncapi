@@ -1,16 +1,46 @@
 {
+  "id": "/",
   "name": "typespec-asyncapi",
   "short_name": "tsp-asyncapi",
   "description": "Generate validated AsyncAPI 3.1 specifications from TypeSpec",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["minimal-ui", "standalone"],
   "background_color": "#0a0908",
   "theme_color": "#14b8a6",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["developer", "productivity", "utilities"],
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quick Start",
+      "short_name": "Start",
+      "url": "/getting-started/quick-start/"
+    },
+    {
+      "name": "Examples",
+      "short_name": "Examples",
+      "url": "/examples/"
+    },
+    {
+      "name": "Search",
+      "short_name": "Search",
+      "url": "/search/"
     }
   ]
 }

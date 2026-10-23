@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /search/
 
 Sitemap: https://typespec-asyncapi.lars.software/sitemap-index.xml

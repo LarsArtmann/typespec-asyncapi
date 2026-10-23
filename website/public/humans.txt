@@ -1,0 +1,10 @@
+/* TEAM */
+  Maintainer: Lars Artmann
+  Contact: https://github.com/LarsArtmann/typespec-asyncapi/issues
+  GitHub: https://github.com/LarsArtmann/typespec-asyncapi
+
+/* SITE */
+  Standards: HTML5, CSS3, WCAG 2.2 AA (target)
+  Language: English
+  Components: Astro, Starlight, Tailwind CSS
+  Software: https://typespec-asyncapi.lars.software

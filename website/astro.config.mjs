@@ -46,7 +46,9 @@ export default defineConfig({
   ],
 
   integrations: [
-    sitemap(),
+    sitemap({
+      filter: (page) => !page.includes("/search/"),
+    }),
     starlight({
       title: "typespec-asyncapi",
       favicon: "/favicon.svg",

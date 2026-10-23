@@ -1,0 +1,124 @@
+---
+import LandingLayout from '../layouts/LandingLayout.astro';
+---
+
+<LandingLayout
+  title="Search — typespec-asyncapi"
+  canonicalPath="/search/"
+  robots="noindex, follow"
+>
+  <section class="pt-36 pb-24">
+    <div class="max-w-3xl mx-auto px-6">
+      <h1 class="text-4xl font-bold tracking-tight text-text-primary mb-3">Search the documentation</h1>
+      <p class="text-text-muted mb-8">Find installation steps, decorator references, binding rules, and diagnostics.</p>
+
+      <form id="search-form" role="search" class="flex gap-2 mb-6">
+        <label for="search-input" class="sr-only">Search documentation</label>
+        <input
+          id="search-input"
+          name="q"
+          type="search"
+          autocomplete="off"
+          placeholder="Try “kafka binding” or “split schemas”"
+          class="flex-1 rounded-lg border border-border bg-bg-card-solid px-4 py-3 text-text-primary placeholder:text-text-muted focus:border-accent"
+        />
+        <button type="submit" class="rounded-lg bg-accent text-on-accent font-semibold px-5 py-3 hover:bg-accent-hover transition-colors">Search</button>
+      </form>
+
+      <p id="search-status" class="text-sm text-text-muted mb-6" aria-live="polite">Type a query to search the docs.</p>
+      <ol id="search-results" class="grid gap-3"></ol>
+      <noscript>
+        <p class="text-text-secondary">Search needs JavaScript. Browse the <a class="text-accent underline" href="/getting-started/installation/">documentation</a> instead.</p>
+      </noscript>
+    </div>
+  </section>
+</LandingLayout>
+
+<script>
+  const form = document.getElementById("search-form");
+  const input = document.getElementById("search-input");
+  const status = document.getElementById("search-status");
+  const results = document.getElementById("search-results");
+
+  let pagefind;
+  let timer;
+
+  async function loadPagefind() {
+    if (pagefind) return pagefind;
+    const url = "/pagefind/pagefind.js";
+    const module = await import(/* @vite-ignore */ url);
+    await module.init();
+    pagefind = module;
+    return pagefind;
+  }
+
+  function render(items) {
+    results.replaceChildren();
+    for (const item of items) {
+      const li = document.createElement("li");
+      li.className = "rounded-xl border border-border bg-bg-card p-4";
+
+      const link = document.createElement("a");
+      link.href = item.url;
+      link.className = "text-accent hover:text-accent-hover font-semibold";
+      link.textContent = item.meta.title || item.url;
+
+      const excerpt = document.createElement("p");
+      excerpt.className = "text-sm text-text-secondary mt-1";
+      excerpt.innerHTML = item.excerpt;
+
+      li.append(link, excerpt);
+      results.append(li);
+    }
+  }
+
+  async function run(query) {
+    const trimmed = query.trim();
+    if (trimmed.length < 2) {
+      results.replaceChildren();
+      status.textContent = "Type at least two characters.";
+      return;
+    }
+    status.textContent = "Searching…";
+    try {
+      const instance = await loadPagefind();
+      const search = await instance.search(trimmed);
+      const items = await Promise.all(
+        search.results.slice(0, 12).map((result) => result.data()),
+      );
+      if (items.length === 0) {
+        status.textContent = `No results for “${trimmed}”.`;
+        results.replaceChildren();
+        return;
+      }
+      status.textContent = `${search.results.length} result${search.results.length === 1 ? "" : "s"} for “${trimmed}”.`;
+      render(items);
+    } catch {
+      results.replaceChildren();
+      status.textContent =
+        "The search index is only built for production. Run pnpm run build and pnpm run preview.";
+    }
+  }
+
+  const initial = new URLSearchParams(window.location.search).get("q") ?? "";
+  input.value = initial;
+  if (initial) run(initial);
+
+  input.addEventListener("input", () => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      const query = input.value;
+      const url = new URL(window.location.href);
+      if (query) url.searchParams.set("q", query);
+      else url.searchParams.delete("q");
+      window.history.replaceState({}, "", url);
+      run(query);
+    }, 180);
+  });
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    clearTimeout(timer);
+    run(input.value);
+  });
+</script>
