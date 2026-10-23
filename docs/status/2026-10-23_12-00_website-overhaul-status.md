@@ -5,6 +5,8 @@
 **Session:** website audit, 140-idea backlog, implementation pass, verification
 **Current state:** build and website gate are green; changes are staged but not committed or deployed.
 
+> **Update (annotation, 2026-10-23 12:45):** deployed to `hosting:typespec-asyncapi` with `firebase deploy --only hosting:typespec-asyncapi --project lars-software` (110 files in `dist`). Live route matrix on `typespec-asyncapi.lars.software` verified: `/` 200, `/getting-started/installation/` 200, `/getting-started/installation` 301 → trailing slash, `/search/` 200, `/llms.txt` 200, `/llms-full.txt` 200, `/rss.xml` 200, `/sitemap-index.xml` 200, `/.well-known/security.txt` 200, `/manifest.json` 200, `/opensearch.xml` 200, `/humans.txt` 200, `/docs` 301 → `/getting-started/installation/`, `/nonexistent` 404 with `robots noindex` + `data-pagefind-ignore`. Root `pnpm run verify` re-run after deploy: 1275 tests / 105 files pass, coverage gate 97.9% average, 0 jscpd clones.
+
 ---
 
 ## 0. Evidence and verification
