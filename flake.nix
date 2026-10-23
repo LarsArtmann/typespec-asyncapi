@@ -76,51 +76,53 @@
 
           apps.deploy-website = {
             type = "app";
-            program = "${pkgs.writeShellApplication {
-              name = "deploy-website";
-              runtimeInputs = [
-                pkgs.pnpm
-                pkgs.nodejs_22
-                pkgs.firebase-tools
-                pkgs.git
-                pkgs.coreutils
-              ];
-              text = ''
-                set -euo pipefail
+            program = "${
+              pkgs.writeShellApplication {
+                name = "deploy-website";
+                runtimeInputs = [
+                  pkgs.pnpm
+                  pkgs.nodejs_22
+                  pkgs.firebase-tools
+                  pkgs.git
+                  pkgs.coreutils
+                ];
+                text = ''
+                  set -euo pipefail
 
-                project="''${FIREBASE_PROJECT:-lars-software}"
-                target="''${FIREBASE_TARGET:-typespec-asyncapi}"
+                  project="''${FIREBASE_PROJECT:-lars-software}"
+                  target="''${FIREBASE_TARGET:-typespec-asyncapi}"
 
-                root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
-                if [ -z "$root" ]; then
-                  echo "error: run this inside the typespec-asyncapi git checkout" >&2
-                  exit 1
-                fi
+                  root="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+                  if [ -z "$root" ]; then
+                    echo "error: run this inside the typespec-asyncapi git checkout" >&2
+                    exit 1
+                  fi
 
-                website="$root/website"
-                if [ ! -f "$website/firebase.json" ]; then
-                  echo "error: $website/firebase.json is missing" >&2
-                  exit 1
-                fi
-                cd "$website"
+                  website="$root/website"
+                  if [ ! -f "$website/firebase.json" ]; then
+                    echo "error: $website/firebase.json is missing" >&2
+                    exit 1
+                  fi
+                  cd "$website"
 
-                if [ ! -d node_modules ]; then
-                  echo "==> installing dependencies"
-                  pnpm install --frozen-lockfile --dir "$root"
-                fi
+                  if [ ! -d node_modules ]; then
+                    echo "==> installing dependencies"
+                    pnpm install --frozen-lockfile --dir "$root"
+                  fi
 
-                echo "==> building website"
-                pnpm run build
+                  echo "==> building website"
+                  pnpm run build
 
-                if [ "''${SKIP_CHECK:-0}" != "1" ]; then
-                  echo "==> checking links"
-                  pnpm run check:links
-                fi
+                  if [ "''${SKIP_CHECK:-0}" != "1" ]; then
+                    echo "==> checking links"
+                    pnpm run check:links
+                  fi
 
-                echo "==> deploying hosting:$target to $project"
-                firebase deploy --only "hosting:$target" --project "$project" "$@"
-              '';
-            }}/bin/deploy-website";
+                  echo "==> deploying hosting:$target to $project"
+                  firebase deploy --only "hosting:$target" --project "$project" "$@"
+                '';
+              }
+            }/bin/deploy-website";
             meta.description = "Build the Astro website and deploy it to Firebase Hosting";
           };
 

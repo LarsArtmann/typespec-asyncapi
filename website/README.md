@@ -52,12 +52,21 @@ scripts/
 
 ## Deploying
 
-Deploys are manual. From `website/`:
+One command from anywhere in the repo:
 
 ```bash
-nix shell nixpkgs#nodejs -c pnpm run build
-nix shell nixpkgs#nodejs nixpkgs#firebase-tools -c \
-  firebase deploy --only hosting:typespec-asyncapi --project lars-software
+nix run .#deploy-website
 ```
+
+The flake app finds the repo root, builds this site, checks internal links, and deploys `hosting:typespec-asyncapi` to the `lars-software` project. Useful overrides:
+
+| Env var / arg                | Effect                                                    |
+| ---------------------------- | --------------------------------------------------------- |
+| `FIREBASE_TARGET=<channel>`  | deploy a preview channel instead of the production target |
+| `FIREBASE_PROJECT=<project>` | deploy to another Firebase project                        |
+| `SKIP_CHECK=1`               | skip the internal link check before deploy                |
+| `-- <flags>`                 | forwarded to `firebase deploy`                            |
+
+Equivalent manual form, if you need it: `nix shell nixpkgs#nodejs -c pnpm run build` then `nix shell nixpkgs#nodejs nixpkgs#firebase-tools -c firebase deploy --only hosting:typespec-asyncapi --project lars-software`, run from `website/` (the Firebase CLI rejects the repo root — `firebase.json` lives here).
 
 Firebase config lives in `firebase.json`; `trailingSlash: true` matches Astro's canonical URLs (every generated page URL ends in `/`), so internal navigation does not take a 301 hop.
