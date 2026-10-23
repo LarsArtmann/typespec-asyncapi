@@ -85,8 +85,10 @@ for (const required of [
   "sitemap-index.xml",
   "robots.txt",
   "llms.txt",
+  "llms-full.txt",
   "manifest.json",
   "favicon.svg",
+  ".well-known/security.txt",
 ]) {
   if (!(await exists(join(DIST, required)))) {
     missing.push({ page: "<build>", href: required, target: required });

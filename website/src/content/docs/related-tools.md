@@ -48,9 +48,22 @@ head:
 | [tsp-asyncapi](https://www.npmjs.com/package/tsp-asyncapi) | TypeSpec emitter, direct-AST           | 3.0.0            |
 | Hand-written YAML                                          | none                                   | any              |
 
-The [comparison table on the landing page](/) covers capability differences in detail.
+The [comparison table on the landing page](/) covers capability differences in detail. The short version, checked October 2026:
+
+| Capability             | typespec-asyncapi                       | tsp-asyncapi           |
+| ---------------------- | --------------------------------------- | ---------------------- |
+| AsyncAPI version       | 3.1.0                                   | 3.0.0                  |
+| Output validation      | AJV against the official 3.1.0 schema   | 15 property tests      |
+| Protocols / bindings   | 22 protocols, 19 generated bindings     | 13, hand-written       |
+| Reusable components    | 11 decorators across 7 component slots  | not supported          |
+| Multi-file output      | `split-schemas` with `$ref` rewriting   | not supported          |
+| Compile-time checks    | 36 diagnostics                          | deferred               |
+
+Choose the other emitter if its 3.0 output or its docs site matters more than schema-validated 3.1 output; choose this one when validation, reusable components, and generated binding metadata are the priority.
 
 ## Where to go next
 
 - [Installation](/getting-started/installation/) — get started
+- [FAQ](/faq/) — versions, validation, and mixed-emitter questions
+- [Architecture](/reference/architecture/) — how the emitter is put together
 - [Changelog](/changelog/) — current status

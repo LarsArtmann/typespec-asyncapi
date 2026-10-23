@@ -33,3 +33,6 @@ jobs:
 
       - name: Compile and validate examples (0 diagnostics + AsyncAPI 3.1 AJV)
         run: pnpm run check-examples
+
+      - name: Website typecheck, build, HTML validation, internal link check
+        run: pnpm --filter typespec-asyncapi-website run check

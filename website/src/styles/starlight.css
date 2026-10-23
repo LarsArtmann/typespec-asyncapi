@@ -58,3 +58,39 @@
   --sl-color-hairline-light: var(--sl-color-gray-6);
   --sl-color-hairline-shade: var(--sl-color-gray-6);
 }
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+.sl-markdown-content :is(h2, h3, h4) {
+  scroll-margin-top: 6rem;
+}
+
+.sl-markdown-content a:not(.not-content) {
+  text-underline-offset: 0.18em;
+}
+
+:focus-visible {
+  outline: 2px solid var(--sl-color-accent-high);
+  outline-offset: 2px;
+}
+
+@media print {
+  header,
+  nav,
+  aside,
+  .right-sidebar {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+  }
+}
