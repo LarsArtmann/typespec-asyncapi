@@ -1,6 +1,6 @@
 # Website improvement backlog
 
-Working list for `typespec-asyncapi.lars.software`. 140 ideas, grouped by the job they do. Status reflects the 2026-10-23 pass; `Done` means shipped and verified by `pnpm run check`.
+Working list for `typespec-asyncapi.lars.software`. 144 ideas, grouped by the job they do. Status reflects the 2026-10-23 pass; `Done` means shipped and verified by `pnpm run check` (which now also validates the emitted CSP).
 
 **Legend:** Impact `H`/`M`/`L`; effort `S` (<1h), `M` (half day), `L` (multi-day). Status `Done`, `Next`, `Later`, `Decision` (needs a product call).
 
@@ -185,6 +185,15 @@ Working list for `typespec-asyncapi.lars.software`. 140 ideas, grouped by the jo
 | 138 | Add talks, podcasts, and article links                                        | L      | S      | Later    |
 | 139 | Add a docs localization pilot (German first)                                  | M      | L      | Decision |
 | 140 | Add a quarterly docs freshness audit (counts, screenshots, competitor claims) | H      | S      | Next     |
+
+## Security headers and CSP
+
+| #   | Idea                                                                                                | Impact | Effort | Status |
+| --- | --------------------------------------------------------------------------------------------------- | ------ | ------ | ------ |
+| 141 | Scope `'unsafe-inline'` to `style-src-attr` so inline `<style>` blocks stay hash-controlled          | H      | S      | Done   |
+| 142 | Validate the emitted CSP on every build: directive names, hash coverage, no `unsafe-inline` scripts  | H      | M      | Done   |
+| 143 | Verify inline `<style>` and `<script>` hashes per page instead of trusting the build                | M      | S      | Done   |
+| 144 | Filter the two expected upstream Astro warnings through a narrow logger allowlist                   | L      | S      | Done   |
 
 ## The next five, in order
 

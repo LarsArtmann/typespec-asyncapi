@@ -18,7 +18,7 @@ pnpm install
 pnpm run dev          # local dev server
 pnpm run build        # sync stats → build → CSP patch
 pnpm run typecheck    # astro check
-pnpm run check        # typecheck + build + HTML validation + link check
+pnpm run check        # typecheck + build + HTML validation + link check + CSP check
 pnpm run preview      # serve the production build
 ```
 
@@ -29,7 +29,12 @@ pnpm run preview      # serve the production build
 - `pnpm run typecheck` — Astro and TypeScript diagnostics, zero errors.
 - `pnpm run check:html` — `html-validate` over every built page.
 - `pnpm run check:links` — every internal `href`/`src` resolves to a built file, and required artifacts (`llms.txt`, `sitemap-index.xml`, `404.html`, `security.txt`) exist.
+- `pnpm run check:csp` — every built page carries a valid policy: directive names are well formed, scripts are hash-only (never `'unsafe-inline'`), `'unsafe-inline'` is confined to `style-src-attr`, and every inline `<style>`/`<script>` block is covered by a hash Astro emitted.
 - CI runs the same `pnpm --filter typespec-asyncapi-website run check` step after the emitter gate.
+
+### Content Security Policy
+
+Astro injects a `<meta http-equiv="content-security-policy">` per page (`security.csp` in `astro.config.mjs`); `scripts/fix-csp.mjs` then adds hashes for inline scripts Astro leaves unhashed. Starlight highlights code with Expressive Code, which writes token colors to `style` attributes — CSP cannot hash or nonce attributes, so `'unsafe-inline'` is scoped to `style-src-attr` while `style-src` keeps element hashes. Astro warns that Shiki is "not compatible with CSP" and Starlight warns about the empty `i18n` collection on a single-language site; both are filtered by `astro-logger.mjs` (exact message prefixes only) and enforced instead by `check:csp`.
 
 ## Layout
 
