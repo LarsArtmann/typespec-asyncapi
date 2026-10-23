@@ -4,6 +4,8 @@ Working list for `typespec-asyncapi.lars.software`. 140 ideas, grouped by the jo
 
 **Legend:** Impact `H`/`M`/`L`; effort `S` (<1h), `M` (half day), `L` (multi-day). Status `Done`, `Next`, `Later`, `Decision` (needs a product call).
 
+**Deployed 2026-10-23** to `hosting:typespec-asyncapi` and verified live against the custom domain: `/` 200, `/getting-started/installation/` 200, `/getting-started/installation` 301 → trailing slash (single hop), `/search/` 200, `/llms.txt` 200, `/llms-full.txt` 200, `/rss.xml` 200, `/sitemap-index.xml` 200, `/.well-known/security.txt` 200 with `max-age=3600`, `/manifest.json` 200, `/opensearch.xml` 200, `/humans.txt` 200, `/docs` 301 → `/getting-started/installation/`, `/nonexistent` 404 carrying both `robots noindex` and `data-pagefind-ignore`. Response CSP meta includes `'wasm-unsafe-eval'`; `frame-ancestors 'none'` is sent as a header.
+
 ## Content and accuracy
 
 | #   | Idea                                                                                       | Impact | Effort | Status   |
@@ -123,7 +125,7 @@ Working list for `typespec-asyncapi.lars.software`. 140 ideas, grouped by the jo
 | 93  | Add TechArticle and BreadcrumbList structured data to docs pages             | M      | M      | Next   |
 | 94  | Add `article:modified_time` to docs Open Graph tags                          | L      | S      | Later  |
 | 95  | Add image entries to the sitemap                                             | L      | S      | Later  |
-| 96  | Compress the 305 KB static OG image                                          | M      | S      | Next   |
+| 96  | Compress the 298 KB static OG image                                          | M      | S      | Next   |
 | 97  | Add `hreflang` once a second language exists                                 | L      | S      | Later  |
 | 98  | Add a docs-wide canonical audit to CI                                        | M      | S      | Next   |
 | 99  | Add a sitemap/robots validation step to CI                                   | L      | S      | Next   |
