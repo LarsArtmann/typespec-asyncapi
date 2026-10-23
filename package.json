@@ -117,11 +117,11 @@
     "@types/node": "^26.6.4",
     "@typescript-eslint/eslint-plugin": "8.72.0",
     "@typescript-eslint/parser": "8.72.0",
-    "@typespec/asset-emitter": "^0.79.2",
-    "@typespec/compiler": "^1.16.0",
-    "@typespec/http": "^1.16.0",
-    "@typespec/json-schema": "^1.16.0",
-    "@typespec/openapi3": "^1.16.0",
+    "@typespec/asset-emitter": "^0.79.3",
+    "@typespec/compiler": "^1.17.0",
+    "@typespec/http": "^1.17.0",
+    "@typespec/json-schema": "^1.17.0",
+    "@typespec/openapi3": "^1.17.0",
     "@typespec/rest": "^0.87.0",
     "@typespec/versioning": "^0.87.0",
     "ajv": "^8.20.0",
@@ -131,13 +131,13 @@
     "jscpd": "5.4.1",
     "oxlint": "1.89.0",
     "tsx": "^4.23.15",
-    "typescript": "7.0.2",
+    "typescript": "6.0.3",
     "typescript-eslint": "8.72.0",
     "vitest": "^5.0.3"
   },
   "peerDependencies": {
-    "@typespec/asset-emitter": "^0.79.2",
-    "@typespec/compiler": "^1.16.0",
+    "@typespec/asset-emitter": "^0.79.3",
+    "@typespec/compiler": "^1.17.0",
     "@typespec/versioning": "^0.87.0"
   },
   "overrides": {
