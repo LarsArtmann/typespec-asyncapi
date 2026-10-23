@@ -1,6 +1,28 @@
 ---
 title: Protocol Bindings
 description: 19 protocol bindings auto-generated from @asyncapi/specs, with version auto-injection and placement checking.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/bindings.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Protocol Bindings — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/bindings.png"
+
 ---
 
 All 19 bindings are auto-generated from `@asyncapi/specs/bindings/` — the same source the AsyncAPI project publishes. That gives you field-level validation, correct binding versions, and placement checks without any hand-written protocol tables.

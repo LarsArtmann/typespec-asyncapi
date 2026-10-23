@@ -1,6 +1,28 @@
 ---
 title: Multi-File Output
 description: Split schemas into individual files with rewritten $ref pointers via split-schemas.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/split-schemas.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Multi-File Output — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/split-schemas.png"
+
 ---
 
 For large specs, enable `split-schemas` to emit every schema into its own file under `schemas/`:

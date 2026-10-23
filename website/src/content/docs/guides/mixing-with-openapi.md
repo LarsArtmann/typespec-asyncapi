@@ -1,6 +1,28 @@
 ---
 title: Mixing with OpenAPI (REST + Events)
 description: Serve REST and event contracts from one TypeSpec program — @typespec/openapi3 owns routed operations, this emitter owns events, and ownership never collides.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/mixing-with-openapi.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Mixing with OpenAPI (REST + Events) — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/mixing-with-openapi.png"
+
 ---
 
 One TypeSpec program can produce both contracts: `@typespec/http` + `@typespec/openapi3` emit the REST document, and this emitter emits the event document. Ownership of every operation is decided by `@typespec/http`'s resolved route table, so the two emitters never claim the same operation.

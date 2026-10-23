@@ -1,6 +1,28 @@
 ---
 title: Architecture
 description: How the emitter turns a TypeSpec type graph into an AsyncAPI 3.1 document — schema seam, document builders, state, and validation.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/reference/architecture.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Architecture — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/reference/architecture.png"
+
 ---
 
 This page is for contributors and for anyone deciding whether to depend on the internals. The public contract is the decorator surface and the emitted document; everything below is implementation.

@@ -1,6 +1,28 @@
 ---
 title: Diagnostics
 description: The 36 compile-time diagnostics (20 errors, 16 warnings) that catch invalid configuration before output.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/reference/diagnostics.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Diagnostics — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/reference/diagnostics.png"
+
 ---
 
 All diagnostics are prefixed `@lars-artmann/typespec-asyncapi/` in compiler output. They fire at compile time — invalid configurations never reach the emitted document.

@@ -1,6 +1,28 @@
 ---
 title: Installation
 description: Install the typespec-asyncapi emitter and wire it into your TypeSpec project.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/getting-started/installation.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Installation — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/getting-started/installation.png"
+
 ---
 
 **Who is this for?** Event-driven API architects, platform engineers, and backend teams already using TypeSpec who want a typed, validated AsyncAPI 3.1 source of truth instead of hand-written YAML.

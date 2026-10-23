@@ -1,6 +1,28 @@
 ---
 title: Quick Start
 description: Define a channel and operation in TypeSpec, then compile a validated AsyncAPI 3.1 document.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/getting-started/quick-start.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Quick Start — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/getting-started/quick-start.png"
+
 ---
 
 This page walks the shortest path from zero to a validated AsyncAPI 3.1 document.

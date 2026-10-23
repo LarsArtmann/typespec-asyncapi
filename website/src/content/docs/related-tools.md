@@ -1,6 +1,28 @@
 ---
 title: Related Tools
 description: The ecosystem around typespec-asyncapi — TypeSpec, AsyncAPI tooling, and sibling emitters.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/related-tools.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Related Tools — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/related-tools.png"
+
 ---
 
 ## The TypeSpec ecosystem

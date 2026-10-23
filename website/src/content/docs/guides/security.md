@@ -1,6 +1,28 @@
 ---
 title: Security
 description: OAuth2, API keys, SASL, and the other AsyncAPI 3.1 security scheme types.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/security.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Security — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/security.png"
+
 ---
 
 `@security` on a namespace declares schemes in `components.securitySchemes`; `@operationSecurity` attaches requirements to one operation as `$ref` pointers.

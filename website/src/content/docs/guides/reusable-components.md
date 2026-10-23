@@ -1,6 +1,28 @@
 ---
 title: Reusable Components
 description: Traits, parameters, correlation IDs, and reusable bindings via 11 decorators across 7 components.* slots.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/reusable-components.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Reusable Components — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/reusable-components.png"
+
 ---
 
 AsyncAPI 3.1's `components.*` slots let you define an operation trait, message trait, parameter, correlation ID, or binding once and reference it everywhere. The emitter populates all of them.

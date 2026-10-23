@@ -1,6 +1,28 @@
 ---
 title: Schema Generation
 description: How TypeSpec models, scalars, constraints, unions, and generics become JSON Schema components.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/schemas.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Schema Generation — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/schemas.png"
+
 ---
 
 Every TypeSpec scalar maps to the correct JSON Schema type and format. Named models, enums, and scalars are emitted as reusable `components.schemas` entries referenced by `$ref`.

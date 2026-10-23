@@ -68,6 +68,7 @@ export default defineConfig({
           items: [
             { label: "Installation", slug: "getting-started/installation" },
             { label: "Quick Start", slug: "getting-started/quick-start" },
+            { label: "Migration Guide", slug: "getting-started/migration" },
           ],
         },
         {
@@ -92,6 +93,7 @@ export default defineConfig({
         {
           label: "Reference",
           items: [
+            { label: "Architecture", slug: "reference/architecture" },
             { label: "Emitter Options", slug: "reference/emitter-options" },
             { label: "Diagnostics", slug: "reference/diagnostics" },
             {
@@ -103,6 +105,8 @@ export default defineConfig({
         {
           label: "Community",
           items: [
+            { label: "Examples", slug: "examples" },
+            { label: "FAQ", slug: "faq" },
             { label: "Changelog", slug: "changelog" },
             { label: "Contributing", slug: "contributing" },
             { label: "Related Tools", slug: "related-tools" },
@@ -123,6 +127,23 @@ export default defineConfig({
             name: "description",
             content:
               "Stop hand-writing AsyncAPI YAML. Model your event-driven API in TypeSpec and emit AsyncAPI 3.1 specifications validated against the official JSON Schema.",
+          },
+        },
+        {
+          tag: "meta",
+          attrs: { name: "twitter:site", content: "@LarsArtmann" },
+        },
+        {
+          tag: "meta",
+          attrs: { name: "twitter:creator", content: "@LarsArtmann" },
+        },
+        {
+          tag: "link",
+          attrs: {
+            rel: "alternate",
+            type: "text/plain",
+            href: "/llms.txt",
+            title: "LLM documentation index",
           },
         },
       ],

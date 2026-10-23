@@ -1,6 +1,28 @@
 ---
 title: Examples
 description: 15 runnable TypeSpec projects covering Kafka, MQTT, WebSocket, reusable components, split schemas, and mixed REST/event systems.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/examples.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Examples — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/examples.png"
+
 ---
 
 Every example is a self-contained TypeSpec project. CI compiles all of them with zero diagnostics and validates each emitted document against the official AsyncAPI 3.1.0 JSON Schema.

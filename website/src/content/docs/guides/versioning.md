@@ -1,6 +1,28 @@
 ---
 title: Versioning
 description: Drive info.version from @typespec/versioning versioned enums.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/versioning.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Versioning — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/versioning.png"
+
 ---
 
 The emitter integrates with [`@typespec/versioning`](https://typespec.io/docs/libraries/versioning/overview/):

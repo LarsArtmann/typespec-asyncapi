@@ -1,6 +1,28 @@
 ---
 title: Emitter Options
 description: Output file, format, pretty-printing, split-schemas, and version options in tspconfig.yaml.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/reference/emitter-options.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Emitter Options — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/reference/emitter-options.png"
+
 ---
 
 All options live under `options."@lars-artmann/typespec-asyncapi"` in `tspconfig.yaml`, or on the command line via `--option @lars-artmann/typespec-asyncapi.<option>=<value>`.

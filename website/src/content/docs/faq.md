@@ -1,6 +1,28 @@
 ---
 title: FAQ
 description: Straight answers about AsyncAPI versions, TypeSpec support, validation, mixed OpenAPI/AsyncAPI programs, and when not to use this emitter.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/faq.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "FAQ — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/faq.png"
+
 ---
 
 ## Is this production-ready?

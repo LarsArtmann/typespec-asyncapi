@@ -1,6 +1,28 @@
 ---
 title: Decorators
 description: All 30 decorators — channels, messages, servers, security, bindings, and reusable components.
+head:
+  - tag: meta
+    attrs:
+      property: og:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/decorators.png"
+  - tag: meta
+    attrs:
+      property: og:image:width
+      content: "1200"
+  - tag: meta
+    attrs:
+      property: og:image:height
+      content: "630"
+  - tag: meta
+    attrs:
+      property: og:image:alt
+      content: "Decorators — typespec-asyncapi"
+  - tag: meta
+    attrs:
+      name: twitter:image
+      content: "https://typespec-asyncapi.lars.software/og/guides/decorators.png"
+
 ---
 
 Every AsyncAPI-specific decorator is declared in `lib/main.tsp` and accepts both `{}` (model expression) and `#{}` (value literal) syntax. Decorators that misconfigure emit compile-time diagnostics — see [Diagnostics](/reference/diagnostics/).
