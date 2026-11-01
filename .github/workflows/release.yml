@@ -27,7 +27,7 @@ on:
         default: true
 
 permissions:
-  contents: read
+  contents: write # creating GitHub Releases on tag push (checkout needs only read)
   id-token: write
 
 jobs:
@@ -82,3 +82,30 @@ jobs:
             echo "Tag push: publishing with provenance"
             npm publish --provenance --ignore-scripts --access public "${TAG_ARGS[@]}"
           fi
+
+      # Body comes from the tagged version's CHANGELOG.md section, so the
+      # changelog stays the single source of release notes. Idempotent: a
+      # re-run of the workflow for an existing release skips this step.
+      - name: Create GitHub release
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TAG="$GITHUB_REF_NAME"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists; skipping creation"
+            exit 0
+          fi
+          VERSION="${TAG#v}"
+          NOTES=$(node -e '
+            const fs = require("fs");
+            const version = process.argv[1];
+            const section = fs.readFileSync("CHANGELOG.md", "utf8")
+              .split(/^## /m)
+              .find((s) => s.startsWith(`[${version}]`));
+            if (section === undefined) {
+              throw new Error(`No CHANGELOG.md section for ${version}`);
+            }
+            console.log(section.slice(section.indexOf("\n") + 1).trimEnd());
+          ' "$VERSION")
+          gh release create "$TAG" --title "$TAG" --notes "$NOTES" --latest
