@@ -67,6 +67,7 @@ Nothing catastrophic — no data loss, no broken push, no reverted work. The hon
 ## f) NEXT — up to 50 things (ordered by impact; brainstorm, harvest-worthy)
 
 **Security & CI (high impact)**
+
 1. Add CI job: `cd website/video && npm ci && npm audit --audit-level=high` (would have caught Oct 23 drift same-day).
 2. Add CI job or step: `pnpm audit` gate on the root workspace (currently manual; the workspace yaml has pins but no enforced check).
 3. Enable Dependabot automerge (green CI + gates) for `minor-and-patch` groups and security bumps; keep majors manual.
@@ -138,4 +139,4 @@ Nothing catastrophic — no data loss, no broken push, no reverted work. The hon
 
 ---
 
-*Report generated per the 2026-11-01 session: PR review → verification → merge cycle. Point-in-time snapshot; section (f) is brainstorm-grade input for docs-health HARVEST, not a commitment list.*
+_Report generated per the 2026-11-01 session: PR review → verification → merge cycle. Point-in-time snapshot; section (f) is brainstorm-grade input for docs-health HARVEST, not a commitment list._

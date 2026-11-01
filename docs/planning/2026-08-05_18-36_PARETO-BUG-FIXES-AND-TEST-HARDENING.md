@@ -41,28 +41,28 @@ Previous session added 108 tests (713 → 821). Two real bugs were discovered bu
 
 ### The 1% That Delivers 51%
 
-| #   | Task                      | Impact                              | Why                                                       |
-| --- | ------------------------- | ----------------------------------- | --------------------------------------------------------- |
-| 1   | Fix binding protocol gap  | 3 protocols silently broken         | Correctness bug — valid user input rejected               |
-| 2   | Fix tuple-of-named-models | Invalid output for a supported type | Correctness bug — output fails AsyncAPI schema validation |
-| 3   | Push to remote            | Unblocks CI/team                    | 1 commit ahead, nothing pushed                            |
+| # | Task                      | Impact                              | Why                                                       |
+| - | ------------------------- | ----------------------------------- | --------------------------------------------------------- |
+| 1 | Fix binding protocol gap  | 3 protocols silently broken         | Correctness bug — valid user input rejected               |
+| 2 | Fix tuple-of-named-models | Invalid output for a supported type | Correctness bug — output fails AsyncAPI schema validation |
+| 3 | Push to remote            | Unblocks CI/team                    | 1 commit ahead, nothing pushed                            |
 
 ### The 4% That Delivers 64% (1% + these)
 
-| #   | Task                           | Impact              | Why                                                          |
-| --- | ------------------------------ | ------------------- | ------------------------------------------------------------ |
-| 4   | Tests for binding protocol fix | Prevents regression | Verifies solace/anypointmq/ros2 validate correctly           |
-| 5   | Tests for tuple fix            | Prevents regression | Verifies primitive + named model tuples produce valid output |
-| 6   | Run coverage gate              | Confidence          | Verifies 75% per-file minimum holds                          |
+| # | Task                           | Impact              | Why                                                          |
+| - | ------------------------------ | ------------------- | ------------------------------------------------------------ |
+| 4 | Tests for binding protocol fix | Prevents regression | Verifies solace/anypointmq/ros2 validate correctly           |
+| 5 | Tests for tuple fix            | Prevents regression | Verifies primitive + named model tuples produce valid output |
+| 6 | Run coverage gate              | Confidence          | Verifies 75% per-file minimum holds                          |
 
 ### The 20% That Delivers 80% (4% + these)
 
-| #   | Task                       | Impact       | Why                                                         |
-| --- | -------------------------- | ------------ | ----------------------------------------------------------- |
-| 7   | splitSchemas unit tests    | 0% → covered | Core feature (multi-file output) has no unit tests          |
-| 8   | extractValue circular kind | Edge case    | Only "none" kind tested, "circular" returns {} untested     |
-| 9   | stdlib-helpers tests       | 6% → covered | `isStdlibType` is critical for $ref-vs-inline decisions     |
-| 10  | Dead diagnostic cleanup    | Code hygiene | 10 diagnostic codes can never fire (TypeSpec prevents them) |
+| #  | Task                       | Impact       | Why                                                         |
+| -- | -------------------------- | ------------ | ----------------------------------------------------------- |
+| 7  | splitSchemas unit tests    | 0% → covered | Core feature (multi-file output) has no unit tests          |
+| 8  | extractValue circular kind | Edge case    | Only "none" kind tested, "circular" returns {} untested     |
+| 9  | stdlib-helpers tests       | 6% → covered | `isStdlibType` is critical for $ref-vs-inline decisions     |
+| 10 | Dead diagnostic cleanup    | Code hygiene | 10 diagnostic codes can never fire (TypeSpec prevents them) |
 
 ### The Remaining 20% → 100%
 

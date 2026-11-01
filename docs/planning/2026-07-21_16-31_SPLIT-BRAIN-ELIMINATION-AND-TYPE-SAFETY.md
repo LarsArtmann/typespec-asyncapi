@@ -88,16 +88,16 @@ These are feature work and investigation — valuable but not correctness-critic
 
 Sorted by: Impact (correctness first) → Effort → Customer value. Dependencies noted.
 
-| #   | Task                                                        | Impact   | Effort | Value                                | Deps  | Phase         |
-| --- | ----------------------------------------------------------- | -------- | ------ | ------------------------------------ | ----- | ------------- |
-| T1  | **Fix diagnostic registry split-brain**                     | CRITICAL | 60min  | Every error path works correctly     | None  | Correctness   |
-| T2  | **Delete dead version constants**                           | HIGH     | 20min  | Prevent next version drift           | None  | Correctness   |
-| T3  | **Tighten `ServerObject.protocol` → `AsyncAPIProtocol`**    | MEDIUM   | 30min  | Document model type safety           | None  | Type Safety   |
-| T4  | **Tighten `OperationObject.bindings` → `ProtocolBindings`** | MEDIUM   | 30min  | Document model consistency           | None  | Type Safety   |
-| T5  | **Compile external `.tsp` specs, report failure modes**     | HIGH     | 90min  | Surface unknown bugs                 | None  | Investigation |
-| T6  | **Add RFC 3986 URL validation to `@server`**                | MEDIUM   | 45min  | Catch malformed URLs at compile time | T1    | Feature Gap   |
-| T7  | **Error type hierarchy review (decide: YAGNI or not)**      | LOW      | 30min  | Close issue #54 with decision        | None  | Feature Gap   |
-| T8  | **Full verification: build + lint + test + coverage**       | CRITICAL | 30min  | Prove everything works               | T1-T7 | Verification  |
+| #  | Task                                                        | Impact   | Effort | Value                                | Deps  | Phase         |
+| -- | ----------------------------------------------------------- | -------- | ------ | ------------------------------------ | ----- | ------------- |
+| T1 | **Fix diagnostic registry split-brain**                     | CRITICAL | 60min  | Every error path works correctly     | None  | Correctness   |
+| T2 | **Delete dead version constants**                           | HIGH     | 20min  | Prevent next version drift           | None  | Correctness   |
+| T3 | **Tighten `ServerObject.protocol` → `AsyncAPIProtocol`**    | MEDIUM   | 30min  | Document model type safety           | None  | Type Safety   |
+| T4 | **Tighten `OperationObject.bindings` → `ProtocolBindings`** | MEDIUM   | 30min  | Document model consistency           | None  | Type Safety   |
+| T5 | **Compile external `.tsp` specs, report failure modes**     | HIGH     | 90min  | Surface unknown bugs                 | None  | Investigation |
+| T6 | **Add RFC 3986 URL validation to `@server`**                | MEDIUM   | 45min  | Catch malformed URLs at compile time | T1    | Feature Gap   |
+| T7 | **Error type hierarchy review (decide: YAGNI or not)**      | LOW      | 30min  | Close issue #54 with decision        | None  | Feature Gap   |
+| T8 | **Full verification: build + lint + test + coverage**       | CRITICAL | 30min  | Prove everything works               | T1-T7 | Verification  |
 
 **Total estimated effort:** ~5.5 hours (335 min)
 

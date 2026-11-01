@@ -9,19 +9,19 @@
 
 ## 0. Evidence
 
-| Command | Result |
-| --- | --- |
-| `date` | `2026-10-23 14:20 CEST` |
-| `pnpm --filter typespec-asyncapi-website run check` | typecheck `0 errors`, build `22 page(s)`, `html-validate` pass, `links: 778 internal references across 22 pages are valid`, `csp: 22 pages carry a valid, hash-covered policy` |
-| `pnpm run verify` (root, Node 24) | `1275 pass`, `0 fail`, coverage gate 97.9% average (45 files), `Found 0 clones` |
-| `nix flake check` | `all checks passed!` (treefmt, cache-cold) |
-| `nix run .#deploy-website` | build + link check + `firebase deploy` → `release complete` (26 files uploaded) |
-| Cold rebuild (`trash .astro dist; pnpm run build`) | `Could not render /404` count: **0**; WARN count: **0** |
-| Live `typespec-asyncapi.lars.software` | `/` 200, `/getting-started/installation` 301 → `/getting-started/installation/`, `/search/` 200, `/llms.txt` 200, `/.well-known/security.txt` 200, `/rss.xml` 200, `/nonexistent` 404 |
-| Live CSP | `style-src 'self' <3 hashes>; style-src-attr 'unsafe-inline'` on `/`, `/search/`, `/guides/decorators/`, 404 |
-| Live 404 body | custom copy present ("Search the docs"), `robots noindex` present |
-| Toolchain | devShell `nodejs_24` (24.21.0), website TypeScript `6.0.3`, root TypeScript `7.0.2` |
-| Backlog counters | `website/IMPROVEMENTS.md`: 144 ideas — 63 Done, 42 Next, 5 Decision, 34 Later |
+| Command                                             | Result                                                                                                                                                                                |
+| --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `date`                                              | `2026-10-23 14:20 CEST`                                                                                                                                                               |
+| `pnpm --filter typespec-asyncapi-website run check` | typecheck `0 errors`, build `22 page(s)`, `html-validate` pass, `links: 778 internal references across 22 pages are valid`, `csp: 22 pages carry a valid, hash-covered policy`        |
+| `pnpm run verify` (root, Node 24)                   | `1275 pass`, `0 fail`, coverage gate 97.9% average (45 files), `Found 0 clones`                                                                                                       |
+| `nix flake check`                                   | `all checks passed!` (treefmt, cache-cold)                                                                                                                                            |
+| `nix run .#deploy-website`                          | build + link check + `firebase deploy` → `release complete` (26 files uploaded)                                                                                                       |
+| Cold rebuild (`trash .astro dist; pnpm run build`)  | `Could not render /404` count: **0**; WARN count: **0**                                                                                                                               |
+| Live `typespec-asyncapi.lars.software`              | `/` 200, `/getting-started/installation` 301 → `/getting-started/installation/`, `/search/` 200, `/llms.txt` 200, `/.well-known/security.txt` 200, `/rss.xml` 200, `/nonexistent` 404 |
+| Live CSP                                            | `style-src 'self' <3 hashes>; style-src-attr 'unsafe-inline'` on `/`, `/search/`, `/guides/decorators/`, 404                                                                          |
+| Live 404 body                                       | custom copy present ("Search the docs"), `robots noindex` present                                                                                                                     |
+| Toolchain                                           | devShell `nodejs_24` (24.21.0), website TypeScript `6.0.3`, root TypeScript `7.0.2`                                                                                                   |
+| Backlog counters                                    | `website/IMPROVEMENTS.md`: 144 ideas — 63 Done, 42 Next, 5 Decision, 34 Later                                                                                                         |
 
 ---
 
@@ -36,7 +36,7 @@
 7. **Custom 404 actually renders now.** Starlight injects a static `/404` route that shadowed `src/content/docs/404.md`; `starlight({ disable404Route: true })` fixes it. Confirmed on a cache-cold build (`Could not render /404` count 0) and live (`Search the docs`).
 8. **Toolchain repaired.** `website/package.json` had drifted back to `typescript: ^7.0.2`, and `astro check` refuses TS 7, aborting the entire website gate before build. Pinned to `6.0.3` and force-relinked (`pnpm install --force --filter typespec-asyncapi-website`; a plain install reports "Already up to date"). Nix `nodejs_22` (22.23.3) is rejected by Astro 7.4.2 (`>=22.23.4` required), so devShells and the deploy app now use `nodejs_24`, matching CI's `node-version: "24"`.
 9. **Docs updated:** `AGENTS.md` (deploy app, CSP scoping + `fix-csp.mjs` hazard, Node 24 requirement, TypeScript constraints, 404 routing, website gate), `website/README.md` (gate list, CSP section, deploy overrides), `website/IMPROVEMENTS.md` (new "Security headers and CSP" section, rows 141-144, counters 140 → 144), status report annotated.
-10. **Deploy-target documentation corrected.** `FIREBASE_TARGET` was described as selecting a preview channel; `--only hosting:<name>` selects a Hosting *target*. Preview channels use `firebase hosting:channel:deploy <channel>` and are now documented as a separate, unbuilt flow.
+10. **Deploy-target documentation corrected.** `FIREBASE_TARGET` was described as selecting a preview channel; `--only hosting:<name>` selects a Hosting _target_. Preview channels use `firebase hosting:channel:deploy <channel>` and are now documented as a separate, unbuilt flow.
 11. **Environment hygiene:** no stray preview daemons left running; `dist` rebuilt from a clean `.astro` cache to prove the warnings were gone rather than cached away.
 
 ---

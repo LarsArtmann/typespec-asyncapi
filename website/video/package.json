@@ -11,7 +11,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "hyperframes": "^0.8.186"
+    "hyperframes": "^0.8.229"
   },
   "overrides": {
     "undici": "^7.30.1",
