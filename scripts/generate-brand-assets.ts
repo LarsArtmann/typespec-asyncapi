@@ -121,15 +121,13 @@ function quote(value: string): string {
 }
 
 function groupElement(
-  attributes: string,
+  openingTag: string,
+  glyphs: readonly string[],
   depth: number,
-  body: readonly string[],
-): string[] {
-  return [
-    `${pad(depth)}<g ${attributes}>`,
-    ...indent(body, depth + 1),
-    `${pad(depth)}</g>`,
-  ];
+): string {
+  return [openingTag, ...indent(glyphs, 1), "</g>"]
+    .map((line) => pad(depth) + line)
+    .join("\n");
 }
 
 function tspGlyphs(): string[] {
@@ -141,10 +139,10 @@ function tspGlyphs(): string[] {
 
 function asyncApiGlyphs(depth: number): string[] {
   return groupElement(
-    'transform="scale(0.643)" fill="#FFFFFF"',
-    depth,
+    '<g transform="scale(0.643)" fill="#FFFFFF">',
     ASYNCAPI_GLYPHS,
-  );
+    depth,
+  ).split("\n");
 }
 
 function tileAt(
@@ -154,7 +152,11 @@ function tileAt(
   y: number,
   scale: number,
 ): string[] {
-  return groupElement(`transform="translate(${x} ${y}) scale(${scale})"`, depth, body);
+  return groupElement(
+    `<g transform="translate(${x} ${y}) scale(${scale})">`,
+    body,
+    depth,
+  ).split("\n");
 }
 
 function asyncApiTileBody(fill: string): string[] {
@@ -282,16 +284,12 @@ function renderLockupSvg(variant: "dark" | "light"): string {
       `<title id="taaLockupTitle${suffix}">TypeSpec emits AsyncAPI</title>`,
       ...defsBlock(
         0,
-        {
-          id: `id="taaLockupAa${suffix}"`,
-          direction: AA_GRADIENT_ATTRS,
-          stops: ASYNCAPI_GRADIENT,
-        },
-        {
-          id: `id="taaLockupBlock${suffix}"`,
-          direction: BLOCK_GRADIENT_ATTRS,
-          stops: EMIT_BLOCK_GRADIENT,
-        },
+        `id="taaLockupAa${suffix}"`,
+        gradientRef(
+          `id="taaLockupBlock${suffix}"`,
+          BLOCK_GRADIENT_ATTRS,
+          EMIT_BLOCK_GRADIENT,
+        ),
       ),
       ...lockupBody({
         aaFill,
@@ -314,16 +312,12 @@ function renderMarkSvg(): string {
       '<title id="taaMarkTitle">TypeSpec emits AsyncAPI</title>',
       ...defsBlock(
         0,
-        {
-          id: 'id="taaMarkAa"',
-          direction: AA_GRADIENT_ATTRS,
-          stops: ASYNCAPI_GRADIENT,
-        },
-        {
-          id: 'id="taaMarkArrow"',
-          direction: ARROW_GRADIENT_ATTRS,
-          stops: ASYNCAPI_GRADIENT,
-        },
+        'id="taaMarkAa"',
+        gradientRef(
+          'id="taaMarkArrow"',
+          ARROW_GRADIENT_ATTRS,
+          ASYNCAPI_GRADIENT,
+        ),
       ),
       ...markBody({
         aaFill,
@@ -338,6 +332,15 @@ interface ComponentParts {
   readonly frontmatter: readonly string[];
   readonly svgAttributes: readonly string[];
   readonly inner: readonly string[];
+}
+
+function componentInner(
+  depth: number,
+  asyncApiId: string,
+  second: GradientRef,
+  body: readonly string[],
+): string[] {
+  return [...defsBlock(depth, asyncApiId, second), ...body];
 }
 
 function componentFile(parts: ComponentParts): string {
@@ -388,26 +391,16 @@ function renderLogoComponent(): string {
       'aria-label={decorative ? undefined : "TypeSpec emits AsyncAPI"}',
       'aria-hidden={decorative ? "true" : undefined}',
     ],
-    inner: [
-      ...defsBlock(
-        1,
-        {
-          id: "id={aaId}",
-          direction: AA_GRADIENT_ATTRS,
-          stops: ASYNCAPI_GRADIENT,
-        },
-        {
-          id: "id={arrowId}",
-          direction: ARROW_GRADIENT_ATTRS,
-          stops: ASYNCAPI_GRADIENT,
-        },
-      ),
-      ...markBody({
+    inner: componentInner(
+      1,
+      "id={aaId}",
+      gradientRef("id={arrowId}", ARROW_GRADIENT_ATTRS, ASYNCAPI_GRADIENT),
+      markBody({
         aaFill: COMPONENT_AA_FILL,
         arrowFill: COMPONENT_ARROW_FILL,
         depth: 1,
       }),
-    ],
+    ),
   });
 }
 
@@ -435,21 +428,11 @@ function renderLockupComponent(): string {
       'role="img"',
       'aria-label="TypeSpec emits AsyncAPI"',
     ],
-    inner: [
-      ...defsBlock(
-        1,
-        {
-          id: "id={aaId}",
-          direction: AA_GRADIENT_ATTRS,
-          stops: ASYNCAPI_GRADIENT,
-        },
-        {
-          id: "id={blockId}",
-          direction: BLOCK_GRADIENT_ATTRS,
-          stops: EMIT_BLOCK_GRADIENT,
-        },
-      ),
-      ...lockupBody({
+    inner: componentInner(
+      1,
+      "id={aaId}",
+      gradientRef("id={blockId}", BLOCK_GRADIENT_ATTRS, EMIT_BLOCK_GRADIENT),
+      lockupBody({
         aaFill: COMPONENT_AA_FILL,
         blockFill: COMPONENT_BLOCK_FILL,
         tspCaptionFill: '"currentColor"',
@@ -458,7 +441,7 @@ function renderLockupComponent(): string {
         mono: CSS_VAR_MONO,
         depth: 1,
       }),
-    ],
+    ),
   });
 }
 
