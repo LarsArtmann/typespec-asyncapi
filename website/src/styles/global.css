@@ -102,3 +102,24 @@ html.js [data-animate]:not(.animate-fade-in) {
 :focus:not(:focus-visible) {
   outline: none;
 }
+
+/* Playground diagnostics: plain CSS so the classes exist even though the
+   list items are created at runtime. */
+[data-playground-diagnostics] li {
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
+}
+
+[data-playground-diagnostics] li[data-severity="error"] {
+  color: var(--color-amber);
+}
+
+[data-playground-diagnostics] li[data-severity="warning"] {
+  color: var(--color-text-muted);
+}
+
+[data-playground-diagnostics] li > code {
+  flex: none;
+  color: var(--color-text-muted);
+}

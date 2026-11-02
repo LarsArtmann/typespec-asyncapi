@@ -181,6 +181,12 @@ importers:
       '@astrojs/check':
         specifier: ^0.9.12
         version: 0.9.12(@emnapi/runtime@1.11.3)(prettier@3.9.6)(typescript@6.0.3)
+      '@typespec/compiler':
+        specifier: ^1.17.0
+        version: 1.17.0(@types/node@26.6.5)
+      esbuild:
+        specifier: ^0.28.1
+        version: 0.28.1
       html-validate:
         specifier: ^11.17.0
         version: 11.17.0(@vitest/expect@4.1.11)(vitest@5.0.5(@types/node@26.6.5)(vite@8.3.4(@types/node@26.6.5)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.15)(yaml@2.9.1)))

@@ -116,3 +116,12 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 # <<< buildflow-managed (.gitignore) <<<
+
+# Local scratch (never commit)
+.scratch/
+.spike/
+tmp/
+
+# Generated playground engine + inlined stdlib
+website/public/playground/
+website/playground/generated-assets.ts

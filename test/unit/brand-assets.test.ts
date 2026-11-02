@@ -192,3 +192,29 @@ describe("readme hero", () => {
     }
   });
 });
+
+describe("astro lockup components", () => {
+  const COMPONENTS: readonly (readonly [file: string, prefix: string])[] = [
+    ["website/src/components/LockupHorizontal.astro", "taa-lockup-horizontal-"],
+    ["website/src/components/PipelineLockup.astro", "taa-lockup-stacked-"],
+  ];
+
+  it.each(COMPONENTS)("%s scopes its svg ids to the layout", (file, prefix) => {
+    const source = readAsset(file);
+
+    expect(source).toContain(`const aaId = "${prefix}aa-" + id;`);
+    expect(source).toContain(`const blockId = "${prefix}block-" + id;`);
+  });
+
+  it("keeps the two components' id prefixes distinct", () => {
+    const [horizontal, stacked] = COMPONENTS;
+
+    expect(horizontal?.[1]).not.toBe(stacked?.[1]);
+  });
+
+  it("renders the horizontal lockup in the landing hero", () => {
+    const hero = readAsset("website/src/components/HeroSection.astro");
+
+    expect(hero).toContain("LockupHorizontal");
+  });
+});

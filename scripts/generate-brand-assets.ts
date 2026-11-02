@@ -510,7 +510,10 @@ function renderLogoComponent(): string {
   });
 }
 
-function renderLockupComponent(): string {
+function renderLockupComponent(
+  layout: LockupLayout,
+  componentSlug: string,
+): string {
   return componentFile({
     frontmatter: [
       "export interface Props {",
@@ -519,17 +522,17 @@ function renderLockupComponent(): string {
       "  id?: string;",
       "}",
       "",
-      `const { height = ${STACKED_LOCKUP.height}, class: className, id = "default" } = Astro.props;`,
+      `const { height = ${layout.height}, class: className, id = "default" } = Astro.props;`,
       "",
-      `const width = Math.round((height * ${STACKED_LOCKUP.width}) / ${STACKED_LOCKUP.height});`,
-      'const aaId = "taa-lockup-aa-" + id;',
-      'const blockId = "taa-lockup-block-" + id;',
+      `const width = Math.round((height * ${layout.width}) / ${layout.height});`,
+      `const aaId = "taa-lockup-${componentSlug}-aa-" + id;`,
+      `const blockId = "taa-lockup-${componentSlug}-block-" + id;`,
     ],
     svgAttributes: [
       "class={className}",
       "width={width}",
       "height={height}",
-      `viewBox="0 0 ${STACKED_LOCKUP.width} ${STACKED_LOCKUP.height}"`,
+      `viewBox="0 0 ${layout.width} ${layout.height}"`,
       'xmlns="http://www.w3.org/2000/svg"',
       'role="img"',
       'aria-label="TypeSpec emits AsyncAPI"',
@@ -548,7 +551,7 @@ function renderLockupComponent(): string {
           mono: CSS_VAR_MONO,
           depth: 1,
         },
-        STACKED_LOCKUP,
+        layout,
       ),
     ),
   });
@@ -578,7 +581,11 @@ const artifacts: Artifact[] = [
   },
   {
     relativePath: "website/src/components/PipelineLockup.astro",
-    content: renderLockupComponent(),
+    content: renderLockupComponent(STACKED_LOCKUP, "stacked"),
+  },
+  {
+    relativePath: "website/src/components/LockupHorizontal.astro",
+    content: renderLockupComponent(HORIZONTAL_LOCKUP, "horizontal"),
   },
 ];
 

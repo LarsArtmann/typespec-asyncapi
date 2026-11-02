@@ -5,7 +5,7 @@ export const features: Feature[] = [
   {
     icon: "shield",
     title: "Validated AsyncAPI 3.1",
-    desc: "Every byte of output is checked against the official AsyncAPI 3.1.0 JSON Schema (AJV) across a 270+-test compliance suite — invalid specs cannot ship.",
+    desc: `Every byte of output is checked against the official AsyncAPI 3.1.0 JSON Schema (AJV) across a ${stats.complianceTests}-test compliance suite — invalid specs cannot ship.`,
     accent: "accent",
   },
   {

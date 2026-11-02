@@ -131,6 +131,14 @@ extern dec bindings(target: Operation | Model | Namespace, value: {} | valueof R
 
 `@typespec/asset-emitter` returns `EmitEntity<T>` objects that must be narrowed by `entity.kind` (`"declaration"`, `"code"`, `"none"`, `"circular"` — only the first two carry `.value`). `Placeholder<T>` lazy values are detected by duck-typing an `onValue` function and must NOT be treated as final values. `extractValue()` in `src/extract-value.ts` is the single authoritative implementation.
 
+## Website Landing Page
+
+- **The hero owns the transformation.** `HeroSection.astro` renders the TypeSpec input and the real emitted AsyncAPI side by side (abridged build-time output, AJV-valid), so the payoff is above the fold. Do not re-add an input-only code card, and do not restore a second TypeSpec→AsyncAPI block further down the page.
+- **The playground is a real compiler, not a fixture.** `website/playground/engine.ts` runs `@typespec/compiler` plus this emitter against an in-memory `CompilerHost` over a virtual FS built from `playground/generated-assets.ts`. `website/scripts/build-playground.mjs` inlines the TypeSpec stdlib, bundles the engine to `website/public/playground/engine.js` (gitignored; ~1.1 MB minified, ~300 KB gzip) and runs before `astro build` and `astro dev`. `@typespec/http` is `external` in that bundle, so the guarded `await import()` fails exactly as it does in a pure-AsyncAPI project. Wire-in: `PlaygroundSection.astro` + `public/js/playground.js` (IntersectionObserver lazy load, 350 ms input debounce). Regenerate with `pnpm --filter typespec-asyncapi-website run playground`.
+- **`website/tsconfig.json` excludes `playground/`** — typechecking the bundled compiler through `astro check` OOMs Node because it pulls the full `@typespec/compiler` type graph. Keep that exclude; esbuild is the only typechecker for the engine.
+- **Brand lockup components are generated per layout**: `LockupHorizontal.astro` (landing hero) and `PipelineLockup.astro` ("How it works"). Their SVG ids carry the layout slug so both can render on one page. `test/unit/brand-assets.test.ts` guards the id prefixes and asserts the hero still imports the horizontal lockup.
+- **Test-count claims are derived, not typed**: `stats.complianceTests` is computed by `website/scripts/sync-stats.mjs` from `it(`/`test(` declarations under `test/compliance/`. Use the stat instead of hardcoding a number in copy.
+
 ## Gotchas
 
 - **Intrinsic mappings:** `unknown`/`void`/`never` → `{}` (unconstrained schema, NOT `{type:"string"}`); `null` → `{type:"null"}` (so `string | null` → `anyOf: [{type:"string"},{type:"null"}]`). Locked by `test/compliance/type-mapping-completeness.test.ts` "intrinsic types".

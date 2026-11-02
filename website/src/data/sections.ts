@@ -20,7 +20,7 @@ export const pipelineSteps: PipelineStep[] = [
   {
     step: "04",
     title: "Validate and ship",
-    desc: "The 270+-test compliance suite proves every emitted document against the official AsyncAPI 3.1.0 JSON Schema — feed it to AsyncAPI Studio, generators, or CI.",
+    desc: `The ${stats.complianceTests}-test compliance suite proves every emitted document against the official AsyncAPI 3.1.0 JSON Schema — feed it to AsyncAPI Studio, generators, or CI.`,
   },
 ];
 
@@ -33,7 +33,7 @@ export const comparisonRows: ComparisonRow[] = [
   },
   {
     feature: "Output validation",
-    emitter: "270+ AJV compliance tests",
+    emitter: `${stats.complianceTests} AJV compliance tests`,
     tspAsyncapi: "15 property tests",
     handwritten: "Spectral, at best",
   },

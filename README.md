@@ -29,7 +29,7 @@
 
 A TypeSpec emitter that transforms TypeSpec service definitions into [AsyncAPI 3.1](https://www.asyncapi.com/) specifications. Define your event schemas, channels, and operations in TypeSpec, then generate standards-compliant AsyncAPI YAML or JSON.
 
-For teams building event-driven APIs who want a **typed, validated, protocol-aware** AsyncAPI source of truth instead of hand-written YAML. Every byte of output is validated against the official AsyncAPI 3.1.0 JSON Schema (AJV) across a 270+-test compliance suite; all 19 protocol bindings are auto-generated from `@asyncapi/specs` with version auto-injection, field-level validation, and placement checking.
+For teams building event-driven APIs who want a **typed, validated, protocol-aware** AsyncAPI source of truth instead of hand-written YAML. Every byte of output is validated against the official AsyncAPI 3.1.0 JSON Schema (AJV) across a 300+-test compliance suite; all 19 protocol bindings are auto-generated from `@asyncapi/specs` with version auto-injection, field-level validation, and placement checking.
 
 ## Why this emitter
 
@@ -42,7 +42,7 @@ For teams building event-driven APIs who want a **typed, validated, protocol-awa
 | `@typespec/versioning` | Integrated (`info.version` from versioned enums)                                        | Deferred                       |
 | Generic models         | Stable argument-derived schema names (`Page<User>` → `PageUser`)                        | —                              |
 | `x-` spec extensions   | `@extension("x-…", value)` on root/operations/messages                                  | Planned                        |
-| Output validation      | 270+ compliance tests against the official AsyncAPI 3.1.0 JSON Schema                   | 15 property tests              |
+| Output validation      | 300+ compliance tests against the official AsyncAPI 3.1.0 JSON Schema                   | 15 property tests              |
 
 ## Who is this for?
 
@@ -329,7 +329,7 @@ The emitter provides 36 compile-time diagnostics (20 error + 16 warning) that ca
 
 ### Rigor
 
-- **1259 tests** (vitest), including a **270+ test AsyncAPI 3.1.0 compliance suite** that validates every output against the official AsyncAPI 3.1.0 JSON Schema via AJV
+- **1259 tests** (vitest), including a **300+ test AsyncAPI 3.1.0 compliance suite** that validates every output against the official AsyncAPI 3.1.0 JSON Schema via AJV
 - **98% line coverage** (gated at 75% minimum per file in CI)
 - **Zero code clones** (jscpd, 0% threshold enforced in CI)
 - **Strict TypeScript** — zero `any`, `noUncheckedIndexedAccess`, type-aware ESLint (`strictTypeChecked`) with zero errors and zero warnings

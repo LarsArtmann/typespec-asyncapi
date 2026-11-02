@@ -1,0 +1,126 @@
+---
+import SectionHeader from './SectionHeader.astro';
+import Icon from './Icon.astro';
+import { defaultExampleId, playgroundExamples } from '../data/playground';
+---
+
+<div id="playground" class="scroll-mt-24">
+  <SectionHeader
+    eyebrow="Try it"
+    title="The real compiler, running in this tab"
+    subtitle="This is not a screenshot. The TypeSpec compiler and this emitter are bundled into the page, compiled against an in-memory file system, and re-run on every edit."
+  />
+</div>
+
+<div
+  data-playground
+  data-playground-example={defaultExampleId}
+  aria-busy="false"
+  class="max-w-5xl mx-auto"
+>
+  <div class="flex flex-wrap items-center gap-2 mb-3">
+    {playgroundExamples.map((example) => (
+      <button
+        type="button"
+        data-playground-example={example.id}
+        title={example.hint}
+        class="px-3 py-1.5 rounded-md border border-border bg-transparent text-text-secondary text-xs font-medium cursor-pointer transition-colors duration-150 hover:border-border-hover hover:text-text-primary data-[active=true]:border-accent data-[active=true]:text-accent-text data-[active=true]:bg-accent/10"
+      >
+        {example.label}
+      </button>
+    ))}
+    <span
+      data-playground-status
+      data-tone="idle"
+      role="status"
+      aria-live="polite"
+      class="ml-auto text-xs font-mono text-text-muted data-[tone=ok]:text-success data-[tone=error]:text-amber"
+    >
+      Waiting to load
+    </span>
+  </div>
+
+  <div class="grid gap-3 md:grid-cols-2 items-stretch">
+    <div class="rounded-xl border border-border bg-bg-code overflow-hidden flex flex-col">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-border">
+        <span class="text-xs font-mono text-text-muted">api.tsp</span>
+        <span class="ml-auto inline-flex items-center gap-1 text-[0.7rem] font-mono text-text-muted">
+          <Icon name="code" size={12} /> editable
+        </span>
+      </div>
+      <textarea
+        data-playground-input
+        aria-label="TypeSpec source"
+        spellcheck="false"
+        autocomplete="off"
+        autocapitalize="off"
+        wrap="off"
+        class="w-full flex-1 min-h-[22rem] p-4 bg-transparent border-0 text-text-secondary text-[0.8rem] leading-6 font-mono resize-y outline-none"
+      >{playgroundExamples[0].source}</textarea>
+    </div>
+
+    <div class="rounded-xl border border-border bg-bg-code overflow-hidden flex flex-col">
+      <div class="flex items-center gap-2 px-4 py-2.5 border-b border-border">
+        <span class="text-xs font-mono text-text-muted">asyncapi.yaml</span>
+        <span class="ml-auto inline-flex items-center gap-1 text-[0.7rem] font-mono text-success">
+          <Icon name="check" size={12} /> real output
+        </span>
+        <button
+          type="button"
+          data-playground-copy
+          class="text-xs font-mono text-text-muted hover:text-text-primary border border-border rounded px-2 py-0.5 transition-colors cursor-pointer"
+        >
+          Copy
+        </button>
+      </div>
+      <pre
+        tabindex="0"
+        data-playground-output
+        data-state="loading"
+        aria-live="polite"
+        aria-label="Emitted AsyncAPI document"
+        class="flex-1 min-h-[22rem] max-h-[32rem] overflow-auto p-4 m-0 text-[0.8rem] leading-6 font-mono text-text-secondary"
+      >Loading the compiler…</pre>
+    </div>
+  </div>
+
+  <ul
+    data-playground-diagnostics
+    hidden
+    class="mt-3 space-y-1 text-left text-xs font-mono"
+  ></ul>
+
+  <div class="flex flex-wrap items-center gap-3 mt-4">
+    <button
+      type="button"
+      data-playground-compile
+      class="px-4 py-2 bg-accent text-on-accent rounded-lg text-sm font-semibold cursor-pointer border-none hover:bg-accent-hover transition-colors duration-150"
+    >
+      Compile
+    </button>
+    <button
+      type="button"
+      data-playground-reset
+      class="px-4 py-2 border border-border rounded-lg text-sm font-semibold text-text-secondary bg-transparent cursor-pointer hover:border-border-hover hover:text-text-primary transition-colors duration-150"
+    >
+      Reset example
+    </button>
+    <p class="text-xs text-text-muted md:ml-auto max-w-md">
+      Runs entirely in your browser &mdash; your spec is never uploaded. The engine
+      (~310&nbsp;KB gzipped) loads only when this section comes into view.
+    </p>
+  </div>
+</div>
+
+{playgroundExamples.map((example) => (
+  <pre hidden data-example-source={example.id}>{example.source}</pre>
+))}
+
+<noscript>
+  <p class="max-w-5xl mx-auto mt-4 text-sm text-text-muted">
+    The live playground needs JavaScript. The <a href="/examples/" class="text-accent underline">example gallery</a>
+    shows the same input/output pairs as static files.
+  </p>
+</noscript>
+
+<script is:inline src="/js/playground.js" defer></script>

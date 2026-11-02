@@ -76,6 +76,8 @@
                   "docs/analysis/**"
                   "website/src/styles/*.out.css"
                   "website/src/data/stats.ts"
+                  "website/playground/generated-assets.ts"
+                  "website/public/playground/**"
                   "pnpm-lock.yaml"
                   "src/constants/generated-bindings.ts"
                 ];

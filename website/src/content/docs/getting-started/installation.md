@@ -71,7 +71,7 @@ npx tsp compile api.tsp
 The output lands in `tsp-output/@lars-artmann/typespec-asyncapi/asyncapi.yaml`.
 
 :::tip
-Every emitted document is validated against the official AsyncAPI 3.1.0 JSON Schema by the project's 270+-test compliance suite. If `tsp compile` succeeds, the output is spec-compliant.
+Every emitted document is validated against the official AsyncAPI 3.1.0 JSON Schema by the project's 300+-test compliance suite. If `tsp compile` succeeds, the output is spec-compliant.
 :::
 
 ## Where to go next

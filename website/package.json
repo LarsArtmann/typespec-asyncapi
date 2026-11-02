@@ -26,9 +26,9 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "node scripts/sync-stats.mjs && node scripts/build-playground.mjs && astro dev",
     "stats": "node scripts/sync-stats.mjs",
-    "build": "node scripts/sync-stats.mjs && astro build && node scripts/fix-csp.mjs",
+    "build": "node scripts/sync-stats.mjs && node scripts/build-playground.mjs && astro build && node scripts/fix-csp.mjs",
     "preview": "astro preview",
     "brand:png": "node scripts/render-brand-png.mjs",
     "typecheck": "astro check",
@@ -37,7 +37,8 @@
     "check:csp": "node scripts/check-csp.mjs",
     "check": "pnpm run typecheck && pnpm run build && pnpm run check:html && pnpm run check:links && pnpm run check:csp",
     "clean": "rm -rf dist .astro node_modules/.cache",
-    "astro": "astro"
+    "astro": "astro",
+    "playground": "node scripts/build-playground.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
@@ -53,7 +54,9 @@
     "@astrojs/check": "^0.9.12",
     "html-validate": "^11.17.0",
     "sharp": "0.35.5",
-    "typescript": "6.0.3"
+    "typescript": "6.0.3",
+    "esbuild": "^0.28.1",
+    "@typespec/compiler": "^1.17.0"
   },
   "overrides": {
     "brace-expansion": "5.0.6",
