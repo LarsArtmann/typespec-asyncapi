@@ -1,3 +1,10 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-dark.svg">
+    <img src="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-light.svg" alt="TypeSpec emits AsyncAPI" width="170" height="151">
+  </picture>
+</p>
+
 <h1 align="center">TypeSpec AsyncAPI Emitter</h1>
 
 <p align="center"><strong>Define your event-driven API in TypeSpec. Generate validated AsyncAPI 3.1 specifications.</strong></p>
