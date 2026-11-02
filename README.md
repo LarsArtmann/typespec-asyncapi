@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-dark.svg">
-    <img src="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-light.svg" alt="TypeSpec emits AsyncAPI" width="170" height="151">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-horizontal-dark.svg">
+    <img src="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-horizontal-light.svg" alt="TypeSpec emits AsyncAPI" width="352" height="54">
   </picture>
 </p>
 

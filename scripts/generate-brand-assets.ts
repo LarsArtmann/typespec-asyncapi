@@ -232,7 +232,97 @@ interface LockupOptions {
   readonly depth: number;
 }
 
-function lockupBody(options: LockupOptions): string[] {
+interface Slot {
+  readonly x: number;
+  readonly y: number;
+}
+
+/**
+ * One composition of the same atoms: two captioned tiles with the emit block
+ * between them. The stacked lockup runs top-to-bottom and the horizontal one
+ * left-to-right; they share every metric, so only the slots move.
+ */
+interface LockupLayout {
+  /** Keeps SVG element ids distinct when two lockups share a page. */
+  readonly slug: string;
+  /** Artifact basename, e.g. `lockup-horizontal`. */
+  readonly fileStem: string;
+  readonly width: number;
+  readonly height: number;
+  readonly tsp: Slot;
+  readonly pill: Slot;
+  readonly asyncApi: Slot;
+}
+
+const STACKED_LOCKUP: LockupLayout = {
+  slug: "Stacked",
+  fileStem: "lockup-stacked",
+  width: 126,
+  height: 112,
+  tsp: { x: 6, y: 6 },
+  pill: { x: 6, y: 44 },
+  asyncApi: { x: 6, y: 76 },
+};
+
+/** The stacked lockup unfolded into one row for wide slots (README banner). */
+const HORIZONTAL_LOCKUP: LockupLayout = {
+  slug: "Horizontal",
+  fileStem: "lockup-horizontal",
+  width: 352,
+  height: 54,
+  tsp: { x: 6, y: 12 },
+  pill: { x: 130, y: 15 },
+  asyncApi: { x: 230, y: 12 },
+};
+
+const LOCKUP_LAYOUTS: readonly LockupLayout[] = [
+  STACKED_LOCKUP,
+  HORIZONTAL_LOCKUP,
+];
+
+const LOCKUP_TILE_SCALE = 0.3;
+const CAPTION_LEAD = 38;
+const CAPTION_RISE = 21;
+const EMIT_PILL_WIDTH = 88;
+const EMIT_PILL_HEIGHT = 24;
+
+function tspTile(depth: number, slot: Slot): string[] {
+  return tileAt(tspGlyphs(), depth, slot.x, slot.y, LOCKUP_TILE_SCALE);
+}
+
+function asyncApiTile(depth: number, slot: Slot, fill: string): string[] {
+  return tileAt(asyncApiTileBody(fill), depth, slot.x, slot.y, LOCKUP_TILE_SCALE);
+}
+
+function caption(
+  depth: number,
+  slot: Slot,
+  fill: string,
+  family: string,
+  text: string,
+): string[] {
+  const x = slot.x + CAPTION_LEAD;
+  const y = slot.y + CAPTION_RISE;
+  return [
+    `${pad(depth)}<text x="${x}" y="${y}" font-family="${family}" font-size="17" font-weight="700" letter-spacing="-0.3" fill=${fill}>${text}</text>`,
+  ];
+}
+
+function emitPill(
+  depth: number,
+  slot: Slot,
+  fill: string,
+  family: string,
+): string[] {
+  const centerY = slot.y + EMIT_PILL_HEIGHT / 2;
+  return [
+    `${pad(depth)}<rect x="${slot.x}" y="${slot.y}" width="${EMIT_PILL_WIDTH}" height="${EMIT_PILL_HEIGHT}" rx="5" fill=${fill} />`,
+    `${pad(depth)}<path d="M${slot.x + 14} ${centerY}H${slot.x + 28}M${slot.x + 23.5} ${centerY - 4.5}L${slot.x + 28} ${centerY}L${slot.x + 23.5} ${centerY + 4.5}" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`,
+    `${pad(depth)}<text x="${slot.x + 36}" y="${centerY + 4}" font-family="${family}" font-size="11" font-weight="700" letter-spacing="1.5" fill="#FFFFFF">EMITS</text>`,
+  ];
+}
+
+function lockupBody(options: LockupOptions, layout: LockupLayout): string[] {
   const {
     aaFill,
     blockFill,
@@ -243,13 +333,11 @@ function lockupBody(options: LockupOptions): string[] {
     depth,
   } = options;
   return [
-    ...tileAt(tspGlyphs(), depth, 6, 6, 0.3),
-    `${pad(depth)}<text x="44" y="27" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill=${tspCaptionFill}>TypeSpec</text>`,
-    `${pad(depth)}<rect x="6" y="44" width="88" height="24" rx="5" fill=${blockFill} />`,
-    `${pad(depth)}<path d="M20 56H34M29.5 51.5L34 56L29.5 60.5" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`,
-    `${pad(depth)}<text x="42" y="60" font-family="${mono}" font-size="11" font-weight="700" letter-spacing="1.5" fill="#FFFFFF">EMITS</text>`,
-    ...tileAt(asyncApiTileBody(aaFill), depth, 6, 76, 0.3),
-    `${pad(depth)}<text x="44" y="97" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill=${aaCaptionFill}>AsyncAPI</text>`,
+    ...tspTile(depth, layout.tsp),
+    ...caption(depth, layout.tsp, tspCaptionFill, grotesk, "TypeSpec"),
+    ...emitPill(depth, layout.pill, blockFill, mono),
+    ...asyncApiTile(depth, layout.asyncApi, aaFill),
+    ...caption(depth, layout.asyncApi, aaCaptionFill, grotesk, "AsyncAPI"),
   ];
 }
 
@@ -273,33 +361,40 @@ function wrapSvg(attributes: string, inner: readonly string[]): string {
   return `${[`<svg ${attributes}>`, ...inner, "</svg>"].join("\n")}\n`;
 }
 
-function renderLockupSvg(variant: "dark" | "light"): string {
+function renderLockupSvg(
+  layout: LockupLayout,
+  variant: "dark" | "light",
+): string {
   const ink = variant === "dark" ? INK_ON_DARK : INK_ON_LIGHT;
   const suffix = variant === "dark" ? "Dark" : "Light";
-  const aaFill = quote(`url(#taaLockupAa${suffix})`);
-  const blockFill = quote(`url(#taaLockupBlock${suffix})`);
+  const prefix = `taaLockup${layout.slug}${suffix}`;
+  const aaFill = quote(`url(#${prefix}Aa)`);
+  const blockFill = quote(`url(#${prefix}Block)`);
   return wrapSvg(
-    `xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 112" width="126" height="112" role="img" aria-labelledby="taaLockupTitle${suffix}"`,
+    `xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${layout.width} ${layout.height}" width="${layout.width}" height="${layout.height}" role="img" aria-labelledby="${prefix}Title"`,
     [
-      `<title id="taaLockupTitle${suffix}">TypeSpec emits AsyncAPI</title>`,
+      `<title id="${prefix}Title">TypeSpec emits AsyncAPI</title>`,
       ...defsBlock(
         0,
-        `id="taaLockupAa${suffix}"`,
+        `id="${prefix}Aa"`,
         gradientRef(
-          `id="taaLockupBlock${suffix}"`,
+          `id="${prefix}Block"`,
           BLOCK_GRADIENT_ATTRS,
           EMIT_BLOCK_GRADIENT,
         ),
       ),
-      ...lockupBody({
-        aaFill,
-        blockFill,
-        tspCaptionFill: quote(ink),
-        aaCaptionFill: aaFill,
-        grotesk: STATIC_GROTESK,
-        mono: STATIC_MONO,
-        depth: 0,
-      }),
+      ...lockupBody(
+        {
+          aaFill,
+          blockFill,
+          tspCaptionFill: quote(ink),
+          aaCaptionFill: aaFill,
+          grotesk: STATIC_GROTESK,
+          mono: STATIC_MONO,
+          depth: 0,
+        },
+        layout,
+      ),
     ],
   );
 }
@@ -413,9 +508,9 @@ function renderLockupComponent(): string {
       "  id?: string;",
       "}",
       "",
-      'const { height = 112, class: className, id = "default" } = Astro.props;',
+      `const { height = ${STACKED_LOCKUP.height}, class: className, id = "default" } = Astro.props;`,
       "",
-      "const width = Math.round((height * 126) / 112);",
+      `const width = Math.round((height * ${STACKED_LOCKUP.width}) / ${STACKED_LOCKUP.height});`,
       'const aaId = "taa-lockup-aa-" + id;',
       'const blockId = "taa-lockup-block-" + id;',
     ],
@@ -423,7 +518,7 @@ function renderLockupComponent(): string {
       "class={className}",
       "width={width}",
       "height={height}",
-      'viewBox="0 0 126 112"',
+      `viewBox="0 0 ${STACKED_LOCKUP.width} ${STACKED_LOCKUP.height}"`,
       'xmlns="http://www.w3.org/2000/svg"',
       'role="img"',
       'aria-label="TypeSpec emits AsyncAPI"',
@@ -432,15 +527,18 @@ function renderLockupComponent(): string {
       1,
       "id={aaId}",
       gradientRef("id={blockId}", BLOCK_GRADIENT_ATTRS, EMIT_BLOCK_GRADIENT),
-      lockupBody({
-        aaFill: COMPONENT_AA_FILL,
-        blockFill: COMPONENT_BLOCK_FILL,
-        tspCaptionFill: '"currentColor"',
-        aaCaptionFill: COMPONENT_AA_FILL,
-        grotesk: CSS_VAR_GROTESK,
-        mono: CSS_VAR_MONO,
-        depth: 1,
-      }),
+      lockupBody(
+        {
+          aaFill: COMPONENT_AA_FILL,
+          blockFill: COMPONENT_BLOCK_FILL,
+          tspCaptionFill: '"currentColor"',
+          aaCaptionFill: COMPONENT_AA_FILL,
+          grotesk: CSS_VAR_GROTESK,
+          mono: CSS_VAR_MONO,
+          depth: 1,
+        },
+        STACKED_LOCKUP,
+      ),
     ),
   });
 }
@@ -452,15 +550,15 @@ interface Artifact {
 
 const markSvg = renderMarkSvg();
 
+const lockupArtifacts: Artifact[] = LOCKUP_LAYOUTS.flatMap((layout) =>
+  (["dark", "light"] as const).map((variant) => ({
+    relativePath: `assets/brand/${layout.fileStem}-${variant}.svg`,
+    content: renderLockupSvg(layout, variant),
+  })),
+);
+
 const artifacts: Artifact[] = [
-  {
-    relativePath: "assets/brand/lockup-dark.svg",
-    content: renderLockupSvg("dark"),
-  },
-  {
-    relativePath: "assets/brand/lockup-light.svg",
-    content: renderLockupSvg("light"),
-  },
+  ...lockupArtifacts,
   { relativePath: "assets/brand/mark.svg", content: markSvg },
   { relativePath: "website/src/assets/brand-mark.svg", content: markSvg },
   {
