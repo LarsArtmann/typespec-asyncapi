@@ -47,10 +47,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   `aria-hidden` instead of double-labelling the site name.
 
 - **`docs/**/\*.html`was never excluded from treefmt** — treefmt's matcher needs
-a separator after the prefix, so the pattern covered`docs/sub/x.html`but not`docs/x.html`; the logo gallery was being reformatted on every `nix fmt`run.
-Both patterns are now listed,`docs/planning/**`and`docs/analysis/**`joined
-the point-in-time exclusions, and`AGENTS.md`documents that`nix fmt`always
-rewrites (only`nix build .#checks.x86_64-linux.format` checks).
+  a separator after the prefix, so the pattern covered`docs/sub/x.html`but not`docs/x.html`; the logo gallery was being reformatted on every `nix fmt`run.
+  Both patterns are now listed,`docs/planning/**`and`docs/analysis/**`joined
+  the point-in-time exclusions, and`AGENTS.md`documents that`nix fmt`always
+  rewrites (only`nix build .#checks.x86_64-linux.format` checks).
 
 - **Manifests disagreed with the lockfile, breaking `pnpm install
 --frozen-lockfile`** — eight specifiers (including `typescript: 7.0.2` in both
