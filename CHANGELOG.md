@@ -40,7 +40,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   rewrites (only `nix build .#checks.x86_64-linux.format` checks).
 
 - **Manifests disagreed with the lockfile, breaking `pnpm install
-  --frozen-lockfile`** — eight specifiers (including `typescript: 7.0.2` in both
+--frozen-lockfile`** — eight specifiers (including `typescript: 7.0.2` in both
   roots, the exact pin `AGENTS.md` forbids for the website) had been rewritten
   without regenerating `pnpm-lock.yaml`. Manifests were restored to the locked
   versions, so CI installs what is actually tested again.

@@ -13,15 +13,15 @@ regenerate.
 
 ## Files
 
-| File | What it is | Consumed by |
-| --- | --- | --- |
-| `lockup-dark.svg` | 126 × 112 full lockup, light ink, for dark backgrounds | `README.md` (`prefers-color-scheme: dark`) |
-| `lockup-light.svg` | 126 × 112 full lockup, dark ink, for light backgrounds | `README.md` (fallback) |
-| `mark.svg` | 72 × 36 compact mark, no captions, no text | Starlight header, favicon work, OG source |
-| `../../website/public/brand-mark.png` | 440 × 220 PNG of `mark.svg` | Open Graph cards (`astro-og-canvas` cannot decode SVG) |
-| `../../website/src/assets/brand-mark.svg` | Byte-identical copy of `mark.svg` | Starlight `logo` option (bundled, hashed) |
-| `../../website/src/components/Logo.astro` | Compact mark as an Astro component | Site header, site footer |
-| `../../website/src/components/PipelineLockup.astro` | Full lockup as an Astro component | Landing page hero |
+| File                                                | What it is                                             | Consumed by                                            |
+| --------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------ |
+| `lockup-dark.svg`                                   | 126 × 112 full lockup, light ink, for dark backgrounds | `README.md` (`prefers-color-scheme: dark`)             |
+| `lockup-light.svg`                                  | 126 × 112 full lockup, dark ink, for light backgrounds | `README.md` (fallback)                                 |
+| `mark.svg`                                          | 72 × 36 compact mark, no captions, no text             | Starlight header, favicon work, OG source              |
+| `../../website/public/brand-mark.png`               | 440 × 220 PNG of `mark.svg`                            | Open Graph cards (`astro-og-canvas` cannot decode SVG) |
+| `../../website/src/assets/brand-mark.svg`           | Byte-identical copy of `mark.svg`                      | Starlight `logo` option (bundled, hashed)              |
+| `../../website/src/components/Logo.astro`           | Compact mark as an Astro component                     | Site header, site footer                               |
+| `../../website/src/components/PipelineLockup.astro` | Full lockup as an Astro component                      | Landing page hero                                      |
 
 ## Regenerate
 
@@ -36,13 +36,13 @@ be byte-identical across platforms, so `verify` does not gate on it).
 
 ## Palette
 
-| Token | Hex | Used for |
-| --- | --- | --- |
-| TypeSpec tile | `#4A3665` | solid tile behind the white TSP glyph |
-| AsyncAPI gradient | `#2DCCFD` → `#A829E2` → `#E50E99` | AsyncAPI tile, `AsyncAPI` caption, compact arrow |
-| Emit block gradient | `#7C3AED` → `#5B21B6` | the `→ EMITS` block |
-| Ink (dark bg) | `#EDEFF7` | `TypeSpec` caption in `lockup-dark` |
-| Ink (light bg) | `#16131F` | `TypeSpec` caption in `lockup-light` |
+| Token               | Hex                               | Used for                                         |
+| ------------------- | --------------------------------- | ------------------------------------------------ |
+| TypeSpec tile       | `#4A3665`                         | solid tile behind the white TSP glyph            |
+| AsyncAPI gradient   | `#2DCCFD` → `#A829E2` → `#E50E99` | AsyncAPI tile, `AsyncAPI` caption, compact arrow |
+| Emit block gradient | `#7C3AED` → `#5B21B6`             | the `→ EMITS` block                              |
+| Ink (dark bg)       | `#EDEFF7`                         | `TypeSpec` caption in `lockup-dark`              |
+| Ink (light bg)      | `#16131F`                         | `TypeSpec` caption in `lockup-light`             |
 
 Two deliberate quirks:
 
@@ -67,10 +67,18 @@ npm package does not ship it — the README must use absolute
 ```html
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)"
-      srcset="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-dark.svg">
-    <img src="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-light.svg"
-      alt="TypeSpec emits AsyncAPI" width="170" height="151">
+    <source
+      media="(prefers-color-scheme: dark)"
+      srcset="
+        https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-dark.svg
+      "
+    />
+    <img
+      src="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-light.svg"
+      alt="TypeSpec emits AsyncAPI"
+      width="170"
+      height="151"
+    />
   </picture>
 </p>
 ```
@@ -84,16 +92,16 @@ a live npm page since the markup changed — check it after the next publish.
 
 The two tiles are **derivative uses of official marks**, not original artwork:
 
-| Mark | Source | Pinned commit | Blob date |
-| --- | --- | --- | --- |
+| Mark     | Source                                                                                                                                                                                                | Pinned commit                              | Blob date  |
+| -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ | ---------- |
 | AsyncAPI | [`asyncapi/brand` → `logos/asyncapi/mark/primary/SVG/asyncapi-logo-mark--primary.svg`](https://github.com/asyncapi/brand/blob/master/logos/asyncapi/mark/primary/SVG/asyncapi-logo-mark--primary.svg) | `fe0e60a486a978855a416a3e518dc30e87a47884` | 2022-09-06 |
-| TypeSpec | [`microsoft/typespec` → `website/public/img/favicon.svg`](https://github.com/microsoft/typespec/blob/main/website/public/img/favicon.svg) | `74ed99a98e5f7fe506a5bed124ffc73cfecc8462` | 2024-10-25 |
+| TypeSpec | [`microsoft/typespec` → `website/public/img/favicon.svg`](https://github.com/microsoft/typespec/blob/main/website/public/img/favicon.svg)                                                             | `74ed99a98e5f7fe506a5bed124ffc73cfecc8462` | 2024-10-25 |
 
 Local snapshots of the downloaded originals live in
 [`docs/logo-sources/`](../../docs/logo-sources). TypeSpec and AsyncAPI are
 trademarks of their respective owners; this lockup describes an integration
 between them and must not be read as an endorsement by either project. Using
-these marks as the project's *primary* identity is an open decision — see
+these marks as the project's _primary_ identity is an open decision — see
 [`docs/adr/`](../../docs/adr) for the recorded status.
 
 The candidate concepts that produced this lockup are kept in
