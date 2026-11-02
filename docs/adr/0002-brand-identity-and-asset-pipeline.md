@@ -32,7 +32,7 @@ Two facts constrain the decision:
    README, with attribution and provenance recorded in `assets/brand/README.md`.
 2. Treat one TypeScript geometry definition as the only source of truth.
    `scripts/generate-brand-assets.ts` emits all eight artifacts; `pnpm run
-   brand:check` is part of `pnpm run verify` and fails on any byte drift.
+brand:check` is part of `pnpm run verify` and fails on any byte drift.
 3. Ship the identity in two lockup orientations from that one definition: a
    352 × 54 horizontal lockup for the README (one line instead of a 151 px
    block) and a 126 × 112 stacked lockup for square-ish slots — plus the
@@ -51,7 +51,7 @@ Two facts constrain the decision:
 
 | Open question                                                                                                                                                                                    | Blocks                                                       |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
-| Trademark posture: is a derivative lockup acceptable as the primary identity, or must the official marks stay documentation-only with an original synthesized mark (concept 25 / 50) as primary? | Social preview, ADR acceptance                                |
+| Trademark posture: is a derivative lockup acceptable as the primary identity, or must the official marks stay documentation-only with an original synthesized mark (concept 25 / 50) as primary? | Social preview, ADR acceptance                               |
 | Favicon: keep the legacy teal squircle, or a 16 px-optimised single tile (and which glyph)?                                                                                                      | apple-touch icons, web manifest, favicon QA                  |
 | npm surface: is GitHub-level fidelity enough, or must the npm package page render the mark natively?                                                                                             | shipping raster lockups, README structure, release checklist |
 

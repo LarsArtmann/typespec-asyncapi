@@ -291,34 +291,39 @@ function tspTile(depth: number, slot: Slot): string[] {
 }
 
 function asyncApiTile(depth: number, slot: Slot, fill: string): string[] {
-  return tileAt(asyncApiTileBody(fill), depth, slot.x, slot.y, LOCKUP_TILE_SCALE);
+  return tileAt(
+    asyncApiTileBody(fill),
+    depth,
+    slot.x,
+    slot.y,
+    LOCKUP_TILE_SCALE,
+  );
 }
 
-function caption(
-  depth: number,
-  slot: Slot,
-  fill: string,
-  family: string,
-  text: string,
-): string[] {
+/** Everything a text or block element needs to paint itself in a layout. */
+interface PaintedSlot {
+  readonly depth: number;
+  readonly slot: Slot;
+  readonly fill: string;
+  readonly family: string;
+}
+
+function caption(paint: PaintedSlot, text: string): string[] {
+  const { slot } = paint;
   const x = slot.x + CAPTION_LEAD;
   const y = slot.y + CAPTION_RISE;
   return [
-    `${pad(depth)}<text x="${x}" y="${y}" font-family="${family}" font-size="17" font-weight="700" letter-spacing="-0.3" fill=${fill}>${text}</text>`,
+    `${pad(paint.depth)}<text x="${x}" y="${y}" font-family="${paint.family}" font-size="17" font-weight="700" letter-spacing="-0.3" fill=${paint.fill}>${text}</text>`,
   ];
 }
 
-function emitPill(
-  depth: number,
-  slot: Slot,
-  fill: string,
-  family: string,
-): string[] {
+function emitPill(paint: PaintedSlot): string[] {
+  const { slot } = paint;
   const centerY = slot.y + EMIT_PILL_HEIGHT / 2;
   return [
-    `${pad(depth)}<rect x="${slot.x}" y="${slot.y}" width="${EMIT_PILL_WIDTH}" height="${EMIT_PILL_HEIGHT}" rx="5" fill=${fill} />`,
-    `${pad(depth)}<path d="M${slot.x + 14} ${centerY}H${slot.x + 28}M${slot.x + 23.5} ${centerY - 4.5}L${slot.x + 28} ${centerY}L${slot.x + 23.5} ${centerY + 4.5}" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`,
-    `${pad(depth)}<text x="${slot.x + 36}" y="${centerY + 4}" font-family="${family}" font-size="11" font-weight="700" letter-spacing="1.5" fill="#FFFFFF">EMITS</text>`,
+    `${pad(paint.depth)}<rect x="${slot.x}" y="${slot.y}" width="${EMIT_PILL_WIDTH}" height="${EMIT_PILL_HEIGHT}" rx="5" fill=${paint.fill} />`,
+    `${pad(paint.depth)}<path d="M${slot.x + 14} ${centerY}H${slot.x + 28}M${slot.x + 23.5} ${centerY - 4.5}L${slot.x + 28} ${centerY}L${slot.x + 23.5} ${centerY + 4.5}" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`,
+    `${pad(paint.depth)}<text x="${slot.x + 36}" y="${centerY + 4}" font-family="${paint.family}" font-size="11" font-weight="700" letter-spacing="1.5" fill="#FFFFFF">EMITS</text>`,
   ];
 }
 
@@ -334,10 +339,16 @@ function lockupBody(options: LockupOptions, layout: LockupLayout): string[] {
   } = options;
   return [
     ...tspTile(depth, layout.tsp),
-    ...caption(depth, layout.tsp, tspCaptionFill, grotesk, "TypeSpec"),
-    ...emitPill(depth, layout.pill, blockFill, mono),
+    ...caption(
+      { depth, slot: layout.tsp, fill: tspCaptionFill, family: grotesk },
+      "TypeSpec",
+    ),
+    ...emitPill({ depth, slot: layout.pill, fill: blockFill, family: mono }),
     ...asyncApiTile(depth, layout.asyncApi, aaFill),
-    ...caption(depth, layout.asyncApi, aaCaptionFill, grotesk, "AsyncAPI"),
+    ...caption(
+      { depth, slot: layout.asyncApi, fill: aaCaptionFill, family: grotesk },
+      "AsyncAPI",
+    ),
   ];
 }
 
