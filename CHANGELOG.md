@@ -6,6 +6,45 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- **Project identity and a generated brand pipeline** — the site and README now
+  carry a TypeSpec "emits" AsyncAPI lockup (compact mark in the header and
+  footer, full lockup on the landing page, theme-aware hero on GitHub, mark on
+  every Open Graph card). All six artifacts come from one geometry definition
+  in `scripts/generate-brand-assets.ts`, and `pnpm run brand:check` (part of
+  `pnpm run verify`) fails when a committed artifact drifts. See
+  `assets/brand/README.md` and `docs/adr/0002-brand-identity-and-asset-pipeline.md`.
+
+- **`pnpm run brand:generate` / `pnpm run brand:check`** and
+  `website/scripts/render-brand-png.mjs`, which rasterises the Open Graph logo
+  with a pinned `sharp` instead of an uncommitted one-off.
+
+### Fixed
+
+- **The compact mark's arrow rendered without its shaft** — a default
+  (`objectBoundingBox`) gradient on a zero-height horizontal line paints
+  nothing, so only the arrowhead was visible. The arrow now uses a
+  `userSpaceOnUse` gradient spanning the shaft.
+
+- **Duplicate SVG gradient ids on every page** — the header and footer both
+  rendered the mark with the same `id`, so the shipped HTML violated id
+  uniqueness. Component ids are now per-instance, and the decorative copies are
+  `aria-hidden` instead of double-labelling the site name.
+
+- **`docs/**/*.html` was never excluded from treefmt** — treefmt's matcher needs
+  a separator after the prefix, so the pattern covered `docs/sub/x.html` but not
+  `docs/x.html`; the logo gallery was being reformatted on every `nix fmt` run.
+  Both patterns are now listed, `docs/planning/**` and `docs/analysis/**` joined
+  the point-in-time exclusions, and `AGENTS.md` documents that `nix fmt` always
+  rewrites (only `nix build .#checks.x86_64-linux.format` checks).
+
+- **Manifests disagreed with the lockfile, breaking `pnpm install
+  --frozen-lockfile`** — eight specifiers (including `typescript: 7.0.2` in both
+  roots, the exact pin `AGENTS.md` forbids for the website) had been rewritten
+  without regenerating `pnpm-lock.yaml`. Manifests were restored to the locked
+  versions, so CI installs what is actually tested again.
+
 ## [1.1.0] - 2026-10-03
 
 ### Fixed
