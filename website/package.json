@@ -30,6 +30,7 @@
     "stats": "node scripts/sync-stats.mjs",
     "build": "node scripts/sync-stats.mjs && astro build && node scripts/fix-csp.mjs",
     "preview": "astro preview",
+    "brand:png": "node scripts/render-brand-png.mjs",
     "typecheck": "astro check",
     "check:html": "html-validate \"dist/**/*.html\"",
     "check:links": "node scripts/check-links.mjs",

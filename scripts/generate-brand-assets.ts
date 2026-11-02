@@ -185,19 +185,29 @@ function renderLockupSvg(variant: "dark" | "light"): string {
   return `${lines.join("\n")}\n`;
 }
 
+function arrowGradientLines(id: string, depth: number): string[] {
+  return [
+    `${pad(depth)}<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="26" y1="18" x2="46" y2="18">`,
+    ...stopLines(ASYNCAPI_GRADIENT, depth + 1),
+    `${pad(depth)}</linearGradient>`,
+  ];
+}
+
 function renderMarkSvg(): string {
   const aaFill = "url(#taaMarkAa)";
+  const arrowFill = "url(#taaMarkArrow)";
   const lines = [
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 36" width="72" height="36" role="img" aria-labelledby="taaMarkTitle">',
     '<title id="taaMarkTitle">TypeSpec emits AsyncAPI</title>',
     "<defs>",
     ...gradientElement("taaMarkAa", ASYNCAPI_GRADIENT, 1),
+    ...arrowGradientLines("taaMarkArrow", 1),
     "</defs>",
     '<g transform="translate(0 5) scale(0.26)">',
     ...tspTileBody().map((line) => pad(1) + line),
     "</g>",
-    `<path d="M30 18H40" stroke="${aaFill}" stroke-width="4" stroke-linecap="round" />`,
-    `<polygon points="40,12 48,18 40,24" fill="${aaFill}" />`,
+    `<path d="M30 18H40" stroke="${arrowFill}" stroke-width="4" stroke-linecap="round" />`,
+    `<polygon points="40,12 48,18 40,24" fill="${arrowFill}" />`,
     '<g transform="translate(46 5) scale(0.26)">',
     ...[
       `<rect width="100" height="100" rx="21" fill="${aaFill}" />`,
@@ -233,6 +243,7 @@ const {
 } = Astro.props;
 
 const aaId = "taa-mark-aa-" + id;
+const arrowId = "taa-mark-arrow-" + id;
 ---
 
 <svg
@@ -249,14 +260,24 @@ const aaId = "taa-mark-aa-" + id;
     <linearGradient id={aaId} x1="1" y1="0" x2="0" y2="1">
 ${stopLines(ASYNCAPI_GRADIENT, 3).join("\n")}
     </linearGradient>
+    <linearGradient
+      id={arrowId}
+      gradientUnits="userSpaceOnUse"
+      x1="26"
+      y1="18"
+      x2="46"
+      y2="18"
+    >
+${stopLines(ASYNCAPI_GRADIENT, 3).join("\n")}
+    </linearGradient>
   </defs>
   <g transform="translate(0 5) scale(0.26)">
 ${tspTileBody()
   .map((line) => pad(2) + line)
   .join("\n")}
   </g>
-  <path d="M30 18H40" stroke=${aaUrl("aaId")} stroke-width="4" stroke-linecap="round" />
-  <polygon points="40,12 48,18 40,24" fill=${aaUrl("aaId")} />
+  <path d="M30 18H40" stroke=${aaUrl("arrowId")} stroke-width="4" stroke-linecap="round" />
+  <polygon points="40,12 48,18 40,24" fill=${aaUrl("arrowId")} />
   <g transform="translate(46 5) scale(0.26)">
     <rect width="100" height="100" rx="21" fill=${aaUrl("aaId")} />
 ${asyncApiGlyphBody()
