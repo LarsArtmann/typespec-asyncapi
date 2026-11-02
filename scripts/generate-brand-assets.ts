@@ -114,6 +114,12 @@ function indent(lines: readonly string[], depth: number): string[] {
   return lines.map((line) => pad(depth) + line);
 }
 
+/** Attribute values are passed fully quoted, so an Astro expression can be
+ * substituted for a literal without the caller wrapping it in quotes. */
+function quote(value: string): string {
+  return `"${value}"`;
+}
+
 function tspTileBody(): string[] {
   return [
     `<rect width="100" height="100" fill="${TSP_TILE_FILL}" />`,
@@ -162,7 +168,7 @@ function asyncApiTileGroup(
   depth: number,
 ): string[] {
   return tileGroup(`translate(${x} ${y}) scale(${scale})`, depth, [
-    `<rect width="100" height="100" rx="21" fill="${fill}" />`,
+    `<rect width="100" height="100" rx="21" fill=${fill} />`,
     ...asyncApiGlyphBody(0),
   ]);
 }
@@ -204,12 +210,12 @@ function lockupBody(options: LockupOptions): string[] {
   } = options;
   return [
     ...tspTileGroup(6, 6, 0.3, depth),
-    `${pad(depth)}<text x="44" y="27" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill="${tspCaptionFill}">TypeSpec</text>`,
-    `${pad(depth)}<rect x="6" y="44" width="88" height="24" rx="5" fill="${blockFill}" />`,
+    `${pad(depth)}<text x="44" y="27" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill=${tspCaptionFill}>TypeSpec</text>`,
+    `${pad(depth)}<rect x="6" y="44" width="88" height="24" rx="5" fill=${blockFill} />`,
     `${pad(depth)}<path d="M20 56H34M29.5 51.5L34 56L29.5 60.5" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`,
     `${pad(depth)}<text x="42" y="60" font-family="${mono}" font-size="11" font-weight="700" letter-spacing="1.5" fill="#FFFFFF">EMITS</text>`,
     ...asyncApiTileGroup(6, 76, 0.3, aaFill, depth),
-    `${pad(depth)}<text x="44" y="97" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill="${aaCaptionFill}">AsyncAPI</text>`,
+    `${pad(depth)}<text x="44" y="97" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill=${aaCaptionFill}>AsyncAPI</text>`,
   ];
 }
 
@@ -223,8 +229,8 @@ function markBody(options: MarkOptions): string[] {
   const { aaFill, arrowFill, depth } = options;
   return [
     ...tspTileGroup(0, 5, 0.26, depth),
-    `${pad(depth)}<path d="M30 18H40" stroke="${arrowFill}" stroke-width="4" stroke-linecap="round" />`,
-    `${pad(depth)}<polygon points="40,12 48,18 40,24" fill="${arrowFill}" />`,
+    `${pad(depth)}<path d="M30 18H40" stroke=${arrowFill} stroke-width="4" stroke-linecap="round" />`,
+    `${pad(depth)}<polygon points="40,12 48,18 40,24" fill=${arrowFill} />`,
     ...asyncApiTileGroup(46, 5, 0.26, aaFill, depth),
   ];
 }
@@ -236,8 +242,8 @@ function svgDocument(attributes: string, lines: readonly string[]): string {
 function renderLockupSvg(variant: "dark" | "light"): string {
   const ink = variant === "dark" ? INK_ON_DARK : INK_ON_LIGHT;
   const suffix = variant === "dark" ? "Dark" : "Light";
-  const aaFill = `url(#taaLockupAa${suffix})`;
-  const blockFill = `url(#taaLockupBlock${suffix})`;
+  const aaFill = quote(`url(#taaLockupAa${suffix})`);
+  const blockFill = quote(`url(#taaLockupBlock${suffix})`);
   return svgDocument(
     `xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 112" width="126" height="112" role="img" aria-labelledby="taaLockupTitle${suffix}"`,
     [
@@ -257,7 +263,7 @@ function renderLockupSvg(variant: "dark" | "light"): string {
       ...lockupBody({
         aaFill,
         blockFill,
-        tspCaptionFill: ink,
+        tspCaptionFill: quote(ink),
         aaCaptionFill: aaFill,
         grotesk: STATIC_GROTESK,
         mono: STATIC_MONO,
@@ -268,7 +274,7 @@ function renderLockupSvg(variant: "dark" | "light"): string {
 }
 
 function renderMarkSvg(): string {
-  const aaFill = "url(#taaMarkAa)";
+  const aaFill = quote("url(#taaMarkAa)");
   return svgDocument(
     'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 36" width="72" height="36" role="img" aria-labelledby="taaMarkTitle"',
     [
@@ -285,7 +291,11 @@ function renderMarkSvg(): string {
         1,
       ),
       "</defs>",
-      ...markBody({ aaFill, arrowFill: "url(#taaMarkArrow)", depth: 0 }),
+      ...markBody({
+        aaFill,
+        arrowFill: quote("url(#taaMarkArrow)"),
+        depth: 0,
+      }),
     ],
   );
 }
@@ -382,7 +392,7 @@ ${defs.join("\n")}
 ${lockupBody({
   aaFill: COMPONENT_AA_FILL,
   blockFill: COMPONENT_BLOCK_FILL,
-  tspCaptionFill: "currentColor",
+  tspCaptionFill: '"currentColor"',
   aaCaptionFill: COMPONENT_AA_FILL,
   grotesk: CSS_VAR_GROTESK,
   mono: CSS_VAR_MONO,
