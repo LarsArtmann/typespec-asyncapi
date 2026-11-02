@@ -44,7 +44,7 @@ Run all commands inside `nix develop .#default` to get the pinned toolchain (pnp
 pnpm run verify
 ```
 
-Runs the full gate: build, lint, test typecheck, 1275 tests (105 files), coverage gate (75% minimum per file), and clone detection (0% threshold). The CI runs exactly this — if it passes locally, it passes in CI.
+Runs the full gate: build, lint, test typecheck, the complete vitest suite, coverage gate (75% minimum per file), and clone detection (0% threshold). The CI runs exactly this — if it passes locally, it passes in CI.
 
 :::note
 Tests run via vitest, but coverage runs via `bun test --coverage`: the TypeSpec compiler loads the emitter from `dist/` through a virtual filesystem, and only Bun's native runtime coverage sees those dynamically loaded files.
