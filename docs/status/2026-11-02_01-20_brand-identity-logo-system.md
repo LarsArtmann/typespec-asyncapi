@@ -258,3 +258,24 @@ git status                                                  → clean after rest
 - §7 (f) is **not yet harvested**: `TODO_LIST.md` and `ROADMAP.md` were not updated from this report. Next session should run `docs-health` **HARVEST**.
 - Do **not** run `nix fmt` until §5.1/§5.2 are fixed — it currently rewrites unrelated files.
 - Shipped identity lives in `assets/brand/` (source artifacts) and is mirrored inline in `Logo.astro` + `PipelineLockup.astro`; any change must touch both.
+
+---
+
+## 11. Resolution (2026-11-02, later session)
+
+Annotation, not a rewrite: this section records what changed after the report was written.
+
+| Defect (§5) | Status | Evidence |
+| --- | --- | --- |
+| 5.1 `nix fmt` rewrote 9 files | **Fixed** | `nix build .#checks.x86_64-linux.format` passes; `AGENTS.md` now states `nix fmt` always rewrites and `-c` means `--clear-cache` |
+| 5.2 `docs/**/*.html` exclusion inert | **Fixed** | Root cause proven with the real treefmt 2.6.0 binary on a scratch tree: the glob needs a separator, so `docs/x.html` was never matched; `docs/*.html` added, plus `docs/planning/**` and `docs/analysis/**` |
+| 5.3 Gallery stale | **Fixed** | Card 57 is now the shipped 126 × 112 lockup (copied from `lockup-dark.svg`) and carries a `shipped` chip |
+| 5.4 Wrong TypeSpec asset downloaded first | **Fixed** | `docs/logo-sources/tsp-logo.svg` trashed; provenance pinned by commit SHA in `assets/brand/README.md` |
+| 5.5 No visual verification | **Fixed** | The mark, both lockups, gallery card 57, the built header/footer marks and `dist/og/home.png` were rasterised and looked at. This found a real bug: the compact mark's arrow shaft painted nothing (zero-height bbox for an `objectBoundingBox` gradient) |
+| 5.6 Ragged generated markup | **Fixed** | Both `.astro` components are generator output with uniform indentation |
+| 5.7 Root gate not run | **Fixed** | `pnpm run verify` green: 1275 tests, 97.9% coverage, 0 clones |
+| 5.8 Unverified absolutes | **Partially fixed** | Regeneration command, palette and provenance are now recorded with pinned commits; the trademark posture stays open by design |
+
+Also fixed while verifying: both manifests had drifted to `typescript: 7.0.2` (and six other specifiers) without a lockfile regeneration, so `pnpm install --frozen-lockfile` — what CI runs — would have failed. Manifests were restored to the locked specifiers.
+
+The single-source rule supersedes the handoff note above: edit `scripts/generate-brand-assets.ts`, run `pnpm run brand:generate`; `pnpm run brand:check` (in `verify`) fails on any drift. The three open questions (§8) are unchanged and remain blocking for favicon, horizontal lockup, and the npm surface.
