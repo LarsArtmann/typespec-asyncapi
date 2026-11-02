@@ -19,51 +19,6 @@
     ],
     "headers": [
       {
-        "source": "**/*.@(css|js|jpg|jpeg|gif|png|svg|ico|webp|avif|woff|woff2|mp4|webm|mov)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=31536000, immutable"
-          }
-        ]
-      },
-      {
-        "source": "playground/**",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=0, must-revalidate"
-          }
-        ]
-      },
-      {
-        "source": "pagefind/**",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=0, must-revalidate"
-          }
-        ]
-      },
-      {
-        "source": "**/*.@(json|xml|txt)",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=3600"
-          }
-        ]
-      },
-      {
-        "source": "**/*.html",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=0, must-revalidate"
-          }
-        ]
-      },
-      {
         "source": "**",
         "headers": [
           {
@@ -101,6 +56,46 @@
           {
             "key": "Cross-Origin-Opener-Policy",
             "value": "same-origin"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "_astro/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=31536000, immutable"
+          }
+        ]
+      },
+      {
+        "source": "pagefind/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "playground/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=0, must-revalidate"
+          }
+        ]
+      },
+      {
+        "source": "**/*.@(json|xml|txt)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "public, max-age=3600"
           }
         ]
       },
