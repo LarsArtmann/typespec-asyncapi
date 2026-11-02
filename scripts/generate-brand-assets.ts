@@ -115,62 +115,94 @@ function indent(lines: readonly string[], depth: number): string[] {
 }
 
 /** Attribute values are passed fully quoted, so an Astro expression can be
- * substituted for a literal without the caller wrapping it in quotes. */
+ * substituted for a literal without the caller adding quotes. */
 function quote(value: string): string {
   return `"${value}"`;
 }
 
-function tspTileBody(): string[] {
+function groupElement(
+  attributes: string,
+  depth: number,
+  body: readonly string[],
+): string[] {
+  return [
+    `${pad(depth)}<g ${attributes}>`,
+    ...indent(body, depth + 1),
+    `${pad(depth)}</g>`,
+  ];
+}
+
+function tspGlyphs(): string[] {
   return [
     `<rect width="100" height="100" fill="${TSP_TILE_FILL}" />`,
     `<path transform="${TSP_GLYPH_TRANSFORM}" d="${TSP_GLYPH_PATH}" fill="#FFFFFF" />`,
   ];
 }
 
-function asyncApiGlyphBody(depth: number): string[] {
-  return [
-    `${pad(depth)}<g transform="scale(0.643)" fill="#FFFFFF">`,
-    ...indent(ASYNCAPI_GLYPHS, depth + 1),
-    `${pad(depth)}</g>`,
-  ];
-}
-
-function tileGroup(
-  transform: string,
-  depth: number,
-  body: readonly string[],
-): string[] {
-  return [
-    `${pad(depth)}<g transform="${transform}">`,
-    ...indent(body, depth + 1),
-    `${pad(depth)}</g>`,
-  ];
-}
-
-function tspTileGroup(
-  x: number,
-  y: number,
-  scale: number,
-  depth: number,
-): string[] {
-  return tileGroup(
-    `translate(${x} ${y}) scale(${scale})`,
+function asyncApiGlyphs(depth: number): string[] {
+  return groupElement(
+    'transform="scale(0.643)" fill="#FFFFFF"',
     depth,
-    tspTileBody(),
+    ASYNCAPI_GLYPHS,
   );
 }
 
-function asyncApiTileGroup(
+function tileAt(
+  body: readonly string[],
+  depth: number,
   x: number,
   y: number,
   scale: number,
-  fill: string,
-  depth: number,
 ): string[] {
-  return tileGroup(`translate(${x} ${y}) scale(${scale})`, depth, [
+  return groupElement(`transform="translate(${x} ${y}) scale(${scale})"`, depth, body);
+}
+
+function asyncApiTileBody(fill: string): string[] {
+  return [
     `<rect width="100" height="100" rx="21" fill=${fill} />`,
-    ...asyncApiGlyphBody(0),
-  ]);
+    ...asyncApiGlyphs(0),
+  ];
+}
+
+interface GradientRef {
+  /** The whole id attribute: quoted for static SVGs, an expression in Astro. */
+  readonly id: string;
+  /** The remaining `<linearGradient>` attributes. */
+  readonly direction: string;
+  readonly stops: readonly GradientStop[];
+}
+
+function gradientRef(
+  id: string,
+  direction: string,
+  stops: readonly GradientStop[],
+): GradientRef {
+  return { id, direction, stops };
+}
+
+/**
+ * The AsyncAPI gradient is on every asset, so only the second gradient is
+ * described at each call site.
+ */
+function defsBlock(
+  depth: number,
+  asyncApiId: string,
+  second: GradientRef,
+): string[] {
+  return [
+    `${pad(depth)}<defs>`,
+    ...gradientElement(
+      `${asyncApiId} ${AA_GRADIENT_ATTRS}`,
+      ASYNCAPI_GRADIENT,
+      depth + 1,
+    ),
+    ...gradientElement(
+      `${second.id} ${second.direction}`,
+      second.stops,
+      depth + 1,
+    ),
+    `${pad(depth)}</defs>`,
+  ];
 }
 
 function gradientElement(
@@ -209,12 +241,12 @@ function lockupBody(options: LockupOptions): string[] {
     depth,
   } = options;
   return [
-    ...tspTileGroup(6, 6, 0.3, depth),
+    ...tileAt(tspGlyphs(), depth, 6, 6, 0.3),
     `${pad(depth)}<text x="44" y="27" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill=${tspCaptionFill}>TypeSpec</text>`,
     `${pad(depth)}<rect x="6" y="44" width="88" height="24" rx="5" fill=${blockFill} />`,
     `${pad(depth)}<path d="M20 56H34M29.5 51.5L34 56L29.5 60.5" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`,
     `${pad(depth)}<text x="42" y="60" font-family="${mono}" font-size="11" font-weight="700" letter-spacing="1.5" fill="#FFFFFF">EMITS</text>`,
-    ...asyncApiTileGroup(6, 76, 0.3, aaFill, depth),
+    ...tileAt(asyncApiTileBody(aaFill), depth, 6, 76, 0.3),
     `${pad(depth)}<text x="44" y="97" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill=${aaCaptionFill}>AsyncAPI</text>`,
   ];
 }
@@ -228,15 +260,15 @@ interface MarkOptions {
 function markBody(options: MarkOptions): string[] {
   const { aaFill, arrowFill, depth } = options;
   return [
-    ...tspTileGroup(0, 5, 0.26, depth),
+    ...tileAt(tspGlyphs(), depth, 0, 5, 0.26),
     `${pad(depth)}<path d="M30 18H40" stroke=${arrowFill} stroke-width="4" stroke-linecap="round" />`,
     `${pad(depth)}<polygon points="40,12 48,18 40,24" fill=${arrowFill} />`,
-    ...asyncApiTileGroup(46, 5, 0.26, aaFill, depth),
+    ...tileAt(asyncApiTileBody(aaFill), depth, 46, 5, 0.26),
   ];
 }
 
-function svgDocument(attributes: string, lines: readonly string[]): string {
-  return `${[`<svg ${attributes}>`, ...lines, "</svg>"].join("\n")}\n`;
+function wrapSvg(attributes: string, inner: readonly string[]): string {
+  return `${[`<svg ${attributes}>`, ...inner, "</svg>"].join("\n")}\n`;
 }
 
 function renderLockupSvg(variant: "dark" | "light"): string {
@@ -244,22 +276,23 @@ function renderLockupSvg(variant: "dark" | "light"): string {
   const suffix = variant === "dark" ? "Dark" : "Light";
   const aaFill = quote(`url(#taaLockupAa${suffix})`);
   const blockFill = quote(`url(#taaLockupBlock${suffix})`);
-  return svgDocument(
+  return wrapSvg(
     `xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 112" width="126" height="112" role="img" aria-labelledby="taaLockupTitle${suffix}"`,
     [
       `<title id="taaLockupTitle${suffix}">TypeSpec emits AsyncAPI</title>`,
-      "<defs>",
-      ...gradientElement(
-        `id="taaLockupAa${suffix}" ${AA_GRADIENT_ATTRS}`,
-        ASYNCAPI_GRADIENT,
-        1,
+      ...defsBlock(
+        0,
+        {
+          id: `id="taaLockupAa${suffix}"`,
+          direction: AA_GRADIENT_ATTRS,
+          stops: ASYNCAPI_GRADIENT,
+        },
+        {
+          id: `id="taaLockupBlock${suffix}"`,
+          direction: BLOCK_GRADIENT_ATTRS,
+          stops: EMIT_BLOCK_GRADIENT,
+        },
       ),
-      ...gradientElement(
-        `id="taaLockupBlock${suffix}" ${BLOCK_GRADIENT_ATTRS}`,
-        EMIT_BLOCK_GRADIENT,
-        1,
-      ),
-      "</defs>",
       ...lockupBody({
         aaFill,
         blockFill,
@@ -275,22 +308,23 @@ function renderLockupSvg(variant: "dark" | "light"): string {
 
 function renderMarkSvg(): string {
   const aaFill = quote("url(#taaMarkAa)");
-  return svgDocument(
+  return wrapSvg(
     'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 36" width="72" height="36" role="img" aria-labelledby="taaMarkTitle"',
     [
       '<title id="taaMarkTitle">TypeSpec emits AsyncAPI</title>',
-      "<defs>",
-      ...gradientElement(
-        `id="taaMarkAa" ${AA_GRADIENT_ATTRS}`,
-        ASYNCAPI_GRADIENT,
-        1,
+      ...defsBlock(
+        0,
+        {
+          id: 'id="taaMarkAa"',
+          direction: AA_GRADIENT_ATTRS,
+          stops: ASYNCAPI_GRADIENT,
+        },
+        {
+          id: 'id="taaMarkArrow"',
+          direction: ARROW_GRADIENT_ATTRS,
+          stops: ASYNCAPI_GRADIENT,
+        },
       ),
-      ...gradientElement(
-        `id="taaMarkArrow" ${ARROW_GRADIENT_ATTRS}`,
-        ASYNCAPI_GRADIENT,
-        1,
-      ),
-      "</defs>",
       ...markBody({
         aaFill,
         arrowFill: quote("url(#taaMarkArrow)"),
@@ -300,106 +334,132 @@ function renderMarkSvg(): string {
   );
 }
 
-function renderLogoComponent(): string {
-  const defs = [
-    ...gradientElement(`id={aaId} ${AA_GRADIENT_ATTRS}`, ASYNCAPI_GRADIENT, 2),
-    ...gradientElement(
-      `id={arrowId} ${ARROW_GRADIENT_ATTRS}`,
-      ASYNCAPI_GRADIENT,
-      2,
-    ),
-  ];
-  return `---
-${GENERATED_NOTICE}
-export interface Props {
-  width?: number;
-  height?: number;
-  class?: string;
-  id?: string;
-  decorative?: boolean;
+interface ComponentParts {
+  readonly frontmatter: readonly string[];
+  readonly svgAttributes: readonly string[];
+  readonly inner: readonly string[];
 }
 
-const {
-  width = 44,
-  height = 22,
-  class: className,
-  id = "default",
-  decorative = false,
-} = Astro.props;
+function componentFile(parts: ComponentParts): string {
+  return `${[
+    "---",
+    GENERATED_NOTICE,
+    ...parts.frontmatter,
+    "---",
+    "",
+    "<svg",
+    ...indent(parts.svgAttributes, 1),
+    ">",
+    ...parts.inner,
+    "</svg>",
+    "",
+  ].join("\n")}`;
+}
 
-const aaId = "taa-mark-aa-" + id;
-const arrowId = "taa-mark-arrow-" + id;
----
-
-<svg
-  class={className}
-  width={width}
-  height={height}
-  viewBox="0 0 72 36"
-  xmlns="http://www.w3.org/2000/svg"
-  role={decorative ? undefined : "img"}
-  aria-label={decorative ? undefined : "TypeSpec emits AsyncAPI"}
-  aria-hidden={decorative ? "true" : undefined}
->
-  <defs>
-${defs.join("\n")}
-  </defs>
-${markBody({
-  aaFill: COMPONENT_AA_FILL,
-  arrowFill: COMPONENT_ARROW_FILL,
-  depth: 1,
-}).join("\n")}
-</svg>
-`;
+function renderLogoComponent(): string {
+  return componentFile({
+    frontmatter: [
+      "export interface Props {",
+      "  width?: number;",
+      "  height?: number;",
+      "  class?: string;",
+      "  id?: string;",
+      "  decorative?: boolean;",
+      "}",
+      "",
+      "const {",
+      "  width = 44,",
+      "  height = 22,",
+      "  class: className,",
+      '  id = "default",',
+      "  decorative = false,",
+      "} = Astro.props;",
+      "",
+      'const aaId = "taa-mark-aa-" + id;',
+      'const arrowId = "taa-mark-arrow-" + id;',
+    ],
+    svgAttributes: [
+      "class={className}",
+      "width={width}",
+      "height={height}",
+      'viewBox="0 0 72 36"',
+      'xmlns="http://www.w3.org/2000/svg"',
+      'role={decorative ? undefined : "img"}',
+      'aria-label={decorative ? undefined : "TypeSpec emits AsyncAPI"}',
+      'aria-hidden={decorative ? "true" : undefined}',
+    ],
+    inner: [
+      ...defsBlock(
+        1,
+        {
+          id: "id={aaId}",
+          direction: AA_GRADIENT_ATTRS,
+          stops: ASYNCAPI_GRADIENT,
+        },
+        {
+          id: "id={arrowId}",
+          direction: ARROW_GRADIENT_ATTRS,
+          stops: ASYNCAPI_GRADIENT,
+        },
+      ),
+      ...markBody({
+        aaFill: COMPONENT_AA_FILL,
+        arrowFill: COMPONENT_ARROW_FILL,
+        depth: 1,
+      }),
+    ],
+  });
 }
 
 function renderLockupComponent(): string {
-  const defs = [
-    ...gradientElement(`id={aaId} ${AA_GRADIENT_ATTRS}`, ASYNCAPI_GRADIENT, 2),
-    ...gradientElement(
-      `id={blockId} ${BLOCK_GRADIENT_ATTRS}`,
-      EMIT_BLOCK_GRADIENT,
-      2,
-    ),
-  ];
-  return `---
-${GENERATED_NOTICE}
-export interface Props {
-  height?: number;
-  class?: string;
-  id?: string;
-}
-
-const { height = 112, class: className, id = "default" } = Astro.props;
-
-const width = Math.round((height * 126) / 112);
-const aaId = "taa-lockup-aa-" + id;
-const blockId = "taa-lockup-block-" + id;
----
-
-<svg
-  class={className}
-  width={width}
-  height={height}
-  viewBox="0 0 126 112"
-  xmlns="http://www.w3.org/2000/svg"
-  role="img"
-  aria-label="TypeSpec emits AsyncAPI"
->
-  <defs>
-${defs.join("\n")}
-  </defs>
-${lockupBody({
-  aaFill: COMPONENT_AA_FILL,
-  blockFill: COMPONENT_BLOCK_FILL,
-  tspCaptionFill: '"currentColor"',
-  aaCaptionFill: COMPONENT_AA_FILL,
-  grotesk: CSS_VAR_GROTESK,
-  mono: CSS_VAR_MONO,
-  depth: 1,
-}).join("\n")}
-</svg>
-`;
+  return componentFile({
+    frontmatter: [
+      "export interface Props {",
+      "  height?: number;",
+      "  class?: string;",
+      "  id?: string;",
+      "}",
+      "",
+      'const { height = 112, class: className, id = "default" } = Astro.props;',
+      "",
+      "const width = Math.round((height * 126) / 112);",
+      'const aaId = "taa-lockup-aa-" + id;',
+      'const blockId = "taa-lockup-block-" + id;',
+    ],
+    svgAttributes: [
+      "class={className}",
+      "width={width}",
+      "height={height}",
+      'viewBox="0 0 126 112"',
+      'xmlns="http://www.w3.org/2000/svg"',
+      'role="img"',
+      'aria-label="TypeSpec emits AsyncAPI"',
+    ],
+    inner: [
+      ...defsBlock(
+        1,
+        {
+          id: "id={aaId}",
+          direction: AA_GRADIENT_ATTRS,
+          stops: ASYNCAPI_GRADIENT,
+        },
+        {
+          id: "id={blockId}",
+          direction: BLOCK_GRADIENT_ATTRS,
+          stops: EMIT_BLOCK_GRADIENT,
+        },
+      ),
+      ...lockupBody({
+        aaFill: COMPONENT_AA_FILL,
+        blockFill: COMPONENT_BLOCK_FILL,
+        tspCaptionFill: '"currentColor"',
+        aaCaptionFill: COMPONENT_AA_FILL,
+        grotesk: CSS_VAR_GROTESK,
+        mono: CSS_VAR_MONO,
+        depth: 1,
+      }),
+    ],
+  });
 }
 
 interface Artifact {
