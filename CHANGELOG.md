@@ -8,10 +8,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **A horizontal lockup, and the README now uses it** — the identity ships in
+  two orientations from one geometry: a 352 × 54 one-row lockup for the README
+  (one text line instead of a 151 px block, so the project title stays near the
+  fold) and the 126 × 112 stacked lockup for square-ish slots such as the
+  landing-page hero. Both are the same atoms driven by two slot tables, so the
+  orientations cannot drift apart.
+
 - **Project identity and a generated brand pipeline** — the site and README now
   carry a TypeSpec "emits" AsyncAPI lockup (compact mark in the header and
   footer, full lockup on the landing page, theme-aware hero on GitHub, mark on
-  every Open Graph card). All six artifacts come from one geometry definition
+  every Open Graph card). All eight artifacts come from one geometry definition
   in `scripts/generate-brand-assets.ts`, and `pnpm run brand:check` (part of
   `pnpm run verify`) fails when a committed artifact drifts. See
   `assets/brand/README.md` and `docs/adr/0002-brand-identity-and-asset-pipeline.md`.
@@ -19,6 +26,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **`pnpm run brand:generate` / `pnpm run brand:check`** and
   `website/scripts/render-brand-png.mjs`, which rasterises the Open Graph logo
   with a pinned `sharp` instead of an uncommitted one-off.
+
+### Changed
+
+- **`assets/brand/lockup-{dark,light}.svg` renamed to
+  `lockup-stacked-{dark,light}.svg`** — with two orientations the unqualified
+  name could not say which one it meant. The old paths are 404s; the README now
+  points at `lockup-horizontal-{dark,light}.svg`.
 
 ### Fixed
 

@@ -31,13 +31,19 @@ Two facts constrain the decision:
 1. Ship the derivative pipeline lockup as the identity for the website and the
    README, with attribution and provenance recorded in `assets/brand/README.md`.
 2. Treat one TypeScript geometry definition as the only source of truth.
-   `scripts/generate-brand-assets.ts` emits all six artifacts; `pnpm run
-brand:check` is part of `pnpm run verify` and fails on any byte drift.
-3. Keep `assets/brand/` out of the npm package (`package.json` `files` lists
+   `scripts/generate-brand-assets.ts` emits all eight artifacts; `pnpm run
+   brand:check` is part of `pnpm run verify` and fails on any byte drift.
+3. Ship the identity in two lockup orientations from that one definition: a
+   352 × 54 horizontal lockup for the README (one line instead of a 151 px
+   block) and a 126 × 112 stacked lockup for square-ish slots — plus the
+   72 × 36 textless mark for small slots. Orientation is a layout choice, not a
+   second identity, so both orientations come from one body function and two
+   slot layouts.
+4. Keep `assets/brand/` out of the npm package (`package.json` `files` lists
    only `CHANGELOG.md`, `LICENSE`, `README.md`, `dist/`, `lib/`). The README
    therefore references absolute `raw.githubusercontent.com` URLs through a
    `prefers-color-scheme` `<picture>`.
-4. Keep the SVG sources authoritative and rasterise only where a renderer
+5. Keep the SVG sources authoritative and rasterise only where a renderer
    cannot decode SVG (Open Graph cards), via `website/scripts/render-brand-png.mjs`
    with a pinned `sharp`.
 
@@ -45,7 +51,7 @@ brand:check` is part of `pnpm run verify` and fails on any byte drift.
 
 | Open question                                                                                                                                                                                    | Blocks                                                       |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
-| Trademark posture: is a derivative lockup acceptable as the primary identity, or must the official marks stay documentation-only with an original synthesized mark (concept 25 / 50) as primary? | Horizontal lockup, social preview, ADR acceptance            |
+| Trademark posture: is a derivative lockup acceptable as the primary identity, or must the official marks stay documentation-only with an original synthesized mark (concept 25 / 50) as primary? | Social preview, ADR acceptance                                |
 | Favicon: keep the legacy teal squircle, or a 16 px-optimised single tile (and which glyph)?                                                                                                      | apple-touch icons, web manifest, favicon QA                  |
 | npm surface: is GitHub-level fidelity enough, or must the npm package page render the mark natively?                                                                                             | shipping raster lockups, README structure, release checklist |
 
@@ -65,6 +71,15 @@ brand:check` is part of `pnpm run verify` and fails on any byte drift.
 
 - Editing any brand file now means editing the generator; a hand edit fails
   `pnpm run brand:check`.
+- Orientation is data, not code: `STACKED_LOCKUP` and `HORIZONTAL_LOCKUP` are two
+  slot tables consumed by the same `lockupBody`, so the orientations cannot
+  drift from each other.
+- The previously unqualified artifacts were renamed `lockup-dark.svg` /
+  `lockup-light.svg` → `lockup-stacked-dark.svg` / `lockup-stacked-light.svg`,
+  because with two orientations the bare name could no longer say which one it
+  meant.
+- The README opens with the horizontal lockup, cutting the header block from
+  170 × 151 to 352 × 54 and keeping the project title near the fold.
 - The Astro components carry a `GENERATED FILE` banner and expose `id` /
   `decorative` props, so a page can render the mark twice without duplicate SVG
   gradient ids (the previous markup shipped duplicate ids on every page).

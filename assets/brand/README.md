@@ -11,22 +11,39 @@ Everything here is generated from a single geometry definition in
 Do not hand-edit the SVGs or the two Astro components; edit the generator and
 regenerate.
 
+## Compositions
+
+One geometry, three compositions — pick by slot shape, not by taste:
+
+| Composition         | Size      | Use for                                                        |
+| ------------------- | --------- | -------------------------------------------------------------- |
+| `mark.svg`          | 72 × 36   | Slots under ~64 px tall: Starlight header/footer, OG art       |
+| `lockup-horizontal` | 352 × 54  | Wide slots: README banner, release notes, social headers       |
+| `lockup-stacked`    | 126 × 112 | Roughly square slots: landing-page hero, gallery, slide decks  |
+
+The two lockups are the same atoms in the same order: the stacked one runs
+top-to-bottom, the horizontal one left-to-right. They share tile scale, caption
+offset, caption size and emit block, so an edit to one is an edit to both —
+only the slot positions in `STACKED_LOCKUP` / `HORIZONTAL_LOCKUP` differ.
+
 ## Files
 
-| File                                                | What it is                                             | Consumed by                                            |
-| --------------------------------------------------- | ------------------------------------------------------ | ------------------------------------------------------ |
-| `lockup-dark.svg`                                   | 126 × 112 full lockup, light ink, for dark backgrounds | `README.md` (`prefers-color-scheme: dark`)             |
-| `lockup-light.svg`                                  | 126 × 112 full lockup, dark ink, for light backgrounds | `README.md` (fallback)                                 |
-| `mark.svg`                                          | 72 × 36 compact mark, no captions, no text             | Starlight header, favicon work, OG source              |
+| File                                                | What it is                                              | Consumed by                                            |
+| --------------------------------------------------- | ------------------------------------------------------- | ------------------------------------------------------ |
+| `lockup-horizontal-dark.svg`                        | 352 × 54 one-row lockup, light ink, for dark backgrounds | `README.md` (`prefers-color-scheme: dark`)             |
+| `lockup-horizontal-light.svg`                       | 352 × 54 one-row lockup, dark ink, for light backgrounds | `README.md` (fallback)                                 |
+| `lockup-stacked-dark.svg`                           | 126 × 112 stacked lockup, light ink, for dark backgrounds | website hero, gallery snapshot                         |
+| `lockup-stacked-light.svg`                          | 126 × 112 stacked lockup, dark ink, for light backgrounds | — (kept parallel to the dark variant)                  |
+| `mark.svg`                                          | 72 × 36 compact mark, no captions, no text              | Starlight header, favicon work, OG source              |
 | `../../website/public/brand-mark.png`               | 440 × 220 PNG of `mark.svg`                            | Open Graph cards (`astro-og-canvas` cannot decode SVG) |
 | `../../website/src/assets/brand-mark.svg`           | Byte-identical copy of `mark.svg`                      | Starlight `logo` option (bundled, hashed)              |
 | `../../website/src/components/Logo.astro`           | Compact mark as an Astro component                     | Site header, site footer                               |
-| `../../website/src/components/PipelineLockup.astro` | Full lockup as an Astro component                      | Landing page hero                                      |
+| `../../website/src/components/PipelineLockup.astro` | Stacked lockup as an Astro component                   | Landing page hero                                      |
 
 ## Regenerate
 
 ```bash
-pnpm run brand:generate   # rewrite all six artifacts + the OG PNG
+pnpm run brand:generate   # rewrite all eight artifacts + the OG PNG
 pnpm run brand:check      # exit 1 if any text artifact drifted (wired into `verify`)
 ```
 
@@ -41,14 +58,19 @@ be byte-identical across platforms, so `verify` does not gate on it).
 | TypeSpec tile       | `#4A3665`                         | solid tile behind the white TSP glyph            |
 | AsyncAPI gradient   | `#2DCCFD` → `#A829E2` → `#E50E99` | AsyncAPI tile, `AsyncAPI` caption, compact arrow |
 | Emit block gradient | `#7C3AED` → `#5B21B6`             | the `→ EMITS` block                              |
-| Ink (dark bg)       | `#EDEFF7`                         | `TypeSpec` caption in `lockup-dark`              |
-| Ink (light bg)      | `#16131F`                         | `TypeSpec` caption in `lockup-light`             |
+| Ink (dark bg)       | `#EDEFF7`                         | `TypeSpec` caption in every dark variant         |
+| Ink (light bg)      | `#16131F`                         | `TypeSpec` caption in every light variant        |
 
-Two deliberate quirks:
+Three deliberate quirks:
 
 - The compact badge's arrow uses `gradientUnits="userSpaceOnUse"`. A default
   (`objectBoundingBox`) gradient on a horizontal line has a zero-height bounding
   box and paints **nothing** — the shaft disappeared until this was fixed.
+- The horizontal lockup's viewBox is 8 units wider than its content. SVG text
+  renders in whatever font the viewer has; Space Grotesk is not installed on
+  GitHub or npm, so the fallback's wider metrics need the slack. The content is
+  laid out left-anchored, which means a narrower font leaves more trailing air
+  rather than shifting the mark.
 - The `AsyncAPI` wordmark keeps the official gradient on light backgrounds, so
   its cyan end is low-contrast on white. Logotypes are exempt from WCAG 1.4.3
   and 1.4.11; brand fidelity won. Do not "fix" this without a brand decision.
@@ -70,18 +92,22 @@ npm package does not ship it — the README must use absolute
     <source
       media="(prefers-color-scheme: dark)"
       srcset="
-        https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-dark.svg
+        https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-horizontal-dark.svg
       "
     />
     <img
-      src="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-light.svg"
+      src="https://raw.githubusercontent.com/LarsArtmann/typespec-asyncapi/master/assets/brand/lockup-horizontal-light.svg"
       alt="TypeSpec emits AsyncAPI"
-      width="170"
-      height="151"
+      width="352"
+      height="54"
     />
   </picture>
 </p>
 ```
+
+The README uses the horizontal lockup: it occupies one text line instead of a
+151 px block, so the project title stays near the fold. The stacked lockup is
+for slots that are closer to square.
 
 On the npm package page the HTML sanitizer strips `<picture>`/`<source>` but
 keeps the child `<img>`, so npm falls back to the light lockup. That is the
