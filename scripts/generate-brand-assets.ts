@@ -119,13 +119,36 @@ function stopLines(stops: readonly GradientStop[], depth: number): string[] {
   );
 }
 
+interface GradientDirection {
+  readonly x1: string;
+  readonly y1: string;
+  readonly x2: string;
+  readonly y2: string;
+}
+
+const TOP_RIGHT_TO_BOTTOM_LEFT: GradientDirection = {
+  x1: "1",
+  y1: "0",
+  x2: "0",
+  y2: "1",
+};
+
+const TOP_LEFT_TO_BOTTOM_RIGHT: GradientDirection = {
+  x1: "0",
+  y1: "0",
+  x2: "1",
+  y2: "1",
+};
+
 function gradientElement(
   id: string,
   stops: readonly GradientStop[],
   depth: number,
+  direction: GradientDirection = TOP_RIGHT_TO_BOTTOM_LEFT,
 ): string[] {
+  const { x1, y1, x2, y2 } = direction;
   return [
-    `${pad(depth)}<linearGradient id="${id}" x1="1" y1="0" x2="0" y2="1">`,
+    `${pad(depth)}<linearGradient id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">`,
     ...stopLines(stops, depth + 1),
     `${pad(depth)}</linearGradient>`,
   ];
@@ -177,7 +200,12 @@ function renderLockupSvg(variant: "dark" | "light"): string {
     `<title id="taaLockupTitle${suffix}">TypeSpec emits AsyncAPI</title>`,
     "<defs>",
     ...gradientElement(aaId, ASYNCAPI_GRADIENT, 1),
-    ...gradientElement(blockId, EMIT_BLOCK_GRADIENT, 1),
+    ...gradientElement(
+      blockId,
+      EMIT_BLOCK_GRADIENT,
+      1,
+      TOP_LEFT_TO_BOTTOM_RIGHT,
+    ),
     "</defs>",
     ...body,
     "</svg>",
