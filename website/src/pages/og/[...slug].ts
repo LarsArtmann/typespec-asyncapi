@@ -22,6 +22,7 @@ export const { getStaticPaths, GET } = await OGImageRoute({
   getImageOptions: (_path, page) => ({
     title: page.data.title,
     description: page.data.description,
+    logo: { path: "./public/brand-mark.png", size: [220, 110] },
     bgGradient: [[10, 9, 8]],
     border: { color: [20, 184, 166], width: 4 },
     padding: 80,

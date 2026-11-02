@@ -60,6 +60,7 @@ export default defineConfig({
     }),
     starlight({
       title: "typespec-asyncapi",
+      logo: { src: "./src/assets/brand-mark.svg" },
       plugins: [
         starlightLlmsTxt({
           description:

@@ -1,7 +1,12 @@
 ---
 import SectionHeader from './SectionHeader.astro';
+import PipelineLockup from './PipelineLockup.astro';
 import { pipelineSteps } from '../data/sections';
 ---
+
+<div class="mb-10 flex justify-center text-text-primary">
+  <PipelineLockup height={100} />
+</div>
 
 <SectionHeader eyebrow="How it works" title="Model, compile, validate, ship" subtitle="Four deterministic steps from typed source to a spec-compliant AsyncAPI document." />
 
