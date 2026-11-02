@@ -84,7 +84,7 @@ brand:check` is part of `pnpm run verify` and fails on any byte drift.
   `decorative` props, so a page can render the mark twice without duplicate SVG
   gradient ids (the previous markup shipped duplicate ids on every page).
 - The gallery card 57 is a point-in-time snapshot of the shipped lockup; it is
-  refreshed by copying the generated `lockup-dark.svg`, not by hand-drawing.
+  refreshed by copying the generated `lockup-stacked-dark.svg`, not by hand-drawing.
 - Open Graph cards show one logo only; there is no dark/light OG variant yet.
 - npm's readme sanitizer behaviour is reasoned, not verified: `<picture>` is
   expected to be stripped with its `<img>` child kept. Re-check after the next
