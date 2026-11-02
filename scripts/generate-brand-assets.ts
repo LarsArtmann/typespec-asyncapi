@@ -5,7 +5,7 @@
  * copy-pasted into six places (two lockup variants, the compact mark, the
  * Starlight logo copy, and two Astro components). Every edit meant six edits,
  * and the copies had already drifted. Now they are all derived from the
- * constants below.
+ * constants below, and each asset body is assembled by exactly one function.
  *
  *   pnpm run brand:generate   rewrite the artifacts
  *   pnpm run brand:check      fail (exit 1) if any artifact on disk drifted
@@ -88,13 +88,30 @@ const EMIT_BLOCK_GRADIENT: readonly GradientStop[] = [
   { offset: "1", color: "#5B21B6" },
 ];
 
+const AA_GRADIENT_ATTRS = 'x1="1" y1="0" x2="0" y2="1"';
+const BLOCK_GRADIENT_ATTRS = 'x1="0" y1="0" x2="1" y2="1"';
+const ARROW_GRADIENT_ATTRS =
+  'gradientUnits="userSpaceOnUse" x1="26" y1="18" x2="46" y2="18"';
+
 const GENERATED_NOTICE = [
   "// GENERATED FILE - do not edit by hand.",
   "// Source: scripts/generate-brand-assets.ts (run `pnpm run brand:generate`).",
 ].join("\n");
 
+/**
+ * How the components point at their per-instance gradients. These strings are
+ * emitted verbatim into the `.astro` files, so they hold the Astro expression.
+ */
+const COMPONENT_AA_FILL = '{"url(#" + aaId + ")"}';
+const COMPONENT_BLOCK_FILL = '{"url(#" + blockId + ")"}';
+const COMPONENT_ARROW_FILL = '{"url(#" + arrowId + ")"}';
+
 function pad(depth: number): string {
   return "  ".repeat(depth);
+}
+
+function indent(lines: readonly string[], depth: number): string[] {
+  return lines.map((line) => pad(depth) + line);
 }
 
 function tspTileBody(): string[] {
@@ -104,52 +121,63 @@ function tspTileBody(): string[] {
   ];
 }
 
-function asyncApiGlyphBody(): string[] {
+function asyncApiGlyphBody(depth: number): string[] {
   return [
-    '<g transform="scale(0.643)" fill="#FFFFFF">',
-    ...ASYNCAPI_GLYPHS.map((glyph) => pad(1) + glyph),
-    "</g>",
+    `${pad(depth)}<g transform="scale(0.643)" fill="#FFFFFF">`,
+    ...indent(ASYNCAPI_GLYPHS, depth + 1),
+    `${pad(depth)}</g>`,
   ];
 }
 
-function stopLines(stops: readonly GradientStop[], depth: number): string[] {
-  return stops.map(
-    ({ offset, color }) =>
-      `${pad(depth)}<stop offset="${offset}" stop-color="${color}" />`,
+function tileGroup(
+  transform: string,
+  depth: number,
+  body: readonly string[],
+): string[] {
+  return [
+    `${pad(depth)}<g transform="${transform}">`,
+    ...indent(body, depth + 1),
+    `${pad(depth)}</g>`,
+  ];
+}
+
+function tspTileGroup(
+  x: number,
+  y: number,
+  scale: number,
+  depth: number,
+): string[] {
+  return tileGroup(
+    `translate(${x} ${y}) scale(${scale})`,
+    depth,
+    tspTileBody(),
   );
 }
 
-interface GradientDirection {
-  readonly x1: string;
-  readonly y1: string;
-  readonly x2: string;
-  readonly y2: string;
+function asyncApiTileGroup(
+  x: number,
+  y: number,
+  scale: number,
+  fill: string,
+  depth: number,
+): string[] {
+  return tileGroup(`translate(${x} ${y}) scale(${scale})`, depth, [
+    `<rect width="100" height="100" rx="21" fill="${fill}" />`,
+    ...asyncApiGlyphBody(0),
+  ]);
 }
 
-const TOP_RIGHT_TO_BOTTOM_LEFT: GradientDirection = {
-  x1: "1",
-  y1: "0",
-  x2: "0",
-  y2: "1",
-};
-
-const TOP_LEFT_TO_BOTTOM_RIGHT: GradientDirection = {
-  x1: "0",
-  y1: "0",
-  x2: "1",
-  y2: "1",
-};
-
 function gradientElement(
-  id: string,
+  attributes: string,
   stops: readonly GradientStop[],
   depth: number,
-  direction: GradientDirection = TOP_RIGHT_TO_BOTTOM_LEFT,
 ): string[] {
-  const { x1, y1, x2, y2 } = direction;
   return [
-    `${pad(depth)}<linearGradient id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">`,
-    ...stopLines(stops, depth + 1),
+    `${pad(depth)}<linearGradient ${attributes}>`,
+    ...stops.map(
+      ({ offset, color }) =>
+        `${pad(depth + 1)}<stop offset="${offset}" stop-color="${color}" />`,
+    ),
     `${pad(depth)}</linearGradient>`,
   ];
 }
@@ -161,97 +189,116 @@ interface LockupOptions {
   readonly aaCaptionFill: string;
   readonly grotesk: string;
   readonly mono: string;
+  readonly depth: number;
 }
 
 function lockupBody(options: LockupOptions): string[] {
-  const { aaFill, blockFill, tspCaptionFill, aaCaptionFill, grotesk, mono } =
-    options;
+  const {
+    aaFill,
+    blockFill,
+    tspCaptionFill,
+    aaCaptionFill,
+    grotesk,
+    mono,
+    depth,
+  } = options;
   return [
-    '<g transform="translate(6 6) scale(0.3)">',
-    ...tspTileBody().map((line) => pad(1) + line),
-    "</g>",
-    `<text x="44" y="27" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill="${tspCaptionFill}">TypeSpec</text>`,
-    `<rect x="6" y="44" width="88" height="24" rx="5" fill="${blockFill}" />`,
-    '<path d="M20 56H34M29.5 51.5L34 56L29.5 60.5" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />',
-    `<text x="42" y="60" font-family="${mono}" font-size="11" font-weight="700" letter-spacing="1.5" fill="#FFFFFF">EMITS</text>`,
-    '<g transform="translate(6 76) scale(0.3)">',
-    `<rect width="100" height="100" rx="21" fill="${aaFill}" />`,
-    ...asyncApiGlyphBody().map((line) => pad(1) + line),
-    "</g>",
-    `<text x="44" y="97" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill="${aaCaptionFill}">AsyncAPI</text>`,
+    ...tspTileGroup(6, 6, 0.3, depth),
+    `${pad(depth)}<text x="44" y="27" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill="${tspCaptionFill}">TypeSpec</text>`,
+    `${pad(depth)}<rect x="6" y="44" width="88" height="24" rx="5" fill="${blockFill}" />`,
+    `${pad(depth)}<path d="M20 56H34M29.5 51.5L34 56L29.5 60.5" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`,
+    `${pad(depth)}<text x="42" y="60" font-family="${mono}" font-size="11" font-weight="700" letter-spacing="1.5" fill="#FFFFFF">EMITS</text>`,
+    ...asyncApiTileGroup(6, 76, 0.3, aaFill, depth),
+    `${pad(depth)}<text x="44" y="97" font-family="${grotesk}" font-size="17" font-weight="700" letter-spacing="-0.3" fill="${aaCaptionFill}">AsyncAPI</text>`,
   ];
+}
+
+interface MarkOptions {
+  readonly aaFill: string;
+  readonly arrowFill: string;
+  readonly depth: number;
+}
+
+function markBody(options: MarkOptions): string[] {
+  const { aaFill, arrowFill, depth } = options;
+  return [
+    ...tspTileGroup(0, 5, 0.26, depth),
+    `${pad(depth)}<path d="M30 18H40" stroke="${arrowFill}" stroke-width="4" stroke-linecap="round" />`,
+    `${pad(depth)}<polygon points="40,12 48,18 40,24" fill="${arrowFill}" />`,
+    ...asyncApiTileGroup(46, 5, 0.26, aaFill, depth),
+  ];
+}
+
+function svgDocument(attributes: string, lines: readonly string[]): string {
+  return `${[`<svg ${attributes}>`, ...lines, "</svg>"].join("\n")}\n`;
 }
 
 function renderLockupSvg(variant: "dark" | "light"): string {
   const ink = variant === "dark" ? INK_ON_DARK : INK_ON_LIGHT;
   const suffix = variant === "dark" ? "Dark" : "Light";
-  const aaId = `taaLockupAa${suffix}`;
-  const blockId = `taaLockupBlock${suffix}`;
-  const body = lockupBody({
-    aaFill: `url(#${aaId})`,
-    blockFill: `url(#${blockId})`,
-    tspCaptionFill: ink,
-    aaCaptionFill: `url(#${aaId})`,
-    grotesk: STATIC_GROTESK,
-    mono: STATIC_MONO,
-  });
-  const lines = [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 112" width="126" height="112" role="img" aria-labelledby="taaLockupTitle${suffix}">`,
-    `<title id="taaLockupTitle${suffix}">TypeSpec emits AsyncAPI</title>`,
-    "<defs>",
-    ...gradientElement(aaId, ASYNCAPI_GRADIENT, 1),
-    ...gradientElement(
-      blockId,
-      EMIT_BLOCK_GRADIENT,
-      1,
-      TOP_LEFT_TO_BOTTOM_RIGHT,
-    ),
-    "</defs>",
-    ...body,
-    "</svg>",
-  ];
-  return `${lines.join("\n")}\n`;
-}
-
-function arrowGradientLines(id: string, depth: number): string[] {
-  return [
-    `${pad(depth)}<linearGradient id="${id}" gradientUnits="userSpaceOnUse" x1="26" y1="18" x2="46" y2="18">`,
-    ...stopLines(ASYNCAPI_GRADIENT, depth + 1),
-    `${pad(depth)}</linearGradient>`,
-  ];
+  const aaFill = `url(#taaLockupAa${suffix})`;
+  const blockFill = `url(#taaLockupBlock${suffix})`;
+  return svgDocument(
+    `xmlns="http://www.w3.org/2000/svg" viewBox="0 0 126 112" width="126" height="112" role="img" aria-labelledby="taaLockupTitle${suffix}"`,
+    [
+      `<title id="taaLockupTitle${suffix}">TypeSpec emits AsyncAPI</title>`,
+      "<defs>",
+      ...gradientElement(
+        `id="taaLockupAa${suffix}" ${AA_GRADIENT_ATTRS}`,
+        ASYNCAPI_GRADIENT,
+        1,
+      ),
+      ...gradientElement(
+        `id="taaLockupBlock${suffix}" ${BLOCK_GRADIENT_ATTRS}`,
+        EMIT_BLOCK_GRADIENT,
+        1,
+      ),
+      "</defs>",
+      ...lockupBody({
+        aaFill,
+        blockFill,
+        tspCaptionFill: ink,
+        aaCaptionFill: aaFill,
+        grotesk: STATIC_GROTESK,
+        mono: STATIC_MONO,
+        depth: 0,
+      }),
+    ],
+  );
 }
 
 function renderMarkSvg(): string {
   const aaFill = "url(#taaMarkAa)";
-  const arrowFill = "url(#taaMarkArrow)";
-  const lines = [
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 36" width="72" height="36" role="img" aria-labelledby="taaMarkTitle">',
-    '<title id="taaMarkTitle">TypeSpec emits AsyncAPI</title>',
-    "<defs>",
-    ...gradientElement("taaMarkAa", ASYNCAPI_GRADIENT, 1),
-    ...arrowGradientLines("taaMarkArrow", 1),
-    "</defs>",
-    '<g transform="translate(0 5) scale(0.26)">',
-    ...tspTileBody().map((line) => pad(1) + line),
-    "</g>",
-    `<path d="M30 18H40" stroke="${arrowFill}" stroke-width="4" stroke-linecap="round" />`,
-    `<polygon points="40,12 48,18 40,24" fill="${arrowFill}" />`,
-    '<g transform="translate(46 5) scale(0.26)">',
-    ...[
-      `<rect width="100" height="100" rx="21" fill="${aaFill}" />`,
-      ...asyncApiGlyphBody(),
-    ].map((line) => pad(1) + line),
-    "</g>",
-    "</svg>",
-  ];
-  return `${lines.join("\n")}\n`;
-}
-
-function aaUrl(expression: string): string {
-  return `{"url(#" + ${expression} + ")"}`;
+  return svgDocument(
+    'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 36" width="72" height="36" role="img" aria-labelledby="taaMarkTitle"',
+    [
+      '<title id="taaMarkTitle">TypeSpec emits AsyncAPI</title>',
+      "<defs>",
+      ...gradientElement(
+        `id="taaMarkAa" ${AA_GRADIENT_ATTRS}`,
+        ASYNCAPI_GRADIENT,
+        1,
+      ),
+      ...gradientElement(
+        `id="taaMarkArrow" ${ARROW_GRADIENT_ATTRS}`,
+        ASYNCAPI_GRADIENT,
+        1,
+      ),
+      "</defs>",
+      ...markBody({ aaFill, arrowFill: "url(#taaMarkArrow)", depth: 0 }),
+    ],
+  );
 }
 
 function renderLogoComponent(): string {
+  const defs = [
+    ...gradientElement(`id={aaId} ${AA_GRADIENT_ATTRS}`, ASYNCAPI_GRADIENT, 2),
+    ...gradientElement(
+      `id={arrowId} ${ARROW_GRADIENT_ATTRS}`,
+      ASYNCAPI_GRADIENT,
+      2,
+    ),
+  ];
   return `---
 ${GENERATED_NOTICE}
 export interface Props {
@@ -285,38 +332,26 @@ const arrowId = "taa-mark-arrow-" + id;
   aria-hidden={decorative ? "true" : undefined}
 >
   <defs>
-    <linearGradient id={aaId} x1="1" y1="0" x2="0" y2="1">
-${stopLines(ASYNCAPI_GRADIENT, 3).join("\n")}
-    </linearGradient>
-    <linearGradient
-      id={arrowId}
-      gradientUnits="userSpaceOnUse"
-      x1="26"
-      y1="18"
-      x2="46"
-      y2="18"
-    >
-${stopLines(ASYNCAPI_GRADIENT, 3).join("\n")}
-    </linearGradient>
+${defs.join("\n")}
   </defs>
-  <g transform="translate(0 5) scale(0.26)">
-${tspTileBody()
-  .map((line) => pad(2) + line)
-  .join("\n")}
-  </g>
-  <path d="M30 18H40" stroke=${aaUrl("arrowId")} stroke-width="4" stroke-linecap="round" />
-  <polygon points="40,12 48,18 40,24" fill=${aaUrl("arrowId")} />
-  <g transform="translate(46 5) scale(0.26)">
-    <rect width="100" height="100" rx="21" fill=${aaUrl("aaId")} />
-${asyncApiGlyphBody()
-  .map((line) => pad(2) + line)
-  .join("\n")}
-  </g>
+${markBody({
+  aaFill: COMPONENT_AA_FILL,
+  arrowFill: COMPONENT_ARROW_FILL,
+  depth: 1,
+}).join("\n")}
 </svg>
 `;
 }
 
 function renderLockupComponent(): string {
+  const defs = [
+    ...gradientElement(`id={aaId} ${AA_GRADIENT_ATTRS}`, ASYNCAPI_GRADIENT, 2),
+    ...gradientElement(
+      `id={blockId} ${BLOCK_GRADIENT_ATTRS}`,
+      EMIT_BLOCK_GRADIENT,
+      2,
+    ),
+  ];
   return `---
 ${GENERATED_NOTICE}
 export interface Props {
@@ -342,29 +377,17 @@ const blockId = "taa-lockup-block-" + id;
   aria-label="TypeSpec emits AsyncAPI"
 >
   <defs>
-    <linearGradient id={aaId} x1="1" y1="0" x2="0" y2="1">
-${stopLines(ASYNCAPI_GRADIENT, 3).join("\n")}
-    </linearGradient>
-    <linearGradient id={blockId} x1="0" y1="0" x2="1" y2="1">
-${stopLines(EMIT_BLOCK_GRADIENT, 3).join("\n")}
-    </linearGradient>
+${defs.join("\n")}
   </defs>
-  <g transform="translate(6 6) scale(0.3)">
-${tspTileBody()
-  .map((line) => pad(2) + line)
-  .join("\n")}
-  </g>
-  <text x="44" y="27" font-family="${CSS_VAR_GROTESK}" font-size="17" font-weight="700" letter-spacing="-0.3" fill="currentColor">TypeSpec</text>
-  <rect x="6" y="44" width="88" height="24" rx="5" fill=${aaUrl("blockId")} />
-  <path d="M20 56H34M29.5 51.5L34 56L29.5 60.5" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
-  <text x="42" y="60" font-family="${CSS_VAR_MONO}" font-size="11" font-weight="700" letter-spacing="1.5" fill="#FFFFFF">EMITS</text>
-  <g transform="translate(6 76) scale(0.3)">
-    <rect width="100" height="100" rx="21" fill=${aaUrl("aaId")} />
-${asyncApiGlyphBody()
-  .map((line) => pad(2) + line)
-  .join("\n")}
-  </g>
-  <text x="44" y="97" font-family="${CSS_VAR_GROTESK}" font-size="17" font-weight="700" letter-spacing="-0.3" fill=${aaUrl("aaId")}>AsyncAPI</text>
+${lockupBody({
+  aaFill: COMPONENT_AA_FILL,
+  blockFill: COMPONENT_BLOCK_FILL,
+  tspCaptionFill: "currentColor",
+  aaCaptionFill: COMPONENT_AA_FILL,
+  grotesk: CSS_VAR_GROTESK,
+  mono: CSS_VAR_MONO,
+  depth: 1,
+}).join("\n")}
 </svg>
 `;
 }

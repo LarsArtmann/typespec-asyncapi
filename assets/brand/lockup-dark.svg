@@ -20,7 +20,7 @@
 <path d="M20 56H34M29.5 51.5L34 56L29.5 60.5" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
 <text x="42" y="60" font-family="'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace" font-size="11" font-weight="700" letter-spacing="1.5" fill="#FFFFFF">EMITS</text>
 <g transform="translate(6 76) scale(0.3)">
-<rect width="100" height="100" rx="21" fill="url(#taaLockupAaDark)" />
+  <rect width="100" height="100" rx="21" fill="url(#taaLockupAaDark)" />
   <g transform="scale(0.643)" fill="#FFFFFF">
     <polygon points="53.35 63.21 49.25 68.86 81.27 92.1 81.49 92.26 85.59 86.61 53.57 63.37 53.35 63.21" />
     <polygon points="74.27 63.37 74.05 63.21 69.95 68.86 101.97 92.1 102.19 92.26 106.29 86.61 74.27 63.37" />
