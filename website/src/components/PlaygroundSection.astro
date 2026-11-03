@@ -48,15 +48,22 @@ import { defaultExampleId, playgroundExamples } from '../data/playground';
           <Icon name="code" size={12} /> editable
         </span>
       </div>
-      <textarea
-        data-playground-input
-        aria-label="TypeSpec source"
-        spellcheck="false"
-        autocomplete="off"
-        autocapitalize="off"
-        wrap="off"
-        class="w-full flex-1 min-h-[22rem] p-4 bg-transparent border-0 text-text-secondary text-[0.8rem] leading-6 font-mono resize-y outline-none"
-      >{playgroundExamples[0].source}</textarea>
+      <div class="relative flex-1 min-h-[22rem]">
+        <pre
+          aria-hidden="true"
+          data-playground-highlight
+          class="absolute top-0 left-0 w-full m-0 p-4 overflow-hidden pointer-events-none whitespace-pre text-[0.8rem] leading-6 font-mono text-text-secondary"
+        ></pre>
+        <textarea
+          data-playground-input
+          aria-label="TypeSpec source"
+          spellcheck="false"
+          autocomplete="off"
+          autocapitalize="off"
+          wrap="off"
+          class="relative block w-full h-full min-h-[22rem] m-0 p-4 bg-transparent border-0 text-[0.8rem] leading-6 font-mono text-text-secondary resize-y outline-none data-[syntax=true]:text-transparent data-[syntax=true]:caret-accent data-[syntax=true]:selection:bg-accent/30"
+        >{playgroundExamples[0].source}</textarea>
+      </div>
     </div>
 
     <div class="rounded-xl border border-border bg-bg-code overflow-hidden flex flex-col">
@@ -110,11 +117,11 @@ import { defaultExampleId, playgroundExamples } from '../data/playground';
       (~310&nbsp;KB gzipped) loads only when this section comes into view.
     </p>
   </div>
-</div>
 
-{playgroundExamples.map((example) => (
-  <pre hidden data-example-source={example.id}>{example.source}</pre>
-))}
+  {playgroundExamples.map((example) => (
+    <pre hidden data-example-source={example.id}>{example.source}</pre>
+  ))}
+</div>
 
 <noscript>
   <p class="max-w-5xl mx-auto mt-4 text-sm text-text-muted">
@@ -123,4 +130,244 @@ import { defaultExampleId, playgroundExamples } from '../data/playground';
   </p>
 </noscript>
 
-<script is:inline src="/js/playground.js" defer></script>
+<script>
+  import { highlightTypeSpec, highlightYaml } from "../lib/highlight";
+
+  interface PlaygroundDiagnostic {
+    severity: "error" | "warning";
+    code: string;
+    message: string;
+  }
+
+  interface PlaygroundEngine {
+    compileToAsyncAPI(source: string): Promise<{
+      output: string;
+      diagnostics: PlaygroundDiagnostic[];
+    }>;
+  }
+
+  const ENGINE_URL = "/playground/engine.js";
+
+  (() => {
+    const root = document.querySelector<HTMLElement>("[data-playground]");
+    if (!root) return;
+
+    const editor = root.querySelector<HTMLTextAreaElement>(
+      "[data-playground-input]",
+    );
+    const output = root.querySelector<HTMLElement>("[data-playground-output]");
+    const backdrop = root.querySelector<HTMLElement>(
+      "[data-playground-highlight]",
+    );
+    const diagnosticsBox = root.querySelector<HTMLElement>(
+      "[data-playground-diagnostics]",
+    );
+    const status = root.querySelector<HTMLElement>("[data-playground-status]");
+    const chips = [
+      ...root.querySelectorAll<HTMLButtonElement>("[data-playground-example]"),
+    ];
+    const compileButton = root.querySelector<HTMLButtonElement>(
+      "[data-playground-compile]",
+    );
+    const resetButton = root.querySelector<HTMLButtonElement>(
+      "[data-playground-reset]",
+    );
+    const copyButton = root.querySelector<HTMLButtonElement>(
+      "[data-playground-copy]",
+    );
+
+    if (!editor || !output || !diagnosticsBox || !status) return;
+
+    const sources = new Map<string, string>(
+      [...root.querySelectorAll<HTMLPreElement>("[data-example-source]")].map(
+        (node) => [node.dataset.exampleSource ?? "", node.textContent ?? ""],
+      ),
+    );
+
+    const initialId = root.dataset.playgroundExample ?? "";
+
+    let engine: PlaygroundEngine | null = null;
+    let enginePromise: Promise<PlaygroundEngine> | null = null;
+    let sequence = 0;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    const setStatus = (text: string, tone = "idle"): void => {
+      status.textContent = text;
+      status.dataset.tone = tone;
+    };
+
+    const syncEditorChrome = (): void => {
+      if (!backdrop) return;
+      backdrop.style.height = `${editor.offsetHeight}px`;
+      backdrop.scrollTop = editor.scrollTop;
+      backdrop.scrollLeft = editor.scrollLeft;
+    };
+
+    const renderEditorHighlight = (): void => {
+      if (!backdrop) return;
+      // The trailing space keeps the backdrop exactly as tall as the
+      // textarea, which reserves an empty line when the value ends in "\n".
+      backdrop.innerHTML = `${highlightTypeSpec(editor.value)} `;
+      syncEditorChrome();
+    };
+
+    const loadEngine = (): Promise<PlaygroundEngine> => {
+      enginePromise ??= import(/* @vite-ignore */ ENGINE_URL)
+        .then((module: unknown) => {
+          engine = module as PlaygroundEngine;
+          return engine;
+        })
+        .catch((error: unknown) => {
+          enginePromise = null;
+          throw error;
+        });
+      return enginePromise;
+    };
+
+    const renderDiagnostics = (diagnostics: PlaygroundDiagnostic[]): void => {
+      diagnosticsBox.replaceChildren();
+      if (diagnostics.length === 0) {
+        diagnosticsBox.hidden = true;
+        return;
+      }
+      diagnosticsBox.hidden = false;
+      for (const diagnostic of diagnostics) {
+        const item = document.createElement("li");
+        item.dataset.severity = diagnostic.severity;
+        const code = document.createElement("code");
+        code.textContent = diagnostic.code.replace(/^.*\//u, "");
+        const message = document.createElement("span");
+        message.textContent = diagnostic.message;
+        item.append(code, message);
+        diagnosticsBox.append(item);
+      }
+    };
+
+    const compile = async (): Promise<void> => {
+      const current = ++sequence;
+      const source = editor.value;
+      output.dataset.state = "loading";
+      root.setAttribute("aria-busy", "true");
+      setStatus("Compiling…");
+      try {
+        const module = engine ?? (await loadEngine());
+        const result = await module.compileToAsyncAPI(source);
+        if (current !== sequence) return;
+        output.innerHTML = highlightYaml(result.output);
+        output.dataset.state = result.output ? "ready" : "empty";
+        renderDiagnostics(result.diagnostics);
+        const errors = result.diagnostics.filter(
+          (diagnostic) => diagnostic.severity === "error",
+        ).length;
+        if (!result.output) {
+          setStatus("No document emitted — fix the errors below.", "error");
+        } else if (errors > 0) {
+          setStatus(`Emitted with ${errors} error(s).`, "error");
+        } else {
+          setStatus("Compiled in your browser.", "ok");
+        }
+      } catch (error) {
+        if (current !== sequence) return;
+        output.textContent = "";
+        output.dataset.state = "empty";
+        renderDiagnostics([]);
+        const message = error instanceof Error ? error.message : String(error);
+        setStatus(`Compilation failed: ${message}`, "error");
+      } finally {
+        if (current === sequence) {
+          root.setAttribute("aria-busy", "false");
+        }
+      }
+    };
+
+    const schedule = (): void => {
+      if (timer !== null) clearTimeout(timer);
+      timer = setTimeout(compile, 350);
+    };
+
+    const selectExample = (id: string): void => {
+      const source = sources.get(id);
+      if (source === undefined) return;
+      editor.value = source;
+      renderEditorHighlight();
+      for (const chip of chips) {
+        chip.dataset.active =
+          chip.dataset.playgroundExample === id ? "true" : "false";
+      }
+      void compile();
+    };
+
+    editor.addEventListener("input", () => {
+      renderEditorHighlight();
+      schedule();
+    });
+    editor.addEventListener("scroll", syncEditorChrome);
+    new ResizeObserver(syncEditorChrome).observe(editor);
+    compileButton?.addEventListener("click", () => void compile());
+    resetButton?.addEventListener("click", () => selectExample(initialId));
+    for (const chip of chips) {
+      chip.addEventListener("click", () => {
+        const id = chip.dataset.playgroundExample;
+        if (id !== undefined) selectExample(id);
+      });
+    }
+
+    copyButton?.addEventListener("click", () => {
+      const original = copyButton.textContent ?? "Copy";
+      const restore = (text: string): void => {
+        copyButton.textContent = text;
+        setTimeout(() => {
+          copyButton.textContent = original;
+        }, 2000);
+      };
+      navigator.clipboard
+        .writeText(output.textContent ?? "")
+        .then(
+          () => restore("Copied"),
+          () => restore("Copy failed"),
+        );
+    });
+
+    for (const chip of chips) {
+      chip.dataset.active =
+        chip.dataset.playgroundExample === initialId ? "true" : "false";
+    }
+
+    editor.dataset.syntax = "true";
+    renderEditorHighlight();
+
+    const start = (): void => {
+      if (enginePromise) return;
+      setStatus("Loading the compiler…");
+      loadEngine().then(
+        () => void compile(),
+        (error: unknown) => {
+          output.textContent =
+            "The compiler bundle could not be loaded. Check your network and reload.";
+          output.dataset.state = "empty";
+          const message =
+            error instanceof Error ? error.message : String(error);
+          setStatus(`Could not load the compiler: ${message}`, "error");
+        },
+      );
+    };
+
+    if (!("IntersectionObserver" in window)) {
+      start();
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            observer.disconnect();
+            start();
+          }
+        }
+      },
+      { rootMargin: "300px" },
+    );
+    observer.observe(root);
+  })();
+</script>

@@ -123,3 +123,15 @@ html.js [data-animate]:not(.animate-fade-in) {
   flex: none;
   color: var(--color-text-muted);
 }
+
+/* The TypeSpec editor paints a highlighted backdrop underneath the textarea.
+   Classic scrollbars would consume width only inside the textarea and shift
+   its glyphs out of alignment with the backdrop, so the editor's scrollbars
+   are hidden; wheel, trackpad, and caret navigation still scroll it. */
+[data-playground-input] {
+  scrollbar-width: none;
+}
+
+[data-playground-input]::-webkit-scrollbar {
+  display: none;
+}
