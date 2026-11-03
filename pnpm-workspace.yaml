@@ -10,8 +10,41 @@ overrides:
   "brace-expansion@^1": "^1.1.21"
   "brace-expansion@^5": "^5.0.12"
   "postcss-selector-parser@<7.1.6": "7.1.6"
+  # undici 7 and 8 coexist (via @scalar/json-magic old/new); only 7.x is vulnerable
+  "undici@^7": "^7.30.1"
+
+auditConfig:
+  ignoreGhsas:
+    # minimatch <11.0.1 glob-DoS (dev-only consumers: spectral-core via
+    # @asyncapi/parser, eslint config chain). The patched version is ESM-only
+    # while spectral-core is CJS and calls require("minimatch")(...) directly,
+    # so a forced bump breaks the parser tests; patterns come from our own
+    # tool config, never attacker input. Re-evaluate when spectral upgrades.
+    - GHSA-g3hv-75wg-m249
 
 allowBuilds:
   "@scarf/scarf": false
   esbuild: true
   sharp: true
+
+minimumReleaseAgeExclude:
+  - "@oxlint/binding-android-arm-eabi@1.91.0"
+  - "@oxlint/binding-android-arm64@1.91.0"
+  - "@oxlint/binding-darwin-arm64@1.91.0"
+  - "@oxlint/binding-darwin-x64@1.91.0"
+  - "@oxlint/binding-freebsd-x64@1.91.0"
+  - "@oxlint/binding-linux-arm-gnueabihf@1.91.0"
+  - "@oxlint/binding-linux-arm-musleabihf@1.91.0"
+  - "@oxlint/binding-linux-arm64-gnu@1.91.0"
+  - "@oxlint/binding-linux-arm64-musl@1.91.0"
+  - "@oxlint/binding-linux-ppc64-gnu@1.91.0"
+  - "@oxlint/binding-linux-riscv64-gnu@1.91.0"
+  - "@oxlint/binding-linux-riscv64-musl@1.91.0"
+  - "@oxlint/binding-linux-s390x-gnu@1.91.0"
+  - "@oxlint/binding-linux-x64-gnu@1.91.0"
+  - "@oxlint/binding-linux-x64-musl@1.91.0"
+  - "@oxlint/binding-openharmony-arm64@1.91.0"
+  - "@oxlint/binding-win32-arm64-msvc@1.91.0"
+  - "@oxlint/binding-win32-ia32-msvc@1.91.0"
+  - "@oxlint/binding-win32-x64-msvc@1.91.0"
+  - oxlint@1.91.0
