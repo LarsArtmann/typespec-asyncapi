@@ -11,3 +11,9 @@ skip_steps:
   - oxfmt
   - prettier-format
   - dprint-format
+  # pnpm-update bumps manifests WITHOUT regenerating pnpm-lock.yaml (3x:
+  # 2026-10-03, 2026-11-03 daemon commits, 2026-11-04) and re-drifts
+  # typescript to 7.0.2, which `astro check` refuses. Dependency updates are
+  # deliberate, verified passes instead (see TODO_LIST 2026-11-04 section);
+  # upstream candidate: teach pnpm-update lockfile atomicity.
+  - pnpm-update
