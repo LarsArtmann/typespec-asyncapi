@@ -36,7 +36,7 @@ head:
 - [AsyncAPI Initiative](https://www.asyncapi.com/) — the specification this emitter targets
 - [AsyncAPI Studio](https://studio.asyncapi.com/) — visualize and edit the emitted documents
 - [AsyncAPI parser](https://github.com/asyncapi/parser-api) — programmatic validation of emitted specs
-- [Spectral](https://github.com/stoplightio/spectral) — additional lint rules on top of schema validation
+- [Spectral](https://github.com/stoplightio/spectral) — lint rules on top of schema validation. The `spectral:asyncapi` ruleset covers AsyncAPI 2.0–2.6 and 3.0/3.1 (3.1 rules shipped in `@stoplight/spectral-rulesets` 1.23.0, Oct 2026; older versions apply no AsyncAPI rules to 3.x documents)
 - [`@asyncapi/specs`](https://github.com/asyncapi/spec-bindings) — the binding schemas this emitter's validation is generated from
 
 ## Alternative emitters
