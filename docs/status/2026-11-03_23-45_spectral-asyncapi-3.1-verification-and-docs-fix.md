@@ -10,16 +10,16 @@
 
 **VERIFIED here (command → artifact):**
 
-| Claim | Evidence |
-| --- | --- |
-| Spectral's asyncapi ruleset declares AsyncAPI 3.x formats | Sourcegraph on `stoplightio/spectral` → `packages/rulesets/src/asyncapi/index.ts`: `formats: [aas2_0…aas2_6, aas3_0, aas3_1]` + dedicated `asyncapi-3-*` rules + `asyncapi-3-document-resolved`/`-unresolved` schema validation |
-| v3 rules shipped 2024-11-12 | `packages/rulesets/CHANGELOG.md`: "add AsyncAPI v3 support (#2697)" in 1.21.0 |
-| 3.1 rules shipped 2026-10-01 | Same changelog: "add 3.1 support and future minor fallback (#3019)" in 1.23.0; npm registry `@stoplight/spectral-rulesets/latest` = 1.23.0 (2026-10-01); `@stoplight/spectral-cli` 6.17.0 published 2026-10-01 (npm search result) |
-| `< 1.23.0` silently skips 3.1 docs | Inference from the format-filter mechanism above (rule set skipped on format miss, not an error). Source-level, NOT runtime-verified — see (b). |
-| `@asyncapi/parser` does NOT depend on `@stoplight/spectral-rulesets` | `rg spectral pnpm-lock.yaml` → no `spectral-rulesets` entry (only core/formats/functions/parsers/ref-resolver/runtime as parser transitives) |
-| Docs copy corrected | `website/src/content/docs/related-tools.md:39` rewritten; `AGENTS.md` gotcha added after the severity-enum bullet |
-| Website gate green after edits | `pnpm --filter typespec-asyncapi-website run check`: astro check 0 errors/0 warnings/0 hints (35 files), 22 pages built, `CSP fix: patched 22/22`, `links: 798 internal references across 22 pages are valid`, `csp: 22 pages carry a valid, hash-covered policy`. Stats line read from gate output: v1.1.0 · 30 decorators · 22 protocols · 19 bindings · 36 diagnostics · 15 examples · **305 compliance tests** |
-| No test snapshots the edited copy | `rg related-tools` → hits are nav links and og:image URLs only |
+| Claim                                                                | Evidence                                                                                                                                                                                                                                                                                                                                                                                                           |
+| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Spectral's asyncapi ruleset declares AsyncAPI 3.x formats            | Sourcegraph on `stoplightio/spectral` → `packages/rulesets/src/asyncapi/index.ts`: `formats: [aas2_0…aas2_6, aas3_0, aas3_1]` + dedicated `asyncapi-3-*` rules + `asyncapi-3-document-resolved`/`-unresolved` schema validation                                                                                                                                                                                    |
+| v3 rules shipped 2024-11-12                                          | `packages/rulesets/CHANGELOG.md`: "add AsyncAPI v3 support (#2697)" in 1.21.0                                                                                                                                                                                                                                                                                                                                      |
+| 3.1 rules shipped 2026-10-01                                         | Same changelog: "add 3.1 support and future minor fallback (#3019)" in 1.23.0; npm registry `@stoplight/spectral-rulesets/latest` = 1.23.0 (2026-10-01); `@stoplight/spectral-cli` 6.17.0 published 2026-10-01 (npm search result)                                                                                                                                                                                 |
+| `< 1.23.0` silently skips 3.1 docs                                   | Inference from the format-filter mechanism above (rule set skipped on format miss, not an error). Source-level, NOT runtime-verified — see (b).                                                                                                                                                                                                                                                                    |
+| `@asyncapi/parser` does NOT depend on `@stoplight/spectral-rulesets` | `rg spectral pnpm-lock.yaml` → no `spectral-rulesets` entry (only core/formats/functions/parsers/ref-resolver/runtime as parser transitives)                                                                                                                                                                                                                                                                       |
+| Docs copy corrected                                                  | `website/src/content/docs/related-tools.md:39` rewritten; `AGENTS.md` gotcha added after the severity-enum bullet                                                                                                                                                                                                                                                                                                  |
+| Website gate green after edits                                       | `pnpm --filter typespec-asyncapi-website run check`: astro check 0 errors/0 warnings/0 hints (35 files), 22 pages built, `CSP fix: patched 22/22`, `links: 798 internal references across 22 pages are valid`, `csp: 22 pages carry a valid, hash-covered policy`. Stats line read from gate output: v1.1.0 · 30 decorators · 22 protocols · 19 bindings · 36 diagnostics · 15 examples · **305 compliance tests** |
+| No test snapshots the edited copy                                    | `rg related-tools` → hits are nav links and og:image URLs only                                                                                                                                                                                                                                                                                                                                                     |
 
 **NOT verified here (and why):**
 
@@ -46,18 +46,21 @@ Consequence: our three Spectral recommendation sites were assessed. `README.md:6
 ## Brutal self-review (direct answers to the three questions)
 
 **What did you forget?**
+
 1. I did not load `verify-external-claims` SKILL.md by the letter before encoding external claims into documentation — I followed its spirit (source-level evidence, quoted lines) inline, but the skill's gate exists precisely for this task and I skipped the lookup step.
 2. I flagged the landing-row/demo-video "Spectral, at best" drift but did not reconcile it — the split brain between `website/src/data/sections.ts:38`, `ComparisonSection.astro`, and the demo video captures (`website/video/.../tokens.json`, `page.html`, `visible-text.txt` — all carry the same string) is still open, waiting on a marketing call.
 3. I did not visually check the rendered built page, did not re-run `git status` at the end, and did not consider whether this docs fix belongs in `CHANGELOG.md`.
 4. I initially wasted two fetch attempts on guessed URLs (both 404) — violating the no-URL-guessing rule before falling back to registry search.
 
 **What could you have done better?**
+
 1. **Runtime proof, not just source proof.** One `spectral lint` against an emitted 3.1 doc closes the gap between "the ruleset declares aas3_1" and "Spectral validates our output". I stopped at source level.
 2. **Proactive drift detection.** The "Spectral, at best" superiority claim silently weakened on 2026-10-01 and nobody noticed until the user pushed. I should periodically re-verify ecosystem-version-dependent competitive copy instead of waiting for a user prompt.
 3. **Read the skill files first** (verify-external-claims), not after.
 4. Search npm registry BEFORE guessing GitHub URLs.
 
 **What could you still improve?**
+
 1. Mechanical date-stamping of every ecosystem-version claim in website copy (like `stats.complianceTests` is derived — claims like "checked October 2026" and Spectral version floors should be one-grep auditable).
 2. docs-health HARVEST of section (f) into `TODO_LIST.md` — pending user go-ahead since the instruction was "WAIT".
 3. Tooling: agentic_fetch credits are exhausted — either top up or accept fetch/Sourcegraph as the default research path.
@@ -68,33 +71,33 @@ Consequence: our three Spectral recommendation sites were assessed. `README.md:6
 
 ## a) FULLY DONE
 
-| # | Item | Evidence | Scope |
-| --- | --- | --- | --- |
-| 1 | Verified the Spectral version-coverage claim against primary sources (ruleset source, per-package changelog, npm registry) | See scope-line table; verdict: 2.x-only is false as of 2024-11-12 (v3) / 2026-10-01 (3.1) | External research, no repo change |
-| 2 | Rewrote the Spectral bullet in Related Tools with exact version coverage + the silent-skip pin caveat | `website/src/content/docs/related-tools.md:39` (single line, edit tool confirmed) | Website docs |
-| 3 | Recorded the finding as an AGENTS.md gotcha (dates, formats list, footgun, "keep copy accurate" instruction) so the stale belief cannot be re-encoded by a future session | `AGENTS.md`, new bullet directly after the severity-enum gotcha | AI session context |
-| 4 | Assessed ALL 44 Spectral mentions in the repo and dispositioned each: README/landing/historical docs left untouched (still accurate or point-in-time archives per annotation policy) | Grep inventory at session start | Repo-wide audit |
-| 5 | Confirmed the docs change is safe by the full website gate | astro check 0/0/0 · 22 pages built · 798 internal links valid · CSP valid 22/22 | Website |
+| # | Item                                                                                                                                                                                 | Evidence                                                                                  | Scope                             |
+| - | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | --------------------------------- |
+| 1 | Verified the Spectral version-coverage claim against primary sources (ruleset source, per-package changelog, npm registry)                                                           | See scope-line table; verdict: 2.x-only is false as of 2024-11-12 (v3) / 2026-10-01 (3.1) | External research, no repo change |
+| 2 | Rewrote the Spectral bullet in Related Tools with exact version coverage + the silent-skip pin caveat                                                                                | `website/src/content/docs/related-tools.md:39` (single line, edit tool confirmed)         | Website docs                      |
+| 3 | Recorded the finding as an AGENTS.md gotcha (dates, formats list, footgun, "keep copy accurate" instruction) so the stale belief cannot be re-encoded by a future session            | `AGENTS.md`, new bullet directly after the severity-enum gotcha                           | AI session context                |
+| 4 | Assessed ALL 44 Spectral mentions in the repo and dispositioned each: README/landing/historical docs left untouched (still accurate or point-in-time archives per annotation policy) | Grep inventory at session start                                                           | Repo-wide audit                   |
+| 5 | Confirmed the docs change is safe by the full website gate                                                                                                                           | astro check 0/0/0 · 22 pages built · 798 internal links valid · CSP valid 22/22           | Website                           |
 
 ## b) PARTIALLY DONE
 
-| # | Item | Works now | Open | Blocker | Effort |
-| --- | --- | --- | --- | --- | --- |
-| 1 | External-claim verification | Source-level: formats list, changelog entries, registry versions all read and quoted | Runtime execution of Spectral against a 3.1 doc (next task #1) | None — pure scope choice | S–M |
-| 2 | Split-brain sweep of "Spectral, at best" copy | Found every surface carrying the string (landing `sections.ts`, `ComparisonSection.astro`, video `tokens.json`/`page.html`/`visible-text.txt`) | Reconciling them into one agreed framing | Marketing decision (question g-1) | S |
-| 3 | Parser/lockfile relationship check | Proved `@asyncapi/parser` has no `@stoplight/spectral-rulesets` dep (lockfile grep) | Did not check which ruleset version the parser bundles internally, so the AGENTS.md "parser Spectral ruleset" gotcha remains version-unverified | None | S |
+| # | Item                                          | Works now                                                                                                                                      | Open                                                                                                                                            | Blocker                           | Effort |
+| - | --------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ------ |
+| 1 | External-claim verification                   | Source-level: formats list, changelog entries, registry versions all read and quoted                                                           | Runtime execution of Spectral against a 3.1 doc (next task #1)                                                                                  | None — pure scope choice          | S–M    |
+| 2 | Split-brain sweep of "Spectral, at best" copy | Found every surface carrying the string (landing `sections.ts`, `ComparisonSection.astro`, video `tokens.json`/`page.html`/`visible-text.txt`) | Reconciling them into one agreed framing                                                                                                        | Marketing decision (question g-1) | S      |
+| 3 | Parser/lockfile relationship check            | Proved `@asyncapi/parser` has no `@stoplight/spectral-rulesets` dep (lockfile grep)                                                            | Did not check which ruleset version the parser bundles internally, so the AGENTS.md "parser Spectral ruleset" gotcha remains version-unverified | None                              | S      |
 
 ## c) NOT STARTED
 
-| # | Item | Why not started | Priority |
-| --- | --- | --- | --- |
-| 1 | FAQ entry "which linters/validators support AsyncAPI 3.1?" | Out of session scope; needs Lars' go-ahead on copy | Medium |
-| 2 | Landing comparison row reword ("Spectral, at best") | Blocked on marketing-honesty decision (g-1) | High (decision), S (work) |
-| 3 | Demo-video copy reconciliation | Depends on #2 | Medium |
-| 4 | CHANGELOG entry for this docs fix | Convention undecided (g-3) | Low |
-| 5 | docs-health HARVEST of (f) into TODO_LIST/ROADMAP | User instruction: WAIT after report | High (process) |
-| 6 | README:60 tweak (add "(now supports AsyncAPI 3.1)") | Judged unnecessary as written; revisit after g-1 | Low |
-| 7 | Silent-skip footnote on landing comparison | Needs g-1 framing decision | Low |
+| # | Item                                                       | Why not started                                    | Priority                  |
+| - | ---------------------------------------------------------- | -------------------------------------------------- | ------------------------- |
+| 1 | FAQ entry "which linters/validators support AsyncAPI 3.1?" | Out of session scope; needs Lars' go-ahead on copy | Medium                    |
+| 2 | Landing comparison row reword ("Spectral, at best")        | Blocked on marketing-honesty decision (g-1)        | High (decision), S (work) |
+| 3 | Demo-video copy reconciliation                             | Depends on #2                                      | Medium                    |
+| 4 | CHANGELOG entry for this docs fix                          | Convention undecided (g-3)                         | Low                       |
+| 5 | docs-health HARVEST of (f) into TODO_LIST/ROADMAP          | User instruction: WAIT after report                | High (process)            |
+| 6 | README:60 tweak (add "(now supports AsyncAPI 3.1)")        | Judged unnecessary as written; revisit after g-1   | Low                       |
+| 7 | Silent-skip footnote on landing comparison                 | Needs g-1 framing decision                         | Low                       |
 
 ## d) TOTALLY FUCKED UP
 
@@ -118,31 +121,31 @@ Consequence: our three Spectral recommendation sites were assessed. `README.md:6
 
 Per your instruction to not research unrelated subsystems: every item below was noticed or created by THIS session. Padding to 50 would have required inventing work outside that scope, so this is 23 real items, HARVEST-ready. (Per the status-report skill: items ≥ #20-class are ROADMAP fuel; HARVEST should route accordingly.)
 
-| # | Task | Impact | Effort | Category |
-| --- | --- | --- | --- | --- |
-| 1 | Runtime-proof: `spectral lint` (CLI ≥ 6.17.0, `extends: ["spectral:asyncapi"]`) against an emitted 3.1.0 doc from `examples/`; record result in AGENTS.md gotcha | Critical | S–M | Quality |
-| 2 | Decide + implement landing row "Spectral, at best" reword (blocked on g-1) | High | S | Documentation |
-| 3 | docs-health HARVEST: pull (f) into TODO_LIST.md/ROADMAP.md once you lift the WAIT | High | S | Process |
-| 4 | Add FAQ answer: "Which linters/validators support AsyncAPI 3.1?" (Spectral ≥ rulesets 1.23.0 / CLI ≥ 6.17.0; `@asyncapi/parser` native; silent-skip pin warning) | High | S | Documentation |
-| 5 | Reconcile demo-video copy ("Spectral, at best" in `website/video/.../tokens.json`, `page.html`, `visible-text.txt`) with any landing reword, in ONE commit | Medium | S–M | Documentation |
-| 6 | Add a recurring TODO_LIST item: re-verify ecosystem-dependent comparison copy after notable upstream releases (Spectral, tsp-asyncapi, AsyncAPI Studio) | High | S | Process |
-| 7 | Mechanize claim date-stamps: extend the "checked October 2026" pattern to every version-sensitive copy row; consider deriving from a generated data module (like `stats.ts`) | Medium | M | Quality |
-| 8 | Fix AGENTS.md compliance-suite count drift: "~270 tests" → 305 (live stat from gate output; website is already derived and safe) | Medium | S | Documentation |
-| 9 | Link the Spectral bullet to the exact changelog URLs (rulesets CHANGELOG, PR #3019) so future re-verification is one click | Low | S | Documentation |
-| 10 | Decide CHANGELOG convention for docs-site copy fixes (blocked on g-3); apply to this fix | Low | S | Documentation |
-| 11 | Visual QA: read the built `dist/related-tools/index.html` bullet to confirm rendering (gate-green ≠ copy reads well) | Low | S | Quality |
-| 12 | README:60: optionally append "(now supports AsyncAPI 3.1)" after g-1 decision | Low | S | Documentation |
-| 13 | Consider a silent-skip footnote near the landing comparison: "Spectral < 6.17.0 silently skips 3.1 docs — pin ≥ 6.17.0" | Low | S | Documentation |
-| 14 | Sweep website copy for other ecosystem version claims that may have silently aged (grep `checked `, `as of `, version literals in `website/src`) — same failure class as the Spectral miss | Medium | M | Quality |
-| 15 | Verify the bundled-ruleset version inside `@asyncapi/parser` and note it in AGENTS.md so the parser's validation path isn't conflated with `@stoplight/spectral-rulesets` (lockfile already proves no dep) | Low | S | Documentation |
-| 16 | Optional e2e: emit a fixture and lint it programmatically via `@stoplight/spectral-core` (already in the tree as a parser transitive) to lock "our output lints clean under the 3.x ruleset" | Medium | M | Quality |
-| 17 | ROADMAP item noticed in passing: unblock "@asyncapi/generator actual CLI testing" by running under vitest/Node instead of Bun (parser-based tests already run under Node) | Medium | M | Quality |
-| 18 | Restore agentic_fetch credits or declare fetch/Sourcegraph the default research path | Low | S | Environment |
-| 19 | Save a copy-paste verification recipe (registry JSON fetch + per-package CHANGELOG fetch + Sourcegraph query) for the next external-claim task | Low | S | Process |
-| 20 | After g-1: if the comparison framing changes, update `website/IMPROVEMENTS.md` row 55 context so the docs-site-gap ledger stays truthful | Low | S | Documentation |
-| 21 | Re-verify our own npm dist-tag claims on the site the same way Spectral's metadata was verified (AGENTS.md says latest/beta/alpha → 1.1.0 as of 2026-10-04) | Low | S | Quality |
-| 22 | Consider adding `spectral:asyncapi` to the related-tools "Where to go next" flow only if g-1 keeps Spectral as a recommended tool | Low | S | Documentation |
-| 23 | Add the runtime-proof result as a dated line in the AGENTS.md Spectral gotcha (supersedes the mechanism-inference label in this report) | Medium | S | Documentation |
+| #  | Task                                                                                                                                                                                                       | Impact   | Effort | Category      |
+| -- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------- |
+| 1  | Runtime-proof: `spectral lint` (CLI ≥ 6.17.0, `extends: ["spectral:asyncapi"]`) against an emitted 3.1.0 doc from `examples/`; record result in AGENTS.md gotcha                                           | Critical | S–M    | Quality       |
+| 2  | Decide + implement landing row "Spectral, at best" reword (blocked on g-1)                                                                                                                                 | High     | S      | Documentation |
+| 3  | docs-health HARVEST: pull (f) into TODO_LIST.md/ROADMAP.md once you lift the WAIT                                                                                                                          | High     | S      | Process       |
+| 4  | Add FAQ answer: "Which linters/validators support AsyncAPI 3.1?" (Spectral ≥ rulesets 1.23.0 / CLI ≥ 6.17.0; `@asyncapi/parser` native; silent-skip pin warning)                                           | High     | S      | Documentation |
+| 5  | Reconcile demo-video copy ("Spectral, at best" in `website/video/.../tokens.json`, `page.html`, `visible-text.txt`) with any landing reword, in ONE commit                                                 | Medium   | S–M    | Documentation |
+| 6  | Add a recurring TODO_LIST item: re-verify ecosystem-dependent comparison copy after notable upstream releases (Spectral, tsp-asyncapi, AsyncAPI Studio)                                                    | High     | S      | Process       |
+| 7  | Mechanize claim date-stamps: extend the "checked October 2026" pattern to every version-sensitive copy row; consider deriving from a generated data module (like `stats.ts`)                               | Medium   | M      | Quality       |
+| 8  | Fix AGENTS.md compliance-suite count drift: "~270 tests" → 305 (live stat from gate output; website is already derived and safe)                                                                           | Medium   | S      | Documentation |
+| 9  | Link the Spectral bullet to the exact changelog URLs (rulesets CHANGELOG, PR #3019) so future re-verification is one click                                                                                 | Low      | S      | Documentation |
+| 10 | Decide CHANGELOG convention for docs-site copy fixes (blocked on g-3); apply to this fix                                                                                                                   | Low      | S      | Documentation |
+| 11 | Visual QA: read the built `dist/related-tools/index.html` bullet to confirm rendering (gate-green ≠ copy reads well)                                                                                       | Low      | S      | Quality       |
+| 12 | README:60: optionally append "(now supports AsyncAPI 3.1)" after g-1 decision                                                                                                                              | Low      | S      | Documentation |
+| 13 | Consider a silent-skip footnote near the landing comparison: "Spectral < 6.17.0 silently skips 3.1 docs — pin ≥ 6.17.0"                                                                                    | Low      | S      | Documentation |
+| 14 | Sweep website copy for other ecosystem version claims that may have silently aged (grep `checked`, `as of`, version literals in `website/src`) — same failure class as the Spectral miss                   | Medium   | M      | Quality       |
+| 15 | Verify the bundled-ruleset version inside `@asyncapi/parser` and note it in AGENTS.md so the parser's validation path isn't conflated with `@stoplight/spectral-rulesets` (lockfile already proves no dep) | Low      | S      | Documentation |
+| 16 | Optional e2e: emit a fixture and lint it programmatically via `@stoplight/spectral-core` (already in the tree as a parser transitive) to lock "our output lints clean under the 3.x ruleset"               | Medium   | M      | Quality       |
+| 17 | ROADMAP item noticed in passing: unblock "@asyncapi/generator actual CLI testing" by running under vitest/Node instead of Bun (parser-based tests already run under Node)                                  | Medium   | M      | Quality       |
+| 18 | Restore agentic_fetch credits or declare fetch/Sourcegraph the default research path                                                                                                                       | Low      | S      | Environment   |
+| 19 | Save a copy-paste verification recipe (registry JSON fetch + per-package CHANGELOG fetch + Sourcegraph query) for the next external-claim task                                                             | Low      | S      | Process       |
+| 20 | After g-1: if the comparison framing changes, update `website/IMPROVEMENTS.md` row 55 context so the docs-site-gap ledger stays truthful                                                                   | Low      | S      | Documentation |
+| 21 | Re-verify our own npm dist-tag claims on the site the same way Spectral's metadata was verified (AGENTS.md says latest/beta/alpha → 1.1.0 as of 2026-10-04)                                                | Low      | S      | Quality       |
+| 22 | Consider adding `spectral:asyncapi` to the related-tools "Where to go next" flow only if g-1 keeps Spectral as a recommended tool                                                                          | Low      | S      | Documentation |
+| 23 | Add the runtime-proof result as a dated line in the AGENTS.md Spectral gotcha (supersedes the mechanism-inference label in this report)                                                                    | Medium   | S      | Documentation |
 
 ## g) QUESTIONS I could NOT figure out myself (what I tried first)
 

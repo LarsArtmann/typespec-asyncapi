@@ -20,32 +20,32 @@ Two deploys were needed because of that: the first shipped the new content with 
 
 ## a) FULLY DONE
 
-| # | Item | Evidence |
-|---|------|----------|
-| 1 | Established the real deployment state | live `GET /playground/engine.js` → 404; live HTML: 0 × `data-playground`, `270+` present |
-| 2 | Fixed TypeScript drift (root + website `7.0.2` → `6.0.3`) | Astro's `check` refuses TS 7; both manifests re-read at 6.0.3 |
-| 3 | Removed the `minimumReleaseAgeExclude` bypass `pnpm install` silently added | `pnpm-workspace.yaml` back to `allowBuilds` only; the two fresh bumps (`astro-og-canvas@0.13.3`, `html-validate@11.18.0`) reverted to `^0.13.2` / `^11.17.0` |
-| 4 | Rebuilt `pnpm-lock.yaml` from scratch (trash + fresh resolve) | `pnpm install --frozen-lockfile` → "Lockfile is up to date", exit 0 |
-| 5 | Repaired `website/video` lockfile (npm-managed) | `npm ci` exit 0, `npm audit` → **0 vulnerabilities**, hyperframes resolves per `^0.9.2` |
-| 6 | Replaced the hero's hand-written YAML with a generated fixture | `website/src/data/hero.ts`; 41-line document, emitted by the real emitter |
-| 7 | Removed the fabricated binding detail in the hero | the old pane claimed `partitions: 6` although the input never set `partitions`; input + output now agree |
-| 8 | Locked the fixture against drift | `test/unit/hero-fixture.test.ts`: compiles `heroTypeSpec`, asserts byte-equality with `heroAsyncAPI`, AJV-validates |
-| 9 | Build-time syntax highlighting that cannot desync | `website/src/lib/highlight.ts`; `test/unit/hero-highlight.test.ts` proves the HTML round-trips to the exact source text and escapes `<`/`>` |
-| 10 | Hero Copy button now yields a **valid, complete** AsyncAPI document | pane renders `heroAsyncAPI` in full; chip relabelled `schema-valid` with an honest tooltip; caption no longer says "abridged" |
-| 11 | Playground engine has automated coverage | `test/unit/playground-engine.test.ts`: module evaluates, all 4 examples compile with 0 errors, error path emits empty output + `unsupported-protocol`; rebuilds the bundle itself when absent |
-| 12 | Playground output no longer spams screen readers | `aria-live="off"` on `[data-playground-output]` |
-| 13 | `/playground/**` cache corrected | live: `public, max-age=0, must-revalidate` |
-| 14 | Page cache corrected (the big one) | live: `/`, `/faq/` → `max-age=0, must-revalidate` (was `max-age=3600`) |
-| 15 | Unhashed assets no longer pinned for a year | live: `/js/playground.js`, `/brand-mark.png` → revalidate (were `immutable`) |
-| 16 | Hashed assets keep long caching | live: `_astro/LandingLayout.CiTPxzSZ.css` → `max-age=31536000, immutable` |
-| 17 | Stale test counts removed from live docs | `faq.md` → `faq.mdx`, imports `stats.complianceTests` (renders **305**); `contributing.md` no longer states 1275/105 |
-| 18 | Project memory updated | `AGENTS.md`: hero fixture rules, highlighting tests, engine test, cache policy + the last-rule-wins evidence, why `faq.mdx` is MDX |
-| 19 | Full gate green | `pnpm run verify` → **1312 pass / 0 fail**, 109 files, coverage 97.9% avg (min 75%/file), **0 clones** |
-| 20 | Website gate green | astro check 0 errors, 22 pages, 798 internal links valid, CSP valid on 22/22, html-validate clean |
-| 21 | Format check green | `nix build .#checks.x86_64-linux.format` exit 0 |
-| 22 | CI green on both pushed commits | `7f9bdba6` 2m17s success; `0ac3b42c` 2m31s success |
-| 23 | Deployed | two `nix run .#deploy-website` runs, 113 files, release complete |
-| 24 | Verified live, per URL | engine 200 / 1,117,130 B; homepage 13 × `data-playground`, `schema-valid`, no `abridged`, 305 |
+| #  | Item                                                                        | Evidence                                                                                                                                                                                      |
+| -- | --------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1  | Established the real deployment state                                       | live `GET /playground/engine.js` → 404; live HTML: 0 × `data-playground`, `270+` present                                                                                                      |
+| 2  | Fixed TypeScript drift (root + website `7.0.2` → `6.0.3`)                   | Astro's `check` refuses TS 7; both manifests re-read at 6.0.3                                                                                                                                 |
+| 3  | Removed the `minimumReleaseAgeExclude` bypass `pnpm install` silently added | `pnpm-workspace.yaml` back to `allowBuilds` only; the two fresh bumps (`astro-og-canvas@0.13.3`, `html-validate@11.18.0`) reverted to `^0.13.2` / `^11.17.0`                                  |
+| 4  | Rebuilt `pnpm-lock.yaml` from scratch (trash + fresh resolve)               | `pnpm install --frozen-lockfile` → "Lockfile is up to date", exit 0                                                                                                                           |
+| 5  | Repaired `website/video` lockfile (npm-managed)                             | `npm ci` exit 0, `npm audit` → **0 vulnerabilities**, hyperframes resolves per `^0.9.2`                                                                                                       |
+| 6  | Replaced the hero's hand-written YAML with a generated fixture              | `website/src/data/hero.ts`; 41-line document, emitted by the real emitter                                                                                                                     |
+| 7  | Removed the fabricated binding detail in the hero                           | the old pane claimed `partitions: 6` although the input never set `partitions`; input + output now agree                                                                                      |
+| 8  | Locked the fixture against drift                                            | `test/unit/hero-fixture.test.ts`: compiles `heroTypeSpec`, asserts byte-equality with `heroAsyncAPI`, AJV-validates                                                                           |
+| 9  | Build-time syntax highlighting that cannot desync                           | `website/src/lib/highlight.ts`; `test/unit/hero-highlight.test.ts` proves the HTML round-trips to the exact source text and escapes `<`/`>`                                                   |
+| 10 | Hero Copy button now yields a **valid, complete** AsyncAPI document         | pane renders `heroAsyncAPI` in full; chip relabelled `schema-valid` with an honest tooltip; caption no longer says "abridged"                                                                 |
+| 11 | Playground engine has automated coverage                                    | `test/unit/playground-engine.test.ts`: module evaluates, all 4 examples compile with 0 errors, error path emits empty output + `unsupported-protocol`; rebuilds the bundle itself when absent |
+| 12 | Playground output no longer spams screen readers                            | `aria-live="off"` on `[data-playground-output]`                                                                                                                                               |
+| 13 | `/playground/**` cache corrected                                            | live: `public, max-age=0, must-revalidate`                                                                                                                                                    |
+| 14 | Page cache corrected (the big one)                                          | live: `/`, `/faq/` → `max-age=0, must-revalidate` (was `max-age=3600`)                                                                                                                        |
+| 15 | Unhashed assets no longer pinned for a year                                 | live: `/js/playground.js`, `/brand-mark.png` → revalidate (were `immutable`)                                                                                                                  |
+| 16 | Hashed assets keep long caching                                             | live: `_astro/LandingLayout.CiTPxzSZ.css` → `max-age=31536000, immutable`                                                                                                                     |
+| 17 | Stale test counts removed from live docs                                    | `faq.md` → `faq.mdx`, imports `stats.complianceTests` (renders **305**); `contributing.md` no longer states 1275/105                                                                          |
+| 18 | Project memory updated                                                      | `AGENTS.md`: hero fixture rules, highlighting tests, engine test, cache policy + the last-rule-wins evidence, why `faq.mdx` is MDX                                                            |
+| 19 | Full gate green                                                             | `pnpm run verify` → **1312 pass / 0 fail**, 109 files, coverage 97.9% avg (min 75%/file), **0 clones**                                                                                        |
+| 20 | Website gate green                                                          | astro check 0 errors, 22 pages, 798 internal links valid, CSP valid on 22/22, html-validate clean                                                                                             |
+| 21 | Format check green                                                          | `nix build .#checks.x86_64-linux.format` exit 0                                                                                                                                               |
+| 22 | CI green on both pushed commits                                             | `7f9bdba6` 2m17s success; `0ac3b42c` 2m31s success                                                                                                                                            |
+| 23 | Deployed                                                                    | two `nix run .#deploy-website` runs, 113 files, release complete                                                                                                                              |
+| 24 | Verified live, per URL                                                      | engine 200 / 1,117,130 B; homepage 13 × `data-playground`, `schema-valid`, no `abridged`, 305                                                                                                 |
 
 ---
 
@@ -53,7 +53,7 @@ Two deploys were needed because of that: the first shipped the new content with 
 
 1. **Visual verification.** I could not run a browser — `firefox` and `chrome` are on the blocked-command list in this environment. Everything I claim about layout is inferred from HTML/CSS and from `html-validate`, not from a rendered page. No screenshot at 1440, 768 or 390 px exists for the new hero or the playground.
 2. **The playground's client wiring.** `website/public/js/playground.js` (IntersectionObserver lazy load, 350 ms debounce, stale-sequence guard, copy handler, diagnostics rendering) has **zero automated coverage**. Only the engine module is tested; the DOM layer is untested.
-3. **`website/video`.** The `hyperframes` bump to `^0.9.2` is only proven to *install* and *audit clean*. No render was run. Its `STORYBOARD.md` and `04-receipt.html` still show `270+`.
+3. **`website/video`.** The `hyperframes` bump to `^0.9.2` is only proven to _install_ and _audit clean_. No render was run. Its `STORYBOARD.md` and `04-receipt.html` still show `270+`.
 4. **Hero copy accuracy.** The caption and chip tooltip were rewritten twice before settling. They are now true, but the process cost two edits and a re-render cycle.
 5. **`FEATURES.md` / `ROADMAP.md` / `website/IMPROVEMENTS.md`.** These still carry `1275 tests / 105 files` with an explicit `Verified: 2026-10-03` date. They are point-in-time records, so I left them, but the repo now has 1312.
 6. **The `hero-highlight` lexer.** It is a naive regex tokenizer. It escapes correctly and round-trips the current fixture, but it has no test for hostile or unusual input beyond `<script>` (e.g. a YAML key containing a colon inside quotes).
@@ -69,7 +69,7 @@ Two deploys were needed because of that: the first shipped the new content with 
 5. Playwright/axe accessibility pass on the rebuilt landing page.
 6. Cleanup of the 1.9 MB `.spike` blob still reachable in history (commits `e02bec85`, `0f9ef3ae`).
 7. Any response to the **14 Dependabot alerts** GitHub reports on the default branch (8 high, 6 moderate).
-8. A link/claim audit of the *other* pages touched by this session's facts (diagnostics count, protocol count) — untouched.
+8. A link/claim audit of the _other_ pages touched by this session's facts (diagnostics count, protocol count) — untouched.
 
 ---
 
@@ -86,7 +86,7 @@ Two deploys were needed because of that: the first shipped the new content with 
 
 ## e) WHAT WE SHOULD IMPROVE
 
-1. **Cache policy is part of the deploy contract.** Audit `firebase.json` header rules *before* the first deploy of a content change, and verify response headers per URL class (`/`, `/docs/page/`, hashed asset, unhashed script, large binary) — not just that the upload succeeded.
+1. **Cache policy is part of the deploy contract.** Audit `firebase.json` header rules _before_ the first deploy of a content change, and verify response headers per URL class (`/`, `/docs/page/`, hashed asset, unhashed script, large binary) — not just that the upload succeeded.
 2. **Never let a fixture be hand-maintained.** The hero had already lied once (fabricated `partitions`). The fix — generate, then lock with a byte-equality test — should be the default for every marketing code sample on the site.
 3. **"Verified" claims should name their verifier.** `schema-valid` pointing at `test/unit/hero-fixture.test.ts` is honest; "checked on every build" was not.
 4. **Fresh-package bypasses are not a solution.** If a dependency is younger than the soak window, keep the older version; do not add an exclude.
@@ -101,88 +101,88 @@ Two deploys were needed because of that: the first shipped the new content with 
 
 ### Deploy + cache (highest value first)
 
-| # | Task |
-|---|------|
+| # | Task                                                                                                                                                |
+| - | --------------------------------------------------------------------------------------------------------------------------------------------------- |
 | 1 | Add `scripts/check-live-headers.mjs` asserting `/`, `/faq/`, `/_astro/*`, `/js/*.js`, `/playground/engine.js` status + `Cache-Control` after deploy |
-| 2 | Wire that script as the final step of `nix run .#deploy-website` |
-| 3 | Add a smoke check that `data-playground` exists in the deployed homepage HTML |
-| 4 | Confirm `firebase.json` last-rule-wins behaviour is documented in `website/README` or a comment |
-| 5 | Decide whether `/llms.txt`/`sitemap*.xml` really want 1 h (currently yes, unverified against the plugin's expectations) |
-| 6 | Re-check `404.html` header ordering after the restructure (rule is last, so it wins) |
+| 2 | Wire that script as the final step of `nix run .#deploy-website`                                                                                    |
+| 3 | Add a smoke check that `data-playground` exists in the deployed homepage HTML                                                                       |
+| 4 | Confirm `firebase.json` last-rule-wins behaviour is documented in `website/README` or a comment                                                     |
+| 5 | Decide whether `/llms.txt`/`sitemap*.xml` really want 1 h (currently yes, unverified against the plugin's expectations)                             |
+| 6 | Re-check `404.html` header ordering after the restructure (rule is last, so it wins)                                                                |
 
 ### Browser + visual gates
 
-| # | Task |
-|---|------|
-| 7 | Add a Playwright smoke test: load `/`, assert play button/lazy state, click Compile, wait for `asyncapi: 3.1.0` in the output pane |
-| 8 | Screenshot `/` at 1440 / 768 / 390 and store as review artefacts |
-| 9 | Screenshot the playground error state (unsupported protocol) |
-| 10 | Assert the hero output pane scrolls and Copy yields valid YAML in a real browser |
-| 11 | Run axe-core over `/` and fix violations |
-| 12 | Measure LCP/CLS with the 41-line code block above the fold; consider `content-visibility` or a shorter fixture if LCP regresses |
+| #  | Task                                                                                                                               |
+| -- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| 7  | Add a Playwright smoke test: load `/`, assert play button/lazy state, click Compile, wait for `asyncapi: 3.1.0` in the output pane |
+| 8  | Screenshot `/` at 1440 / 768 / 390 and store as review artefacts                                                                   |
+| 9  | Screenshot the playground error state (unsupported protocol)                                                                       |
+| 10 | Assert the hero output pane scrolls and Copy yields valid YAML in a real browser                                                   |
+| 11 | Run axe-core over `/` and fix violations                                                                                           |
+| 12 | Measure LCP/CLS with the 41-line code block above the fold; consider `content-visibility` or a shorter fixture if LCP regresses    |
 
 ### Playground
 
-| # | Task |
-|---|------|
+| #  | Task                                                                                                             |
+| -- | ---------------------------------------------------------------------------------------------------------------- |
 | 13 | Add DOM-level tests for `public/js/playground.js` (jsdom): debounce, stale-sequence guard, diagnostics rendering |
-| 14 | Test the copy button path with a mocked clipboard |
-| 15 | Show a visible "loading engine" progress state with byte size, not just text |
-| 16 | Add a share/permalink (hash-encoded source) so a user can link a spec |
-| 17 | Detect unsupported-but-valid TypeSpec (e.g. `@typespec/http` imports) and explain the limitation inline |
-| 18 | Add a fifth example that intentionally fails, to teach diagnostics |
-| 19 | Confirm the 317,003 B gzip figure is what the site claims ("~310 KB") and keep it derived rather than typed |
-| 20 | Consider `import("/playground/engine.js")` retry with backoff on transient network failure |
-| 21 | Verify the playground works with JS disabled → `<noscript>` path points at `/examples/` (present, untested) |
-| 22 | Add `prefers-reduced-motion` handling if any playground animation is added |
+| 14 | Test the copy button path with a mocked clipboard                                                                |
+| 15 | Show a visible "loading engine" progress state with byte size, not just text                                     |
+| 16 | Add a share/permalink (hash-encoded source) so a user can link a spec                                            |
+| 17 | Detect unsupported-but-valid TypeSpec (e.g. `@typespec/http` imports) and explain the limitation inline          |
+| 18 | Add a fifth example that intentionally fails, to teach diagnostics                                               |
+| 19 | Confirm the 317,003 B gzip figure is what the site claims ("~310 KB") and keep it derived rather than typed      |
+| 20 | Consider `import("/playground/engine.js")` retry with backoff on transient network failure                       |
+| 21 | Verify the playground works with JS disabled → `<noscript>` path points at `/examples/` (present, untested)      |
+| 22 | Add `prefers-reduced-motion` handling if any playground animation is added                                       |
 
 ### Hero
 
-| # | Task |
-|---|------|
+| #  | Task                                                                                                    |
+| -- | ------------------------------------------------------------------------------------------------------- |
 | 23 | Decide the product trade-off: full 41-line scrollable document vs compact excerpt without a Copy button |
-| 24 | Give `schema-valid` a screen-reader-accessible explanation (it is a `title` on a non-interactive span) |
-| 25 | Add a "diff" affordance: highlight which lines came from which decorator |
-| 26 | Harden the highlighter with adversarial fixtures (quoted keys, `#` in strings, block scalars) |
-| 27 | Add a test that `data-copy-target` text equals `heroAsyncAPI` after DOM parse |
-| 28 | Check hero at 320 px width (input pane text can overflow horizontally) |
+| 24 | Give `schema-valid` a screen-reader-accessible explanation (it is a `title` on a non-interactive span)  |
+| 25 | Add a "diff" affordance: highlight which lines came from which decorator                                |
+| 26 | Harden the highlighter with adversarial fixtures (quoted keys, `#` in strings, block scalars)           |
+| 27 | Add a test that `data-copy-target` text equals `heroAsyncAPI` after DOM parse                           |
+| 28 | Check hero at 320 px width (input pane text can overflow horizontally)                                  |
 
 ### Dependencies + CI
 
-| # | Task |
-|---|------|
-| 29 | Add a CI job for `website/video`: `npm ci` + `npm audit --audit-level=high` |
+| #  | Task                                                                                                                        |
+| -- | --------------------------------------------------------------------------------------------------------------------------- |
+| 29 | Add a CI job for `website/video`: `npm ci` + `npm audit --audit-level=high`                                                 |
 | 30 | Add a CI guard that diffs manifest specifiers against `pnpm-lock.yaml` importers (the drift that broke `--frozen-lockfile`) |
-| 31 | Add a guard that fails if `minimumReleaseAgeExclude` gains entries |
-| 32 | Re-verify root `typescript` stays at 6.0.3 after any automated writer runs |
-| 33 | Triage the 14 Dependabot alerts (8 high / 6 moderate) |
-| 34 | Decide hyperframes `^0.9.2` vs the `0.8.x` line, then render the demo video once to prove it |
-| 35 | Refresh the video storyboard's `270+` copy and `04-receipt.html` counter |
+| 31 | Add a guard that fails if `minimumReleaseAgeExclude` gains entries                                                          |
+| 32 | Re-verify root `typescript` stays at 6.0.3 after any automated writer runs                                                  |
+| 33 | Triage the 14 Dependabot alerts (8 high / 6 moderate)                                                                       |
+| 34 | Decide hyperframes `^0.9.2` vs the `0.8.x` line, then render the demo video once to prove it                                |
+| 35 | Refresh the video storyboard's `270+` copy and `04-receipt.html` counter                                                    |
 
 ### Docs + memory
 
-| # | Task |
-|---|------|
-| 36 | Update `FEATURES.md` / `ROADMAP.md` verified-test line to 1312 (or replace with a derived stat) |
-| 37 | Fold the previous session's 50-item list into `TODO_LIST.md` so it is not lost in `docs/status` |
-| 38 | Add the hero-fixture rule to `website/README` (contribute-a-sample workflow) |
-| 39 | Document the `faq.mdx` MDX exception where the docs conventions live |
+| #  | Task                                                                                                   |
+| -- | ------------------------------------------------------------------------------------------------------ |
+| 36 | Update `FEATURES.md` / `ROADMAP.md` verified-test line to 1312 (or replace with a derived stat)        |
+| 37 | Fold the previous session's 50-item list into `TODO_LIST.md` so it is not lost in `docs/status`        |
+| 38 | Add the hero-fixture rule to `website/README` (contribute-a-sample workflow)                           |
+| 39 | Document the `faq.mdx` MDX exception where the docs conventions live                                   |
 | 40 | Record the clean-URL header trap in `AGENTS.md` (done) and cross-link it from `firebase.json` guidance |
-| 41 | Delete or annotate stale status claims in `website/IMPROVEMENTS.md` |
+| 41 | Delete or annotate stale status claims in `website/IMPROVEMENTS.md`                                    |
 
 ### Repo hygiene
 
-| # | Task |
-|---|------|
-| 42 | Remove the 1.9 MB `.spike` blob from history (or accept and document it) |
-| 43 | Stop the daemon from committing scratch files: keep them outside `test/` |
-| 44 | Add a `.gitignore` entry or lint rule for `tmp-*.test.ts` |
-| 45 | Investigate the vitest `isolate:false` flake I deleted (`toHaveProperty("orders.placed")`) |
-| 46 | Re-run `pnpm run verify` with `--frozen-lockfile` from a clean `node_modules` to prove CI parity |
-| 47 | Confirm `brand:check` still passes after any lockup change (it does today) |
-| 48 | Add a `scripts/deploy-verify.sh` that combines header + content + link checks |
+| #  | Task                                                                                                       |
+| -- | ---------------------------------------------------------------------------------------------------------- |
+| 42 | Remove the 1.9 MB `.spike` blob from history (or accept and document it)                                   |
+| 43 | Stop the daemon from committing scratch files: keep them outside `test/`                                   |
+| 44 | Add a `.gitignore` entry or lint rule for `tmp-*.test.ts`                                                  |
+| 45 | Investigate the vitest `isolate:false` flake I deleted (`toHaveProperty("orders.placed")`)                 |
+| 46 | Re-run `pnpm run verify` with `--frozen-lockfile` from a clean `node_modules` to prove CI parity           |
+| 47 | Confirm `brand:check` still passes after any lockup change (it does today)                                 |
+| 48 | Add a `scripts/deploy-verify.sh` that combines header + content + link checks                              |
 | 49 | Consider a GitHub Actions deploy on tag instead of manual `nix run` (removes the "forgot to deploy" class) |
-| 50 | Write this session's cache/hero lessons into `references/lessons.md` if they generalise beyond this repo |
+| 50 | Write this session's cache/hero lessons into `references/lessons.md` if they generalise beyond this repo   |
 
 ---
 

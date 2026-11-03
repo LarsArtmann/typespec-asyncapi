@@ -2,7 +2,7 @@
 
 **Date:** 2026-11-02 06:06 CET
 **Branch:** `master` (local HEAD `c5807e3e`, 1 commit ahead of `origin/master` `27c5dd69`)
-**Scope:** the two questions asked this session only — *why is CI/CD still failing?* and *why does GitHub not link our website?*
+**Scope:** the two questions asked this session only — _why is CI/CD still failing?_ and _why does GitHub not link our website?_
 **Code changed:** none. One external repo setting changed (`homepage`).
 **Full gate run this session:** no (`pnpm run verify` was not re-run; no source changed).
 
@@ -10,26 +10,26 @@
 
 ## 0. What this session actually did
 
-| # | Action | Result |
-|---|---|---|
-| 1 | `gh run list --limit 15` | 5 failures (23:04Z–00:53Z), 1 success (04:08Z) |
-| 2 | Compared local `master` to `origin/master` and the GitHub ref | identical to `27c5dd69`; local is 1 commit ahead (this session's prior report) |
-| 3 | Pulled `--log-failed` for the last failure | `ERR_PNPM_OUTDATED_LOCKFILE` |
-| 4 | Pulled `--log-failed` for the 4 earlier failures | **identical** 4-specifier drift |
-| 5 | `pnpm install --frozen-lockfile --lockfile-only` locally | exit 0 (lockfile now matches manifests) |
-| 6 | Fetched the README badge SVG | `<title>CI - passing</title>` |
-| 7 | `check-runs` API on `origin/master` | `build-and-test completed success` |
-| 8 | Traced the manifest history | `542c8074` (02:05 CET) restored `typescript 6.0.3` + the other 3 pins |
-| 9 | Checked `release.yml` history | last success 2026-10-03 (`v1.1.0`); nothing since |
-| 10 | Checked Dependabot failures | updater errors on `hono` in `/website/video`, Oct 29–31; Nov 1 green |
-| 11 | Checked open PRs | **0** |
-| 12 | `repos/...` metadata | `homepage: ""`, `has_pages: false`, public, 17 stars |
-| 13 | Fetched `https://typespec-asyncapi.lars.software/` | live, full page, JSON-LD says `softwareVersion 1.1.0` |
-| 14 | `gh repo edit --homepage https://typespec-asyncapi.lars.software` | set, verified via API |
-| 15 | `gh api .../dependabot/alerts?state=open` | **14 open**, all on root `pnpm-lock.yaml` |
-| 16 | `pnpm audit --json` | **exit 1** — 9 high, 9 moderate |
-| 17 | `grep audit .github/workflows/` | **no audit step anywhere** |
-| 18 | Inspected `pnpm-workspace.yaml` overrides + pinned versions | undici `7.29.1`/`8.10.2`, minimatch `10.2.6`/`3.1.5`, zod `4.6.2`+`4.6.7` |
+| #  | Action                                                            | Result                                                                         |
+| -- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------ |
+| 1  | `gh run list --limit 15`                                          | 5 failures (23:04Z–00:53Z), 1 success (04:08Z)                                 |
+| 2  | Compared local `master` to `origin/master` and the GitHub ref     | identical to `27c5dd69`; local is 1 commit ahead (this session's prior report) |
+| 3  | Pulled `--log-failed` for the last failure                        | `ERR_PNPM_OUTDATED_LOCKFILE`                                                   |
+| 4  | Pulled `--log-failed` for the 4 earlier failures                  | **identical** 4-specifier drift                                                |
+| 5  | `pnpm install --frozen-lockfile --lockfile-only` locally          | exit 0 (lockfile now matches manifests)                                        |
+| 6  | Fetched the README badge SVG                                      | `<title>CI - passing</title>`                                                  |
+| 7  | `check-runs` API on `origin/master`                               | `build-and-test completed success`                                             |
+| 8  | Traced the manifest history                                       | `542c8074` (02:05 CET) restored `typescript 6.0.3` + the other 3 pins          |
+| 9  | Checked `release.yml` history                                     | last success 2026-10-03 (`v1.1.0`); nothing since                              |
+| 10 | Checked Dependabot failures                                       | updater errors on `hono` in `/website/video`, Oct 29–31; Nov 1 green           |
+| 11 | Checked open PRs                                                  | **0**                                                                          |
+| 12 | `repos/...` metadata                                              | `homepage: ""`, `has_pages: false`, public, 17 stars                           |
+| 13 | Fetched `https://typespec-asyncapi.lars.software/`                | live, full page, JSON-LD says `softwareVersion 1.1.0`                          |
+| 14 | `gh repo edit --homepage https://typespec-asyncapi.lars.software` | set, verified via API                                                          |
+| 15 | `gh api .../dependabot/alerts?state=open`                         | **14 open**, all on root `pnpm-lock.yaml`                                      |
+| 16 | `pnpm audit --json`                                               | **exit 1** — 9 high, 9 moderate                                                |
+| 17 | `grep audit .github/workflows/`                                   | **no audit step anywhere**                                                     |
+| 18 | Inspected `pnpm-workspace.yaml` overrides + pinned versions       | undici `7.29.1`/`8.10.2`, minimatch `10.2.6`/`3.1.5`, zod `4.6.2`+`4.6.7`      |
 
 Nothing was pushed. Nothing was committed. The two auto-commit commits that appeared during the session (`c5807e3e` etc.) are the background daemon, not me.
 
@@ -37,7 +37,7 @@ Nothing was pushed. Nothing was committed. The two auto-commit commits that appe
 
 ## 1. (a) FULLY DONE
 
-1. **Answered "why is CI failing?" with evidence, not speculation.** Every one of the 5 red runs is the *same* failure, not 5 different ones.
+1. **Answered "why is CI failing?" with evidence, not speculation.** Every one of the 5 red runs is the _same_ failure, not 5 different ones.
 2. **Identified the exact failing command:** `pnpm install --frozen-lockfile` → `ERR_PNPM_OUTDATED_LOCKFILE`, failing in 19–39 s (before build).
 3. **Identified the exact drift, all four specifiers, from the log:**
    ```
@@ -59,7 +59,7 @@ Nothing was pushed. Nothing was committed. The two auto-commit commits that appe
 14. **Found the genuinely still-failing gate** that the "CI is green" headline hides: `pnpm audit` exits **1** — 9 high, 9 moderate, 14 open Dependabot alerts, all against the root `pnpm-lock.yaml`.
 15. **Proved CI can never catch it:** `grep -rn audit .github/workflows/` → no match. The workflow runs `verify`, `check-examples`, website `check` — no audit.
 16. **Mapped every advisory to a concrete locked version:** undici `7.29.1` + `8.10.2`, minimatch `10.2.6` + `3.1.5`, zod `4.6.2`.
-17. **Checked whether the current lockfile could be fixed by a simple bump:** yes for undici (`7.30.1` and `8.12.2`/`8.12.3` exist), yes for zod (`4.6.6`+ exists and `4.6.7` is *already in the lockfile*), risky for minimatch (patched only at `11.0.1`, while `3.1.5` and `10.2.6` coexist).
+17. **Checked whether the current lockfile could be fixed by a simple bump:** yes for undici (`7.30.1` and `8.12.2`/`8.12.3` exist), yes for zod (`4.6.6`+ exists and `4.6.7` is _already in the lockfile_), risky for minimatch (patched only at `11.0.1`, while `3.1.5` and `10.2.6` coexist).
 18. **Noticed and recorded a real reliability gap:** no CI run exists between `01:00Z` and `04:00Z` on 2026-11-02, even though ~20 daemon commits landed in that window. Green badge notwithstanding, the last ~3 hours of history was never tested.
 
 ---
@@ -71,7 +71,7 @@ Nothing was pushed. Nothing was committed. The two auto-commit commits that appe
 3. **The Dependabot story is half-verified.** I read the generic error (`updater encountered one or more errors`) and the hono job definition, but the truncated error table was not read line-by-line; "hono in /website/video" is strongly supported, not proven end-to-end.
 4. **The audit remediation is analysed but not attempted.** I know the override shape that would clear undici and zod; I did not change `pnpm-workspace.yaml` because that requires a lockfile regeneration plus the full gate and the website build.
 5. **minimatch is classified but unresolved.** Forcing `11.0.1` across consumers that ask for `^3`/`^10` is a cross-major change; I did not test whether the build survives it, so I left it alone rather than shipping an unverified break.
-6. **The failure class is documented in prose (AGENTS.md already warns about manifest/lockfile drift), but no *mechanism* prevents it.** The same daemon can do it again on the next `buildflow update`.
+6. **The failure class is documented in prose (AGENTS.md already warns about manifest/lockfile drift), but no _mechanism_ prevents it.** The same daemon can do it again on the next `buildflow update`.
 
 ---
 
@@ -81,7 +81,7 @@ Nothing was pushed. Nothing was committed. The two auto-commit commits that appe
 2. No override for `undici` / `zod` / `minimatch` in `pnpm-workspace.yaml`.
 3. No verification that `npm audit` in `/website/video` is still 0 after the Nov 1 overrides landed.
 4. No CI job that runs `npm ci` in `/website/video` — the exact hole that let `package-lock.json` rot from Oct 23 to Nov 1.
-5. No check that the *pushed* commit is the *tested* commit (there is no concurrency group, and the badge only reflects the most recent completed run).
+5. No check that the _pushed_ commit is the _tested_ commit (there is no concurrency group, and the badge only reflects the most recent completed run).
 6. No branch protection on `master`; the daemon pushes directly.
 7. No release since `v1.1.0` (2026-10-03), despite ~a month of fixes and the brand work.
 8. No record in the repo that the GitHub homepage was set — repo settings are not version-controlled, so the next person cannot see when or why.
@@ -95,8 +95,8 @@ Nothing was pushed. Nothing was committed. The two auto-commit commits that appe
 
 Honest list. These are mine, not the codebase's.
 
-1. **I answered "CI is failing" by trusting `gh run list`'s *conclusion column* without first asking what "still" meant.** The user was likely looking at the Actions list, where five red X's sit above one green check. I could have led with "the last run is green; the red ones are older" instead of making them wait through a full investigation.
-2. **My first attempt at tracing the revert was wrong and I did not notice for a while.** `git diff --stat e2fade1e 56322eb8 -- package.json` returned *empty*, which reads as "nothing changed" — but both commits predate the revert (`542c8074`, 02:05 CET, is later than `56322eb8`, 01:58 CET). I nearly wrote "the pins were never actually reverted" into the report. I only caught it by checking `git show <sha>:package.json` per commit. The wrong conclusion was one step from being stated as fact.
+1. **I answered "CI is failing" by trusting `gh run list`'s _conclusion column_ without first asking what "still" meant.** The user was likely looking at the Actions list, where five red X's sit above one green check. I could have led with "the last run is green; the red ones are older" instead of making them wait through a full investigation.
+2. **My first attempt at tracing the revert was wrong and I did not notice for a while.** `git diff --stat e2fade1e 56322eb8 -- package.json` returned _empty_, which reads as "nothing changed" — but both commits predate the revert (`542c8074`, 02:05 CET, is later than `56322eb8`, 01:58 CET). I nearly wrote "the pins were never actually reverted" into the report. I only caught it by checking `git show <sha>:package.json` per commit. The wrong conclusion was one step from being stated as fact.
 3. **I initially reported the drift as "reverting the pins fixed it" without naming the commit.** A user cannot verify "reverting" — they need a SHA. Fixed in this report (`542c8074`), but it should have been in the answer.
 4. **I said "the fix commit is 542c8074" only after a partial method.** My first pass used `git log -S`, which reported commits in both directions and could not distinguish "introduced 7.0.2" from "removed 7.0.2". I had to write a loop over `git rev-list` to get a definitive answer. I should have gone straight to the loop.
 5. **I set the GitHub homepage without recording it anywhere durable.** It is now a fact that exists only in GitHub's database. If the repo is transferred or the setting is cleared, nothing in git explains why it pointed at `typespec-asyncapi.lars.software`.
@@ -114,11 +114,11 @@ Honest list. These are mine, not the codebase's.
 
 The real bug is not the four pins. It is that **a process can write `package.json` without writing `pnpm-lock.yaml`, and nothing local stops it.** CI catches it, but 20 minutes late and with a red badge. Three candidate defences, in order of strength:
 
-| Defence | Strength | Cost |
-|---|---|---|
-| Pre-commit hook: if `package.json`/`pnpm-workspace.yaml` staged, require a staged `pnpm-lock.yaml` | Stops it at the source | Hook already runs full `verify` (~2 min); would need to be cheap and separate |
-| Auto-commit daemon refuses to commit a manifest-only change | Stops it at the source, even for automation | Requires changing the daemon, not this repo |
-| CI job that prints *which* specifiers drifted (not just "outdated") | Faster diagnosis | Purely additive; ~5 lines |
+| Defence                                                                                            | Strength                                    | Cost                                                                          |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------- | ----------------------------------------------------------------------------- |
+| Pre-commit hook: if `package.json`/`pnpm-workspace.yaml` staged, require a staged `pnpm-lock.yaml` | Stops it at the source                      | Hook already runs full `verify` (~2 min); would need to be cheap and separate |
+| Auto-commit daemon refuses to commit a manifest-only change                                        | Stops it at the source, even for automation | Requires changing the daemon, not this repo                                   |
+| CI job that prints _which_ specifiers drifted (not just "outdated")                                | Faster diagnosis                            | Purely additive; ~5 lines                                                     |
 
 Today we have only the third by accident (pnpm's error is already that good). We should have the first or second.
 
@@ -131,9 +131,9 @@ Today we have only the third by accident (pnpm's error is already that good). We
 
 Blocking is correct for `high`/`critical` in a package that ships to npm. Advisory-only is defensible for dev-only chains. This repo ships an emitter, so the undici/zod chains are dev/website-only — but they are still in the lockfile users can audit.
 
-### 5.3 Verify the *pushed* commit, not the working tree
+### 5.3 Verify the _pushed_ commit, not the working tree
 
-The badge describes the last *completed* run. With a daemon pushing every ~30 s, "green" can be one or two commits stale. A one-line `concurrency: { group: ci-${{ github.ref }}, cancel-in-progress: true }` plus a "commit sha" line in the badge link would make this visible.
+The badge describes the last _completed_ run. With a daemon pushing every ~30 s, "green" can be one or two commits stale. A one-line `concurrency: { group: ci-${{ github.ref }}, cancel-in-progress: true }` plus a "commit sha" line in the badge link would make this visible.
 
 ### 5.4 Pin the toolchain in CI
 
@@ -151,7 +151,7 @@ Dependabot alerts have no effect on the Build badge. Consider a second README ba
 
 - Lead with the state ("it is green now"), then the history. The user asked "still failing" — that word was the whole question.
 - Name SHAs, not verbs. "Reverted the pins" is unverifiable; "`542c8074`" is checkable.
-- When two commits are compared and the diff is empty, check the *topology* before concluding anything. Committer dates lie to `git diff`.
+- When two commits are compared and the diff is empty, check the _topology_ before concluding anything. Committer dates lie to `git diff`.
 - Push before claiming "CI is green". A green badge for `origin/master` is not a green badge for local `HEAD`.
 
 ---
@@ -216,7 +216,7 @@ Ranked by impact, not by ease. Items 1–10 are the direct continuation of this 
 ## 7. (g) Three questions I cannot answer myself
 
 **1. Do you want the reverted dependency bumps re-landed, or do you want the pins held?**
-`@types/node 26.6.6`, `eslint 10.14.0`, `oxlint 1.90.0`, `astro 7.4.4`, `starlight 0.42.8`, `html-validate 11.18` were written into the manifests and then reverted to the lockfile values because the lockfile was never regenerated. The *intent* was presumably to upgrade; the *fix* was to revert. I can land them properly with a lockfile regen in one commit, but that reopens the minimum-release-age and peer-range questions, and `typescript 7.0.2` cannot go in while `website/` refuses TS 7. Your call on scope.
+`@types/node 26.6.6`, `eslint 10.14.0`, `oxlint 1.90.0`, `astro 7.4.4`, `starlight 0.42.8`, `html-validate 11.18` were written into the manifests and then reverted to the lockfile values because the lockfile was never regenerated. The _intent_ was presumably to upgrade; the _fix_ was to revert. I can land them properly with a lockfile regen in one commit, but that reopens the minimum-release-age and peer-range questions, and `typescript 7.0.2` cannot go in while `website/` refuses TS 7. Your call on scope.
 
 **2. Should the auto-commit daemon be constrained, or is direct-to-`master` intentional?**
 It committed `package.json` without `pnpm-lock.yaml` five times in a row, and it pushes so fast that five red runs sat above one green one. Constraining it (refuse manifest-only commits, or require the lockfile) would eliminate the failure class. But it is your workflow, and I do not know whether the daemon is load-bearing for something I cannot see.

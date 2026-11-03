@@ -48,38 +48,38 @@ The identity is **shipped and gate-verified** on four surfaces (README, landing 
 
 ## 2. a) FULLY DONE (verifiable)
 
-| # | Item | Evidence |
-|---|------|----------|
-| 1 | **Logo contact sheet** `docs/logo-concepts.html` — 59 cards (50 original concepts + 5 literal merges + 4 pipeline lockups), fully self-contained (Space Grotesk 400/700 + JetBrains Mono 400 embedded as base64, 148 077 bytes / 851 lines) | `html-validate` exit 0; 0 duplicate SVG ids; commit `f70feeb9` chain |
-| 2 | **Interactive review surface** — Dark / Light / Checker tile toggle, global motion pause (auto-off under `prefers-reduced-motion`), 5 canvas marks drawn from seeded RNG, 1 rAF animation | gallery JS parses (`new Function`, 166 lines); manual code review |
-| 3 | **Official marks sourced verbatim** — `docs/logo-sources/asyncapi-mark.svg` (asyncapi/brand, mark/primary), `docs/logo-sources/typespec-mark.svg` (microsoft/typespec `website/public/img/favicon.svg`) | downloaded via `gh api`, committed |
-| 4 | **Section E — literal merges 51–55** using the official path data (lockup, gradient bridge, stacked double, diagonal splice, favicon stress 16/24/32/48) | rendered in gallery, ids unique |
-| 5 | **Section F — pipeline lockups 56–59** ("46's idea × official marks"); you selected **57** | rendered in gallery |
-| 6 | **Lockup v2 shipped** — `assets/brand/lockup-dark.svg` + `lockup-light.svg` (126×112): 8-unit vertical rhythm, 30 px tiles, drawn arrow (no text glyph), 88 px emit block with symmetric padding, cropped canvas (was 160×100 with dead space), official brand casing (`TypeSpec` / `AsyncAPI`), `<title>` for a11y, no version strings | `svgo` parse OK; ImageMagick content bbox **115×100 @ +6+6** |
-| 7 | **Compact mark shipped** — `assets/brand/mark.svg` (72×36, background-agnostic, input→output arrow) | `svgo` OK; content bbox **72×26 @ +0+5** |
-| 8 | **OG raster asset** — `website/public/brand-mark.png` 440×220 RGBA (CanvasKit cannot decode SVG) | `identify`: `channels=srgba opaque=False`; logo pixels confirmed in built card (top-strip σ ≈ 25) |
-| 9 | **README hero** — `<picture>` with `prefers-color-scheme`, absolute `raw.githubusercontent` URLs (npm renders README outside the repo), 170×151 display | committed in `c9c1ffe4` |
-| 10 | **Landing header** — `Logo.astro` rewritten to the compact mark (44×22), Header updated | in `dist/index.html` (`taa-mark-aa` present) |
-| 11 | **"How it works" section** — new `PipelineLockup.astro`, theme-aware (`currentColor` caption), height 100 | in `dist/index.html` (`taa-lockup-aa`, `text-text-primary`, `fill="currentColor">TypeSpec<`) |
-| 12 | **Docs header** — Starlight `logo` option + `website/src/assets/brand-mark.svg` copy | `brand-mark` referenced in built docs pages |
-| 13 | **OG cards** — `logo: { path: "./public/brand-mark.png", size: [220, 110] }` in `src/pages/og/[...slug].ts` | all 25 `/og/*.png` routes built, `og/home.png` 1200×630 |
-| 14 | **Website gate green** | `astro check` + build **22 pages**, `links: 798 internal references … valid`, `csp: 22 pages carry a valid, hash-covered policy`, html-validate silent, CSP patch 22/22 |
-| 15 | **Memory updated** — AGENTS.md brand-system bullet (asset inventory, regeneration command, favicon decision, font-fallback rationale) | commit chain |
+| #  | Item                                                                                                                                                                                                                                                                                                                                    | Evidence                                                                                                                                                                |
+| -- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1  | **Logo contact sheet** `docs/logo-concepts.html` — 59 cards (50 original concepts + 5 literal merges + 4 pipeline lockups), fully self-contained (Space Grotesk 400/700 + JetBrains Mono 400 embedded as base64, 148 077 bytes / 851 lines)                                                                                             | `html-validate` exit 0; 0 duplicate SVG ids; commit `f70feeb9` chain                                                                                                    |
+| 2  | **Interactive review surface** — Dark / Light / Checker tile toggle, global motion pause (auto-off under `prefers-reduced-motion`), 5 canvas marks drawn from seeded RNG, 1 rAF animation                                                                                                                                               | gallery JS parses (`new Function`, 166 lines); manual code review                                                                                                       |
+| 3  | **Official marks sourced verbatim** — `docs/logo-sources/asyncapi-mark.svg` (asyncapi/brand, mark/primary), `docs/logo-sources/typespec-mark.svg` (microsoft/typespec `website/public/img/favicon.svg`)                                                                                                                                 | downloaded via `gh api`, committed                                                                                                                                      |
+| 4  | **Section E — literal merges 51–55** using the official path data (lockup, gradient bridge, stacked double, diagonal splice, favicon stress 16/24/32/48)                                                                                                                                                                                | rendered in gallery, ids unique                                                                                                                                         |
+| 5  | **Section F — pipeline lockups 56–59** ("46's idea × official marks"); you selected **57**                                                                                                                                                                                                                                              | rendered in gallery                                                                                                                                                     |
+| 6  | **Lockup v2 shipped** — `assets/brand/lockup-dark.svg` + `lockup-light.svg` (126×112): 8-unit vertical rhythm, 30 px tiles, drawn arrow (no text glyph), 88 px emit block with symmetric padding, cropped canvas (was 160×100 with dead space), official brand casing (`TypeSpec` / `AsyncAPI`), `<title>` for a11y, no version strings | `svgo` parse OK; ImageMagick content bbox **115×100 @ +6+6**                                                                                                            |
+| 7  | **Compact mark shipped** — `assets/brand/mark.svg` (72×36, background-agnostic, input→output arrow)                                                                                                                                                                                                                                     | `svgo` OK; content bbox **72×26 @ +0+5**                                                                                                                                |
+| 8  | **OG raster asset** — `website/public/brand-mark.png` 440×220 RGBA (CanvasKit cannot decode SVG)                                                                                                                                                                                                                                        | `identify`: `channels=srgba opaque=False`; logo pixels confirmed in built card (top-strip σ ≈ 25)                                                                       |
+| 9  | **README hero** — `<picture>` with `prefers-color-scheme`, absolute `raw.githubusercontent` URLs (npm renders README outside the repo), 170×151 display                                                                                                                                                                                 | committed in `c9c1ffe4`                                                                                                                                                 |
+| 10 | **Landing header** — `Logo.astro` rewritten to the compact mark (44×22), Header updated                                                                                                                                                                                                                                                 | in `dist/index.html` (`taa-mark-aa` present)                                                                                                                            |
+| 11 | **"How it works" section** — new `PipelineLockup.astro`, theme-aware (`currentColor` caption), height 100                                                                                                                                                                                                                               | in `dist/index.html` (`taa-lockup-aa`, `text-text-primary`, `fill="currentColor">TypeSpec<`)                                                                            |
+| 12 | **Docs header** — Starlight `logo` option + `website/src/assets/brand-mark.svg` copy                                                                                                                                                                                                                                                    | `brand-mark` referenced in built docs pages                                                                                                                             |
+| 13 | **OG cards** — `logo: { path: "./public/brand-mark.png", size: [220, 110] }` in `src/pages/og/[...slug].ts`                                                                                                                                                                                                                             | all 25 `/og/*.png` routes built, `og/home.png` 1200×630                                                                                                                 |
+| 14 | **Website gate green**                                                                                                                                                                                                                                                                                                                  | `astro check` + build **22 pages**, `links: 798 internal references … valid`, `csp: 22 pages carry a valid, hash-covered policy`, html-validate silent, CSP patch 22/22 |
+| 15 | **Memory updated** — AGENTS.md brand-system bullet (asset inventory, regeneration command, favicon decision, font-fallback rationale)                                                                                                                                                                                                   | commit chain                                                                                                                                                            |
 
 ---
 
 ## 3. b) PARTIALLY DONE (works, but with gaps)
 
-| # | Item | What works | What remains | Effort |
-|---|------|-----------|--------------|--------|
-| 1 | **Gallery ↔ shipped identity** | 59 cards render and validate | Card 57 still shows the 160×100 draft; no "shipped" badge; page title says 50 | S |
-| 2 | **Icon system** | header/docs/OG use the new mark | favicon + manifest icons still the legacy teal squircle → split identity | S–M (needs decision) |
-| 3 | **OG card composition** | builds, logo present, correct dimensions | nobody has looked at it; logo/title spacing and balance unverified | S |
-| 4 | **README rendering** | GitHub-safe markup, absolute URLs | npm's renderer untested; `<picture>` may be stripped there | S–M |
-| 5 | **Provenance** | sources named in AGENTS.md | no `assets/brand/README.md` with URLs + trademark note; no commit SHA pinning | S |
-| 6 | **Formatter compliance** | site + assets verified functionally | new `.astro` files have ragged indentation; treefmt behavior unverified (§5.1) | S |
-| 7 | **Light-mode QA** | `currentColor` wiring verified in HTML | contrast of gradient caption / block on light theme not eyeballed | S |
-| 8 | **Title/count consistency** | counts line says "+9 official-mark lockups" | `<title>`/H1 still says "50 logo concepts" | S |
+| # | Item                           | What works                                  | What remains                                                                   | Effort               |
+| - | ------------------------------ | ------------------------------------------- | ------------------------------------------------------------------------------ | -------------------- |
+| 1 | **Gallery ↔ shipped identity** | 59 cards render and validate                | Card 57 still shows the 160×100 draft; no "shipped" badge; page title says 50  | S                    |
+| 2 | **Icon system**                | header/docs/OG use the new mark             | favicon + manifest icons still the legacy teal squircle → split identity       | S–M (needs decision) |
+| 3 | **OG card composition**        | builds, logo present, correct dimensions    | nobody has looked at it; logo/title spacing and balance unverified             | S                    |
+| 4 | **README rendering**           | GitHub-safe markup, absolute URLs           | npm's renderer untested; `<picture>` may be stripped there                     | S–M                  |
+| 5 | **Provenance**                 | sources named in AGENTS.md                  | no `assets/brand/README.md` with URLs + trademark note; no commit SHA pinning  | S                    |
+| 6 | **Formatter compliance**       | site + assets verified functionally         | new `.astro` files have ragged indentation; treefmt behavior unverified (§5.1) | S                    |
+| 7 | **Light-mode QA**              | `currentColor` wiring verified in HTML      | contrast of gradient caption / block on light theme not eyeballed              | S                    |
+| 8 | **Title/count consistency**    | counts line says "+9 official-mark lockups" | `<title>`/H1 still says "50 logo concepts"                                     | S                    |
 
 ---
 
@@ -169,66 +169,66 @@ The identity is **shipped and gate-verified** on four surfaces (README, landing 
 
 ## 7. f) Up to 50 next tasks (ranked by impact)
 
-| # | Task | Impact | Effort | Category |
-|---|------|--------|--------|----------|
-| 1 | Fix treefmt: verify correct check invocation, repair `docs/**/*.html` exclude, document in AGENTS | Critical | S | Tooling |
-| 2 | Decide favicon direction (legacy teal vs new 16 px mark) and implement icons/manifest | Critical | S–M | Brand |
-| 3 | Decide trademark posture (derivative lockup vs own synthesized mark) and record an ADR | Critical | S | Legal/Docs |
-| 4 | Refresh gallery card 57 to the shipped v2 geometry + "shipped" badge | High | S | Cleanup |
-| 5 | Screenshot-QA `/og/home.png`, `/`, docs header in light + dark; fix spacing if wrong | High | S | Quality |
-| 6 | Add `assets/brand/README.md`: sources, URLs, trademark note, regeneration command | High | S | Documentation |
-| 7 | Verify npm README rendering of `<picture>`; add PNG/`<img>` fallback if broken | High | S–M | Quality |
-| 8 | Build the brand generator with `--check` (single definition → 5 artifacts) | High | M | Tooling |
-| 9 | Decide brand palette tokens (official gradient vs site teal) and wire into website config | High | S | Design |
-| 10 | Hide/delete `docs/logo-sources/tsp-logo.svg`; rename with provenance | Medium | S | Cleanup |
-| 11 | Normalize generated `.astro` indentation | Medium | S | Quality |
-| 12 | Generate dark/light PNG lockups (@2×) for SVG-hostile renderers | Medium | S | Quality |
-| 13 | Design horizontal lockup for banners/social/npm | Medium | M | Design |
-| 14 | Produce GitHub social preview (1280×640) from the lockup | Medium | S | Branding |
-| 15 | Add 180×180 apple-touch + 32×32 PNG icons and manifest entries | Medium | S | Branding |
-| 16 | Retitle gallery to "50 concepts + 9 official-mark experiments" | Low | S | Cleanup |
-| 17 | Add CHANGELOG entry for the identity change | Low | S | Documentation |
-| 18 | Add motion variant of the emit arrow (reduced-motion aware) to the hero | Low | M | Feature |
-| 19 | Add `forced-colors` / high-contrast handling to inline SVGs | Low | S | A11y |
-| 20 | Outline lockup captions to paths for renderer parity (optional) | Medium | M | Quality |
-| 21 | Add screenshot visual-regression tests for brand surfaces | Medium | L | Testing |
-| 22 | Confirm Starlight logo height/alignment in docs header (both themes) | Medium | S | QA |
-| 23 | Verify compact mark legibility at 22 px; adjust or switch to single-tile variant if weak | Medium | S | QA |
-| 24 | Curate the 59 cards: mark finalists, drop weak marks | Medium | S | Cleanup |
-| 25 | Add shortlist/favicon-safety filter to the gallery | Low | M | Feature |
-| 26 | Document README asset policy (absolute raw URLs + picture) in CONTRIBUTING | Low | S | Docs |
-| 27 | Add brand tokens to `website/src/data/config.ts` | Medium | M | Quality |
-| 28 | Re-verify shipped choice vs concept 52 (Gradient Bridge) in light of v2 | Low | S | Design |
-| 29 | Add `brand:check` npm script (artifact existence + geometry hash compare) | Low | M | CI |
-| 30 | Add release-checklist item for npm README verification | Medium | S | Release |
-| 31 | Add favicon-scale card to the gallery for the final mark | Low | S | Design |
-| 32 | Remove gallery's cross-card filter reuse (card 58 borrows card 19's `m19f`) | Low | S | Cleanup |
-| 33 | Add `aria-live` for background toggle state in the gallery | Low | S | A11y |
-| 34 | Pause the pulse canvas on `visibilitychange` / IntersectionObserver | Low | S | Perf |
-| 35 | Add `prettier-plugin-astro` (or explicit exclude) so `.astro` formatting is defined | Low | M | Tooling |
-| 36 | Add brand-asset check to `nix flake check` (parse + bbox assertions) | Medium | M | CI |
-| 37 | Write "when to use lockup vs mark vs wordmark" usage note | Low | S | Docs |
-| 38 | Decide whether `assets/brand` ships in the npm package or stays repo-only | Low | S | Packaging |
-| 39 | Verify README on GitHub dark/light (picture media query) | Medium | S | QA |
-| 40 | Add OG dark/light variant strategy (og-canvas supports one logo) | Low | M | Feature |
-| 41 | Audit alt text on all new SVG surfaces | Low | S | A11y |
-| 42 | Automate `brand-mark.png` regeneration in a committed script | Medium | S | Tooling |
-| 43 | Add provenance SHA pinning for downloaded official assets | Low | S | Documentation |
-| 44 | Decide exclusion policy for `docs/planning/**`, `docs/analysis/**`, `website/IMPROVEMENTS.md` | Medium | S | Tooling |
-| 45 | Run root `pnpm run verify` once to close the unverified-gate gap | Low | M | Quality |
-| 46 | Evaluate ImageMagick `magick` for all rasterization (drop npx sharp-cli) | Low | S | Tooling |
-| 47 | Add example markdown snippet showing how to embed the lockup elsewhere | Low | S | Docs |
-| 48 | Review auto-commit daemon noise (9 heuristic commits this session) | Low | S | Process |
-| 49 | Add "brand source verification" step to the design workflow notes | Low | S | Process |
-| 50 | Archive this session's decisions into `docs/adr/` (identity + asset strategy) | High | S | Docs |
+| #  | Task                                                                                              | Impact   | Effort | Category      |
+| -- | ------------------------------------------------------------------------------------------------- | -------- | ------ | ------------- |
+| 1  | Fix treefmt: verify correct check invocation, repair `docs/**/*.html` exclude, document in AGENTS | Critical | S      | Tooling       |
+| 2  | Decide favicon direction (legacy teal vs new 16 px mark) and implement icons/manifest             | Critical | S–M    | Brand         |
+| 3  | Decide trademark posture (derivative lockup vs own synthesized mark) and record an ADR            | Critical | S      | Legal/Docs    |
+| 4  | Refresh gallery card 57 to the shipped v2 geometry + "shipped" badge                              | High     | S      | Cleanup       |
+| 5  | Screenshot-QA `/og/home.png`, `/`, docs header in light + dark; fix spacing if wrong              | High     | S      | Quality       |
+| 6  | Add `assets/brand/README.md`: sources, URLs, trademark note, regeneration command                 | High     | S      | Documentation |
+| 7  | Verify npm README rendering of `<picture>`; add PNG/`<img>` fallback if broken                    | High     | S–M    | Quality       |
+| 8  | Build the brand generator with `--check` (single definition → 5 artifacts)                        | High     | M      | Tooling       |
+| 9  | Decide brand palette tokens (official gradient vs site teal) and wire into website config         | High     | S      | Design        |
+| 10 | Hide/delete `docs/logo-sources/tsp-logo.svg`; rename with provenance                              | Medium   | S      | Cleanup       |
+| 11 | Normalize generated `.astro` indentation                                                          | Medium   | S      | Quality       |
+| 12 | Generate dark/light PNG lockups (@2×) for SVG-hostile renderers                                   | Medium   | S      | Quality       |
+| 13 | Design horizontal lockup for banners/social/npm                                                   | Medium   | M      | Design        |
+| 14 | Produce GitHub social preview (1280×640) from the lockup                                          | Medium   | S      | Branding      |
+| 15 | Add 180×180 apple-touch + 32×32 PNG icons and manifest entries                                    | Medium   | S      | Branding      |
+| 16 | Retitle gallery to "50 concepts + 9 official-mark experiments"                                    | Low      | S      | Cleanup       |
+| 17 | Add CHANGELOG entry for the identity change                                                       | Low      | S      | Documentation |
+| 18 | Add motion variant of the emit arrow (reduced-motion aware) to the hero                           | Low      | M      | Feature       |
+| 19 | Add `forced-colors` / high-contrast handling to inline SVGs                                       | Low      | S      | A11y          |
+| 20 | Outline lockup captions to paths for renderer parity (optional)                                   | Medium   | M      | Quality       |
+| 21 | Add screenshot visual-regression tests for brand surfaces                                         | Medium   | L      | Testing       |
+| 22 | Confirm Starlight logo height/alignment in docs header (both themes)                              | Medium   | S      | QA            |
+| 23 | Verify compact mark legibility at 22 px; adjust or switch to single-tile variant if weak          | Medium   | S      | QA            |
+| 24 | Curate the 59 cards: mark finalists, drop weak marks                                              | Medium   | S      | Cleanup       |
+| 25 | Add shortlist/favicon-safety filter to the gallery                                                | Low      | M      | Feature       |
+| 26 | Document README asset policy (absolute raw URLs + picture) in CONTRIBUTING                        | Low      | S      | Docs          |
+| 27 | Add brand tokens to `website/src/data/config.ts`                                                  | Medium   | M      | Quality       |
+| 28 | Re-verify shipped choice vs concept 52 (Gradient Bridge) in light of v2                           | Low      | S      | Design        |
+| 29 | Add `brand:check` npm script (artifact existence + geometry hash compare)                         | Low      | M      | CI            |
+| 30 | Add release-checklist item for npm README verification                                            | Medium   | S      | Release       |
+| 31 | Add favicon-scale card to the gallery for the final mark                                          | Low      | S      | Design        |
+| 32 | Remove gallery's cross-card filter reuse (card 58 borrows card 19's `m19f`)                       | Low      | S      | Cleanup       |
+| 33 | Add `aria-live` for background toggle state in the gallery                                        | Low      | S      | A11y          |
+| 34 | Pause the pulse canvas on `visibilitychange` / IntersectionObserver                               | Low      | S      | Perf          |
+| 35 | Add `prettier-plugin-astro` (or explicit exclude) so `.astro` formatting is defined               | Low      | M      | Tooling       |
+| 36 | Add brand-asset check to `nix flake check` (parse + bbox assertions)                              | Medium   | M      | CI            |
+| 37 | Write "when to use lockup vs mark vs wordmark" usage note                                         | Low      | S      | Docs          |
+| 38 | Decide whether `assets/brand` ships in the npm package or stays repo-only                         | Low      | S      | Packaging     |
+| 39 | Verify README on GitHub dark/light (picture media query)                                          | Medium   | S      | QA            |
+| 40 | Add OG dark/light variant strategy (og-canvas supports one logo)                                  | Low      | M      | Feature       |
+| 41 | Audit alt text on all new SVG surfaces                                                            | Low      | S      | A11y          |
+| 42 | Automate `brand-mark.png` regeneration in a committed script                                      | Medium   | S      | Tooling       |
+| 43 | Add provenance SHA pinning for downloaded official assets                                         | Low      | S      | Documentation |
+| 44 | Decide exclusion policy for `docs/planning/**`, `docs/analysis/**`, `website/IMPROVEMENTS.md`     | Medium   | S      | Tooling       |
+| 45 | Run root `pnpm run verify` once to close the unverified-gate gap                                  | Low      | M      | Quality       |
+| 46 | Evaluate ImageMagick `magick` for all rasterization (drop npx sharp-cli)                          | Low      | S      | Tooling       |
+| 47 | Add example markdown snippet showing how to embed the lockup elsewhere                            | Low      | S      | Docs          |
+| 48 | Review auto-commit daemon noise (9 heuristic commits this session)                                | Low      | S      | Process       |
+| 49 | Add "brand source verification" step to the design workflow notes                                 | Low      | S      | Process       |
+| 50 | Archive this session's decisions into `docs/adr/` (identity + asset strategy)                     | High     | S      | Docs          |
 
 ---
 
 ## 8. g) Questions I cannot answer myself (max 3)
 
-1. **Trademark posture.** Should the project's primary identity be a **derivative lockup of the official TypeSpec + AsyncAPI marks** (what shipped), or should the **official marks stay documentation-only** and our own synthesized mark (concept 25 Outline Mark / 50 Lockup) become primary? I can implement either; I cannot decide the legal/positioning risk appetite. *(Blocks tasks 3, 13, 14, 50.)*
-2. **Favicon direction.** Keep the **legacy teal squircle** (recognizable, 16 px-safe, but a different visual system), or invest in a **16 px-optimized single-tile mark** — and if so, which glyph: gradient arrow, AsyncAPI "A", TSP, or our hex-bolt? *(Blocks tasks 2, 15, 23.)*
-3. **npm/PyPI surface requirement.** Is **GitHub fidelity sufficient**, or must npm's package page also render the logo? If yes, I will ship raster PNG lockups and a `<img>`-first structure instead of relying on `<picture>`. *(Blocks tasks 7, 12, 30.)*
+1. **Trademark posture.** Should the project's primary identity be a **derivative lockup of the official TypeSpec + AsyncAPI marks** (what shipped), or should the **official marks stay documentation-only** and our own synthesized mark (concept 25 Outline Mark / 50 Lockup) become primary? I can implement either; I cannot decide the legal/positioning risk appetite. _(Blocks tasks 3, 13, 14, 50.)_
+2. **Favicon direction.** Keep the **legacy teal squircle** (recognizable, 16 px-safe, but a different visual system), or invest in a **16 px-optimized single-tile mark** — and if so, which glyph: gradient arrow, AsyncAPI "A", TSP, or our hex-bolt? _(Blocks tasks 2, 15, 23.)_
+3. **npm/PyPI surface requirement.** Is **GitHub fidelity sufficient**, or must npm's package page also render the logo? If yes, I will ship raster PNG lockups and a `<img>`-first structure instead of relying on `<picture>`. _(Blocks tasks 7, 12, 30.)_
 
 ---
 
@@ -265,16 +265,16 @@ git status                                                  → clean after rest
 
 Annotation, not a rewrite: this section records what changed after the report was written.
 
-| Defect (§5) | Status | Evidence |
-| --- | --- | --- |
-| 5.1 `nix fmt` rewrote 9 files | **Fixed** | `nix build .#checks.x86_64-linux.format` passes; `AGENTS.md` now states `nix fmt` always rewrites and `-c` means `--clear-cache` |
-| 5.2 `docs/**/*.html` exclusion inert | **Fixed** | Root cause proven with the real treefmt 2.6.0 binary on a scratch tree: the glob needs a separator, so `docs/x.html` was never matched; `docs/*.html` added, plus `docs/planning/**` and `docs/analysis/**` |
-| 5.3 Gallery stale | **Fixed** | Card 57 is now the shipped 126 × 112 lockup (copied from `lockup-dark.svg`) and carries a `shipped` chip |
-| 5.4 Wrong TypeSpec asset downloaded first | **Fixed** | `docs/logo-sources/tsp-logo.svg` trashed; provenance pinned by commit SHA in `assets/brand/README.md` |
-| 5.5 No visual verification | **Fixed** | The mark, both lockups, gallery card 57, the built header/footer marks and `dist/og/home.png` were rasterised and looked at. This found a real bug: the compact mark's arrow shaft painted nothing (zero-height bbox for an `objectBoundingBox` gradient) |
-| 5.6 Ragged generated markup | **Fixed** | Both `.astro` components are generator output with uniform indentation |
-| 5.7 Root gate not run | **Fixed** | `pnpm run verify` green: 1275 tests, 97.9% coverage, 0 clones |
-| 5.8 Unverified absolutes | **Partially fixed** | Regeneration command, palette and provenance are now recorded with pinned commits; the trademark posture stays open by design |
+| Defect (§5)                               | Status              | Evidence                                                                                                                                                                                                                                                  |
+| ----------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 5.1 `nix fmt` rewrote 9 files             | **Fixed**           | `nix build .#checks.x86_64-linux.format` passes; `AGENTS.md` now states `nix fmt` always rewrites and `-c` means `--clear-cache`                                                                                                                          |
+| 5.2 `docs/**/*.html` exclusion inert      | **Fixed**           | Root cause proven with the real treefmt 2.6.0 binary on a scratch tree: the glob needs a separator, so `docs/x.html` was never matched; `docs/*.html` added, plus `docs/planning/**` and `docs/analysis/**`                                               |
+| 5.3 Gallery stale                         | **Fixed**           | Card 57 is now the shipped 126 × 112 lockup (copied from `lockup-dark.svg`) and carries a `shipped` chip                                                                                                                                                  |
+| 5.4 Wrong TypeSpec asset downloaded first | **Fixed**           | `docs/logo-sources/tsp-logo.svg` trashed; provenance pinned by commit SHA in `assets/brand/README.md`                                                                                                                                                     |
+| 5.5 No visual verification                | **Fixed**           | The mark, both lockups, gallery card 57, the built header/footer marks and `dist/og/home.png` were rasterised and looked at. This found a real bug: the compact mark's arrow shaft painted nothing (zero-height bbox for an `objectBoundingBox` gradient) |
+| 5.6 Ragged generated markup               | **Fixed**           | Both `.astro` components are generator output with uniform indentation                                                                                                                                                                                    |
+| 5.7 Root gate not run                     | **Fixed**           | `pnpm run verify` green: 1275 tests, 97.9% coverage, 0 clones                                                                                                                                                                                             |
+| 5.8 Unverified absolutes                  | **Partially fixed** | Regeneration command, palette and provenance are now recorded with pinned commits; the trademark posture stays open by design                                                                                                                             |
 
 Also fixed while verifying: both manifests had drifted to `typescript: 7.0.2` (and six other specifiers) without a lockfile regeneration, so `pnpm install --frozen-lockfile` — what CI runs — would have failed. Manifests were restored to the locked specifiers.
 

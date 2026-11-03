@@ -11,41 +11,41 @@
 
 ## 0. Action Log
 
-| # | Action | Result |
-|---|---|---|
-| 1 | Loaded `modern-web-guidance` SKILL.md | No guide covers compiler-in-browser; proceeded with measured evidence |
-| 2 | Read `index.astro`, hero/showcase/section components, data files, layout | Render order and duplication confirmed |
-| 3 | Removed `.spike/` from index and disk, added `.gitignore` rules | Artifact gone from tree; blob still in local history |
-| 4 | Read `scripts/generate-brand-assets.ts` (620 lines) | Found `HORIZONTAL_LOCKUP` already parameterised, only the component renderer was hardcoded |
-| 5 | Parameterised `renderLockupComponent(layout, slug)` | 9 generated artifacts, `brand:check` green |
-| 6 | Wrote `LockupHorizontal.astro` output + wired into hero | Horizontal lockup renders at 52 px |
-| 7 | Rewrote `HeroSection.astro` | Input + real emitted output side by side |
-| 8 | Compiled the hero fixture with `tsp compile` | Authentic 50-line AsyncAPI document, abridged for display |
-| 9 | Deleted `ShowcaseSection.astro`, `hero-code.ts` | No `#demo` references remain |
-| 10 | Extended `sync-stats.mjs` with `complianceTests` | 305 derived from `test/compliance/` |
-| 11 | Replaced 7 hardcoded "270+" claims | features, sections×2, installation docs, README×3 |
-| 12 | esbuild spike: `@typespec/compiler` core → browser | 0 unresolved builtins, 359 KB gzip |
-| 13 | esbuild spike: `@typespec/compiler/testing` → browser | Fails: `assert`, `url`, `fs/promises` |
-| 14 | Built a virtual `CompilerHost` and compiled in Node | Real AsyncAPI output, zero diagnostics |
-| 15 | Mapped stdlib JS entrypoints + emitter `tsp-index` | Compilation completes |
-| 16 | Wrote `website/playground/engine.ts` (204 lines) | Real compiler + real emitter in one bundle |
-| 17 | Wrote `website/scripts/build-playground.mjs` (129 lines) | 7 stdlib files inlined; 1,116,981 B minified |
-| 18 | Added `esbuild` + `@typespec/compiler` to website devDeps | `pnpm install` clean |
-| 19 | First bundle run | **Deadlock: "unsettled top-level await"** |
-| 20 | Made `@typespec/http` external | Deadlock gone; bundle 1,116,981 B / **316,944 B gzip** |
-| 21 | Ran the bundle in Node | 129 ms cold, 20 ms warm, real YAML |
-| 22 | Ran the error path | `error:unsupported-protocol`, empty output |
-| 23 | Wrote `PlaygroundSection.astro` + `public/js/playground.js` | Lazy, debounced, sequence-guarded |
-| 24 | `astro check` OOM (4 GB heap) | Engine type graph too large |
-| 25 | Added `exclude` to `website/tsconfig.json` | Fixed OOM, broke content types by excluding `.astro`, then fixed |
-| 26 | Headless Firefox at 1440×820 | Transformation visible above the fold |
-| 27 | Headless Firefox at 1440×2600 | Playground shows "Compiled in your browser." |
-| 28 | Headless Firefox at 390×1400 | Hero stacks correctly |
-| 29 | `pnpm run verify` | 1300 tests, 0 fail, 97.9% coverage, 0 clones |
-| 30 | `pnpm --filter … run check` (×3) | typecheck, build, html-validate, 799 links, CSP |
-| 31 | `pnpm run brand:check` | 9 files up to date |
-| 32 | `nix fmt -- --fail-on-change -c` | 5 files reformatted, then 0 changed |
-| 33 | Added generated files to treefmt excludes | No more churn |
+| #  | Action                                                                   | Result                                                                                     |
+| -- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------ |
+| 1  | Loaded `modern-web-guidance` SKILL.md                                    | No guide covers compiler-in-browser; proceeded with measured evidence                      |
+| 2  | Read `index.astro`, hero/showcase/section components, data files, layout | Render order and duplication confirmed                                                     |
+| 3  | Removed `.spike/` from index and disk, added `.gitignore` rules          | Artifact gone from tree; blob still in local history                                       |
+| 4  | Read `scripts/generate-brand-assets.ts` (620 lines)                      | Found `HORIZONTAL_LOCKUP` already parameterised, only the component renderer was hardcoded |
+| 5  | Parameterised `renderLockupComponent(layout, slug)`                      | 9 generated artifacts, `brand:check` green                                                 |
+| 6  | Wrote `LockupHorizontal.astro` output + wired into hero                  | Horizontal lockup renders at 52 px                                                         |
+| 7  | Rewrote `HeroSection.astro`                                              | Input + real emitted output side by side                                                   |
+| 8  | Compiled the hero fixture with `tsp compile`                             | Authentic 50-line AsyncAPI document, abridged for display                                  |
+| 9  | Deleted `ShowcaseSection.astro`, `hero-code.ts`                          | No `#demo` references remain                                                               |
+| 10 | Extended `sync-stats.mjs` with `complianceTests`                         | 305 derived from `test/compliance/`                                                        |
+| 11 | Replaced 7 hardcoded "270+" claims                                       | features, sections×2, installation docs, README×3                                          |
+| 12 | esbuild spike: `@typespec/compiler` core → browser                       | 0 unresolved builtins, 359 KB gzip                                                         |
+| 13 | esbuild spike: `@typespec/compiler/testing` → browser                    | Fails: `assert`, `url`, `fs/promises`                                                      |
+| 14 | Built a virtual `CompilerHost` and compiled in Node                      | Real AsyncAPI output, zero diagnostics                                                     |
+| 15 | Mapped stdlib JS entrypoints + emitter `tsp-index`                       | Compilation completes                                                                      |
+| 16 | Wrote `website/playground/engine.ts` (204 lines)                         | Real compiler + real emitter in one bundle                                                 |
+| 17 | Wrote `website/scripts/build-playground.mjs` (129 lines)                 | 7 stdlib files inlined; 1,116,981 B minified                                               |
+| 18 | Added `esbuild` + `@typespec/compiler` to website devDeps                | `pnpm install` clean                                                                       |
+| 19 | First bundle run                                                         | **Deadlock: "unsettled top-level await"**                                                  |
+| 20 | Made `@typespec/http` external                                           | Deadlock gone; bundle 1,116,981 B / **316,944 B gzip**                                     |
+| 21 | Ran the bundle in Node                                                   | 129 ms cold, 20 ms warm, real YAML                                                         |
+| 22 | Ran the error path                                                       | `error:unsupported-protocol`, empty output                                                 |
+| 23 | Wrote `PlaygroundSection.astro` + `public/js/playground.js`              | Lazy, debounced, sequence-guarded                                                          |
+| 24 | `astro check` OOM (4 GB heap)                                            | Engine type graph too large                                                                |
+| 25 | Added `exclude` to `website/tsconfig.json`                               | Fixed OOM, broke content types by excluding `.astro`, then fixed                           |
+| 26 | Headless Firefox at 1440×820                                             | Transformation visible above the fold                                                      |
+| 27 | Headless Firefox at 1440×2600                                            | Playground shows "Compiled in your browser."                                               |
+| 28 | Headless Firefox at 390×1400                                             | Hero stacks correctly                                                                      |
+| 29 | `pnpm run verify`                                                        | 1300 tests, 0 fail, 97.9% coverage, 0 clones                                               |
+| 30 | `pnpm --filter … run check` (×3)                                         | typecheck, build, html-validate, 799 links, CSP                                            |
+| 31 | `pnpm run brand:check`                                                   | 9 files up to date                                                                         |
+| 32 | `nix fmt -- --fail-on-change -c`                                         | 5 files reformatted, then 0 changed                                                        |
+| 33 | Added generated files to treefmt excludes                                | No more churn                                                                              |
 
 ---
 
@@ -67,7 +67,7 @@
 14. **Proved the browser path before building it.** `@typespec/compiler` core bundles with zero unresolved builtins (1,923,564 B raw / 359,150 B gzip); only `/testing` is Node-bound. That is what made the design a `CompilerHost` problem instead of a compiler port.
 15. **Built a real in-browser compiler.** `website/playground/engine.ts` compiles against a virtual file system holding the TypeSpec stdlib (7 `.tsp` files inlined), the emitter's `lib/main.tsp`, and the user's spec — no mocks, no precomputed fixtures.
 16. **Verified it in three ways**: in Node (129 ms cold / 20 ms warm), on the error path (`unsupported-protocol` → empty output + one error diagnostic), and in a real browser (Firefox renders "Compiled in your browser." beside the emitted document).
-17. **Diagnosed and fixed a bundling deadlock.** The first bundle evaluated to never-settled top-level await. Root cause was `@typespec/http` being pulled in through the emitter's guarded dynamic import; marking it `external` fixed the deadlock *and* made the playground behave like a pure-AsyncAPI project.
+17. **Diagnosed and fixed a bundling deadlock.** The first bundle evaluated to never-settled top-level await. Root cause was `@typespec/http` being pulled in through the emitter's guarded dynamic import; marking it `external` fixed the deadlock _and_ made the playground behave like a pure-AsyncAPI project.
 18. **Made the playground cheap to load.** IntersectionObserver with a 300 px root margin, so the 1.07 MB bundle is fetched only when the section approaches the viewport; 350 ms input debounce; monotonic sequence number so a slow compile cannot overwrite a newer one.
 19. **Handled the failure and empty states** — load failure replaces the pane text and the status, empty output says "No document emitted — fix the errors below", diagnostics render with severity styling.
 20. **Wrote the CSS for runtime-created diagnostics in `global.css`** rather than emitting Tailwind class names from JavaScript that the compiler may never see.
@@ -80,7 +80,7 @@
 
 ## 2. (b) PARTIALLY DONE
 
-1. **The hero's "valid" badge is an inference.** The document is genuine emitter output, but I never ran AJV over *that exact fixture*. The compliance suite covers the emitter generally; it does not cover this file.
+1. **The hero's "valid" badge is an inference.** The document is genuine emitter output, but I never ran AJV over _that exact fixture_. The compliance suite covers the emitter generally; it does not cover this file.
 2. **The hero's Copy button copies invalid YAML.** See §4.2.
 3. **Mobile verification covers the hero only.** The playground at 390 px was never screenshotted; the two panes stack but the toolbar's four chips plus status were never checked for overflow.
 4. **Browser coverage is one engine.** Firefox headless only. No Chromium, no Safari.
@@ -213,58 +213,58 @@ A second visit with a warm HTTP cache is the only way to catch §4.1. No amount 
 
 ## 6. (f) UP TO 50 THINGS TO GET DONE NEXT
 
-| # | Task | Why |
-|---|---|---|
-| 1 | Content-hash the engine filename (`engine.<hash>.js`) and reference it from the component | §4.1 is a live bug for every returning visitor |
-| 2 | Or add a `playground/**` header override with `max-age=0, must-revalidate` | Cheaper alternative; pick one |
-| 3 | Make the hero output pane the complete document, or remove its Copy button | §4.2 |
-| 4 | Replace the `✓ valid` chip with something measured (run AJV on the fixture at build time) | §4.8 |
-| 5 | Commit the session's work | §4.3 |
-| 6 | Push and confirm the CI run on the tip | §4.4 |
-| 7 | Build the engine before the site in CI, and assert the artifact exists | The playground is now a build dependency |
-| 8 | Add a vitest suite that imports `dist`-built engine and compiles all 4 examples | §4.5 |
-| 9 | Add a smoke test that the shipped `engine.js` evaluates and returns output | Catches the TLA class of bug |
-| 10 | Give `playground/` a typecheck path (`tsc --noEmit` with a narrow tsconfig, run separately from `astro check`) | §4.6 |
-| 11 | Set `aria-live="off"` on the output `<pre>` | §4.7 |
-| 12 | Add `aria-describedby` from the textarea to the diagnostics region | Errors are currently visual only |
-| 13 | Run `pnpm install --frozen-lockfile` and prove it exits 0 | CI's exact command |
-| 14 | Screenshot the playground at 390 px and 768 px | §2.3 |
-| 15 | Screenshot the playground error state in a browser | §2.3 |
-| 16 | Test in Chromium (module workers, dynamic import failure text differ) | §2.4 |
-| 17 | Verify Firebase serves the engine gzip/brotli-encoded | 1.07 MB on the wire if not |
-| 18 | Consider a Web Worker for compilation | §2.8 |
-| 19 | Measure LCP/CLS before and after the hero change | §2.11 |
-| 20 | Add a bundle-size budget check to the website gate | 1.07 MB should be deliberate, not accidental |
-| 21 | Add `/playground/` as a docs route reusing the same engine | Discoverability |
-| 22 | Link the playground from the docs sidebar and the README | Only reachable from one CTA today |
-| 23 | Add the 4 examples to the repo as real `.tsp` fixtures | Currently strings inside `playground.ts` |
-| 24 | Compile those fixtures in a test and assert they stay valid | Drift guard |
-| 25 | Decide the `.spike` history question (rewrite the 3 unpushed commits or carry the blob) | Still open from last report |
-| 26 | Add a pre-commit guard rejecting files over 512 KB | Structural fix for the spike incident |
-| 27 | Run `nix flake check` once end-to-end | Only the format check ran |
-| 28 | Add `pnpm audit --audit-level=high` to CI | Carried over; 9 highs still open |
-| 29 | Re-land the reverted dependency bumps with a lockfile regen | Carried over |
-| 30 | Add `undici`/`zod` overrides | Carried over |
-| 31 | Evaluate `minimatch@11` separately | Carried over |
-| 32 | Add `concurrency` + `timeout-minutes` to `ci.yml` | Carried over |
-| 33 | Pin pnpm and bun versions in CI | Carried over |
-| 34 | Add a `/website/video` `npm ci` job | Carried over |
-| 35 | Create `docs/REPO_SETTINGS.md` | Carried over |
-| 36 | Harvest this report into `TODO_LIST.md` | Reports are snapshots |
-| 37 | Add a CHANGELOG line for the derived test count | §3.16 |
-| 38 | Update `FEATURES.md` with the playground | §3.17 |
-| 39 | Add the playground to the OG/social description | The site's headline claim changed |
-| 40 | Re-check `siteConfig.description` still matches the new hero copy | Split-brain risk |
-| 41 | Add a `prefers-reduced-motion` path for the playground's lazy load | §3.14 |
-| 42 | Cap the demo source length before compiling | DoS by paste |
-| 43 | Show compile duration in the status line | Turns a claim into evidence |
-| 44 | Add a "download .yaml" action beside Copy | Makes the demo a tool |
-| 45 | Cache the compiled result per source string | Re-clicking Compile is currently full work |
-| 46 | Log the engine version in the UI footer | Users can tell which build they got (see §4.1) |
-| 47 | Add `website/public/js/playground.js` to a DOM test harness | §4.5 |
-| 48 | Verify the 4 example specs use only documented decorators | They bypass the docs |
-| 49 | Re-run AJV over the hero fixture in CI and regenerate on change | §4.8 |
-| 50 | Remove the stale `website/dist` and `jscpd-report` from the working tree before committing | Cleanup hygiene |
+| #  | Task                                                                                                           | Why                                            |
+| -- | -------------------------------------------------------------------------------------------------------------- | ---------------------------------------------- |
+| 1  | Content-hash the engine filename (`engine.<hash>.js`) and reference it from the component                      | §4.1 is a live bug for every returning visitor |
+| 2  | Or add a `playground/**` header override with `max-age=0, must-revalidate`                                     | Cheaper alternative; pick one                  |
+| 3  | Make the hero output pane the complete document, or remove its Copy button                                     | §4.2                                           |
+| 4  | Replace the `✓ valid` chip with something measured (run AJV on the fixture at build time)                      | §4.8                                           |
+| 5  | Commit the session's work                                                                                      | §4.3                                           |
+| 6  | Push and confirm the CI run on the tip                                                                         | §4.4                                           |
+| 7  | Build the engine before the site in CI, and assert the artifact exists                                         | The playground is now a build dependency       |
+| 8  | Add a vitest suite that imports `dist`-built engine and compiles all 4 examples                                | §4.5                                           |
+| 9  | Add a smoke test that the shipped `engine.js` evaluates and returns output                                     | Catches the TLA class of bug                   |
+| 10 | Give `playground/` a typecheck path (`tsc --noEmit` with a narrow tsconfig, run separately from `astro check`) | §4.6                                           |
+| 11 | Set `aria-live="off"` on the output `<pre>`                                                                    | §4.7                                           |
+| 12 | Add `aria-describedby` from the textarea to the diagnostics region                                             | Errors are currently visual only               |
+| 13 | Run `pnpm install --frozen-lockfile` and prove it exits 0                                                      | CI's exact command                             |
+| 14 | Screenshot the playground at 390 px and 768 px                                                                 | §2.3                                           |
+| 15 | Screenshot the playground error state in a browser                                                             | §2.3                                           |
+| 16 | Test in Chromium (module workers, dynamic import failure text differ)                                          | §2.4                                           |
+| 17 | Verify Firebase serves the engine gzip/brotli-encoded                                                          | 1.07 MB on the wire if not                     |
+| 18 | Consider a Web Worker for compilation                                                                          | §2.8                                           |
+| 19 | Measure LCP/CLS before and after the hero change                                                               | §2.11                                          |
+| 20 | Add a bundle-size budget check to the website gate                                                             | 1.07 MB should be deliberate, not accidental   |
+| 21 | Add `/playground/` as a docs route reusing the same engine                                                     | Discoverability                                |
+| 22 | Link the playground from the docs sidebar and the README                                                       | Only reachable from one CTA today              |
+| 23 | Add the 4 examples to the repo as real `.tsp` fixtures                                                         | Currently strings inside `playground.ts`       |
+| 24 | Compile those fixtures in a test and assert they stay valid                                                    | Drift guard                                    |
+| 25 | Decide the `.spike` history question (rewrite the 3 unpushed commits or carry the blob)                        | Still open from last report                    |
+| 26 | Add a pre-commit guard rejecting files over 512 KB                                                             | Structural fix for the spike incident          |
+| 27 | Run `nix flake check` once end-to-end                                                                          | Only the format check ran                      |
+| 28 | Add `pnpm audit --audit-level=high` to CI                                                                      | Carried over; 9 highs still open               |
+| 29 | Re-land the reverted dependency bumps with a lockfile regen                                                    | Carried over                                   |
+| 30 | Add `undici`/`zod` overrides                                                                                   | Carried over                                   |
+| 31 | Evaluate `minimatch@11` separately                                                                             | Carried over                                   |
+| 32 | Add `concurrency` + `timeout-minutes` to `ci.yml`                                                              | Carried over                                   |
+| 33 | Pin pnpm and bun versions in CI                                                                                | Carried over                                   |
+| 34 | Add a `/website/video` `npm ci` job                                                                            | Carried over                                   |
+| 35 | Create `docs/REPO_SETTINGS.md`                                                                                 | Carried over                                   |
+| 36 | Harvest this report into `TODO_LIST.md`                                                                        | Reports are snapshots                          |
+| 37 | Add a CHANGELOG line for the derived test count                                                                | §3.16                                          |
+| 38 | Update `FEATURES.md` with the playground                                                                       | §3.17                                          |
+| 39 | Add the playground to the OG/social description                                                                | The site's headline claim changed              |
+| 40 | Re-check `siteConfig.description` still matches the new hero copy                                              | Split-brain risk                               |
+| 41 | Add a `prefers-reduced-motion` path for the playground's lazy load                                             | §3.14                                          |
+| 42 | Cap the demo source length before compiling                                                                    | DoS by paste                                   |
+| 43 | Show compile duration in the status line                                                                       | Turns a claim into evidence                    |
+| 44 | Add a "download .yaml" action beside Copy                                                                      | Makes the demo a tool                          |
+| 45 | Cache the compiled result per source string                                                                    | Re-clicking Compile is currently full work     |
+| 46 | Log the engine version in the UI footer                                                                        | Users can tell which build they got (see §4.1) |
+| 47 | Add `website/public/js/playground.js` to a DOM test harness                                                    | §4.5                                           |
+| 48 | Verify the 4 example specs use only documented decorators                                                      | They bypass the docs                           |
+| 49 | Re-run AJV over the hero fixture in CI and regenerate on change                                                | §4.8                                           |
+| 50 | Remove the stale `website/dist` and `jscpd-report` from the working tree before committing                     | Cleanup hygiene                                |
 
 ---
 

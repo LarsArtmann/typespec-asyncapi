@@ -12,29 +12,29 @@
 
 ## 0. Action Log
 
-| # | Action | Result |
-|---|---|---|
-| 1 | Loaded `modern-web-guidance` SKILL.md | Mandatory for HTML/CSS/client-JS; no guide matched a compiler-in-browser demo |
-| 2 | `git status`, `git log`, listed `website/src/components` | 17 components; tree clean at start |
-| 3 | Read `website/src/pages/index.astro` | 5 render stages identified |
-| 4 | Read `HeroSection.astro`, `Sections.astro`, `PipelineLockup.astro` | Hero composition mapped |
-| 5 | Read `ShowcaseSection.astro`, `FeatureGrid.astro` | Confirmed `#demo` is the TypeSpec→AsyncAPI block |
-| 6 | Read `PipelineSection.astro`, `ComparisonSection.astro` | Lockup lives here, not in the hero |
-| 7 | Read `Section.astro`, `global.css` animation section | Found `data-animate` stamping |
-| 8 | Read `website/public/js/animations.js` | Confirmed IntersectionObserver fade-in |
-| 9 | Read `website/src/data/stats.ts`, `hero-code.ts` | Version 1.1.0; 30 decorators, 22 protocols |
-| 10 | Read `Logo.astro` | 72×36 mark, used by Header + Footer |
-| 11 | Grepped who imports `Logo` / `PipelineLockup` | PipelineLockup → PipelineSection only |
-| 12 | `ls assets/brand/` | 4 lockups + mark + README |
-| 13 | `git log --diff-filter=A -- .spike` | **`e02bec85` added my scratch bundle to git** |
-| 14 | `git cat-file -s HEAD:.spike/out2.js` | 1,923,564 bytes |
-| 15 | `git branch -r --contains <spike commit>` | No remote contains it (unpushed) |
-| 16 | `grep` node builtins in our `dist/` | None — emitter is browser-bundleable |
-| 17 | `grep` node builtins in `@typespec/compiler` | `url` ×10, `path` ×5, `util` ×3, `fs` ×2, `os` ×1, `crypto` ×1 |
-| 18 | esbuild bundle of `@typespec/compiler` core | **0 unresolved, 1,923,564 B raw / 359,150 B gzip** |
-| 19 | esbuild bundle of `@typespec/compiler/testing` | **Fails** — `assert`, `url`, `fs/promises` |
-| 20 | `du -sh` on dists | compiler 6.7 M, asset-emitter 284 K, our dist 988 K |
-| 21 | Read `assets/brand/README.md:25-50` | Consumer table contains two false claims |
+| #  | Action                                                             | Result                                                                        |
+| -- | ------------------------------------------------------------------ | ----------------------------------------------------------------------------- |
+| 1  | Loaded `modern-web-guidance` SKILL.md                              | Mandatory for HTML/CSS/client-JS; no guide matched a compiler-in-browser demo |
+| 2  | `git status`, `git log`, listed `website/src/components`           | 17 components; tree clean at start                                            |
+| 3  | Read `website/src/pages/index.astro`                               | 5 render stages identified                                                    |
+| 4  | Read `HeroSection.astro`, `Sections.astro`, `PipelineLockup.astro` | Hero composition mapped                                                       |
+| 5  | Read `ShowcaseSection.astro`, `FeatureGrid.astro`                  | Confirmed `#demo` is the TypeSpec→AsyncAPI block                              |
+| 6  | Read `PipelineSection.astro`, `ComparisonSection.astro`            | Lockup lives here, not in the hero                                            |
+| 7  | Read `Section.astro`, `global.css` animation section               | Found `data-animate` stamping                                                 |
+| 8  | Read `website/public/js/animations.js`                             | Confirmed IntersectionObserver fade-in                                        |
+| 9  | Read `website/src/data/stats.ts`, `hero-code.ts`                   | Version 1.1.0; 30 decorators, 22 protocols                                    |
+| 10 | Read `Logo.astro`                                                  | 72×36 mark, used by Header + Footer                                           |
+| 11 | Grepped who imports `Logo` / `PipelineLockup`                      | PipelineLockup → PipelineSection only                                         |
+| 12 | `ls assets/brand/`                                                 | 4 lockups + mark + README                                                     |
+| 13 | `git log --diff-filter=A -- .spike`                                | **`e02bec85` added my scratch bundle to git**                                 |
+| 14 | `git cat-file -s HEAD:.spike/out2.js`                              | 1,923,564 bytes                                                               |
+| 15 | `git branch -r --contains <spike commit>`                          | No remote contains it (unpushed)                                              |
+| 16 | `grep` node builtins in our `dist/`                                | None — emitter is browser-bundleable                                          |
+| 17 | `grep` node builtins in `@typespec/compiler`                       | `url` ×10, `path` ×5, `util` ×3, `fs` ×2, `os` ×1, `crypto` ×1                |
+| 18 | esbuild bundle of `@typespec/compiler` core                        | **0 unresolved, 1,923,564 B raw / 359,150 B gzip**                            |
+| 19 | esbuild bundle of `@typespec/compiler/testing`                     | **Fails** — `assert`, `url`, `fs/promises`                                    |
+| 20 | `du -sh` on dists                                                  | compiler 6.7 M, asset-emitter 284 K, our dist 988 K                           |
+| 21 | Read `assets/brand/README.md:25-50`                                | Consumer table contains two false claims                                      |
 
 ---
 
@@ -112,7 +112,7 @@ Three independent things had to go wrong for this to land, and all three did.
 
 I told the user `assets/brand/README.md:35` claims the **horizontal** lockup is "Consumed by: website hero".
 
-That is wrong. Line 35 is the **stacked** lockup row (`lockup-stacked-dark.svg` → "website hero, gallery snapshot"); line 41 is `PipelineLockup.astro` → "Landing page hero". The horizontal lockups are documented correctly (README only). Both hero claims *are* false — the component renders in `PipelineSection`, mid-page — but I cited the wrong row and the wrong artifact while correcting someone else's documentation. Correction errors are worse than the original error.
+That is wrong. Line 35 is the **stacked** lockup row (`lockup-stacked-dark.svg` → "website hero, gallery snapshot"); line 41 is `PipelineLockup.astro` → "Landing page hero". The horizontal lockups are documented correctly (README only). Both hero claims _are_ false — the component renders in `PipelineSection`, mid-page — but I cited the wrong row and the wrong artifact while correcting someone else's documentation. Correction errors are worse than the original error.
 
 ### 4.3 "Bundles" was reported as if it meant "works"
 
@@ -152,12 +152,12 @@ Candidate ignored paths: `.scratch/`, `.spike/`, `tmp/`.
 
 It committed a 1.9 MB minified bundle within one cycle. Its heuristic is "any changed file", with no size cap, no path allowlist, and no generated-artifact detection. Concrete hardening:
 
-| Guard | Where | Effect |
-|---|---|---|
-| Max blob size (e.g. 512 KB) | daemon / pre-commit | Refuses to stage bundles and lockfile blobs |
-| Path allowlist | daemon | Never touches `.scratch/`, `tmp/`, `*.log`, `.crush/` |
-| Generated-file detection | pre-commit | Skips `dist/`, `*.min.js`, `.out.css` |
-| `git status` post-condition | every agent command | Surfaces the race immediately |
+| Guard                       | Where               | Effect                                                |
+| --------------------------- | ------------------- | ----------------------------------------------------- |
+| Max blob size (e.g. 512 KB) | daemon / pre-commit | Refuses to stage bundles and lockfile blobs           |
+| Path allowlist              | daemon              | Never touches `.scratch/`, `tmp/`, `*.log`, `.crush/` |
+| Generated-file detection    | pre-commit          | Skips `dist/`, `*.min.js`, `.out.css`                 |
+| `git status` post-condition | every agent command | Surfaces the race immediately                         |
 
 ### 5.3 Answer every part of a multi-part question in one pass
 
@@ -165,7 +165,7 @@ The user asked three questions. I answered two and let the third wait for a foll
 
 ### 5.4 Verify before asserting, especially when correcting
 
-Every factual sentence should carry the command that produced it. When the sentence is a *correction of someone else's documentation*, the bar is higher, because being confidently wrong about a wrong claim destroys the whole audit.
+Every factual sentence should carry the command that produced it. When the sentence is a _correction of someone else's documentation_, the bar is higher, because being confidently wrong about a wrong claim destroys the whole audit.
 
 ### 5.5 Separate "it builds" from "it runs"
 
@@ -189,58 +189,58 @@ The hero duplicates a section that exists 300 px below it, and the CTA points do
 
 Ranked by impact ÷ effort. Items 1–4 are cleanup of this session's damage and should precede everything else.
 
-| # | Task | Why |
-|---|---|---|
-| 1 | Remove `.spike/` from the working tree and the index | 1.9 MB of junk must not reach GitHub |
-| 2 | Add `.spike/` and `.scratch/` to `.gitignore` **before** any further spike | Prevents recurrence, not just this instance |
-| 3 | Decide the history question: rewrite the 3 unpushed commits or carry the blob | Irreversible either way — see §7.1 |
-| 4 | Push the local commits so the tip of `master` gets a CI run | The previous report's own lesson |
-| 5 | Actually **execute** the browser bundle to prove `compile()` returns | "Bundles" ≠ "works" |
-| 6 | Implement a minimal in-memory `CompilerHost` (`readFile`/`readDir`/`stat`/`realpath`/`getJsImport`) | The real blocker |
-| 7 | Inline the TypeSpec stdlib `.tsp` sources as a virtual FS | Without it nothing compiles |
-| 8 | Register our emitter as a loadable library in that host | The whole point |
-| 9 | Verify in-browser output equals `tsp compile` output for the hero example | Otherwise the demo is fiction |
-| 10 | Add a build-time snapshot of the real emitted AsyncAPI for the hero example | Enables a no-JS hero |
-| 11 | Restructure the hero: TypeSpec input left, AsyncAPI output right, one arrow | Fixes the fold problem at its root |
-| 12 | Delete the hero's input-only code card | Removes the duplicate |
-| 13 | Demote `ShowcaseSection` to the interactive demo (or delete it) | One owner per message |
-| 14 | Repoint or remove the `#demo` anchor | The CTA must not point at a deleted block |
-| 15 | Add a `LockupHorizontal.astro` component to the brand generator | The new logo has no component |
-| 16 | Use the horizontal lockup in the hero | Answers the logo question concretely |
-| 17 | Fix `assets/brand/README.md:35` and `:41` | Two false consumer claims |
-| 18 | Add a `brand:check` assertion that documented consumers really import the artifact | Kills this error class |
-| 19 | Replace the hardcoded "270+-test compliance suite" with a generated stat | Unverified number in the H1 block |
-| 20 | Add the test count to `scripts/sync-stats.mjs` | So it cannot drift again |
-| 21 | Measure real above-the-fold height at 1280×800 and 390×844 | Replace the invented number |
-| 22 | Run `pnpm --filter typespec-asyncapi-website run check` | Website gate has not run this session |
-| 23 | Run `pnpm run brand:check` | Would have caught §4.2's subject |
-| 24 | Run `pnpm run verify` | Root gate has not run this session |
-| 25 | Run `nix flake check` | Format/lint/duplication in a cold sandbox |
-| 26 | Analyse CSP impact of a lazily loaded module | `script-src` is hash-controlled |
-| 27 | Choose the demo load trigger (click / intersection / idle) | Must not regress LCP |
-| 28 | Run the compiler in a `Worker` | 1.9 MB parse on the main thread will jank |
-| 29 | Add a `noscript` path that still shows the transformation | Progressive enhancement |
-| 30 | Add `aria-live="polite"` to the output region | A live demo must announce |
-| 31 | Make the demo editor keyboard-reachable and labelled | Accessibility |
-| 32 | Never `set:html` user input; build DOM nodes | XSS via the demo editor |
-| 33 | Cap demo input length | Prevent UI lockup |
-| 34 | Add a "copy AsyncAPI" action to the demo | Same affordance as the current cards |
-| 35 | Add a "download .yaml" action | Turns the demo into a tool |
-| 36 | Verify `copy-code.js` still works after the hero rewrite | It targets `#copy-btn` |
-| 37 | Decide the honest label: full compiler vs documented subset | Trust |
-| 38 | Write an ADR for in-browser compilation | Durable rationale |
-| 39 | Document the demo's guarantees on the docs site | Avoid implied parity |
-| 40 | Port the demo to `/playground/` in the docs site | Reusable, not landing-only |
-| 41 | Add a bundle-size budget check to the website gate | 1.9 MB should be deliberate |
-| 42 | Add a Lighthouse/CWV budget for the landing page | The demo will move LCP |
-| 43 | Add a pre-commit guard rejecting files over 512 KB | Structural fix for §4.1 |
-| 44 | Constrain the auto-commit daemon with a path allowlist | Structural fix for §4.1 |
-| 45 | Add `.crush/` and build output to the ignore list if absent | Check, do not assume |
-| 46 | Re-read `docs/status/2026-11-02_06-06_ci-green-but-security-red.md` §6 and merge its 50 items | Two backlogs are drifting apart |
-| 47 | Harvest this report's §6 into `TODO_LIST.md` | Reports are snapshots; `TODO_LIST` is the live list |
-| 48 | Add a `status-report` cross-check that tasks are not duplicated across snapshots | 90 status files now |
-| 49 | Verify the `examples` count (15) matches the docs claim | Same drift class as #19 |
-| 50 | Add a link check for `#demo` anchors across the site | Anchor rot after the restructure |
+| #  | Task                                                                                                | Why                                                 |
+| -- | --------------------------------------------------------------------------------------------------- | --------------------------------------------------- |
+| 1  | Remove `.spike/` from the working tree and the index                                                | 1.9 MB of junk must not reach GitHub                |
+| 2  | Add `.spike/` and `.scratch/` to `.gitignore` **before** any further spike                          | Prevents recurrence, not just this instance         |
+| 3  | Decide the history question: rewrite the 3 unpushed commits or carry the blob                       | Irreversible either way — see §7.1                  |
+| 4  | Push the local commits so the tip of `master` gets a CI run                                         | The previous report's own lesson                    |
+| 5  | Actually **execute** the browser bundle to prove `compile()` returns                                | "Bundles" ≠ "works"                                 |
+| 6  | Implement a minimal in-memory `CompilerHost` (`readFile`/`readDir`/`stat`/`realpath`/`getJsImport`) | The real blocker                                    |
+| 7  | Inline the TypeSpec stdlib `.tsp` sources as a virtual FS                                           | Without it nothing compiles                         |
+| 8  | Register our emitter as a loadable library in that host                                             | The whole point                                     |
+| 9  | Verify in-browser output equals `tsp compile` output for the hero example                           | Otherwise the demo is fiction                       |
+| 10 | Add a build-time snapshot of the real emitted AsyncAPI for the hero example                         | Enables a no-JS hero                                |
+| 11 | Restructure the hero: TypeSpec input left, AsyncAPI output right, one arrow                         | Fixes the fold problem at its root                  |
+| 12 | Delete the hero's input-only code card                                                              | Removes the duplicate                               |
+| 13 | Demote `ShowcaseSection` to the interactive demo (or delete it)                                     | One owner per message                               |
+| 14 | Repoint or remove the `#demo` anchor                                                                | The CTA must not point at a deleted block           |
+| 15 | Add a `LockupHorizontal.astro` component to the brand generator                                     | The new logo has no component                       |
+| 16 | Use the horizontal lockup in the hero                                                               | Answers the logo question concretely                |
+| 17 | Fix `assets/brand/README.md:35` and `:41`                                                           | Two false consumer claims                           |
+| 18 | Add a `brand:check` assertion that documented consumers really import the artifact                  | Kills this error class                              |
+| 19 | Replace the hardcoded "270+-test compliance suite" with a generated stat                            | Unverified number in the H1 block                   |
+| 20 | Add the test count to `scripts/sync-stats.mjs`                                                      | So it cannot drift again                            |
+| 21 | Measure real above-the-fold height at 1280×800 and 390×844                                          | Replace the invented number                         |
+| 22 | Run `pnpm --filter typespec-asyncapi-website run check`                                             | Website gate has not run this session               |
+| 23 | Run `pnpm run brand:check`                                                                          | Would have caught §4.2's subject                    |
+| 24 | Run `pnpm run verify`                                                                               | Root gate has not run this session                  |
+| 25 | Run `nix flake check`                                                                               | Format/lint/duplication in a cold sandbox           |
+| 26 | Analyse CSP impact of a lazily loaded module                                                        | `script-src` is hash-controlled                     |
+| 27 | Choose the demo load trigger (click / intersection / idle)                                          | Must not regress LCP                                |
+| 28 | Run the compiler in a `Worker`                                                                      | 1.9 MB parse on the main thread will jank           |
+| 29 | Add a `noscript` path that still shows the transformation                                           | Progressive enhancement                             |
+| 30 | Add `aria-live="polite"` to the output region                                                       | A live demo must announce                           |
+| 31 | Make the demo editor keyboard-reachable and labelled                                                | Accessibility                                       |
+| 32 | Never `set:html` user input; build DOM nodes                                                        | XSS via the demo editor                             |
+| 33 | Cap demo input length                                                                               | Prevent UI lockup                                   |
+| 34 | Add a "copy AsyncAPI" action to the demo                                                            | Same affordance as the current cards                |
+| 35 | Add a "download .yaml" action                                                                       | Turns the demo into a tool                          |
+| 36 | Verify `copy-code.js` still works after the hero rewrite                                            | It targets `#copy-btn`                              |
+| 37 | Decide the honest label: full compiler vs documented subset                                         | Trust                                               |
+| 38 | Write an ADR for in-browser compilation                                                             | Durable rationale                                   |
+| 39 | Document the demo's guarantees on the docs site                                                     | Avoid implied parity                                |
+| 40 | Port the demo to `/playground/` in the docs site                                                    | Reusable, not landing-only                          |
+| 41 | Add a bundle-size budget check to the website gate                                                  | 1.9 MB should be deliberate                         |
+| 42 | Add a Lighthouse/CWV budget for the landing page                                                    | The demo will move LCP                              |
+| 43 | Add a pre-commit guard rejecting files over 512 KB                                                  | Structural fix for §4.1                             |
+| 44 | Constrain the auto-commit daemon with a path allowlist                                              | Structural fix for §4.1                             |
+| 45 | Add `.crush/` and build output to the ignore list if absent                                         | Check, do not assume                                |
+| 46 | Re-read `docs/status/2026-11-02_06-06_ci-green-but-security-red.md` §6 and merge its 50 items       | Two backlogs are drifting apart                     |
+| 47 | Harvest this report's §6 into `TODO_LIST.md`                                                        | Reports are snapshots; `TODO_LIST` is the live list |
+| 48 | Add a `status-report` cross-check that tasks are not duplicated across snapshots                    | 90 status files now                                 |
+| 49 | Verify the `examples` count (15) matches the docs claim                                             | Same drift class as #19                             |
+| 50 | Add a link check for `#demo` anchors across the site                                                | Anchor rot after the restructure                    |
 
 ---
 
@@ -260,7 +260,7 @@ I will not rewrite history without your word. Which way?
 - **Real compiler**: proven to bundle at 359 KB gzip, but needs a `CompilerHost`, inlined stdlib, an emitter registration, and a Worker. Days of work. Output is guaranteed to match `tsp compile`.
 - **Documented subset**: a purpose-built mini emitter, ~20 KB, hours of work, and it will drift from real behaviour the first time the emitter changes — unless its output is snapshot-locked against the real emitter on a corpus.
 
-Which tradeoff do you want on a *landing page*?
+Which tradeoff do you want on a _landing page_?
 
 ### 7.3 Which lockup belongs in the hero?
 
