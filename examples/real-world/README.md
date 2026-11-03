@@ -250,9 +250,9 @@ All examples are designed to:
 ## 🔗 Related Resources
 
 - **TypeSpec Documentation:** https://typespec.io/docs/
-- **AsyncAPI Specification:** https://www.asyncapi.com/docs/specifications/v3.1.0
+- **AsyncAPI Specification:** https://www.asyncapi.com/docs/reference/specification/v3.1.0
 - **Main Project:** [../README.md](../README.md)
-- **Getting Started:** [getting-started.tsp](../getting-started.tsp)
+- **Getting Started:** [simple example](../simple/)
 
 ---
 

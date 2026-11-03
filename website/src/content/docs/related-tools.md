@@ -29,7 +29,7 @@ head:
 - [TypeSpec](https://typespec.io/) — the language this emitter consumes. Install the compiler with `npm install -g @typespec/compiler`.
 - [TypeSpec playground](https://typespec.io/playground) — experiment with the language in the browser
 - [`@typespec/openapi3`](https://www.npmjs.com/package/@typespec/openapi3) — model REST APIs in the same TypeSpec sources; many teams run both emitters over one spec
-- [`@typespec/versioning`](https://typespec.io/docs/libraries/versioning/overview/) — versioned API libraries (integrated: latest enum value feeds `info.version`)
+- [`@typespec/versioning`](https://github.com/microsoft/typespec/tree/main/packages/versioning) — versioned API libraries (integrated: latest enum value feeds `info.version`)
 
 ## The AsyncAPI ecosystem
 

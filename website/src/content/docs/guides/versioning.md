@@ -24,7 +24,7 @@ head:
       content: "https://typespec-asyncapi.lars.software/og/guides/versioning.png"
 ---
 
-The emitter integrates with [`@typespec/versioning`](https://typespec.io/docs/libraries/versioning/overview/):
+The emitter integrates with [`@typespec/versioning`](https://github.com/microsoft/typespec/tree/main/packages/versioning):
 
 ```typespec
 import "@typespec/versioning";

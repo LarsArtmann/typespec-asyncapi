@@ -148,6 +148,7 @@
                 pkgs.bun
                 pkgs.nodejs_24
                 pkgs.typescript
+                pkgs.lychee
               ];
             };
 

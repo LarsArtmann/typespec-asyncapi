@@ -1,5 +1,5 @@
 {
-  description = "gogenfilter website — Astro + Starlight";
+  description = "typespec-asyncapi website — Astro + Starlight";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
@@ -40,7 +40,7 @@
         }:
         let
           mdgo = inputs.md-go-validator.packages.${pkgs.stdenv.system}.default.overrideAttrs (_: {
-            vendorHash = "sha256-r2hvS99DCP2DkLrMkRs4lOkvDk2tQI+CGQl89KM4ZBc=";
+            vendorHash = import ./vendorHash.nix;
           });
 
           mkApp = name: runtimeInputs: text: {

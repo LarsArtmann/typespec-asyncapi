@@ -1,0 +1,5 @@
+# lychee link-check scope: repo documentation only (README, docs/, examples/).
+# website/ is excluded because its markdown links are root-relative and only
+# resolve on the built Astro site — website/scripts/check-links.mjs owns them
+# post-build — and website/video assets reference local captures, not docs.
+exclude_path = ["website"]

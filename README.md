@@ -251,7 +251,7 @@ Splits schemas into individual files under `schemas/` with all `$ref` pointers r
 
 ### Versioning
 
-Integrates with [`@typespec/versioning`](https://typespec.io/docs/libraries/versioning/overview/):
+Integrates with [`@typespec/versioning`](https://github.com/microsoft/typespec/tree/main/packages/versioning):
 
 ```typespec
 import "@typespec/versioning";
