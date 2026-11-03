@@ -2,9 +2,12 @@
 # nix-flake-check step (treefmt-check runs in every `nix flake check`) with
 # excludes for generated/archived files (see flake.nix). These providers
 # duplicate that responsibility WITHOUT those excludes and disagree with it
-# (~135 oxfmt findings; prettier-format flags Tailwind-generated
-# website/src/styles/global.out.css) — advisory-only noise, so both stay
-# skipped: one formatter owner, no split brain.
+# (oxfmt: ~135 findings; prettier-format flags Tailwind-generated
+# website/src/styles/global.out.css; dprint-format rewrote
+# website/IMPROVEMENTS.md in dprint table style on 2026-11-04 and broke the
+# format check) — advisory-only noise, so all stay skipped: one formatter
+# owner, no split brain.
 skip_steps:
   - oxfmt
   - prettier-format
+  - dprint-format
