@@ -1,12 +1,34 @@
 # Feature Inventory
 
-**Verified:** 2026-10-03 against actual code + full verify gate (1275 pass, 0 fail, 105 test files)
+**Verified:** 2026-10-03 full audit (1275 pass, 0 fail, 105 test files); 2026-11-04 spot-refresh (toolchain re-pinned to TS 6.0.3 after manifest drift, `pnpm audit` clean, format/link gates repaired — see refresh log; full line-by-line re-audit not yet repeated)
 **Project:** `@lars-artmann/typespec-asyncapi` v1.1.0 (live on npm, `latest` dist-tag)
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 36 codes (20 error + 16 warning), all compile-time validated via `$lib.reportDiagnostic()`
 **Decorators:** 30 declared in `lib/main.tsp` (19 core + 11 reusable-component); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
 **Duplication:** 0% threshold enforced via jscpd (source files only), 0 clones
 **Coverage:** 97.9% average line coverage (45 source files, 75% per-file minimum gate)
+
+**Refresh log (newest first):**
+
+- 2026-11-04 (BuildFlow triage session): undici `^7.30.1` security override
+  and a documented minimatch `GHSA-g3hv-75wg-m249` audit dismissal (ESM-only
+  fix vs CJS spectral-core) in `pnpm-workspace.yaml`; manifests + lockfile
+  restored to the CI-green toolchain (TS 6.0.3, oxlint 1.90.0, vitest 5.0.5)
+  after BuildFlow's pnpm-update drifted them; `dprint-format` skipped in
+  `.buildflow.yml` (treefmt/prettier owns formatting); `lychee.toml` scopes
+  link checks to repo docs; `website/flake.nix` vendorHash extracted to
+  `website/vendorHash.nix` and its stale description fixed; three real
+  broken links repaired (typespec.io versioning → GitHub, AsyncAPI spec →
+  `/docs/reference/specification/v3.1.0`, dead `getting-started.tsp` →
+  `examples/simple/`).
+- 2026-11-01 → 2026-11-03 (shipped since the 2026-10-03 audit): live browser
+  playground (real `@typespec/compiler` + this emitter bundled to
+  `public/playground/engine.js`, overlay syntax highlighting shared with the
+  hero, example chips), brand identity generator
+  (`scripts/generate-brand-assets.ts`, eight generated SVG/astro artifacts
+  plus the OG PNG, `brand:check` byte-gate in `pnpm run verify`), and a
+  GitHub Release creation step in `release.yml` so tags cannot ship
+  releaseless.
 
 ---
 

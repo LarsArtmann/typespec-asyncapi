@@ -29,10 +29,10 @@ removal.
   - [ ] NPM_TOKEN rotation + update the GitHub publish secret (maintainer;
         current token still works — the 1.0.0 publish succeeded — but was
         flagged for rotation before the beta)
-  - [ ] Remove the stale `alpha` dist-tag (0.0.1-alpha.2) — `npm dist-tag rm`
-        returns 403 with the local token (registry DELETEs restricted); do it
-        from the npmjs.com package settings page. `beta` was re-pointed at
-        1.0.0 via `npm dist-tag add` (the `set` form 400s).
+  - [x] ~~Remove the stale `alpha` dist-tag~~ RESOLVED DIFFERENTLY 2026-10-04:
+        all three dist-tags (`latest`/`beta`/`alpha`) were re-pointed at 1.1.0
+        via `npm dist-tag add`; `alpha`/`beta` are now intentional prerelease
+        channels, not stale pointers — nothing to delete.
   - Resolved en route 2026-09-30 (release blockers fixed before the tag):
     Dependabot bumped package.json without regenerating pnpm-lock.yaml
     (frozen-lockfile CI failure), `typescript` had drifted to ^7.0.2
@@ -41,6 +41,32 @@ removal.
     clones (fixed via `InfoOptionalFields`, `ServerConfigData` Pick, and
     `subdirectoryNames` extractions). Gate green at tag time: 1236 tests,
     98.0% coverage, 0 clones.
+
+## Dependency & Toolchain Refresh (2026-11-04, harvested from the BuildFlow triage session)
+
+- [ ] **Re-attempt the reverted minor bumps as ONE verified pass** —
+      oxlint 1.91.0, vitest 5.1.0, astro ^7.4.5, tailwindcss ^4.3.4,
+      @tailwindcss/vite ^4.3.4, astro-og-canvas ^0.13.3, html-validate
+      ^11.18.0, hyperframes ^0.9.9. All were reverted 2026-11-04 after
+      BuildFlow's `pnpm-update` wrote them into the manifests without a
+      lockfile regen (3rd recurrence). Do it deliberately: versions must be
+      ≥24h soaked (no `minimumReleaseAgeExclude`), regenerate
+      `pnpm-lock.yaml`, run the full gate, `npm ci` in `website/video`, and
+      keep `typescript` exact 6.0.3 (`astro check` refuses TS 7).
+- [ ] **File the pnpm-update drift upstream in LarsArtmann/BuildFlow** —
+      it bumps manifests without regenerating pnpm-lock.yaml and writes
+      `minimumReleaseAgeExclude` bypasses (observed 2026-10-03 and
+      2026-11-04). `verify-before-filing` + `github-voice` passes first;
+      include today's half-written-lockfile evidence (importer `specifier:`
+      fields rewritten, package resolutions stale).
+- [ ] **Rebuild the BuildFlow binary** (maintainer, other repo) — preflight
+      warned the binary was built at `74a9212` while HEAD is ahead:
+      `cd ~/projects/BuildFlow && nix build . && nix run .#reinstall`.
+- [x] **vulnix toolchain CVEs (binutils, bison, ada, async, …)** — DELIBERATE
+      NON-FIX at project level (2026-11-04): these ride the nixpkgs revision
+      in `flake.lock`, are build-time-only toolchain packages, and none ship
+      in any artifact this repo publishes. Revisit on the next nixpkgs
+      channel bump; do not chase per-CVE patches in-repo.
 
 ## Mixed-Emitter Ownership Track (harvested 2026-10-03 from the SUPERB plan + 11-20 report §f)
 
