@@ -65,9 +65,7 @@ describe("playground UI wiring", () => {
 describe("playground highlighting round-trips", () => {
   it("preserves every playground example source exactly", () => {
     for (const example of playgroundExamples) {
-      expect(plainText(highlightTypeSpec(example.source))).toBe(
-        example.source,
-      );
+      expect(plainText(highlightTypeSpec(example.source))).toBe(example.source);
     }
   });
 
