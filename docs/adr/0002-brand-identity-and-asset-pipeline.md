@@ -31,7 +31,7 @@ Two facts constrain the decision:
 1. Ship the derivative pipeline lockup as the identity for the website and the
    README, with attribution and provenance recorded in `assets/brand/README.md`.
 2. Treat one TypeScript geometry definition as the only source of truth.
-   `scripts/generate-brand-assets.ts` emits all eight artifacts; `pnpm run
+   `scripts/generate-brand-assets.ts` emits all eleven artifacts; `pnpm run
 brand:check` is part of `pnpm run verify` and fails on any byte drift.
 3. Ship the identity in two lockup orientations from that one definition: a
    352 × 54 horizontal lockup for the README (one line instead of a 151 px
@@ -46,13 +46,20 @@ brand:check` is part of `pnpm run verify` and fails on any byte drift.
 5. Keep the SVG sources authoritative and rasterise only where a renderer
    cannot decode SVG (Open Graph cards), via `website/scripts/render-brand-png.mjs`
    with a pinned `sharp`.
+6. Favicon (decided 2026-11-04): ship the compact mark itself, not a
+   single-tile derivative. The generator emits `website/public/favicon.svg`
+   (mark scaled-to-fit on a transparent 36 × 36 canvas) and
+   `website/public/favicon-maskable.svg` (mark at 35 % inside the maskable
+   safe circle over the brand ink `#0a0908`); the web manifest points its
+   `maskable` entry at the latter. The legacy teal squircle is retired.
+   The mark's glyph detail degrades below ~24 px, which is accepted: the
+   plum-tile → gradient-tile colour story is the identity at tab size.
 
 **Explicitly not decided yet** (each blocks work; do not silently pick one):
 
 | Open question                                                                                                                                                                                    | Blocks                                                       |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------ |
 | Trademark posture: is a derivative lockup acceptable as the primary identity, or must the official marks stay documentation-only with an original synthesized mark (concept 25 / 50) as primary? | Social preview, ADR acceptance                               |
-| Favicon: keep the legacy teal squircle, or a 16 px-optimised single tile (and which glyph)?                                                                                                      | apple-touch icons, web manifest, favicon QA                  |
 | npm surface: is GitHub-level fidelity enough, or must the npm package page render the mark natively?                                                                                             | shipping raster lockups, README structure, release checklist |
 
 ## Rationale

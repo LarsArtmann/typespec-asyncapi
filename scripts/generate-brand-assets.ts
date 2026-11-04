@@ -434,6 +434,49 @@ function renderMarkSvg(): string {
   );
 }
 
+const FAVICON_CANVAS = 36;
+const FAVICON_MARK_SCALE = 0.5;
+const FAVICON_MASKABLE_SCALE = 0.35;
+const FAVICON_BACKGROUND = "#0a0908";
+
+/**
+ * The compact mark on a square canvas: scaled-to-fit with no horizontal
+ * padding for the transparent `any` favicon, and shrunk into the maskable
+ * safe circle (radius 0.4 of the canvas) over the brand ink for `maskable`.
+ */
+function renderFaviconSvg(maskable: boolean): string {
+  const prefix = maskable ? "taaFaviconMask" : "taaFavicon";
+  const scale = maskable ? FAVICON_MASKABLE_SCALE : FAVICON_MARK_SCALE;
+  const offsetX = (FAVICON_CANVAS - 72 * scale) / 2;
+  const offsetY = (FAVICON_CANVAS - 36 * scale) / 2;
+  const mark = markBody({
+    aaFill: quote(`url(#${prefix}Aa)`),
+    arrowFill: quote(`url(#${prefix}Arrow)`),
+    depth: 0,
+  });
+  return wrapSvg(
+    `xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${FAVICON_CANVAS} ${FAVICON_CANVAS}" width="${FAVICON_CANVAS}" height="${FAVICON_CANVAS}" role="img" aria-labelledby="${prefix}Title"`,
+    [
+      `<title id="${prefix}Title">TypeSpec emits AsyncAPI</title>`,
+      ...defsBlock(
+        0,
+        `id="${prefix}Aa"`,
+        gradientRef(
+          `id="${prefix}Arrow"`,
+          ARROW_GRADIENT_ATTRS,
+          ASYNCAPI_GRADIENT,
+        ),
+      ),
+      ...(maskable
+        ? [
+            `<rect width="${FAVICON_CANVAS}" height="${FAVICON_CANVAS}" fill="${FAVICON_BACKGROUND}" />`,
+          ]
+        : []),
+      ...tileAt(mark, 0, offsetX, offsetY, scale),
+    ],
+  );
+}
+
 interface ComponentParts {
   readonly frontmatter: readonly string[];
   readonly svgAttributes: readonly string[];
@@ -575,6 +618,14 @@ const artifacts: Artifact[] = [
   ...lockupArtifacts,
   { relativePath: "assets/brand/mark.svg", content: markSvg },
   { relativePath: "website/src/assets/brand-mark.svg", content: markSvg },
+  {
+    relativePath: "website/public/favicon.svg",
+    content: renderFaviconSvg(false),
+  },
+  {
+    relativePath: "website/public/favicon-maskable.svg",
+    content: renderFaviconSvg(true),
+  },
   {
     relativePath: "website/src/components/Logo.astro",
     content: renderLogoComponent(),

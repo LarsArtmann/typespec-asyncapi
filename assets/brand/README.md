@@ -28,23 +28,25 @@ only the slot positions in `STACKED_LOCKUP` / `HORIZONTAL_LOCKUP` differ.
 
 ## Files
 
-| File                                                  | What it is                                                | Consumed by                                            |
-| ----------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------ |
-| `lockup-horizontal-dark.svg`                          | 352 × 54 one-row lockup, light ink, for dark backgrounds  | `README.md` (`prefers-color-scheme: dark`)             |
-| `lockup-horizontal-light.svg`                         | 352 × 54 one-row lockup, dark ink, for light backgrounds  | `README.md` (fallback)                                 |
-| `lockup-stacked-dark.svg`                             | 126 × 112 stacked lockup, light ink, for dark backgrounds | `docs/logo-concepts.html` card 57 snapshot             |
-| `lockup-stacked-light.svg`                            | 126 × 112 stacked lockup, dark ink, for light backgrounds | — (kept parallel to the dark variant)                  |
-| `mark.svg`                                            | 72 × 36 compact mark, no captions, no text                | Starlight header, favicon work, OG source              |
-| `../../website/public/brand-mark.png`                 | 440 × 220 PNG of `mark.svg`                               | Open Graph cards (`astro-og-canvas` cannot decode SVG) |
-| `../../website/src/assets/brand-mark.svg`             | Byte-identical copy of `mark.svg`                         | Starlight `logo` option (bundled, hashed)              |
-| `../../website/src/components/Logo.astro`             | Compact mark as an Astro component                        | Site header, site footer                               |
-| `../../website/src/components/LockupHorizontal.astro` | Horizontal lockup as an Astro component                   | Landing page hero                                      |
-| `../../website/src/components/PipelineLockup.astro`   | Stacked lockup as an Astro component                      | Landing page "How it works" section                    |
+| File                                                  | What it is                                                  | Consumed by                                            |
+| ----------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------ |
+| `lockup-horizontal-dark.svg`                          | 352 × 54 one-row lockup, light ink, for dark backgrounds    | `README.md` (`prefers-color-scheme: dark`)             |
+| `lockup-horizontal-light.svg`                         | 352 × 54 one-row lockup, dark ink, for light backgrounds    | `README.md` (fallback)                                 |
+| `lockup-stacked-dark.svg`                             | 126 × 112 stacked lockup, light ink, for dark backgrounds   | `docs/logo-concepts.html` card 57 snapshot             |
+| `lockup-stacked-light.svg`                            | 126 × 112 stacked lockup, dark ink, for light backgrounds   | — (kept parallel to the dark variant)                  |
+| `mark.svg`                                            | 72 × 36 compact mark, no captions, no text                  | Starlight header, favicon source, OG source            |
+| `../../website/public/favicon.svg`                    | Compact mark scaled-to-fit on a 36 × 36 transparent canvas  | Browser tab favicon (`purpose: any`)                   |
+| `../../website/public/favicon-maskable.svg`           | Mark at 35 % inside the maskable safe circle over brand ink | Web manifest `maskable` icon                           |
+| `../../website/public/brand-mark.png`                 | 440 × 220 PNG of `mark.svg`                                 | Open Graph cards (`astro-og-canvas` cannot decode SVG) |
+| `../../website/src/assets/brand-mark.svg`             | Byte-identical copy of `mark.svg`                           | Starlight `logo` option (bundled, hashed)              |
+| `../../website/src/components/Logo.astro`             | Compact mark as an Astro component                          | Site header, site footer                               |
+| `../../website/src/components/LockupHorizontal.astro` | Horizontal lockup as an Astro component                     | Landing page hero                                      |
+| `../../website/src/components/PipelineLockup.astro`   | Stacked lockup as an Astro component                        | Landing page "How it works" section                    |
 
 ## Regenerate
 
 ```bash
-pnpm run brand:generate   # rewrite all eight artifacts + the OG PNG
+pnpm run brand:generate   # rewrite all eleven artifacts + the OG PNG
 pnpm run brand:check      # exit 1 if any text artifact drifted (wired into `verify`)
 ```
 
