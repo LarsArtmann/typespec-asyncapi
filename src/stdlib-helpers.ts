@@ -6,11 +6,14 @@ export function isStdlibType(type: Type): boolean {
     namespace?: Namespace;
     type?: { namespace?: Namespace };
   };
-  const ns = typeWithNs.namespace ?? typeWithNs.type?.namespace;
-  if (!ns) {
-    return false;
+  let ns = typeWithNs.namespace ?? typeWithNs.type?.namespace;
+  while (ns) {
+    if (isStdNamespace(ns)) {
+      return true;
+    }
+    ns = ns.namespace;
   }
-  return isStdNamespace(ns);
+  return false;
 }
 
 export function collectAllStdlibNames(program: Program): Set<string> {

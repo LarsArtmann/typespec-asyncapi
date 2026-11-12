@@ -38,6 +38,7 @@ import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 import { intrinsicToSchema } from "./intrinsic-mapping.js";
 import { extractValue } from "./extract-value.js";
 import { refForNamedType } from "./schema-ref.js";
+import { isStdlibType } from "./stdlib-helpers.js";
 import {
   composeUnionVariants,
   constSchema,
@@ -201,6 +202,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     type: Model | Scalar | Enum | Union,
     schema: JsonSchema,
   ): EmitterOutput<JsonSchema> {
+    if (isStdlibType(type)) {
+      return schema;
+    }
     applyMetadata(this.emitter.getProgram(), type, schema);
     return this.emitter.result.declaration(name, schema);
   }

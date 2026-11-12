@@ -10,7 +10,10 @@
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
-import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers.js";
+import {
+  compileAsyncAPISpecWithoutErrors,
+  compileAsyncAPIWithoutErrors,
+} from "../utils/test-helpers.js";
 
 describe("spec Compliance: Template Instantiations", () => {
   it("declares Page<User> as PageUser with items $ref to User", async () => {
@@ -144,5 +147,41 @@ describe("spec Compliance: Template Instantiations", () => {
       (d) => d.code === "@lars-artmann/typespec-asyncapi/duplicate-schema-name",
     );
     expect(collisions.length).toBeGreaterThan(0);
+  });
+
+  it("inlines nested standard-library templates without duplicate declarations", async () => {
+    const result = await compileAsyncAPIWithoutErrors(`
+      import "@lars-artmann/typespec-asyncapi";
+      import "@typespec/http";
+      using TypeSpec.AsyncAPI;
+      namespace Demo;
+      model Envelope<T> { value: T; }
+      model Event {
+        first: TypeSpec.Http.HttpPart<string, #{ name: "first" }>;
+        second: TypeSpec.Http.HttpPart<string, #{ name: "second" }>;
+        owned: Envelope<string>;
+      }
+      @channel("events") @publish op send(): Event;
+    `);
+    expect(
+      result.diagnostics
+        .filter((d) => d.code.endsWith("duplicate-schema-name"))
+        .map((d) => d.code),
+    ).toStrictEqual([]);
+    const { schemas } = result.asyncApiDoc.components;
+    expect(schemas.HttpPartString).toBeUndefined();
+    expect(schemas.Event.properties.first).toStrictEqual({
+      properties: {},
+      type: "object",
+    });
+    expect(schemas.Event.properties.second).toStrictEqual(
+      schemas.Event.properties.first,
+    );
+    expect(schemas.Event.properties.owned).toStrictEqual({
+      $ref: "#/components/schemas/EnvelopeString",
+    });
+    expect(schemas.EnvelopeString.properties.value).toStrictEqual({
+      type: "string",
+    });
   });
 });
