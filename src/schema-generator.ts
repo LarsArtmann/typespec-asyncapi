@@ -35,10 +35,7 @@ export function generateSchemas(
     for (const sourceFile of assetEmitter.getSourceFiles()) {
       const scope = sourceFile.globalScope;
       for (const declaration of scope.declarations) {
-        if (
-          !declaration.name ||
-          !(declaration.value as object | undefined)
-        ) {
+        if (!declaration.name || !(declaration.value as object | undefined)) {
           continue;
         }
         if (schemas[declaration.name] !== undefined) {
