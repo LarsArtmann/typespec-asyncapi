@@ -53,9 +53,9 @@ export function refChannel(name: string): Ref {
   return { $ref: `#/channels/${escapeRefToken(name)}` };
 }
 
-/** Escape a string for safe use as a JSON Pointer reference token (RFC 6901). */
+/** Escape a JSON Pointer token for use in a URI fragment (RFC 6901, section 6). */
 export function escapeRefToken(token: string): string {
-  return token.replaceAll("~", "~0").replaceAll("/", "~1");
+  return encodeURIComponent(token.replaceAll("~", "~0").replaceAll("/", "~1"));
 }
 
 /** AsyncAPI 3.1 operation action — the direction of message flow. */

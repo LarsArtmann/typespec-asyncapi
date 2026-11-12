@@ -11,7 +11,7 @@ export function resolveRef(doc: unknown, ref: string): unknown | null {
   if (!ref.startsWith("#/")) {
     return null;
   }
-  const parts = ref.slice(2).split("/");
+  const parts = decodeURIComponent(ref.slice(2)).split("/");
   let current: unknown = doc;
   for (const part of parts) {
     if (current == null || typeof current !== "object") {

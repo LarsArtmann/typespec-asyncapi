@@ -27,9 +27,9 @@ operations:
   publishOrder:
     action: send
     channel:
-      $ref: "#/channels/orders~1{orderId}"
+      $ref: "#/channels/orders~1%7BorderId%7D"
     messages:
-      - $ref: "#/channels/orders~1{orderId}/messages/Order"
+      - $ref: "#/channels/orders~1%7BorderId%7D/messages/Order"
     tags:
       - name: realtime
       - name: urgent
