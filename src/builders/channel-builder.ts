@@ -40,11 +40,12 @@ import {
 export function ensureChannel(
   ctx: DocumentBuildContext,
   channelKey: string,
+  address = channelKey,
 ): ChannelObject {
   if (!ctx.channels[channelKey]) {
-    const params = extractChannelParameters(channelKey);
+    const params = extractChannelParameters(address);
     ctx.channels[channelKey] = {
-      address: channelKey,
+      address,
       messages: {},
       ...(params ? { parameters: params } : {}),
     };

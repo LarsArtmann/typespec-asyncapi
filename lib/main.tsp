@@ -10,8 +10,9 @@ namespace TypeSpec.AsyncAPI;
 /**
  * Specify the channel address/path for a message operation
  * @param address The channel address (e.g., "user.events" or "orders/{orderId}")
+ * @param id Optional channel identifier; defaults to the address
  */
-extern dec channel(target: Operation, address: valueof string);
+extern dec channel(target: Operation, address: valueof string, id?: valueof string);
 
 /**
  * Apply message metadata to a model representing an AsyncAPI message

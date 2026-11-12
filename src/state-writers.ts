@@ -32,12 +32,14 @@ export const storeChannelState = (
   program: Program,
   target: Operation,
   path: string,
+  id = path,
 ): void => {
   const map = getStateMap(program, stateSymbols.channelPaths);
   map.set(target, {
     hasParameters: path.includes("{"),
     parameters: path.match(/\{(?<param>[^}]+)\}/gu)?.map((p) => p.slice(1, -1)),
     path,
+    id,
   });
 };
 

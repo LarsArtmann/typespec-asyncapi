@@ -29,6 +29,7 @@ import {
   type DocumentBuildContext,
 } from "./_imports.js";
 import { schemaNameForType } from "../schema-ref.js";
+import { ensureChannel } from "./channel-builder.js";
 import { findEnclosingServiceNamespace } from "./cross-emitter-validation.js";
 import {
   type HttpRouteFacts,
@@ -81,18 +82,31 @@ function discoverDecoratedOps(
   ctx: DocumentBuildContext,
 ): void {
   for (const { type, name, data } of iterNamedTypes(state.channels)) {
-    ctx.opToChannel.set(name, data.path);
-    const doc = getDoc(ctx.program, type);
-    if (doc) {
-      ctx.channelDocs.set(data.path, doc);
+    const channelKey = data.id ?? data.path;
+    ctx.opToChannel.set(name, channelKey);
+    const channel = ensureChannel(ctx, channelKey, data.path);
+    if (channel.address !== data.path) {
+      reportProgramDiagnostic(ctx.program, {
+        code: "conflicting-channel-address",
+        target: type,
+        format: {
+          channelId: channelKey,
+          firstAddress: String(channel.address),
+          secondAddress: data.path,
+        },
+      });
+    }
+    const channelDoc = getDoc(ctx.program, type);
+    if (channelDoc) {
+      ctx.channelDocs.set(channelKey, channelDoc);
     }
     const channelSummary = getSummary(ctx.program, type);
     if (channelSummary !== undefined) {
-      ctx.channelSummaries.set(data.path, channelSummary);
+      ctx.channelSummaries.set(channelKey, channelSummary);
     }
     const channelTags = state.tags.get(type);
     if (channelTags && channelTags.length > 0) {
-      ctx.channelTags.set(data.path, channelTags);
+      ctx.channelTags.set(channelKey, channelTags);
     }
   }
 
@@ -143,7 +157,7 @@ const discoverChannelOnlyOps: BuilderFn = (state, ctx) => {
       continue;
     }
     const opName = resolveOpName(state, type, name);
-    const channelKey = data.path;
+    const channelKey = data.id ?? data.path;
     const info = resolveMessageInfo(type, state, opName);
     ctx.discoveredOps.push({
       action: inferActionFromName(name),
