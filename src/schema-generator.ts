@@ -5,14 +5,12 @@ import type {
   JsonSchema,
 } from "./domain/models/asyncapi-document.js";
 import { reportProgramDiagnostic } from "./decorator-helpers.js";
-import { collectAllStdlibNames } from "./stdlib-helpers.js";
 import { AsyncAPISchemaEmitter } from "./schema-emitter.js";
 
 export function generateSchemas(
   context: EmitContext<AsyncAPIEmitterOptions>,
 ): Record<string, JsonSchema> {
   const schemas: Record<string, JsonSchema> = {};
-  const stdlibNames = collectAllStdlibNames(context.program);
 
   const report = (
     code: "duplicate-schema-name" | "schema-generation-failed",
@@ -32,15 +30,14 @@ export function generateSchemas(
       context,
     );
 
-    assetEmitter.emitProgram({ emitGlobalNamespace: true });
+    assetEmitter.emitProgram();
 
     for (const sourceFile of assetEmitter.getSourceFiles()) {
       const scope = sourceFile.globalScope;
       for (const declaration of scope.declarations) {
         if (
           !declaration.name ||
-          !(declaration.value as object | undefined) ||
-          stdlibNames.has(declaration.name)
+          !(declaration.value as object | undefined)
         ) {
           continue;
         }
