@@ -33,6 +33,7 @@ export type {
  */
 export interface ChannelPathData {
   path: string;
+  id?: string;
   hasParameters: boolean;
   parameters?: string[];
 }
