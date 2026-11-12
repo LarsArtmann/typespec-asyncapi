@@ -237,6 +237,9 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     elementType: Type,
     fallback: (t: Type) => JsonSchema,
   ): JsonSchema {
+    if (elementType.kind === "UnionVariant") {
+      return this.refOrFallback(elementType.type, fallback);
+    }
     const ref = refForNamedType(elementType);
     if (ref && !isTemplateInstance(elementType)) {
       return ref;

@@ -13,6 +13,31 @@
 import { asJsonSchema } from "../utils/type-guards.js";
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
+describe("union-variant literals", () => {
+  it.each([
+    ["string", '"event.created"', "event.created"],
+    ["number", "42", 42],
+    ["boolean", "true", true],
+  ])(
+    "preserves a %s literal in properties and array items",
+    async (_, literal, value) => {
+      const result = await compileAsyncAPIWithoutErrors(`
+        union Value { fixed: ${literal} }
+        model Event {
+          type: Value.fixed;
+          values: Value.fixed[];
+        }
+      `);
+      const { properties } = result.asyncApiDoc.components.schemas.Event;
+      expect(properties.type).toStrictEqual({ const: value });
+      expect(properties.values).toStrictEqual({
+        items: { const: value },
+        type: "array",
+      });
+    },
+  );
+});
+
 describe("refForNamedType: arrays of named models", () => {
   it("item[] emits items: { $ref: #/components/schemas/Item }", async () => {
     const source = `
