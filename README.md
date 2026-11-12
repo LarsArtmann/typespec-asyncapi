@@ -231,6 +231,8 @@ Binding versions are auto-injected when omitted. Protocol aliases (`websocket`�
 
 Every TypeSpec scalar maps to the correct JSON Schema type and format (int8-64, uint8-64, float32/64, decimal, dateTime, duration, bytes, url, and more). Named models, enums, and scalars use `$ref` for clean component reuse. Inheritance, unions, tuples, records, and multi-message operations are all supported.
 
+When an operation returns a model with `@discriminator`, its derived variants become separate channel and operation messages, including variants below intermediate base models. Overlapping union members are deduplicated, and each variant keeps its `@messageId`. Models without a discriminator and discriminated models without variants keep their existing behavior. An explicit `@publish(MessageModel)` still overrides discovery.
+
 **Constraint decorators** are fully mapped: `@minValue`, `@maxValue`, `@minValueExclusive`, `@maxValueExclusive`, `@minLength`, `@maxLength`, `@pattern`, `@format`, `@minItems`, `@maxItems`, `#deprecated`, `@summary` (→`title`), `@example` (→`examples`), and `@visibility` (→`readOnly`/`writeOnly`) all produce the correct JSON Schema keywords.
 
 **`@jsonSchemaExtension(key, value)`** attaches arbitrary JSON Schema keywords (`x-` extensions, `multipleOf`, vendor keywords) to any Model, ModelProperty, Union, Enum, or Scalar — inline and as `$ref` siblings. Repeatable; the outermost same-key application wins; object/array values use `#{}` / `#[]` literals.
