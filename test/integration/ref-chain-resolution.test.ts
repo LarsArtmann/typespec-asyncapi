@@ -31,24 +31,27 @@ describe("$ref Chain Resolution", () => {
     ["sessions/{session_id}/events", "sessions~1%7Bsession_id%7D~1events"],
     ["events/%2F ~raw", "events~1%252F%20~0raw"],
     ["\u00E9v\u00E9nements", "%C3%A9v%C3%A9nements"],
-  ])("emits resolvable URI-fragment references for %s", async (address, token) => {
-    const result = await compileAsyncAPIWithoutErrors(`
+  ])(
+    "emits resolvable URI-fragment references for %s",
+    async (address, token) => {
+      const result = await compileAsyncAPIWithoutErrors(`
       model Event { id: string; }
       @channel("${address}") @publish op send(): Event;
     `);
-    const doc = result.asyncApiDoc;
-    expect(doc.channels[address].address).toBe(address);
-    expect(doc.operations.send.channel.$ref).toBe(`#/channels/${token}`);
-    expect(doc.operations.send.messages).toStrictEqual([
-      { $ref: `#/channels/${token}/messages/Event` },
-    ]);
-    expect(resolveRef(doc, doc.operations.send.channel.$ref)).toBe(
-      doc.channels[address],
-    );
-    for (const reference of collectRefs(doc)) {
-      expect(resolveRef(doc, reference)).toBeTruthy();
-    }
-  });
+      const doc = result.asyncApiDoc;
+      expect(doc.channels[address].address).toBe(address);
+      expect(doc.operations.send.channel.$ref).toBe(`#/channels/${token}`);
+      expect(doc.operations.send.messages).toStrictEqual([
+        { $ref: `#/channels/${token}/messages/Event` },
+      ]);
+      expect(resolveRef(doc, doc.operations.send.channel.$ref)).toBe(
+        doc.channels[address],
+      );
+      for (const reference of collectRefs(doc)) {
+        expect(resolveRef(doc, reference)).toBeTruthy();
+      }
+    },
+  );
 
   it("operation.messages[0].$ref should point to #/channels/{channel}/messages/{message}", async () => {
     const result = await compileAsyncAPIWithoutErrors(source);
