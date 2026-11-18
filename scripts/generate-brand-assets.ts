@@ -372,6 +372,23 @@ function wrapSvg(attributes: string, inner: readonly string[]): string {
   return `${[`<svg ${attributes}>`, ...inner, "</svg>"].join("\n")}\n`;
 }
 
+function documentSvg(
+  prefix: string,
+  width: number,
+  height: number,
+  secondGradient: GradientRef,
+  body: readonly string[],
+): string {
+  return wrapSvg(
+    `xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-labelledby="${prefix}Title"`,
+    [
+      `<title id="${prefix}Title">TypeSpec emits AsyncAPI</title>`,
+      ...defsBlock(0, `id="${prefix}Aa"`, secondGradient),
+      ...body,
+    ],
+  );
+}
+
 function renderLockupSvg(
   layout: LockupLayout,
   variant: "dark" | "light",
@@ -381,56 +398,42 @@ function renderLockupSvg(
   const prefix = `taaLockup${layout.slug}${suffix}`;
   const aaFill = quote(`url(#${prefix}Aa)`);
   const blockFill = quote(`url(#${prefix}Block)`);
-  return wrapSvg(
-    `xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${layout.width} ${layout.height}" width="${layout.width}" height="${layout.height}" role="img" aria-labelledby="${prefix}Title"`,
-    [
-      `<title id="${prefix}Title">TypeSpec emits AsyncAPI</title>`,
-      ...defsBlock(
-        0,
-        `id="${prefix}Aa"`,
-        gradientRef(
-          `id="${prefix}Block"`,
-          BLOCK_GRADIENT_ATTRS,
-          EMIT_BLOCK_GRADIENT,
-        ),
-      ),
-      ...lockupBody(
-        {
-          aaFill,
-          blockFill,
-          tspCaptionFill: quote(ink),
-          aaCaptionFill: aaFill,
-          grotesk: STATIC_GROTESK,
-          mono: STATIC_MONO,
-          depth: 0,
-        },
-        layout,
-      ),
-    ],
+  return documentSvg(
+    prefix,
+    layout.width,
+    layout.height,
+    gradientRef(
+      `id="${prefix}Block"`,
+      BLOCK_GRADIENT_ATTRS,
+      EMIT_BLOCK_GRADIENT,
+    ),
+    lockupBody(
+      {
+        aaFill,
+        blockFill,
+        tspCaptionFill: quote(ink),
+        aaCaptionFill: aaFill,
+        grotesk: STATIC_GROTESK,
+        mono: STATIC_MONO,
+        depth: 0,
+      },
+      layout,
+    ),
   );
 }
 
 function renderMarkSvg(): string {
   const aaFill = quote("url(#taaMarkAa)");
-  return wrapSvg(
-    'xmlns="http://www.w3.org/2000/svg" viewBox="0 0 72 36" width="72" height="36" role="img" aria-labelledby="taaMarkTitle"',
-    [
-      '<title id="taaMarkTitle">TypeSpec emits AsyncAPI</title>',
-      ...defsBlock(
-        0,
-        'id="taaMarkAa"',
-        gradientRef(
-          'id="taaMarkArrow"',
-          ARROW_GRADIENT_ATTRS,
-          ASYNCAPI_GRADIENT,
-        ),
-      ),
-      ...markBody({
-        aaFill,
-        arrowFill: quote("url(#taaMarkArrow)"),
-        depth: 0,
-      }),
-    ],
+  return documentSvg(
+    "taaMark",
+    72,
+    36,
+    gradientRef('id="taaMarkArrow"', ARROW_GRADIENT_ATTRS, ASYNCAPI_GRADIENT),
+    markBody({
+      aaFill,
+      arrowFill: quote("url(#taaMarkArrow)"),
+      depth: 0,
+    }),
   );
 }
 
@@ -454,19 +457,16 @@ function renderFaviconSvg(maskable: boolean): string {
     arrowFill: quote(`url(#${prefix}Arrow)`),
     depth: 0,
   });
-  return wrapSvg(
-    `xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${FAVICON_CANVAS} ${FAVICON_CANVAS}" width="${FAVICON_CANVAS}" height="${FAVICON_CANVAS}" role="img" aria-labelledby="${prefix}Title"`,
+  return documentSvg(
+    prefix,
+    FAVICON_CANVAS,
+    FAVICON_CANVAS,
+    gradientRef(
+      `id="${prefix}Arrow"`,
+      ARROW_GRADIENT_ATTRS,
+      ASYNCAPI_GRADIENT,
+    ),
     [
-      `<title id="${prefix}Title">TypeSpec emits AsyncAPI</title>`,
-      ...defsBlock(
-        0,
-        `id="${prefix}Aa"`,
-        gradientRef(
-          `id="${prefix}Arrow"`,
-          ARROW_GRADIENT_ATTRS,
-          ASYNCAPI_GRADIENT,
-        ),
-      ),
       ...(maskable
         ? [
             `<rect width="${FAVICON_CANVAS}" height="${FAVICON_CANVAS}" fill="${FAVICON_BACKGROUND}" />`,
