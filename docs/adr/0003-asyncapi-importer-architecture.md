@@ -8,6 +8,8 @@
 
 This package emits AsyncAPI 3.1 from TypeSpec. It does not import existing descriptions. The [migration guide](../../website/src/content/docs/getting-started/migration.md) currently asks users to model their API by hand and diff the emitted document against the original. An importer should produce editable TypeSpec and tell users where that same comparison will show meaningful differences. It should not promise a byte-identical or lossless round trip.
 
+The companion [AsyncAPI 3.1 import mapping](asyncapi-3.1-import-mapping.md) inventories specification objects and distinguishes existing TypeSpec mappings, emitter options, and gaps.
+
 The reference implementation is [`@typespec/openapi3`][upstream] at commit [`3b98b20a`][revision], inspected in the sibling TypeSpec checkout. The next two sections describe what that revision does; the proposal that follows is for this repository. No importer is implemented by this ADR.
 
 ## Reference implementation: CLI and conversion API
