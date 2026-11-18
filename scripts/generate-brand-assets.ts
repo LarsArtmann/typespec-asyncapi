@@ -461,11 +461,7 @@ function renderFaviconSvg(maskable: boolean): string {
     prefix,
     FAVICON_CANVAS,
     FAVICON_CANVAS,
-    gradientRef(
-      `id="${prefix}Arrow"`,
-      ARROW_GRADIENT_ATTRS,
-      ASYNCAPI_GRADIENT,
-    ),
+    gradientRef(`id="${prefix}Arrow"`, ARROW_GRADIENT_ATTRS, ASYNCAPI_GRADIENT),
     [
       ...(maskable
         ? [
