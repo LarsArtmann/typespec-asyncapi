@@ -50,6 +50,9 @@
   ],
   "type": "module",
   "sideEffects": false,
+  "bin": {
+    "tsp-asyncapi": "dist/src/importer/cli.js"
+  },
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "exports": {
@@ -110,6 +113,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@typespec/openapi3": "^1.17.0",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
@@ -123,7 +127,6 @@
     "@typespec/compiler": "^1.17.0",
     "@typespec/http": "^1.17.0",
     "@typespec/json-schema": "^1.17.0",
-    "@typespec/openapi3": "^1.17.0",
     "@typespec/rest": "^0.87.0",
     "@typespec/versioning": "^0.87.0",
     "ajv": "^8.20.0",

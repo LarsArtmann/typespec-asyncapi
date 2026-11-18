@@ -142,6 +142,14 @@ components:
         - timestamp
 ```
 
+## Import an existing AsyncAPI description
+
+```sh
+pnpm exec tsp-asyncapi asyncapi.yaml --output-dir imported
+```
+
+The importer accepts local AsyncAPI 3.1 YAML or JSON and writes `imported/main.tsp` without overwriting an existing file. It supports document-local references, basic service and server metadata, send/receive operations, and JSON object message payloads. Use `--namespace` to override the generated namespace. Review the warnings and compare the re-emitted contract with the original; bindings, traits, security, and replies are not imported.
+
 ## Features
 
 ### 30 Decorators

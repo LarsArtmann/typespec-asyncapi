@@ -24,7 +24,17 @@ head:
       content: "https://typespec-asyncapi.lars.software/og/getting-started/migration.png"
 ---
 
-There is no YAML importer. Migration is a modeling exercise: describe the same channels, operations, messages, and servers in TypeSpec, then diff the emitted document against the one you have today. The diff is the review artifact.
+Use `tsp-asyncapi` to generate a TypeSpec starting point from a local AsyncAPI 3.1 YAML or JSON file:
+
+```shell
+pnpm exec tsp-asyncapi asyncapi.yaml --output-dir imported
+```
+
+The command writes `imported/main.tsp`, refuses to overwrite an existing file, and accepts an optional `--namespace` override. It imports the service title and version, supported servers, send/receive operations, and JSON object payloads. It follows document-local references only. Warnings identify fields that were skipped or normalized, such as a channel key that differs from its address. Bindings, traits, security, replies, and non-JSON payload formats are not imported.
+
+Distinct messages that share one payload schema are rejected because the emitter uses the TypeSpec model as the message identity. Schema composition keywords such as `oneOf` and `anyOf` are reported but not translated.
+
+Review the warnings, fill in unsupported details, and compile with `tsp compile imported/main.tsp --emit @lars-artmann/typespec-asyncapi`. Compare the emitted contract to the original before replacing it.
 
 ## From hand-written YAML
 
