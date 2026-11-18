@@ -10,7 +10,7 @@
  * but never committed as permanent regression tests.
  */
 
-import { asJsonSchema } from "../utils/type-guards.js";
+import { asJsonSchema, inlineObject } from "../utils/type-guards.js";
 import { compileAsyncAPIWithoutErrors } from "../utils/test-helpers.js";
 
 describe("union-variant literals", () => {
@@ -36,6 +36,30 @@ describe("union-variant literals", () => {
       });
     },
   );
+});
+
+describe("user schemas with standard-library names", () => {
+  it("keeps a user Response schema when the HTTP library is imported", async () => {
+    const result = await compileAsyncAPIWithoutErrors(`
+      import "@lars-artmann/typespec-asyncapi";
+      import "@typespec/http";
+      using TypeSpec.AsyncAPI;
+      namespace Demo;
+      model Response { text: string; }
+      @channel("events")
+      @publish
+      op send(): Response;
+    `);
+    const { schemas, messages } = result.asyncApiDoc.components;
+    expect(Object.keys(schemas)).toStrictEqual(["Response"]);
+    expect(schemas?.Response?.properties?.text).toStrictEqual({
+      type: "string",
+    });
+    expect(schemas?.Response?.required).toStrictEqual(["text"]);
+    expect(inlineObject(messages.Response).payload).toStrictEqual({
+      $ref: "#/components/schemas/Response",
+    });
+  });
 });
 
 describe("refForNamedType: arrays of named models", () => {
