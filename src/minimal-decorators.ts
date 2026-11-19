@@ -60,14 +60,16 @@ export function $channel(
   context: DecoratorContext,
   target: Operation,
   path: string,
+  id?: string,
 ): void {
-  if (!path || path.length === 0) {
-    reportDiagnostic(context, "missing-channel-path", target, {
+  if (!path || id === "") {
+    const code = path ? "invalid-channel-id" : "missing-channel-path";
+    reportDiagnostic(context, code, target, {
       operationName: target.name,
     });
     return;
   }
-  storeChannelState(context.program, target, path);
+  storeChannelState(context.program, target, path, id);
 }
 
 export function $publish(
