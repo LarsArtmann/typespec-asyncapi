@@ -162,7 +162,7 @@ During this session, I found `@apiVersion` by accident while looking up `@operat
 46. **OAuth2 flow validation** — Verify all 4 flow types (implicit, password, clientCredentials, authorizationCode) work.
 47. **Security scheme `in` field validation** — Verify only `query|header|cookie` accepted for httpApiKey.
 48. **Multi-file TypeSpec input** — Verify `import` and `import from` work correctly.
-49. **Schema inheritance depth** — Verify deep inheritance chains emit correct `$ref`s.
+49. **Schema inheritance depth** — Verify deep inheritance chains emit correct `$ref` chains.
 50. **Union/enum edge cases** — Verify non-string unions, numeric enums, mixed types.
 
 ---

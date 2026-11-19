@@ -130,7 +130,7 @@ Auto-commit daemon note: everything through the version-constant/AJV work is alr
 1. Finish `protocol-binding-integration.test.ts`: write the binding-value assertions the imports promise (kafka topic/partitions + ws method + mqtt qos placements, AJV-validated) — **or** delete the file as a duplicate (see g)2) and revert the import line.
 2. Run `pnpm run verify`; fix fallout (expected: the unused-import lint failure; possibly nothing else).
 3. Add conflict-diagnostics tests: two namespaces with different `@defaultContentType` / `@apiVersion` → assert warning fires and first value wins.
-4. external-specs.test.ts structural assertions (nested models, `allOf` chains, Record→additionalProperties, defaults, nullable, exact array-item `$ref`s; assert zero diagnostics on the raw-compile test).
+4. external-specs.test.ts structural assertions (nested models, `allOf` chains, Record→additionalProperties, defaults, nullable, exact array-item `$ref` shapes; assert zero diagnostics on the raw-compile test).
 5. server.test.ts: derive the accept-loop from `PROTOCOL_LIST` (22 protocols) + explicit alias cases (`websocket`, `websockets`).
 6. Remove dead `modelsPerChannel` (interface, `DEFAULT_OPTIONS`, 4 call sites in `performance.test.ts`); close the TODO_LIST item.
 7. Update AGENTS.md: `tsconfig.test.json` + `typecheck:test` gate stage, `inlineObject`/`asJsonSchema`, `validateAsyncAPIDocument`, the spectral `DiagnosticSeverity` numeric-enum trap.

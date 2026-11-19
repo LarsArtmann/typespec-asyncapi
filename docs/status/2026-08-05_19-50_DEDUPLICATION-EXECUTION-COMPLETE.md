@@ -92,7 +92,7 @@ The **partial** label would apply to **plan acceptance criteria** (Section 5) �
 | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | --- | ---------------------------------------------- |
 | Reaching <20 clones target | Plan called this the acceptance criteria, but practical ROI dropped sharply after 44 — see Section 5 |
 | Reaching <2% duplication | Same — remaining clones are mostly spec-mandated or have defensive reasons |
-| `extractBindingsConfigFromValue` helper | Never explicitly listed; would clean up `$bindings` 5-line inline validation, but pattern differs from the others (uses `!value |     | typeof value !== "object"`not`validateConfig`) |
+| `extractBindingsConfigFromValue` helper | Never explicitly listed; would clean up `$bindings` 5-line inline validation, but pattern differs from the others (uses `!value || typeof value !== "object"`, `not`, `validateConfig`) |
 | Pushing the `validatedDecorator` HOF further (apply to `$server`, `$channel`, `$operationId`, `$messageId`, etc.) | Marginal — the HOF only fits 3 of 7 candidate decorators cleanly |
 | Refactoring `asyncapi-document.ts` interface property repetition (7 clones ACCEPTED in plan) | Plan said "ACCEPT — AsyncAPI 3.1 spec mandates same properties on multiple interfaces". Could investigate if mixin types help |
 

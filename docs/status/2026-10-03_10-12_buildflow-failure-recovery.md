@@ -142,7 +142,7 @@ eslint@10.12.0` appeared in `pnpm-workspace.yaml` during the sync — needs
    `--fix` ("repair-only tool" rejection); also echoed `$?` after a pipeline,
    which reported `head`'s status, not buildflow's — sloppy verification
    twice in one command.
-4. **Two edit-tool round trips wasted** on files I had `cat`ed but not
+4. **Two edit-tool round trips wasted** on files I had opened via `cat` but not
    View'ed (flake.nix, .jscpd.json) — the read-before-edit contract is per
    tool, and I knew it.
 5. **Installed-binary assumption** — I went deep into fixing BuildFlow before
@@ -234,7 +234,7 @@ autonomously per "keep going until everything works":
    (detached HEAD + staged patch only — never touched the baseline WIP),
    gated there (go build, go test -race ./tools/providers ok 191s,
    golangci-lint clean for my files, erraudit 0 violations), built and
-   `nix profile install`ed from it. Binary now
+   installed from it via `nix profile install`. Binary now
    `13d32f75613e093100277d6c301411330406d306-dirty`. `buildflow -s jscpd`
    green (0 findings, 336ms). NOTE: worktree placement matters — BuildFlow's
    go.mod has sibling `../` replaces, so a /tmp worktree cannot build.

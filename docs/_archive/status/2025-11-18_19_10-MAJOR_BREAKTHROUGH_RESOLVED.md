@@ -67,7 +67,7 @@ extern dec header(target: Model | ModelProperty, name: valueof string, value: va
 "invalid-server-config": {
   severity: "error",
   messages: {
-    default: paramMessage`Server configuration '${"serverName"}' is not valid. Server configurations must include url and protocol.`,
+    default: paramMessage`Server configuration '${"serverName"}' is not valid. Server configurations must include url and protocol.`, <!-- format:allow -->
   },
 }
 ```

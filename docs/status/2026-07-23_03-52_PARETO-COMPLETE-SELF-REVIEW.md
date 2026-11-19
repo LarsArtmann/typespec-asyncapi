@@ -196,7 +196,7 @@ The original goal was "under 370 lines." I could have achieved that with fewer, 
 
 | #  | Task                                                                                         | Effort |
 | -- | -------------------------------------------------------------------------------------------- | ------ |
-| 23 | Validate `split-schemas` main document resolves all external `$ref`s                         | Medium |
+| 23 | Validate `split-schemas` main document resolves all external `$ref` refs                    | Medium |
 | 24 | Test `@server` with `variables` field                                                        | Low    |
 | 25 | Test `@server` with `security` field                                                         | Low    |
 | 26 | Test multi-server configurations (2+ servers per namespace)                                  | Low    |
