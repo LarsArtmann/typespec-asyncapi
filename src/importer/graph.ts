@@ -166,7 +166,7 @@ export class Graph {
       serverKeys,
       messages,
       messageKeysByPointer: new Map(
-        [...messages.keys()].map((key) => [child(messagesPointer, key), key]),
+        [...messages.keys()].map((name) => [child(messagesPointer, name), name]),
       ),
       used: new Set(),
     };

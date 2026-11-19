@@ -17,6 +17,33 @@ async function expectSnapshot(source: string, name: string) {
 }
 
 describe("asyncAPI import round trip", () => {
+  it("preserves integer component scalars referenced by a payload", async () => {
+    const result = await importAsyncAPI(`
+asyncapi: 3.1.0
+info: { title: Events, version: '1' }
+channels:
+  counts:
+    address: counts
+    messages:
+      Counts:
+        payload:
+          type: object
+          properties:
+            total: { $ref: '#/components/schemas/Count' }
+operations:
+  sendCounts:
+    action: send
+    channel: { $ref: '#/channels/counts' }
+components:
+  schemas:
+    Count: { type: integer }`);
+    const emitted = await compileAndValidateOrThrow(result.source);
+    expect(emitted.components?.schemas).toMatchObject({
+      Count: { type: "integer" },
+      Counts: { properties: { total: { $ref: "#/components/schemas/Count" } } },
+    });
+  });
+
   it("preserves typed additional properties on a named payload", async () => {
     const result = await importAsyncAPI(`
 asyncapi: 3.1.0
@@ -215,7 +242,7 @@ operations:
     ]);
   });
 
-  it("URI-encodes percent signs in refs without changing the channel key", async () => {
+  it("encodes percent signs in URI refs without changing the channel key", async () => {
     const address = "events%2Fnew";
     const channelRef = "#/channels/events%252Fnew";
     const messageRef = `${channelRef}/messages/Created`;

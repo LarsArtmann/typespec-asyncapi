@@ -35,7 +35,7 @@ import type {
 import { applyConstraints, applyMetadata } from "./constraint-mapper.js";
 import type { AsyncAPIEmitterOptions } from "./infrastructure/configuration/asyncAPIEmitterOptions.js";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
-import { intrinsicToSchema } from "./intrinsic-mapping.js";
+import { intrinsicToSchema, scalarToSchema } from "./intrinsic-mapping.js";
 import { extractValue } from "./extract-value.js";
 import { refForNamedType } from "./schema-ref.js";
 import { isStdlibType } from "./stdlib-helpers.js";
@@ -135,15 +135,13 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
   }
 
   scalarDeclaration(scalar: Scalar, name: string): EmitterOutput<JsonSchema> {
-    return this.declareSchema(name, scalar, this.intrinsicSchema(scalar.name));
+    return this.declareSchema(name, scalar, scalarToSchema(scalar));
   }
-
   scalarInstantiation = (
     s: Scalar,
     name: string | undefined,
   ): EmitterOutput<JsonSchema> =>
-    name ? this.scalarDeclaration(s, name) : this.intrinsicSchema(s.name);
-
+    name ? this.scalarDeclaration(s, name) : scalarToSchema(s);
   stringLiteral = (literal: StringLiteral): EmitterOutput<JsonSchema> =>
     constSchema(literal.value);
   numericLiteral = (literal: NumericLiteral): EmitterOutput<JsonSchema> =>
@@ -181,7 +179,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return { scope: sourceFile.globalScope };
   }
 
-  /** Emit return types so op-return instantiations (`op x(): Page<User>`) get declared. */
   operationReturnType = (
     _operation: Operation,
     returnType: Type,
@@ -196,7 +193,6 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     return { contents: "", path: sourceFile.path };
   }
 
-  /** Build an intrinsic type schema. Falls back to `"string"` when name is undefined. */
   private intrinsicSchema(name: string | undefined): JsonSchema {
     return intrinsicToSchema(name ?? "string");
   }
@@ -373,8 +369,10 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     if (kind === "Model" && (t as Model).indexer) {
       return this.indexedModelSchema(t as Model);
     }
-    if (kind === "Scalar" || kind === "Intrinsic") {
-      return this.intrinsicSchema((t as { name?: string }).name);
+    if (t.kind === "Scalar" || t.kind === "Intrinsic") {
+      return t.kind === "Scalar"
+        ? scalarToSchema(t)
+        : this.intrinsicSchema(t.name);
     }
     if (kind === "String") {
       return constSchema((t as { value: string }).value);
