@@ -4,9 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [1.2.0] - 2026-11-19
 
 ### Added
+
+- **`@channel(address, id?)` — channel identifiers separate from addresses
+  (#291)** — a channel key no longer has to be its address. Distinct IDs
+  describe separate connections at the same address (for example two WebSocket
+  channels at `/v1/realtime` with different handshake bindings); reusing an ID
+  pairs send and receive operations at one address. Omitting the ID keeps the
+  address as the channel key, so existing specs are unaffected. Two new error
+  diagnostics guard it: `invalid-channel-id` (empty ID) and
+  `conflicting-channel-address` (one ID used for two different addresses).
 
 - **A live playground that runs the real compiler in the browser** — the
   landing page can now compile TypeSpec to AsyncAPI without a server. The
@@ -48,12 +57,40 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- **Operations returning a discriminated base model now emit one message per
+  derived variant (#289)** — previously only the base model itself became the
+  message, so subscribers never saw the concrete event types. Message
+  discovery now walks the discriminator's derived variants and emits each as
+  its own message. This changes the emitted document for affected specs:
+  channels gain the derived messages, and operations reference all of them.
+
 - **`assets/brand/lockup-{dark,light}.svg` renamed to
   `lockup-stacked-{dark,light}.svg`** — with two orientations the unqualified
   name could not say which one it meant. The old paths are 404s; the README now
   points at `lockup-horizontal-{dark,light}.svg`.
 
 ### Fixed
+
+- **User models were dropped when a stdlib type shared their name (#286)** — a
+  model named `Response` disappeared from the document whenever
+  `@typespec/http` was imported, because stdlib filtering matched by name.
+  The emitter now skips stdlib types by namespace identity instead of by
+  name, so user-defined models win.
+
+- **Stdlib instantiations such as `HttpPart<...>` triggered
+  `duplicate-schema-name` warnings (#287)** — the stdlib check only looked at
+  the type's own namespace, missing types nested through instantiations. The
+  walk now crosses namespaces and recognizes the whole stdlib closure.
+
+- **A property typed as a union variant lost its literal value (#288)** —
+  variants were unwrapped to their base type, so `"queued" | "done"` emitted
+  as plain `string`. The literal value is now preserved as a `const` schema,
+  matching the declared contract.
+
+- **Templated channel addresses produced invalid `$ref` URIs (#290)** —
+  `{orderId}`-style addresses contain characters RFC 3986 forbids in a
+  fragment, so emitted references never resolved. `$ref` fragments are now
+  URI-encoded after RFC 6901 JSON-Pointer escaping.
 
 - **The compact mark's arrow rendered without its shaft** — a default
   (`objectBoundingBox`) gradient on a zero-height horizontal line paints

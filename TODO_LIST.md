@@ -42,6 +42,30 @@ removal.
     `subdirectoryNames` extractions). Gate green at tag time: 1236 tests,
     98.0% coverage, 0 clones.
 
+## Post-Merge Follow-ups (harvested 2026-11-19 from the PR-sweep reports)
+
+- [ ] **PR #295 (import CLI) review track** — draft, deferred until baywet
+      marks it ready; then deep-review the ~2100 lines, including the
+      `@typespec/openapi3` as-runtime-dependency decision (question posted on
+      the PR 2026-11-19). (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.21)
+- [ ] **CI alerting on daemon-push failures** — master CI ran red for two
+      weeks (2026-11-04→18, jscpd clone in `scripts/generate-brand-assets.ts`)
+      because nobody watches daemon-pushed runs; add a workflow-level
+      notification (e.g. failed-run → issue/notify) or an external watcher.
+      (`docs/status/2026-11-19_07-36_merge-sequence-phase2.md` §f.13)
+- [ ] **Property-test seeds for the new 1.2.0 behaviors** — channel-id
+      (`data.id ?? data.path`) and derived-variant message expansion have no
+      `test/property` generators yet; extend `specArbitrary` in
+      `test/property/emitter-properties.test.ts` (compliance/golden cover them
+      today). (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.32)
+- [ ] **E2E test: `@channel(address, id)` × `split-schemas`** — the channel-ID
+      key flows into `$ref` rewriting; no e2e locks the combination.
+      (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.33)
+- [ ] (repo: fleet) **Daemon-push CI health sweep** — the same blind spot
+      (auto-commits pushing without a watcher) may exist in other owned repos;
+      one glance per repo at recent master-run conclusions.
+      (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.35)
+
 ## Dependency & Toolchain Refresh (2026-11-04, harvested from the BuildFlow triage session)
 
 - [ ] **Re-attempt the reverted minor bumps as ONE verified pass** —
