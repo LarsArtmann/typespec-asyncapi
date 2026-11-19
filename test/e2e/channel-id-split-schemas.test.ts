@@ -10,6 +10,7 @@
  */
 
 import { compileAsyncAPI } from "../utils/test-helpers.js";
+import { inlineObject } from "../utils/type-guards.js";
 import type { AsyncAPIEmitterOptions } from "../../src/infrastructure/configuration/asyncAPIEmitterOptions.js";
 
 const source = `
@@ -100,10 +101,20 @@ describe("e2E: Channel IDs with split-schemas", () => {
     expect(mainJson).toContain("schemas/UserSignedUp.json");
     expect(mainJson).toContain("schemas/UserNotified.json");
 
-    expect(doc!.components!.messages!.UserSignedUp!.payload).toStrictEqual({
+    expect(
+      inlineObject(
+        doc!.components!.messages!.UserSignedUp!,
+        "components.messages.UserSignedUp",
+      ).payload,
+    ).toStrictEqual({
       $ref: "schemas/UserSignedUp.json",
     });
-    expect(doc!.components!.messages!.UserNotified!.payload).toStrictEqual({
+    expect(
+      inlineObject(
+        doc!.components!.messages!.UserNotified!,
+        "components.messages.UserNotified",
+      ).payload,
+    ).toStrictEqual({
       $ref: "schemas/UserNotified.json",
     });
   });
@@ -134,7 +145,12 @@ describe("e2E: Channel IDs with split-schemas", () => {
     expect(doc!.operations.sendPresence!.channel).toStrictEqual({
       $ref: "#/channels/presenceStream",
     });
-    expect(doc!.components!.messages!.UserNotified!.payload).toStrictEqual({
+    expect(
+      inlineObject(
+        doc!.components!.messages!.UserNotified!,
+        "components.messages.UserNotified",
+      ).payload,
+    ).toStrictEqual({
       $ref: "schemas/UserNotified.yaml",
     });
     expect(allOutputFiles.has("UserNotified.yaml")).toBe(true);

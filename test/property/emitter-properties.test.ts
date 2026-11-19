@@ -9,6 +9,8 @@
  *  P4 enum/union/literal mappings always yield a `type` or `const`/`enum`
  *  P5 split-schemas rewriting preserves the full ref graph
  *  P6 determinism — the same source compiles byte-identically twice
+ *  P7 the channel key is exactly `id ?? address` and every ref agrees
+ *  P8 a discriminated base return expands to one message per variant
  *
  * Reproduction: seeds are pinned via SEED below; override with FC_SEED
  * env var, then set `numRuns` higher locally to hunt. A failing seed is
@@ -63,6 +65,7 @@ const RESERVED = new Set([
   "float64",
   "boolean",
   "utcDateTime",
+  "kind",
 ]);
 
 const fieldName = fc
@@ -167,7 +170,7 @@ function renderModel(model: ModelSpec): string {
   return `${enumBlock}model ${model.name} {\n  ${fields}\n}`;
 }
 
-const specArbitrary = fc.record({
+const specFields = {
   models: fc.uniqueArray(modelSpec, {
     selector: (model) => model.name,
     minLength: 1,
@@ -175,7 +178,40 @@ const specArbitrary = fc.record({
   }),
   opName: identifier,
   channelName: fc.stringMatching(/^[a-z]{3,10}\/[a-z]{3,10}$/u),
-});
+  channelId: fc.option(fc.stringMatching(/^[a-z][a-z0-9]{2,11}$/u), {
+    nil: null,
+  }),
+  variantCount: fc.option(fc.integer({ min: 2, max: 4 }), { nil: null }),
+};
+
+interface GeneratedSpec {
+  models: ModelSpec[];
+  opName: string;
+  channelName: string;
+  channelId: string | null;
+  variantCount: number | null;
+}
+
+/** A variant named `<base>V<i>` colliding with another generated model. */
+function hasVariantNameCollision(spec: {
+  models: ModelSpec[];
+  variantCount: number | null;
+}): boolean {
+  if (spec.variantCount === null) {
+    return false;
+  }
+  const base = spec.models[0]!.name;
+  return spec.models.slice(1).some((m) => m.name.startsWith(`${base}V`));
+}
+
+const specArbitrary = fc
+  .record(specFields)
+  .filter((spec) => !hasVariantNameCollision(spec));
+
+/** Variant-heavy variant of specArbitrary: P8 always sees a family. */
+const variantSpecArbitrary = fc
+  .record({ ...specFields, variantCount: fc.integer({ min: 2, max: 4 }) })
+  .filter((spec) => !hasVariantNameCollision(spec));
 
 /** Render a model with one extra property referencing another named model. */
 function renderModelWithRef(model: ModelSpec, refTarget: string): string {
@@ -190,27 +226,56 @@ function renderModelWithRef(model: ModelSpec, refTarget: string): string {
   return `${enumBlock}model ${model.name} {\n  ${fields}\n}`;
 }
 
-function renderSpec(spec: {
-  models: ModelSpec[];
-  opName: string;
-  channelName: string;
-}): string {
+/** Render the payload as a `@discriminator` base plus `count` variants. */
+function renderDiscriminatedFamily(
+  base: ModelSpec,
+  refTarget: string | null,
+  count: number,
+): string {
+  const fields = [
+    "kind: string;",
+    ...base.fields.map(renderField),
+    ...(refTarget === null ? [] : [`related: ${refTarget};`]),
+  ].join("\n  ");
+  const baseModel = `@discriminator("kind")\nmodel ${base.name} {\n  ${fields}\n}`;
+  const variants = Array.from({ length: count }, (_, index) => index + 1)
+    .map(
+      (i) =>
+        `model ${base.name}V${i} extends ${base.name} {\n  kind: "v${i}";\n}`,
+    )
+    .join("\n\n");
+  return `${baseModel}\n\n${variants}`;
+}
+
+function renderSpec(spec: GeneratedSpec): string {
   const payload = spec.models[0]!;
   const rest = spec.models.slice(1);
+  const refTarget = rest.length > 0 ? rest[0]!.name : null;
   // The payload model references the next model when one exists.
   // Single-model specs stay self-contained; this exercises model→model $refs.
   const payloadModel =
-    rest.length > 0
-      ? renderModelWithRef(payload, rest[0]!.name)
-      : renderModel(payload);
+    spec.variantCount === null
+      ? refTarget === null
+        ? renderModel(payload)
+        : renderModelWithRef(payload, refTarget)
+      : renderDiscriminatedFamily(payload, refTarget, spec.variantCount);
   const others = rest.map(renderModel).join("\n\n");
   const body = [payloadModel, others].filter(Boolean).join("\n\n");
+  const channelArg =
+    spec.channelId === null
+      ? `"${spec.channelName}"`
+      : `"${spec.channelName}", "${spec.channelId}"`;
   return `
     namespace Test;
     ${body}
-    @channel("${spec.channelName}")
+    @channel(${channelArg})
     op ${spec.opName}(): ${payload.name};
   `;
+}
+
+/** RFC 6901 token for a channel key, as the emitter must emit it in $refs. */
+function channelPointerToken(key: string): string {
+  return encodeURIComponent(key.replaceAll("~", "~0").replaceAll("/", "~1"));
 }
 
 /** Resolve a JSON pointer (RFC 6901, ~0/~1 aware) inside a document. */
@@ -382,6 +447,67 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
       expect(JSON.stringify(second.asyncApiDoc)).toBe(
         JSON.stringify(first.asyncApiDoc),
       );
+    });
+  });
+
+  it("property 7: channel key is the id when given, the address otherwise", async () => {
+    await property("spec", specArbitrary, async (spec) => {
+      const expectedKey = spec.channelId ?? spec.channelName;
+      const { asyncApiDoc: doc } = await compileAsyncAPI(renderSpec(spec), {});
+      expect(doc).not.toBeNull();
+
+      expect(Object.keys(doc!.channels!)).toStrictEqual([expectedKey]);
+      expect(doc!.channels![expectedKey]!.address).toBe(spec.channelName);
+
+      const token = channelPointerToken(expectedKey);
+      const op = doc!.operations![spec.opName]!;
+      expect(op.channel).toStrictEqual({ $ref: `#/channels/${token}` });
+      const messageRefs = collectRefs(op).filter((ref) =>
+        ref.includes("/messages/"),
+      );
+      expect(messageRefs.length).toBeGreaterThan(0);
+      for (const ref of messageRefs) {
+        expect(ref.startsWith(`#/channels/${token}/messages/`)).toBe(true);
+      }
+    });
+  });
+
+  it("property 8: a discriminated base return expands to one message per variant", async () => {
+    await property("variant spec", variantSpecArbitrary, async (spec) => {
+      const result = await compileAndValidate(renderSpec(spec));
+      expect(result.valid).toBe(true);
+
+      const base = spec.models[0]!.name;
+      const variantNames = Array.from(
+        { length: spec.variantCount! },
+        (_, index) => `${base}V${index + 1}`,
+      );
+      const channelKey = spec.channelId ?? spec.channelName;
+      const token = channelPointerToken(channelKey);
+      const channel = result.document.channels![channelKey]!;
+
+      const messageKeys = Object.keys(channel.messages ?? {}).toSorted();
+      expect(messageKeys).toStrictEqual(variantNames.toSorted());
+      expect(channel.messages![base]).toBeUndefined();
+
+      const op = result.document.operations![spec.opName]!;
+      const opRefs = collectRefs(op)
+        .filter((ref) => ref.includes("/messages/"))
+        .toSorted();
+      expect(opRefs).toStrictEqual(
+        variantNames
+          .map((v) => `#/channels/${token}/messages/${v}`)
+          .toSorted(),
+      );
+
+      for (const variant of variantNames) {
+        expect(channel.messages![variant]).toStrictEqual({
+          $ref: `#/components/messages/${variant}`,
+        });
+        expect(result.document.components!.messages![variant]).toBeDefined();
+        expect(result.document.components!.schemas![variant]).toBeDefined();
+      }
+      expect(result.document.components!.messages![base]).toBeUndefined();
     });
   });
 });
