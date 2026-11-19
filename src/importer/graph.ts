@@ -11,7 +11,7 @@ import type { SchemaAdapter } from "./schema-adapter.js";
 import { checkKey, literal, type Names, tspValue } from "./source.js";
 
 interface Channel {
-  pointer: string;
+  messagesPointer: string;
   address: string;
   messages: Map<string, unknown>;
   serverKeys: string[];
@@ -97,7 +97,7 @@ export class Graph {
       for (const key of channel.messages.keys()) {
         if (!channel.used.has(key)) {
           this.doc.warn(
-            child(child(channel.pointer, "messages"), key),
+            child(channel.messagesPointer, key),
             "Message is not used by an imported operation.",
           );
         }
@@ -157,11 +157,12 @@ export class Graph {
             }
             return serverKey;
           });
+    const messagesPointer = child(pointer, "messages");
     return {
-      pointer: at,
+      messagesPointer,
       address,
       serverKeys,
-      messages: new Map(entries(value.messages, child(pointer, "messages"))),
+      messages: new Map(entries(value.messages, messagesPointer)),
       used: new Set(),
     };
   }
@@ -243,7 +244,7 @@ export class Graph {
     at: string,
     channel: Channel,
   ): Set<string> {
-    const parent = child(channel.pointer, "messages");
+    const parent = channel.messagesPointer;
     const selected =
       input === undefined
         ? [...channel.messages.keys()]
