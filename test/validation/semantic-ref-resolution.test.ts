@@ -50,7 +50,7 @@ function refExists(doc: unknown, ref: string): boolean {
   if (!ref.startsWith("#/")) {
     return false;
   }
-  const parts = ref.slice(2).split("/");
+  const parts = decodeURIComponent(ref.slice(2)).split("/");
   let current: unknown = doc;
   for (const part of parts) {
     if (current == null || typeof current !== "object") {
@@ -88,7 +88,7 @@ function findAllRefs(obj: unknown, refs: string[] = []): string[] {
 
 /** Unescape a JSON Pointer reference token (RFC 6901). */
 function unescapeRefToken(token: string): string {
-  return token.replaceAll("~1", "/").replaceAll("~0", "~");
+  return decodeURIComponent(token).replaceAll("~1", "/").replaceAll("~0", "~");
 }
 
 describe("semantic Validation: $ref Resolution", () => {

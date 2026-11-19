@@ -6,6 +6,8 @@
  */
 
 import {
+  getDiscriminator,
+  getDiscriminatedUnionFromInheritance,
   isStdNamespace,
   type Namespace,
   type Operation,
@@ -57,11 +59,29 @@ export const discoverOperations: BuilderFn = (state, ctx) => {
 
 /** Resolve message names and schema names from an operation's return type. */
 function resolveMessageInfo(
+  program: Program,
   type: Type,
   state: AsyncAPIConsolidatedState,
   fallbackName: string,
 ): { messageNames: string[]; messageSchemaNames: string[] } {
-  const models = returnModelTypes(type);
+  const models = [
+    ...new Set(
+      returnModelTypes(type).flatMap<Type>((model) => {
+        if (model.kind !== "Model") {
+          return [model];
+        }
+        const discriminator = getDiscriminator(program, model);
+        if (!discriminator) {
+          return [model];
+        }
+        const [union] = getDiscriminatedUnionFromInheritance(
+          model,
+          discriminator,
+        );
+        return union.variants.size > 0 ? [...union.variants.values()] : [model];
+      }),
+    ),
+  ];
   if (models.length === 0) {
     return {
       messageNames: [fallbackName],
@@ -116,6 +136,7 @@ function discoverDecoratedOps(
     const channelKey = ctx.opToChannel.get(name) ?? name;
 
     let { messageNames, messageSchemaNames } = resolveMessageInfo(
+      ctx.program,
       type,
       state,
       opName,
@@ -158,7 +179,7 @@ const discoverChannelOnlyOps: BuilderFn = (state, ctx) => {
     }
     const opName = resolveOpName(state, type, name);
     const channelKey = data.id ?? data.path;
-    const info = resolveMessageInfo(type, state, opName);
+    const info = resolveMessageInfo(ctx.program, type, state, opName);
     ctx.discoveredOps.push({
       action: inferActionFromName(name),
       channelKey,
@@ -211,7 +232,7 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
         continue;
       }
       const effectiveName = resolveOpName(state, op, opName);
-      const info = resolveMessageInfo(op, state, effectiveName);
+      const info = resolveMessageInfo(ctx.program, op, state, effectiveName);
       const bareDoc = getDoc(ctx.program, op);
       if (bareDoc) {
         ctx.opDocs.set(effectiveName, bareDoc);
