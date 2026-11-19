@@ -31,11 +31,14 @@ removal.
         the day of the 1.2.0 release; release run 44529186193 failed at
         `npm publish` with E404 (npm's notice on 2FA-bypass tokens appeared
         first), the local `~/.npmrc` token returns E401 on `npm whoami`, and
-        npm still serves 1.1.0. Fix: mint a granular token (Read and write,
-        @lars-artmann scope) on npmjs.com, `gh secret set NPM_TOKEN --repo
-        LarsArtmann/typespec-asyncapi`, refresh `~/.npmrc`, then `gh run rerun
-        44529186193 --failed` (GitHub Release v1.2.0 already exists manually —
-        the workflow's create step will skip idempotently).
+        npm still serves 1.1.0. Fix paths: (a) mint a granular token (Read
+        and write, @lars-artmann scope), `gh secret set NPM_TOKEN --repo
+        LarsArtmann/typespec-asyncapi`, refresh `~/.npmrc`; or (b) PREFERRED:
+        review+merge #298 (baywet, opened within the hour) which switches
+        release.yml to npm trusted publishing (OIDC, no token) — then register
+        release.yml as trusted publisher on npmjs.com. Either way finish with
+        `gh run rerun 44529186193 --failed` (GitHub Release v1.2.0 already
+        exists manually — the workflow's create step will skip idempotently).
   - [x] ~~Remove the stale `alpha` dist-tag~~ RESOLVED DIFFERENTLY 2026-10-04:
         all three dist-tags (`latest`/`beta`/`alpha`) were re-pointed at 1.1.0
         via `npm dist-tag add`; `alpha`/`beta` are now intentional prerelease
