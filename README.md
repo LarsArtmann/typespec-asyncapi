@@ -423,7 +423,7 @@ git tag -m "v1.0.0" v1.0.0
 git push origin v1.0.0
 ```
 
-The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publish --dry-run`, no upload). Real releases use [npm trusted publishing](https://docs.npmjs.com/trusted-publishers/#for-github-actions) with GitHub Actions OIDC instead of a stored npm token. In the npm package settings, authorize `LarsArtmann/typespec-asyncapi` with workflow filename `release.yml` and allow direct `npm publish`.
+The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publish --dry-run`, no upload or publish credentials). Real releases pass the verified npm tarball to a separate [trusted publishing](https://docs.npmjs.com/trusted-publishers/#for-github-actions) job. Only that job gets GitHub Actions OIDC permission, and only the GitHub Release job gets repository write permission. In the npm package settings, authorize `LarsArtmann/typespec-asyncapi` with workflow filename `release.yml` and allow direct `npm publish`.
 
 ## Status
 
