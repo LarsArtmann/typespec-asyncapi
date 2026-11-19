@@ -1,17 +1,14 @@
 # Release workflow: tag-triggered npm publish, gated on the full verify suite.
 #
-# Setup (one-time, already done):
-#   Repository Settings > Secrets and variables > Actions > NPM_TOKEN
-#   must contain an npm access token with publish rights to the
-#   @lars-artmann scope (granular token recommended).
+# Setup: register release.yml as a trusted publisher in the npm package
+# settings and allow direct npm publish.
+# https://docs.npmjs.com/trusted-publishers/#for-github-actions
 #
-# Provenance: publishing with --provenance requires the `id-token: write`
-# permission below; npm generates a signed provenance attestation from
-# GitHub's OIDC provider, visible on the npm package page.
+# npm uses GitHub OIDC for trusted publishing and provenance.
 #
 # Dry-run: trigger manually via workflow_dispatch with dry_run=true to
 # exercise the whole pipeline (install, verify, publish dry-run) without
-# touching the registry. Real publishes happen only on `v*` tags.
+# uploading a package. A `v*` tag or a manual run with dry_run=false publishes.
 
 name: Release
 
@@ -26,13 +23,12 @@ on:
         type: boolean
         default: true
 
-permissions:
-  contents: write # creating GitHub Releases on tag push (checkout needs only read)
-  id-token: write
-
 jobs:
   verify-and-publish:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # creating GitHub Releases on tag push
+      id-token: write
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -44,6 +40,7 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: "24"
+          registry-url: "https://registry.npmjs.org"
           cache: pnpm
 
       - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
@@ -56,10 +53,7 @@ jobs:
         run: pnpm run verify
 
       - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
-          printf 'registry=https://registry.npmjs.org/\n//registry.npmjs.org/:_authToken=%s\n' "$NODE_AUTH_TOKEN" > "$HOME/.npmrc"
           # npm >= 11 refuses to put a prerelease on the default `latest` tag;
           # this project's convention is that `latest` tracks the newest beta
           # (all published versions so far are prereleases), so opt in
