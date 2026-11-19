@@ -26,9 +26,16 @@ removal.
   - [x] CHANGELOG 1.0.0 entry (fold `[Unreleased]`) + package.json bump
   - [x] README de-beta-ification + stability statement
   - [x] Tag `v1.0.0` → provenance workflow; fresh-install smoke test
-  - [ ] NPM_TOKEN rotation + update the GitHub publish secret (maintainer;
-        current token still works — the 1.0.0 publish succeeded — but was
-        flagged for rotation before the beta)
+  - [ ] NPM_TOKEN rotation + update the GitHub publish secret — **URGENT since
+        2026-11-19**: the token (created 2026-08-21, 90-day lifetime) EXPIRED
+        the day of the 1.2.0 release; release run 44529186193 failed at
+        `npm publish` with E404 (npm's notice on 2FA-bypass tokens appeared
+        first), the local `~/.npmrc` token returns E401 on `npm whoami`, and
+        npm still serves 1.1.0. Fix: mint a granular token (Read and write,
+        @lars-artmann scope) on npmjs.com, `gh secret set NPM_TOKEN --repo
+        LarsArtmann/typespec-asyncapi`, refresh `~/.npmrc`, then `gh run rerun
+        44529186193 --failed` (GitHub Release v1.2.0 already exists manually —
+        the workflow's create step will skip idempotently).
   - [x] ~~Remove the stale `alpha` dist-tag~~ RESOLVED DIFFERENTLY 2026-10-04:
         all three dist-tags (`latest`/`beta`/`alpha`) were re-pointed at 1.1.0
         via `npm dist-tag add`; `alpha`/`beta` are now intentional prerelease

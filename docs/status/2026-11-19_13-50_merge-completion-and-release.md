@@ -57,8 +57,15 @@ TODO LIST"), full hygiene pass, and cut release 1.2.0. Continues
 
 ## b) Partially done
 
-- Release 1.2.0: see §f — gate + tag + publish flow is the remaining step
-  as this report is written.
+- Release 1.2.0: version bumped (022a0de4), annotated tag `v1.2.0` pushed,
+  release.yml ran — and FAILED at `npm publish` with E404: the NPM_TOKEN
+  (GitHub secret AND local `~/.npmrc`, both created 2026-08-21) expired on
+  its 90-day lifetime exactly today; `npm whoami` → E401 locally, npm still
+  serves 1.1.0. The GitHub Release v1.2.0 was created manually from the
+  CHANGELOG section (workflow's own extraction logic, byte-identical) so the
+  tag is not releaseless. Remaining: Lars mints a granular npm token →
+  `gh secret set NPM_TOKEN` → `gh run rerun 44529186193 --failed`. TODO_LIST
+  Release row carries the full recipe.
 
 ## c) Not started
 
@@ -67,9 +74,13 @@ TODO LIST"), full hygiene pass, and cut release 1.2.0. Continues
 
 ## d) Operational surprises
 
-- None this phase. The GitHub mechanics that bit phase 2 (reruns on stale
-  merge refs, fork-run approvals) were already solved; `update-branch`
-  worked first try every time.
+- **NPM_TOKEN expired mid-release (2026-11-19):** 90-day token created
+  2026-08-21 died the same day as the v1.2.0 tag. CI publish failed E404
+  (right after npm's 2FA-bypass-token restriction notice — expiry is the
+  simpler explanation, both tokens share the Aug-21 birthday); the local
+  token is E401 too. npm's granular-token migration notice suggests future
+  tokens must be granular regardless. TODO_LIST Release row upgraded to
+  URGENT with the complete fix recipe.
 
 ## e) What to improve
 
@@ -78,13 +89,14 @@ TODO LIST"), full hygiene pass, and cut release 1.2.0. Continues
 
 ## f) Next
 
-1. Release 1.2.0: `pnpm install --lockfile-only && pnpm install
-   --frozen-lockfile && pnpm run verify` proof, `pnpm version minor`, tag
-   `v1.2.0` (annotated), push tag → release.yml (full gate + npm publish
-   --provenance + GitHub Release from the CHANGELOG section), then verify
-   npm + release + dist-tags.
-2. Post-release: update TODO_LIST Release section with the shipped row.
-3. Cleanup: local `pr-*` / `integration-test` branches, /tmp worktrees.
+1. **BLOCKED on maintainer:** rotate NPM_TOKEN (granular, @lars-artmann
+   scope, publish rights) → `gh secret set NPM_TOKEN --repo
+   LarsArtmann/typespec-asyncapi` → `gh run rerun 44529186193 --failed` →
+   verify `npm view @lars-artmann/typespec-asyncapi version` = 1.2.0 +
+   provenance + dist-tags (`latest` auto-moves; prerelease channels stay on
+   1.1.0 until re-pointed if desired).
+2. Cleanup: local `pr-*` / `integration-test` branches, /tmp worktrees
+   (executed this session; re-check nothing regenerated).
 
 ## g) Questions
 
