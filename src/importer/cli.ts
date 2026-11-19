@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { link, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { parseArgs } from "node:util";
 import { importAsyncAPI } from "./convert.js";
@@ -42,13 +42,19 @@ async function main(): Promise<void> {
   }
   await mkdir(outputDir, { recursive: true });
   const target = path.join(outputDir, "main.tsp");
+  const tempDir = await mkdtemp(path.join(outputDir, ".tsp-asyncapi-"));
   try {
-    await writeFile(target, result.source, { encoding: "utf8", flag: "wx" });
-  } catch (error) {
-    if (error instanceof Error && "code" in error && error.code === "EEXIST") {
-      throw new Error(`Refusing to overwrite ${target}.`, { cause: error });
-    }
-    throw error;
+    const staged = path.join(tempDir, "main.tsp");
+    await writeFile(staged, result.source, { encoding: "utf8", flag: "wx" });
+    // A hard link publishes the complete file without replacing an existing target.
+    await link(staged, target).catch((error: unknown) => {
+      if (error instanceof Error && "code" in error && error.code === "EEXIST") {
+        throw new Error(`Refusing to overwrite ${target}.`, { cause: error });
+      }
+      throw error;
+    });
+  } finally {
+    await rm(tempDir, { recursive: true, force: true });
   }
 }
 

@@ -3,6 +3,7 @@ import {
   cp,
   mkdir,
   mkdtemp,
+  readdir,
   readFile,
   rm,
   symlink,
@@ -120,6 +121,50 @@ describe("published importer command", () => {
         stderr: expect.stringContaining("Refusing to overwrite"),
       });
       await expect(readFile(file, "utf8")).resolves.toBe(saved);
+      await expect(readdir(output)).resolves.toStrictEqual(["main.tsp"]);
+    } finally {
+      await rm(dir, { force: true, recursive: true });
+    }
+  }, 35_000);
+
+  it("cleans up a partial write and lets the import be retried", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "asyncapi-import-"));
+    try {
+      const input = join(dir, "input.yaml");
+      await writeFile(
+        input,
+        "asyncapi: 3.1.0\ninfo: { title: Events, version: '1' }",
+      );
+      const output = join(dir, "output");
+      const args = [input, "--output-dir", output];
+      const preload = `
+        import fs from "node:fs/promises";
+        import { syncBuiltinESMExports } from "node:module";
+        const writeFile = fs.writeFile;
+        fs.writeFile = async (target, _source, options) => {
+          await writeFile(target, "partial output", options);
+          throw Object.assign(new Error("Simulated disk full"), { code: "ENOSPC" });
+        };
+        syncBuiltinESMExports();
+      `;
+      const nodeArgs = [
+        "--import",
+        `data:text/javascript,${encodeURIComponent(preload)}`,
+        bin,
+        ...args,
+      ];
+      expect(
+        spawnSync("node", nodeArgs, { encoding: "utf8", timeout: 15_000 }),
+      ).toMatchObject({
+        status: 1,
+        stderr: expect.stringContaining("Simulated disk full"),
+      });
+      await expect(readdir(output)).resolves.toStrictEqual([]);
+
+      expect(run(...args)).toMatchObject({ status: 0, stderr: "" });
+      await expect(readFile(join(output, "main.tsp"), "utf8")).resolves.toContain(
+        "namespace Events;",
+      );
     } finally {
       await rm(dir, { force: true, recursive: true });
     }
