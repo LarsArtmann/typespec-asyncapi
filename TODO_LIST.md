@@ -163,10 +163,17 @@ What remains is the gated release chain and the tail:
       reports in `docs/status/` — harvest into TODO_LIST/ROADMAP or annotate
       resolved (docs-health ANNOTATE ritual), then archive per cadence
       thresholds (15 reports / 21 days, currently 99 / oldest 128d).
-      `audit_max: 272` in `.docs-gates.json` is the ratchet pin: NEVER raise
-      it; every future item gets an inline verdict or a TODO_LIST/ROADMAP
-      row, and the pin steps down as the corpus drains. Source:
-      `docs-gates freshness . --audit-all` evidence.
+      `audit_max: 267` in `.docs-gates.json` is the ratchet pin (ratcheted
+      from 272 the moment this row landed): NEVER raise it; every future item
+      gets an inline verdict or a TODO_LIST/ROADMAP row, and the pin steps
+      down as the corpus drains. Source: `docs-gates freshness . --audit-all`
+      evidence.
+- [ ] Bump `go-finding` to v1.15.1 in `md-go-validator`'s flake.nix (repo:
+      md-go-validator — the `ref = "v1.14.0"` pin lives THERE, so
+      `nix flake update` here cannot move `website/flake.lock`'s 45-day-old
+      `go-finding-src` follow; v1.15.0/v1.15.1 tags exist upstream, verified
+      via `git ls-remote` 2026-11-19). Release md-go-validator, then
+      `nix flake update md-go-validator` here + `nix flake check` both sides.
 
 ## Test-Suite Integrity (residual)
 
