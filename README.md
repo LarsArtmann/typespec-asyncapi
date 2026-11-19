@@ -148,11 +148,13 @@ components:
 
 **Core messaging**
 
-| Decorator                         | Target    | Purpose                                |
-| --------------------------------- | --------- | -------------------------------------- |
-| `@channel(address, description?)` | Operation | Defines a channel address              |
-| `@publish` / `@subscribe`         | Operation | Marks operation as send / receive      |
-| `@reply(replyModel, address?)`    | Operation | Operation reply with message reference |
+| Decorator                      | Target    | Purpose                                   |
+| ------------------------------ | --------- | ----------------------------------------- |
+| `@channel(address, id?)`       | Operation | Defines a channel address and optional ID |
+| `@publish` / `@subscribe`      | Operation | Marks operation as send / receive         |
+| `@reply(replyModel, address?)` | Operation | Operation reply with message reference    |
+
+`@channel` uses the address as the channel ID when the second argument is omitted. Use distinct IDs to describe connections at the same address with different handshake bindings, such as `@channel("/v1/realtime", "conversation")` and `@channel("/v1/realtime", "transcription")`. Reuse an ID to pair send and receive operations at the same address. Empty IDs or conflicting addresses for one ID are reported as errors.
 
 **Servers**
 
@@ -230,6 +232,8 @@ Binding versions are auto-injected when omitted. Protocol aliases (`websocket`�
 ### Schema Generation
 
 Every TypeSpec scalar maps to the correct JSON Schema type and format (int8-64, uint8-64, float32/64, decimal, dateTime, duration, bytes, url, and more). Named models, enums, and scalars use `$ref` for clean component reuse. Inheritance, unions, tuples, records, and multi-message operations are all supported.
+
+When an operation returns a model with `@discriminator`, its derived variants become separate channel and operation messages, including variants below intermediate base models. Overlapping union members are deduplicated, and each variant keeps its `@messageId`. Models without a discriminator and discriminated models without variants keep their existing behavior. An explicit `@publish(MessageModel)` still overrides discovery.
 
 **Constraint decorators** are fully mapped: `@minValue`, `@maxValue`, `@minValueExclusive`, `@maxValueExclusive`, `@minLength`, `@maxLength`, `@pattern`, `@format`, `@minItems`, `@maxItems`, `#deprecated`, `@summary` (→`title`), `@example` (→`examples`), and `@visibility` (→`readOnly`/`writeOnly`) all produce the correct JSON Schema keywords.
 

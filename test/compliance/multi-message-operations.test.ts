@@ -1,6 +1,69 @@
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import { inlineObject } from "../utils/type-guards.js";
 
 describe("multi-message operations", () => {
+  it.each([
+    ["decorated", '@subscribe @channel("events")', "events"],
+    ["channel-only", '@channel("events")', "events"],
+    ["bare", "", "receiveEvents"],
+  ])(
+    "discovers derived messages for %s operations without duplicates",
+    async (_, decorators, channelKey) => {
+      const doc = await compileAndValidateOrThrow(`
+        namespace Demo;
+        @discriminator("type") model Event { type: string; }
+        model Intermediate extends Event {}
+        @messageId("created_event")
+        model Created extends Intermediate { type: "created"; id: string; }
+        model Deleted extends Event { type: "deleted"; id: string; }
+        ${decorators}
+        op receiveEvents(): Event | Created;
+      `);
+      expect(doc.operations.receiveEvents.messages).toStrictEqual([
+        { $ref: `#/channels/${channelKey}/messages/created_event` },
+        { $ref: `#/channels/${channelKey}/messages/Deleted` },
+      ]);
+      expect(Object.keys(doc.channels[channelKey].messages)).toStrictEqual([
+        "created_event",
+        "Deleted",
+      ]);
+      expect(
+        inlineObject(doc.components.messages.created_event).payload,
+      ).toStrictEqual({
+        $ref: "#/components/schemas/Created",
+      });
+      expect(
+        inlineObject(doc.components.messages.Deleted).payload,
+      ).toStrictEqual({
+        $ref: "#/components/schemas/Deleted",
+      });
+    },
+  );
+
+  it("preserves explicit overrides, non-discriminated bases, and discriminated leaves", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      namespace Demo;
+      @discriminator("type") model Event { type: string; }
+      model Created extends Event { type: "created"; }
+      model Override { value: string; }
+      model Plain { value: string; }
+      model Derived extends Plain { extra: string; }
+      @discriminator("type") model Leaf { type: string; }
+      @publish(Override) @channel("events") op send(): Event;
+      op receivePlain(): Plain;
+      op receiveLeaf(): Leaf;
+    `);
+    expect(doc.operations.send.messages).toStrictEqual([
+      { $ref: "#/channels/events/messages/Override" },
+    ]);
+    expect(doc.operations.receivePlain.messages).toStrictEqual([
+      { $ref: "#/channels/receivePlain/messages/Plain" },
+    ]);
+    expect(doc.operations.receiveLeaf.messages).toStrictEqual([
+      { $ref: "#/channels/receiveLeaf/messages/Leaf" },
+    ]);
+  });
+
   it("should emit multiple messages for a union return type", async () => {
     const spec = `
       @service(#{title: "Multi-Message Test"})
