@@ -6,23 +6,32 @@ channels:
   animals:
     address: animals
     messages:
-      Animal:
-        $ref: "#/components/messages/Animal"
+      Dog:
+        $ref: "#/components/messages/Dog"
+      Cat:
+        $ref: "#/components/messages/Cat"
 operations:
   publish:
     action: send
     channel:
       $ref: "#/channels/animals"
     messages:
-      - $ref: "#/channels/animals/messages/Animal"
+      - $ref: "#/channels/animals/messages/Dog"
+      - $ref: "#/channels/animals/messages/Cat"
 components:
   messages:
-    Animal:
-      name: Animal
+    Dog:
+      name: Dog
       contentType: application/json
-      title: Animal
+      title: Dog
       payload:
-        $ref: "#/components/schemas/Animal"
+        $ref: "#/components/schemas/Dog"
+    Cat:
+      name: Cat
+      contentType: application/json
+      title: Cat
+      payload:
+        $ref: "#/components/schemas/Cat"
   schemas:
     Animal:
       type: object
