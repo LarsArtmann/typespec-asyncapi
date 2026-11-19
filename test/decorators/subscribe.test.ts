@@ -202,7 +202,7 @@ describe("@subscribe Decorator Tests", () => {
     const operation = asyncapiDoc.operations.subscribeUserNotifications;
     expect(operation.action).toBe("receive");
     expect(operation.channel?.$ref).toBe(
-      "#/channels/user.notifications.{userId}",
+      "#/channels/user.notifications.%7BuserId%7D",
     );
   });
 });
