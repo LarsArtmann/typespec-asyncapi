@@ -168,7 +168,6 @@ What remains is the gated release chain and the tail:
       row, and the pin steps down as the corpus drains. Source:
       `docs-gates freshness . --audit-all` evidence.
 
-
 ## Test-Suite Integrity (residual)
 
 - [ ] Property-suite generator breadth — generators now cover model→model
