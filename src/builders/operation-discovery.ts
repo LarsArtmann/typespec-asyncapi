@@ -6,6 +6,8 @@
  */
 
 import {
+  getDiscriminator,
+  getDiscriminatedUnionFromInheritance,
   isStdNamespace,
   type Namespace,
   type Operation,
@@ -29,6 +31,7 @@ import {
   type DocumentBuildContext,
 } from "./_imports.js";
 import { schemaNameForType } from "../schema-ref.js";
+import { ensureChannel } from "./channel-builder.js";
 import { findEnclosingServiceNamespace } from "./cross-emitter-validation.js";
 import {
   type HttpRouteFacts,
@@ -56,11 +59,29 @@ export const discoverOperations: BuilderFn = (state, ctx) => {
 
 /** Resolve message names and schema names from an operation's return type. */
 function resolveMessageInfo(
+  program: Program,
   type: Type,
   state: AsyncAPIConsolidatedState,
   fallbackName: string,
 ): { messageNames: string[]; messageSchemaNames: string[] } {
-  const models = returnModelTypes(type);
+  const models = [
+    ...new Set(
+      returnModelTypes(type).flatMap<Type>((model) => {
+        if (model.kind !== "Model") {
+          return [model];
+        }
+        const discriminator = getDiscriminator(program, model);
+        if (!discriminator) {
+          return [model];
+        }
+        const [union] = getDiscriminatedUnionFromInheritance(
+          model,
+          discriminator,
+        );
+        return union.variants.size > 0 ? [...union.variants.values()] : [model];
+      }),
+    ),
+  ];
   if (models.length === 0) {
     return {
       messageNames: [fallbackName],
@@ -81,18 +102,31 @@ function discoverDecoratedOps(
   ctx: DocumentBuildContext,
 ): void {
   for (const { type, name, data } of iterNamedTypes(state.channels)) {
-    ctx.opToChannel.set(name, data.path);
-    const doc = getDoc(ctx.program, type);
-    if (doc) {
-      ctx.channelDocs.set(data.path, doc);
+    const channelKey = data.id ?? data.path;
+    ctx.opToChannel.set(name, channelKey);
+    const channel = ensureChannel(ctx, channelKey, data.path);
+    if (channel.address !== data.path) {
+      reportProgramDiagnostic(ctx.program, {
+        code: "conflicting-channel-address",
+        target: type,
+        format: {
+          channelId: channelKey,
+          firstAddress: String(channel.address),
+          secondAddress: data.path,
+        },
+      });
+    }
+    const channelDoc = getDoc(ctx.program, type);
+    if (channelDoc) {
+      ctx.channelDocs.set(channelKey, channelDoc);
     }
     const channelSummary = getSummary(ctx.program, type);
     if (channelSummary !== undefined) {
-      ctx.channelSummaries.set(data.path, channelSummary);
+      ctx.channelSummaries.set(channelKey, channelSummary);
     }
     const channelTags = state.tags.get(type);
     if (channelTags && channelTags.length > 0) {
-      ctx.channelTags.set(data.path, channelTags);
+      ctx.channelTags.set(channelKey, channelTags);
     }
   }
 
@@ -102,6 +136,7 @@ function discoverDecoratedOps(
     const channelKey = ctx.opToChannel.get(name) ?? name;
 
     let { messageNames, messageSchemaNames } = resolveMessageInfo(
+      ctx.program,
       type,
       state,
       opName,
@@ -143,8 +178,8 @@ const discoverChannelOnlyOps: BuilderFn = (state, ctx) => {
       continue;
     }
     const opName = resolveOpName(state, type, name);
-    const channelKey = data.path;
-    const info = resolveMessageInfo(type, state, opName);
+    const channelKey = data.id ?? data.path;
+    const info = resolveMessageInfo(ctx.program, type, state, opName);
     ctx.discoveredOps.push({
       action: inferActionFromName(name),
       channelKey,
@@ -197,7 +232,7 @@ const discoverBareOps: BuilderFn = (state, ctx) => {
         continue;
       }
       const effectiveName = resolveOpName(state, op, opName);
-      const info = resolveMessageInfo(op, state, effectiveName);
+      const info = resolveMessageInfo(ctx.program, op, state, effectiveName);
       const bareDoc = getDoc(ctx.program, op);
       if (bareDoc) {
         ctx.opDocs.set(effectiveName, bareDoc);

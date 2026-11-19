@@ -82,6 +82,18 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "error",
     },
+    "invalid-channel-id": {
+      messages: {
+        default: paramMessage`@channel on operation '${"operationName"}' must use a non-empty channel ID.`,
+      },
+      severity: "error",
+    },
+    "conflicting-channel-address": {
+      messages: {
+        default: paramMessage`Channel ID '${"channelId"}' is used for different addresses: '${"firstAddress"}' and '${"secondAddress"}'. Use a different ID for each address.`,
+      },
+      severity: "error",
+    },
     "schema-generation-failed": {
       messages: {
         default: paramMessage`Schema generation failed: ${"error"}.`,

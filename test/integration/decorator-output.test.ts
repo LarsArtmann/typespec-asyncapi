@@ -5,7 +5,11 @@
  * actually produce correct output in the generated AsyncAPI document.
  */
 
-import { compileAsyncAPISpecWithoutErrors } from "../utils/test-helpers";
+import {
+  compileAsyncAPI,
+  compileAsyncAPISpecWithoutErrors,
+  compileAsyncAPIWithoutErrors,
+} from "../utils/test-helpers";
 import { parse as parseYAML } from "yaml";
 
 async function compileAndGetDoc(source: string) {
@@ -17,6 +21,122 @@ async function compileAndGetDoc(source: string) {
   }
   throw new Error("No AsyncAPI output found");
 }
+
+describe("decorator Output: channel identity", () => {
+  it("keeps channels at the same address separate while pairing send and receive", async () => {
+    const { asyncApiDoc: doc } = await compileAsyncAPIWithoutErrors(`
+      @server("main", #{ url: "wss://example.test", protocol: "wss" })
+      namespace Demo;
+      model Event { id: string; }
+      @doc("Conversation connection")
+      @summary("Conversation")
+      @tags(#["conversation"])
+      @useChannelServer("main")
+      @protocol(#{ protocol: "ws", queryParams: #{
+        type: "object", properties: #{ mode: #{ \`enum\`: #["conversation"] } }
+      } })
+      @channel("/v1/realtime", "conversation")
+      @publish op sendConversation(): Event;
+      @channel("/v1/realtime", "conversation")
+      @subscribe op receiveConversation(): Event;
+      @doc("Transcription connection")
+      @protocol(#{ protocol: "ws", queryParams: #{
+        type: "object", properties: #{ mode: #{ \`enum\`: #["transcription"] } }
+      } })
+      @channel("/v1/realtime", "transcription")
+      @publish op sendTranscription(): Event;
+    `);
+    expect(Object.keys(doc.channels)).toStrictEqual([
+      "conversation",
+      "transcription",
+    ]);
+    expect(doc.channels.conversation.address).toBe("/v1/realtime");
+    expect(doc.channels.transcription.address).toBe("/v1/realtime");
+    expect(doc.channels.conversation.bindings).toMatchObject({
+      ws: { query: { properties: { mode: { enum: ["conversation"] } } } },
+    });
+    expect(doc.channels.transcription.bindings).toMatchObject({
+      ws: { query: { properties: { mode: { enum: ["transcription"] } } } },
+    });
+    expect(doc.channels.conversation.description).toBe(
+      "Conversation connection",
+    );
+    expect(doc.channels.transcription.description).toBe(
+      "Transcription connection",
+    );
+    expect(doc.channels.conversation.summary).toBe("Conversation");
+    expect(doc.channels.conversation.tags).toStrictEqual([
+      { name: "conversation" },
+    ]);
+    expect(doc.channels.conversation.servers).toStrictEqual([
+      { $ref: "#/servers/main" },
+    ]);
+    expect(doc.operations.sendConversation.channel).toStrictEqual({
+      $ref: "#/channels/conversation",
+    });
+    expect(doc.operations.receiveConversation.channel).toStrictEqual(
+      doc.operations.sendConversation.channel,
+    );
+    expect(doc.operations.receiveConversation.messages).toStrictEqual([
+      { $ref: "#/channels/conversation/messages/Event" },
+    ]);
+    expect(doc.operations.sendTranscription.messages).toStrictEqual([
+      { $ref: "#/channels/transcription/messages/Event" },
+    ]);
+  });
+
+  it("uses the address for channel parameters and keeps one-argument behavior", async () => {
+    const { asyncApiDoc: doc } = await compileAsyncAPIWithoutErrors(`
+      @parameter("session_id", #{ description: "Session ID" })
+      @reusableBinding("socket", #{ ws: #{ method: "GET" } })
+      namespace Demo;
+      model Event { id: string; }
+      @useChannelBinding("socket")
+      @channel("sessions/{session_id}/events", "sessionEvents")
+      op receive(): Event;
+      @channel("legacy") @publish op sendLegacy(): Event;
+    `);
+    expect(doc.channels.sessionEvents.address).toBe(
+      "sessions/{session_id}/events",
+    );
+    expect(doc.channels.sessionEvents.parameters).toStrictEqual({
+      session_id: { $ref: "#/components/parameters/session_id" },
+    });
+    expect(doc.channels.sessionEvents.bindings).toStrictEqual({
+      $ref: "#/components/channelBindings/socket",
+    });
+    expect(doc.operations.receive.channel).toStrictEqual({
+      $ref: "#/channels/sessionEvents",
+    });
+    expect(doc.channels.legacy.address).toBe("legacy");
+    expect(doc.operations.sendLegacy.channel).toStrictEqual({
+      $ref: "#/channels/legacy",
+    });
+  });
+
+  it.each([
+    [
+      "empty IDs",
+      '@channel("events", "") op receive(): Event;',
+      "invalid-channel-id",
+    ],
+    [
+      "conflicting addresses",
+      '@channel("first", "shared") op first(): Event; @channel("second", "shared") op second(): Event;',
+      "conflicting-channel-address",
+    ],
+  ])("rejects %s", async (_, source, code) => {
+    const result = await compileAsyncAPI(`
+      model Event { id: string; }
+      ${source}
+    `);
+    expect(
+      result.diagnostics
+        .filter((d) => d.severity === "error")
+        .map((d) => d.code),
+    ).toContain(`@lars-artmann/typespec-asyncapi/${code}`);
+  });
+});
 
 describe("decorator Output: @tags", () => {
   it("should emit tags on operations", async () => {
