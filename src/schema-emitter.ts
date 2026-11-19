@@ -77,6 +77,11 @@ export class AsyncAPISchemaEmitter extends TypeEmitter<
     const program = this.emitter.getProgram();
     const base = model.baseModel ? this.baseSchemaOf(model.baseModel) : null;
     const schema = this.collectPropertiesSchema(model, base === null);
+    if (model.indexer) {
+      schema.additionalProperties = this.elementTypeToSchema(
+        model.indexer.value,
+      );
+    }
     if (base) {
       schema.allOf = [base];
     }

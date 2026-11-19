@@ -17,6 +17,33 @@ async function expectSnapshot(source: string, name: string) {
 }
 
 describe("asyncAPI import round trip", () => {
+  it("preserves typed additional properties on a named payload", async () => {
+    const result = await importAsyncAPI(`
+asyncapi: 3.1.0
+info: { title: Events, version: '1' }
+channels:
+  counts:
+    address: counts
+    messages:
+      Counts:
+        payload:
+          type: object
+          properties:
+            total: { type: integer }
+          required: [total]
+          additionalProperties: { type: integer }
+operations:
+  sendCounts:
+    action: send
+    channel: { $ref: '#/channels/counts' }`);
+    const emitted = await compileAndValidateOrThrow(result.source);
+    expect(emitted.components?.schemas?.Counts).toMatchObject({
+      properties: { total: { type: "integer" } },
+      required: ["total"],
+      additionalProperties: { type: "integer" },
+    });
+  });
+
   it("snapshots an adapted public-spec example and re-emits its contract", async () => {
     const input = await readFile(
       new URL("fixtures/account-events.yaml", import.meta.url),
