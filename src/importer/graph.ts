@@ -362,7 +362,7 @@ export class Graph {
         this.doc.warn(path, "Reusable correlation ID is inlined.");
       }
       const location = text(correlation.location, child(pointer, "location"));
-      if (!/^\$message\.(?:header|payload)#(?:\/|$)/u.test(location)) {
+      if (!/^\$message\.(?:header|payload)(?:$|#(?:\/|$))/u.test(location)) {
         fail(
           child(pointer, "location"),
           "Expected a message runtime expression.",

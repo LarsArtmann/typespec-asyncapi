@@ -132,6 +132,27 @@ describe("import graph and schema adapter", () => {
     ]);
   });
 
+  it.each(["$message.payload", "$message.header#/id"])(
+    "preserves the correlation location %s",
+    async (location) => {
+      const result = await importAsyncAPI(`
+asyncapi: 3.1.0
+info: { title: Events, version: '1' }
+channels:
+  events:
+    address: events
+    messages:
+      Event:
+        payload: { type: object }
+        correlationId: { location: '${location}' }
+operations:
+  sendEvent:
+    action: send
+    channel: { $ref: '#/channels/events' }`);
+      expect(result.source).toContain(`@correlationId("${location}")`);
+    },
+  );
+
   it("rejects a converter response that omits an expected declaration", () => {
     const expected = new Map([["Payload", { annotations: new Map() }]]);
     expect(() =>
