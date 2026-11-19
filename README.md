@@ -415,7 +415,7 @@ Run all commands inside `nix develop .#default` to get the right toolchain (pnpm
 
 ### Releasing
 
-Releases are published automatically by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a `v*` tag runs the full `pnpm run verify` gate (build, lint, 1236 tests, coverage ≥ 75%/file, zero code clones) and then publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements) attestation.
+Releases are published automatically by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a `v*` tag runs the full `pnpm run verify` gate (build, lint, 1236 tests, coverage ≥ 75%/file, zero code clones) and then publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements) attestation. After npm publishing succeeds, the workflow creates the GitHub Release and attaches the same tarball as `typespec-asyncapi.tgz`.
 
 ```bash
 # bump version in package.json and update CHANGELOG.md first

@@ -104,7 +104,7 @@ jobs:
           npm publish "$PACKAGE" --registry https://registry.npmjs.org/ --provenance --ignore-scripts --access public "${TAG_ARGS[@]}"
 
   github-release:
-    needs: publish
+    needs: [verify, publish]
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
@@ -114,6 +114,11 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.verify.outputs.artifact-id }}
+          path: ${{ runner.temp }}/npm-package
 
       # Body comes from the tagged version's CHANGELOG.md section, so the
       # changelog stays the single source of release notes. Idempotent: a
@@ -139,4 +144,6 @@ jobs:
             }
             console.log(section.slice(section.indexOf("\n") + 1).trimEnd());
           ' "$VERSION")
-          gh release create "$TAG" --verify-tag --title "$TAG" --notes "$NOTES" --latest
+          PACKAGE="$RUNNER_TEMP/npm-package/typespec-asyncapi.tgz"
+          mv "$RUNNER_TEMP/npm-package/package.tgz" "$PACKAGE"
+          gh release create "$TAG" "$PACKAGE" --verify-tag --title "$TAG" --notes "$NOTES" --latest
