@@ -148,11 +148,13 @@ components:
 
 **Core messaging**
 
-| Decorator                         | Target    | Purpose                                |
-| --------------------------------- | --------- | -------------------------------------- |
-| `@channel(address, description?)` | Operation | Defines a channel address              |
-| `@publish` / `@subscribe`         | Operation | Marks operation as send / receive      |
-| `@reply(replyModel, address?)`    | Operation | Operation reply with message reference |
+| Decorator                      | Target    | Purpose                                   |
+| ------------------------------ | --------- | ----------------------------------------- |
+| `@channel(address, id?)`       | Operation | Defines a channel address and optional ID |
+| `@publish` / `@subscribe`      | Operation | Marks operation as send / receive         |
+| `@reply(replyModel, address?)` | Operation | Operation reply with message reference    |
+
+`@channel` uses the address as the channel ID when the second argument is omitted. Use distinct IDs to describe connections at the same address with different handshake bindings, such as `@channel("/v1/realtime", "conversation")` and `@channel("/v1/realtime", "transcription")`. Reuse an ID to pair send and receive operations at the same address. Empty IDs or conflicting addresses for one ID are reported as errors.
 
 **Servers**
 
