@@ -18,9 +18,6 @@ importers:
 
   .:
     dependencies:
-      '@typespec/openapi3':
-        specifier: ^1.17.0
-        version: 1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6))(@typespec/http@1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6)))(@typespec/json-schema@1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6)))(@typespec/openapi@1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6))(@typespec/http@1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6))))(@typespec/versioning@0.87.0(@typespec/compiler@1.17.0(@types/node@26.6.6)))
       yaml:
         specifier: ^2.9.1
         version: 2.9.1
@@ -55,6 +52,9 @@ importers:
       '@typespec/json-schema':
         specifier: ^1.17.0
         version: 1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6))
+      '@typespec/openapi3':
+        specifier: ^1.17.0
+        version: 1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6))(@typespec/http@1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6)))(@typespec/json-schema@1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6)))(@typespec/openapi@1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6))(@typespec/http@1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6))))(@typespec/versioning@0.87.0(@typespec/compiler@1.17.0(@types/node@26.6.6)))
       '@typespec/rest':
         specifier: ^0.87.0
         version: 0.87.0(@typespec/compiler@1.17.0(@types/node@26.6.6))(@typespec/http@1.17.0(@typespec/compiler@1.17.0(@types/node@26.6.6)))

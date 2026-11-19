@@ -113,7 +113,6 @@
     "prepare": "husky"
   },
   "dependencies": {
-    "@typespec/openapi3": "^1.17.0",
     "yaml": "^2.9.1"
   },
   "devDependencies": {
@@ -127,6 +126,7 @@
     "@typespec/compiler": "^1.17.0",
     "@typespec/http": "^1.17.0",
     "@typespec/json-schema": "^1.17.0",
+    "@typespec/openapi3": "^1.17.0",
     "@typespec/rest": "^0.87.0",
     "@typespec/versioning": "^0.87.0",
     "ajv": "^8.20.0",
@@ -143,7 +143,13 @@
   "peerDependencies": {
     "@typespec/asset-emitter": "^0.79.3",
     "@typespec/compiler": "^1.17.0",
+    "@typespec/openapi3": "^1.17.0",
     "@typespec/versioning": "^0.87.0"
+  },
+  "peerDependenciesMeta": {
+    "@typespec/openapi3": {
+      "optional": true
+    }
   },
   "overrides": {
     "@asyncapi/specs": "6.11.1",

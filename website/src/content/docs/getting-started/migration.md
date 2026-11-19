@@ -27,8 +27,11 @@ head:
 Use `tsp-asyncapi` to generate a TypeSpec starting point from a local AsyncAPI 3.1 YAML or JSON file:
 
 ```shell
+pnpm add -D @typespec/openapi3@^1.17.0
 pnpm exec tsp-asyncapi asyncapi.yaml --output-dir imported
 ```
+
+The importer uses `@typespec/openapi3` to convert schemas. You do not need it to emit AsyncAPI from TypeSpec.
 
 The command writes `imported/main.tsp`, refuses to overwrite an existing file, and accepts an optional `--namespace` override. It imports the service title and version, supported servers, send/receive operations, and JSON object payloads. It follows document-local references only. Warnings identify fields that were skipped or normalized, such as a channel key that differs from its address. Bindings, traits, security, replies, and non-JSON payload formats are not imported.
 

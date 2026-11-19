@@ -1,5 +1,7 @@
-import { convertOpenAPI3Document } from "@typespec/openapi3";
-import type { OpenAPISchema3_1 } from "@typespec/openapi3";
+import type {
+  convertOpenAPI3Document as schemaConverter,
+  OpenAPISchema3_1,
+} from "@typespec/openapi3";
 import { fail } from "./diagnostics.js";
 import {
   extractSchemaDeclarations,
@@ -65,6 +67,26 @@ const types = [
   "null",
 ] as const;
 type ProjectedSchema = OpenAPISchema3_1 | { $ref: string };
+
+async function loadSchemaConverter(): Promise<typeof schemaConverter> {
+  try {
+    import.meta.resolve("@typespec/openapi3");
+  } catch (error) {
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "ERR_MODULE_NOT_FOUND"
+    ) {
+      throw new Error(
+        "Schema import requires @typespec/openapi3. Install it with `pnpm add -D @typespec/openapi3@^1.17.0` and retry.",
+        { cause: error },
+      );
+    }
+    throw error;
+  }
+  const { convertOpenAPI3Document } = await import("@typespec/openapi3");
+  return convertOpenAPI3Document;
+}
 
 /** Reuse the public document converter for TypeSpec type syntax, not OpenAPI metadata. */
 export class SchemaAdapter {
@@ -324,6 +346,7 @@ export class SchemaAdapter {
     if (this.schemas.size === 0) {
       return [];
     }
+    const convertOpenAPI3Document = await loadSchemaConverter();
     const byName = new Map(
       [...this.schemas.values()].map((entry) => [entry.name, entry]),
     );

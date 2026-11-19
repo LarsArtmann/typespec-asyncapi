@@ -1,5 +1,13 @@
 import { spawnSync } from "node:child_process";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import {
+  cp,
+  mkdir,
+  mkdtemp,
+  readFile,
+  rm,
+  symlink,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
@@ -11,7 +19,11 @@ const bin = fileURLToPath(
 );
 
 function run(...args: string[]) {
-  return spawnSync(process.execPath, [bin, ...args], {
+  return runBin(bin, ...args);
+}
+
+function runBin(command: string, ...args: string[]) {
+  return spawnSync(process.execPath, [command, ...args], {
     encoding: "utf8",
     timeout: 15_000,
   });
@@ -30,6 +42,55 @@ describe("published importer command", () => {
       status: 1,
       stderr: expect.stringContaining("Expected one input path"),
     });
+  }, 35_000);
+
+  it("only requires OpenAPI3 when converting schemas", async () => {
+    const dir = await mkdtemp(join(tmpdir(), "asyncapi-import-"));
+    try {
+      const repo = fileURLToPath(new URL("../../", import.meta.url));
+      const modules = join(dir, "node_modules");
+      await mkdir(join(modules, "@typespec"), { recursive: true });
+      for (const name of ["@typespec/compiler", "yaml"]) {
+        await symlink(
+          join(repo, "node_modules", name),
+          join(modules, name),
+          "junction",
+        );
+      }
+      await writeFile(join(dir, "package.json"), '{"type":"module"}');
+      await cp(join(repo, "dist", "src"), join(dir, "src"), { recursive: true });
+      const command = join(dir, "src", "importer", "cli.js");
+      expect(runBin(command, "--help")).toMatchObject({
+        status: 0,
+        stderr: "",
+      });
+
+      const schemaFree = join(dir, "schema-free.yaml");
+      await writeFile(
+        schemaFree,
+        "asyncapi: 3.1.0\ninfo: { title: Events, version: '1' }",
+      );
+      expect(
+        runBin(command, schemaFree, "--output-dir", join(dir, "empty")),
+      ).toMatchObject({
+        status: 0,
+        stderr: "",
+      });
+
+      const fixture = fileURLToPath(
+        new URL("fixtures/account-events.yaml", import.meta.url),
+      );
+      const output = join(dir, "with-schemas");
+      expect(runBin(command, fixture, "--output-dir", output)).toMatchObject({
+        status: 1,
+        stderr: expect.stringContaining("pnpm add -D @typespec/openapi3"),
+      });
+      await expect(readFile(join(output, "main.tsp"))).rejects.toMatchObject({
+        code: "ENOENT",
+      });
+    } finally {
+      await rm(dir, { force: true, recursive: true });
+    }
   }, 35_000);
 
   it("creates output, warns on stderr, and refuses to overwrite", async () => {
