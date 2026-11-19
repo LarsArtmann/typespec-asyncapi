@@ -80,7 +80,7 @@
     "clean:test": "trash tsp-test tsp-output test-output @lars-artmann output 2>/dev/null || true",
     "pretest": "pnpm run clean:test && pnpm run build",
     "test": "vitest run",
-    "test:watch": "vitest",
+    "test:watch": "pnpm run build && vitest",
     "test:coverage": "pnpm run build && rm -rf coverage && bun test --coverage --coverage-reporter=lcov --coverage-dir=coverage",
     "test:coverage:gate": "pnpm run test:coverage && bun run scripts/coverage-gate.ts",
     "test:validation": "pnpm run build && vitest run test/critical-validation.test.ts test/all-generated-specs-validation.test.ts",
