@@ -26,7 +26,7 @@ function list(value: unknown, at: string): unknown[] {
 }
 
 function optionalText(value: unknown, at: string): string | undefined {
-  return value === undefined ? undefined : text(value, at);
+  return value === undefined || value === "" ? undefined : text(value, at);
 }
 
 export class Graph {
@@ -331,8 +331,9 @@ export class Graph {
       );
     }
     const contentType =
-      optionalText(value.contentType, child(at, "contentType")) ??
-      this.defaultContentType;
+      value.contentType === undefined
+        ? this.defaultContentType
+        : text(value.contentType, child(at, "contentType"));
     const config: RecordValue = {};
     for (const [key, item] of Object.entries({
       title: title ?? name,

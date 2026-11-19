@@ -100,6 +100,26 @@ describe("import graph and schema adapter", () => {
     expect(result.source).toContain('@operationId("send-event")');
   });
 
+  it("omits empty optional operation docs but preserves nonempty docs", async () => {
+    const input = document({ type: "object" });
+    const operation = input.operations["send-event"];
+    const withDescription = (description: unknown) =>
+      JSON.stringify({
+        ...input,
+        operations: {
+          sendEvent: { ...operation, description, summary: "" },
+        },
+      });
+
+    const empty = await importAsyncAPI(withDescription(""));
+    expect(empty.source).not.toMatch(/@(?:doc|summary)\(/u);
+    const nonempty = await importAsyncAPI(withDescription("Sends an event"));
+    expect(nonempty.source).toContain('@doc("Sends an event")');
+    await expect(importAsyncAPI(withDescription(42))).rejects.toMatchObject({
+      pointer: "/operations/sendEvent/description",
+    });
+  });
+
   it("reports unused reusable messages without generating an operation for them", async () => {
     const input = {
       ...root,
