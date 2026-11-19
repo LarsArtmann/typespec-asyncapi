@@ -33,7 +33,7 @@ removal.
         first), the local `~/.npmrc` token returns E401 on `npm whoami`, and
         npm still serves 1.1.0. Fix paths: (a) mint a granular token (Read
         and write, @lars-artmann scope), `gh secret set NPM_TOKEN --repo
-        LarsArtmann/typespec-asyncapi`, refresh `~/.npmrc`; or (b) PREFERRED:
+    LarsArtmann/typespec-asyncapi`, refresh `~/.npmrc`; or (b) PREFERRED:
         review+merge #298 (baywet, opened within the hour) which switches
         release.yml to npm trusted publishing (OIDC, no token) — then register
         release.yml as trusted publisher on npmjs.com. Either way finish with
