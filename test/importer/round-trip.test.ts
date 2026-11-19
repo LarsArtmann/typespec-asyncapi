@@ -269,44 +269,45 @@ describe("asyncAPI import round trip", () => {
       },
     });
 
-    it("shares inline messages from referenced channel definitions", async () => {
-      const inbound = "#/components/channels/Inbound";
-      const event = `${inbound}/messages/Event`;
-      const result = await importAsyncAPI(
-        JSON.stringify({
-          asyncapi: "3.1.0",
-          info: { title: "Events", version: "1" },
+  });
+
+  it("shares inline messages from referenced channel definitions", async () => {
+    const inbound = "#/components/channels/Inbound";
+    const event = `${inbound}/messages/Event`;
+    const result = await importAsyncAPI(
+      JSON.stringify({
+        asyncapi: "3.1.0",
+        info: { title: "Events", version: "1" },
+        channels: {
+          in: { $ref: inbound },
+          out: { address: "out", messages: { Event: { $ref: event } } },
+        },
+        components: {
           channels: {
-            in: { $ref: inbound },
-            out: { address: "out", messages: { Event: { $ref: event } } },
-          },
-          components: {
-            channels: {
-              Inbound: {
-                address: "in",
-                messages: { Event: { payload: { type: "object" } } },
-              },
+            Inbound: {
+              address: "in",
+              messages: { Event: { payload: { type: "object" } } },
             },
           },
-          operations: {
-            receiveEvent: {
-              action: "receive",
-              channel: { $ref: "#/channels/in" },
-              messages: [{ $ref: event }],
-            },
-            sendEvent: { action: "send", channel: { $ref: "#/channels/out" } },
+        },
+        operations: {
+          receiveEvent: {
+            action: "receive",
+            channel: { $ref: "#/channels/in" },
+            messages: [{ $ref: event }],
           },
-        }),
-      );
-      const emitted = await compileAndValidateOrThrow(result.source);
-      const messages = { Event: { $ref: "#/components/messages/Event" } };
-      expect(emitted.channels).toMatchObject({
-        in: { messages },
-        out: { messages },
-      });
-      expect(Object.keys(emitted.components?.messages ?? {})).toStrictEqual([
-        "Event",
-      ]);
+          sendEvent: { action: "send", channel: { $ref: "#/channels/out" } },
+        },
+      }),
+    );
+    const emitted = await compileAndValidateOrThrow(result.source);
+    const messages = { Event: { $ref: "#/components/messages/Event" } };
+    expect(emitted.channels).toMatchObject({
+      in: { messages },
+      out: { messages },
     });
+    expect(Object.keys(emitted.components?.messages ?? {})).toStrictEqual([
+      "Event",
+    ]);
   });
 });
