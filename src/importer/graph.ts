@@ -14,6 +14,7 @@ interface Channel {
   messagesPointer: string;
   address: string;
   messages: Map<string, unknown>;
+  messageKeysByPointer: ReadonlyMap<string, string>;
   serverKeys: string[];
   used: Set<string>;
 }
@@ -158,11 +159,15 @@ export class Graph {
             return serverKey;
           });
     const messagesPointer = child(pointer, "messages");
+    const messages = new Map(entries(value.messages, messagesPointer));
     return {
       messagesPointer,
       address,
       serverKeys,
-      messages: new Map(entries(value.messages, messagesPointer)),
+      messages,
+      messageKeysByPointer: new Map(
+        [...messages.keys()].map((key) => [child(messagesPointer, key), key]),
+      ),
       used: new Set(),
     };
   }
@@ -251,10 +256,9 @@ export class Graph {
         : list(input, at).map((item, index) => {
             const path = child(at, String(index));
             const target = this.doc.lookup(object(item, path).$ref, path);
-            for (const key of channel.messages.keys()) {
-              if (child(parent, key) === target.pointer) {
-                return key;
-              }
+            const key = channel.messageKeysByPointer.get(target.pointer);
+            if (key !== undefined) {
+              return key;
             }
             return fail(
               path,
