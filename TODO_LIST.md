@@ -27,8 +27,7 @@ removal.
   - [x] README de-beta-ification + stability statement
   - [x] Tag `v1.0.0` → provenance workflow; fresh-install smoke test
   - [ ] Register npm trusted publisher — **remaining Lars action, narrowed
-        2026-11-19 evening**: Lars dispatched the real publish (run
-        44603780129) and the publish job FAILED with **E404 on PUT** — OIDC
+        2026-11-19 evening**: Lars dispatched the real publish (run 44603780129) and the publish job FAILED with **E404 on PUT** — OIDC
         exchange and provenance signing work (sigstore logIndex 4005319347),
         the registry rejected the package write. GitHub side is verifiably
         correct (repo, default branch, workflow filename `release.yml`,
@@ -53,7 +52,7 @@ removal.
         push-event-only, but the v1.2.0 GitHub Release ALREADY EXISTS
         (created 2026-11-19 13:00Z, no assets) — after the publish succeeds,
         optionally attach the tarball (`gh release upload v1.2.0
-        lars-artmann-typespec-asyncapi-1.2.0.tgz`) and verify the notes
+    lars-artmann-typespec-asyncapi-1.2.0.tgz`) and verify the notes
         match the CHANGELOG section; do NOT create a second release.
   - [ ] ~~Remove the stale `alpha` dist-tag~~ SUPERSEDED 2026-11-19: all three
         dist-tags had been re-pointed at 1.1.0 as "intentional prerelease
@@ -81,8 +80,12 @@ removal.
       comments on a single `ci-alert`-labeled tracking issue for every failed
       run (Release failures always alert; CI only on master/main — PR runs
       stay excluded) and auto-closes it once CI on master is green again. No
-      third-party actions to pin; actionlint clean. It went live after the
-      19:58Z Release failure, so the next incident alerts automatically.
+      third-party actions to pin; actionlint clean, heredoc logic dry-run
+      verified locally. **NOT LIVE YET** (verified 21:17 CET): it sits in
+      daemon commits not yet pushed — GitHub's workflow list has no "CI
+      Alert". Once pushed, `workflow_run` only observes runs started AFTER
+      the landing, so the 19:58Z Release failure predates it and will never
+      alert; the first incident after the push is the live-fire test.
       (`docs/status/2026-11-19_07-36_merge-sequence-phase2.md` §f.13)
 - [x] **Property-test seeds for the new 1.2.0 behaviors** — DONE
       2026-11-19: `specArbitrary` now generates optional channel IDs
@@ -114,7 +117,7 @@ removal.
       Updates failed 3x from 12:51Z (new advisory fetch for the documented
       GHSA-g3hv-75wg-m249 dismissal — only patched minimatch releases are
       ESM-only, spectral-core is CJS). Added `ignore:
-      dependency-name: minimatch` to the root npm updater in
+    dependency-name: minimatch` to the root npm updater in
       `.github/dependabot.yml` with the rationale as a comment.
 
 ## Dependency & Toolchain Refresh (2026-11-04, harvested from the BuildFlow triage session)
@@ -165,8 +168,10 @@ What remains is the gated release chain and the tail:
       (NOTICE provenance banner + review ledger ticked; TL;DR asks for an
       implicit-verb warning AND duplicate-operation errors that name the
       operations). Remaining: watch for maintainer response.
-- [ ] **⏰ eslint 10.12.0 bump** — after the 20:08 UTC soak on 2026-10-03;
-      relock, frozen-lockfile proof, quick lint.
+- [x] **⏰ eslint 10.12.0 bump** — SUPERSEDED (2026-11-19): the tree already
+      resolved eslint 10.14.0 (verified via `pnpm why minimatch`), so the
+      10.12.0 window is long gone; eslint rides the "one verified pass"
+      dependency item above if it ever needs a deliberate bump again.
 - [ ] **⏰ After the BuildFlow baseline WIP lands** — remove
       `.bf-jscpd-worktree`, reinstall buildflow from the main URL, verify
       version is not `-dirty`.

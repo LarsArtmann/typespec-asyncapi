@@ -44,7 +44,7 @@ Compilation fails; no (or partial) output.
 | `invalid-tags-config`           | Tags without a `name`, or empty tag names                          |
 | `missing-channel-path`          | Operation missing a `@channel` address                             |
 | `invalid-channel-id`            | `@channel` used an empty channel ID                                |
-| `conflicting-channel-address`    | One channel ID used for two different addresses                     |
+| `conflicting-channel-address`   | One channel ID used for two different addresses                    |
 | `server-protocol-required`      | Server config without a protocol                                   |
 | `server-target-invalid`         | `@useChannelServer` references an unknown server                   |
 | `server-url-required`           | Server config without a URL                                        |

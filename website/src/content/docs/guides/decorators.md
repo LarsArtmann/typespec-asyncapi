@@ -32,11 +32,11 @@ Reserved words cannot be keys in `#{}` literals (`model`, `enum`, `default`, ...
 
 ## Core messaging
 
-| Decorator                         | Target    | Purpose                                |
-| --------------------------------- | --------- | -------------------------------------- |
-| `@channel(address, id?)`        | Operation | Defines a channel address and optional channel ID    |
-| `@publish` / `@subscribe`         | Operation | Marks operation as send / receive      |
-| `@reply(replyModel, address?)`    | Operation | Operation reply with message reference |
+| Decorator                      | Target    | Purpose                                           |
+| ------------------------------ | --------- | ------------------------------------------------- |
+| `@channel(address, id?)`       | Operation | Defines a channel address and optional channel ID |
+| `@publish` / `@subscribe`      | Operation | Marks operation as send / receive                 |
+| `@reply(replyModel, address?)` | Operation | Operation reply with message reference            |
 
 ## Servers
 

@@ -495,9 +495,7 @@ describe("property: emitter invariants (seed pinned, FC_SEED to reproduce)", () 
         .filter((ref) => ref.includes("/messages/"))
         .toSorted();
       expect(opRefs).toStrictEqual(
-        variantNames
-          .map((v) => `#/channels/${token}/messages/${v}`)
-          .toSorted(),
+        variantNames.map((v) => `#/channels/${token}/messages/${v}`).toSorted(),
       );
 
       for (const variant of variantNames) {
