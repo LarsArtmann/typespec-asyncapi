@@ -49,11 +49,12 @@ removal.
         provenance attestation on the npm page, fresh-install smoke test
         (new project, compile, AJV-validate), dist-tags reduced to
         `latest` only, confirm the prerelease `--tag latest` branch did
-        NOT fire (1.2.0 is stable). ALSO: the `github-release` job is
-        push-event-only, so a dispatch publish does NOT create the v1.2.0
-        GitHub Release — create it manually from the 1.2.0 CHANGELOG
-        section (`gh release create v1.2.0 --verify-tag --title v1.2.0
-        --latest`).
+        NOT fire (1.2.0 is stable). NOTE: the `github-release` job is
+        push-event-only, but the v1.2.0 GitHub Release ALREADY EXISTS
+        (created 2026-11-19 13:00Z, no assets) — after the publish succeeds,
+        optionally attach the tarball (`gh release upload v1.2.0
+        lars-artmann-typespec-asyncapi-1.2.0.tgz`) and verify the notes
+        match the CHANGELOG section; do NOT create a second release.
   - [ ] ~~Remove the stale `alpha` dist-tag~~ SUPERSEDED 2026-11-19: all three
         dist-tags had been re-pointed at 1.1.0 as "intentional prerelease
         channels", but the owner retired `beta`/`alpha` outright — delete both

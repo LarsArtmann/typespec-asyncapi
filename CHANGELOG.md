@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- **CI failure alerting** — `.github/workflows/ci-alert.yml` opens or comments
+  on a single `ci-alert`-labeled tracking issue whenever CI on master fails
+  or a Release run fails, and closes the issue automatically once CI on
+  master is green again. This closes the daemon-push blind spot that let
+  master CI stay red for two weeks unnoticed (2026-11-04 to 2026-11-18).
+- Property-test generators for the 1.2.0 channel-ID and variant-expansion
+  behaviors, plus two new invariants: the channel key is always exactly
+  `id ?? address` with agreeing refs (RFC 6901 token escaping included), and
+  a discriminated base return expands to one message per derived variant.
+- E2E coverage for `@channel(address, id)` combined with `split-schemas`
+  output (id-keyed channels, operation pairing at a shared ID, distinct IDs
+  at one address, external schema ref rewriting, YAML flavor).
+
+### Changed
+
+- Dependabot ignores `minimatch` (the documented ESM-only advisory
+  dismissal) so update runs stop failing daily on an unfixable bump.
+
 ## [1.2.0] - 2026-11-19
 
 ### Added
