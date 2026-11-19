@@ -57,7 +57,7 @@ any release.
   `test/property/mixed-ownership-properties.test.ts`: 20 random mixed specs
   (seed 20261003, `FC_SEED` override), full oracle — channels == decorated
   events + unclaimed bare ops, every exclusion signaled, conflict warning
-  deduped per namespace. Unique per-op `@route`s in the generator avoid the
+  deduped per namespace. A unique `@route` per op in the generator avoids the
   upstream duplicate-route abort.
 - **M13 — CHANGELOG + FEATURES.** Fixed entry rewritten to route-facts; 6 new
   Added entries; FEATURES diagnostics count 34 → **35 (20 error + 15

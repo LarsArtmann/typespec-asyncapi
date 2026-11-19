@@ -14,7 +14,7 @@ Ready, not yet merged (sequence was interrupted here):
 - **289** derived messages — `update-branch` done, fresh CI **success**, mergeable now
 - **290** $ref encoding — expected clean merge; update-branch + CI not yet run
 - **291** channel IDs — will conflict with 289 (`operation-discovery.ts` one-liner); resolution recipe prepared and proven in the integration tree
-- **293, 294, 292, 278** (Dependabot) — all `update-branch`ed, all CI **pass** (verified 293/294 locally earlier incl. full website gate for 294)
+- **293, 294, 292, 278** (Dependabot) — all went through `update-branch`, all CI **pass** (verified 293/294 locally earlier incl. full website gate for 294)
 
 ## a) Fully done (this phase)
 
