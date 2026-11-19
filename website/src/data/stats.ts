@@ -5,9 +5,9 @@ export const stats = {
   "decorators": 30,
   "protocols": 22,
   "bindings": 19,
-  "diagnostics": 36,
+  "diagnostics": 38,
   "examples": 15,
-  "complianceTests": 305
+  "complianceTests": 308
 } as const;
 
 export type Stats = typeof stats;
