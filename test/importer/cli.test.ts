@@ -116,11 +116,13 @@ describe("published importer command", () => {
       const file = join(output, "main.tsp");
       const saved = await readFile(file, "utf8");
       expect(saved).toContain("namespace CLI_Service;");
+      const sentinel = "// Existing file must remain unchanged.\n";
+      await writeFile(file, sentinel, "utf8");
       expect(run(...args)).toMatchObject({
         status: 1,
         stderr: expect.stringContaining("Refusing to overwrite"),
       });
-      await expect(readFile(file, "utf8")).resolves.toBe(saved);
+      await expect(readFile(file, "utf8")).resolves.toBe(sentinel);
       await expect(readdir(output)).resolves.toStrictEqual(["main.tsp"]);
     } finally {
       await rm(dir, { force: true, recursive: true });
