@@ -1,0 +1,89 @@
+# Alert on red master CI or failed releases.
+#
+# Why: the auto-commit daemon pushes to master with no human watching, and a
+# failed run otherwise goes unnoticed (2026-11-04 -> 2026-11-18: master CI
+# stayed red for two weeks before anyone looked). Every failed run comments
+# on a single open tracking issue labeled ci-alert; the issue closes
+# automatically once CI on master is green again. PR failures are excluded:
+# they are already visible on the pull request itself.
+#
+# No third-party actions are used, so there is nothing to pin or audit.
+
+name: CI Alert
+
+on:
+  workflow_run:
+    workflows: ["CI", "Release"]
+    types: [completed]
+
+permissions: {}
+
+# Serialize alert handling so two near-simultaneous failures cannot race the
+# create-issue check and open duplicate tracking issues.
+concurrency:
+  group: ci-alert
+  cancel-in-progress: false
+
+jobs:
+  alert:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+
+    steps:
+      - name: Open or update the failure tracking issue
+        if: >-
+          (github.event.workflow_run.conclusion == 'failure' ||
+           github.event.workflow_run.conclusion == 'startup_failure') &&
+          (github.event.workflow_run.name == 'Release' ||
+           contains(fromJSON('["master", "main"]'), github.event.workflow_run.head_branch))
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_NAME: ${{ github.event.workflow_run.name }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+          BRANCH: ${{ github.event.workflow_run.head_branch }}
+          SHA: ${{ github.event.workflow_run.head_sha }}
+          COMMIT_MSG: ${{ github.event.workflow_run.head_commit.message }}
+          ACTOR: ${{ github.event.workflow_run.actor.login }}
+        run: |
+          gh label create ci-alert \
+            --color D73A4A \
+            --description "Auto-filed tracking issue for red master CI or failed releases" \
+            2>/dev/null || true
+          ISSUE=$(gh issue list -R "$REPO" --label ci-alert --state open \
+            --json number --jq '.[0].number // empty')
+          BODY=$(cat <<EOF
+          **$RUN_NAME failed** on ${BRANCH:-default branch}
+
+          - Run: $RUN_URL
+          - Commit: \`$SHA\` - ${COMMIT_MSG%%$'\n'*}
+          - Triggered by: @$ACTOR
+
+          Auto-filed by the CI Alert workflow; closes automatically when CI on master is green again.
+          EOF
+          )
+          if [ -n "$ISSUE" ]; then
+            gh issue comment "$ISSUE" -R "$REPO" --body "$BODY"
+          else
+            gh issue create -R "$REPO" \
+              --title "CI or release failure needs attention" \
+              --label ci-alert \
+              --body "$BODY"
+          fi
+
+      - name: Close the tracking issue when CI is green again
+        if: >-
+          github.event.workflow_run.conclusion == 'success' &&
+          github.event.workflow_run.name == 'CI' &&
+          contains(fromJSON('["master", "main"]'), github.event.workflow_run.head_branch)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          ISSUE=$(gh issue list -R "$REPO" --label ci-alert --state open \
+            --json number --jq '.[0].number // empty')
+          if [ -n "$ISSUE" ]; then
+            gh issue close "$ISSUE" -R "$REPO" --comment "Green again: $RUN_URL"
+          fi
