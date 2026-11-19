@@ -188,6 +188,37 @@ describe("asyncAPI import round trip", () => {
     ]);
   });
 
+  it("URI-encodes percent signs in refs without changing the channel key", async () => {
+    const address = "events%2Fnew";
+    const channelRef = "#/channels/events%252Fnew";
+    const messageRef = `${channelRef}/messages/Created`;
+    const result = await importAsyncAPI(
+      JSON.stringify({
+        asyncapi: "3.1.0",
+        info: { title: "Events", version: "1" },
+        channels: {
+          [address]: {
+            address,
+            messages: { Created: { payload: { type: "object" } } },
+          },
+        },
+        operations: {
+          sendEvent: {
+            action: "send",
+            channel: { $ref: channelRef },
+            messages: [{ $ref: messageRef }],
+          },
+        },
+      }),
+    );
+    const emitted = await compileAndValidateOrThrow(result.source);
+    expect(emitted.channels?.[address]).toMatchObject({ address });
+    expect(emitted.operations?.sendEvent).toMatchObject({
+      channel: { $ref: channelRef },
+      messages: [{ $ref: messageRef }],
+    });
+  });
+
   it("re-emits a referenced server with host template variables", async () => {
     const result = await importAsyncAPI(
       JSON.stringify({
