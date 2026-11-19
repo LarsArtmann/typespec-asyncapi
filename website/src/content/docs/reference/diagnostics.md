@@ -1,6 +1,6 @@
 ---
 title: Diagnostics
-description: The 36 compile-time diagnostics (20 errors, 16 warnings) that catch invalid configuration before output.
+description: The 38 compile-time diagnostics (22 errors, 16 warnings) that catch invalid configuration before output.
 head:
   - tag: meta
     attrs:
@@ -26,7 +26,7 @@ head:
 
 All diagnostics are prefixed `@lars-artmann/typespec-asyncapi/` in compiler output. They fire at compile time — invalid configurations never reach the emitted document.
 
-## Errors (20)
+## Errors (22)
 
 Compilation fails; no (or partial) output.
 
@@ -43,6 +43,8 @@ Compilation fails; no (or partial) output.
 | `invalid-server-url`            | Malformed server URL                                               |
 | `invalid-tags-config`           | Tags without a `name`, or empty tag names                          |
 | `missing-channel-path`          | Operation missing a `@channel` address                             |
+| `invalid-channel-id`            | `@channel` used an empty channel ID                                |
+| `conflicting-channel-address`    | One channel ID used for two different addresses                     |
 | `server-protocol-required`      | Server config without a protocol                                   |
 | `server-target-invalid`         | `@useChannelServer` references an unknown server                   |
 | `server-url-required`           | Server config without a URL                                        |
