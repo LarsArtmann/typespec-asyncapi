@@ -26,25 +26,34 @@ removal.
   - [x] CHANGELOG 1.0.0 entry (fold `[Unreleased]`) + package.json bump
   - [x] README de-beta-ification + stability statement
   - [x] Tag `v1.0.0` → provenance workflow; fresh-install smoke test
-  - [ ] Register npm trusted publisher — **remaining Lars action**: #298 was
-        security-audited (all six action pins verified against official tag
-        commits) and merged as 253e4665 on 2026-11-19; release.yml now
-        publishes via GitHub OIDC, the expired NPM_TOKEN secret is deleted,
-        and the dry-run dispatch (run 44599637231) proved the pipeline.
-        One-time manual step on npmjs.com (2FA): package settings → trusted
-        publishing → authorize `LarsArtmann/typespec-asyncapi`, workflow
-        filename `release.yml`. Then publish 1.2.0 with
-        `gh workflow run Release --ref master -f dry_run=false` (NOT a rerun
-        of 44529186193 — that run is pinned to the pre-#298 workflow whose
-        NPM_TOKEN no longer exists). In the same npmjs.com session: delete
-        the `beta` and `alpha` dist-tags (owner retired them 2026-11-19).
+  - [ ] Register npm trusted publisher — **remaining Lars action, narrowed
+        2026-11-19 evening**: Lars dispatched the real publish (run
+        44603780129) and the publish job FAILED with **E404 on PUT** — OIDC
+        exchange and provenance signing work (sigstore logIndex 4005319347),
+        the registry rejected the package write. GitHub side is verifiably
+        correct (repo, default branch, workflow filename `release.yml`,
+        `id-token: write`, NO `environment:` on the job), so the mismatch is
+        in the npmjs.com registration: check it reads EXACTLY repository
+        `LarsArtmann/typespec-asyncapi`, workflow filename `release.yml`,
+        environment EMPTY (a registered environment the job does not declare
+        is the classic E404-on-PUT cause). Then re-dispatch
+        `gh workflow run Release --ref master -f dry_run=false`; npm requires
+        the first authorized publish within 2 days of registration. In the
+        same npmjs.com session: delete the `beta` and `alpha` dist-tags
+        (registry still shows all three at 1.1.0 on 2026-11-19 evening).
+        Status comment on #297: issuecomment-7020669604.
   - [ ] Post-publish verification (after the `dry_run=false` dispatch):
-        watch the publish job closely (its FIRST live exercise), then
+        watch the publish job closely (its FIRST live exercise FAILED
+        2026-11-19 — see the registration item above), then
         `npm view @lars-artmann/typespec-asyncapi version` → 1.2.0,
         provenance attestation on the npm page, fresh-install smoke test
         (new project, compile, AJV-validate), dist-tags reduced to
         `latest` only, confirm the prerelease `--tag latest` branch did
-        NOT fire (1.2.0 is stable).
+        NOT fire (1.2.0 is stable). ALSO: the `github-release` job is
+        push-event-only, so a dispatch publish does NOT create the v1.2.0
+        GitHub Release — create it manually from the 1.2.0 CHANGELOG
+        section (`gh release create v1.2.0 --verify-tag --title v1.2.0
+        --latest`).
   - [ ] ~~Remove the stale `alpha` dist-tag~~ SUPERSEDED 2026-11-19: all three
         dist-tags had been re-pointed at 1.1.0 as "intentional prerelease
         channels", but the owner retired `beta`/`alpha` outright — delete both
@@ -66,23 +75,46 @@ removal.
       marks it ready; then deep-review the ~2100 lines, including the
       `@typespec/openapi3` as-runtime-dependency decision (question posted on
       the PR 2026-11-19). (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.21)
-- [ ] **CI alerting on daemon-push failures** — master CI ran red for two
-      weeks (2026-11-04→18, jscpd clone in `scripts/generate-brand-assets.ts`)
-      because nobody watches daemon-pushed runs; add a workflow-level
-      notification (e.g. failed-run → issue/notify) or an external watcher.
+- [x] **CI alerting on daemon-push failures** — DONE 2026-11-19:
+      `.github/workflows/ci-alert.yml` (workflow_run on CI/Release) opens or
+      comments on a single `ci-alert`-labeled tracking issue for every failed
+      run (Release failures always alert; CI only on master/main — PR runs
+      stay excluded) and auto-closes it once CI on master is green again. No
+      third-party actions to pin; actionlint clean. It went live after the
+      19:58Z Release failure, so the next incident alerts automatically.
       (`docs/status/2026-11-19_07-36_merge-sequence-phase2.md` §f.13)
-- [ ] **Property-test seeds for the new 1.2.0 behaviors** — channel-id
-      (`data.id ?? data.path`) and derived-variant message expansion have no
-      `test/property` generators yet; extend `specArbitrary` in
-      `test/property/emitter-properties.test.ts` (compliance/golden cover them
-      today). (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.32)
-- [ ] **E2E test: `@channel(address, id)` × `split-schemas`** — the channel-ID
-      key flows into `$ref` rewriting; no e2e locks the combination.
+- [x] **Property-test seeds for the new 1.2.0 behaviors** — DONE
+      2026-11-19: `specArbitrary` now generates optional channel IDs
+      (`@channel(address, id)`) and optional discriminated variant families
+      (`@discriminator("kind")` + 2-4 derived models); all six original
+      properties run over the enriched space, and two new invariants lock the
+      behaviors directly: P7 (channel key = `id ?? address`, every ref agrees
+      incl. RFC 6901 token escaping) and P8 (variant expansion: one message
+      per variant, base excluded, payload refs per variant schema).
+      (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.32)
+- [x] **E2E test: `@channel(address, id)` with `split-schemas`** — DONE
+      2026-11-19: `test/e2e/channel-id-split-schemas.test.ts` (6 tests:
+      id-keyed channels, op pairing at a shared id, separation of distinct
+      ids at one address, ref-chain rewriting to external schema files, file
+      emission, YAML flavor).
       (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.33)
-- [ ] (repo: fleet) **Daemon-push CI health sweep** — the same blind spot
-      (auto-commits pushing without a watcher) may exist in other owned repos;
-      one glance per repo at recent master-run conclusions.
+- [x] (repo: fleet) **Daemon-push CI health sweep** — DONE 2026-11-19
+      (agent sweep, 57 active repos): **16 red**, worst: BuildFlow (every
+      gate red across the whole 15-run window — no green in days); nextd,
+      project-dependency-graph, gh-constellation, index, Code-To-CV-Agent,
+      mr-sync, sox-cra, crush-config (gitleaks), pim-sync, blog, CV red
+      12h-1.3d; go-cqrs-lite, dnsblockd, templ-components flipped red within
+      ~2h of the sweep (same daemon blind spot). Follow-up: port
+      `ci-alert.yml` to the red repos (owner call per repo), triage BuildFlow
+      first. This repo's own reds (Release dispatch failure, Dependabot
+      minimatch) are handled in the Release section and below.
       (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.35)
+- [x] **Dependabot `minimatch` failures** — DONE 2026-11-19: Dependabot
+      Updates failed 3x from 12:51Z (new advisory fetch for the documented
+      GHSA-g3hv-75wg-m249 dismissal — only patched minimatch releases are
+      ESM-only, spectral-core is CJS). Added `ignore:
+      dependency-name: minimatch` to the root npm updater in
+      `.github/dependabot.yml` with the rationale as a comment.
 
 ## Dependency & Toolchain Refresh (2026-11-04, harvested from the BuildFlow triage session)
 
