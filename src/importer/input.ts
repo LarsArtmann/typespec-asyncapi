@@ -1,11 +1,11 @@
 import { parseDocument } from "yaml";
-import { escapeRefToken } from "../domain/models/asyncapi-document.js";
+import { escapePointerToken } from "../domain/json-pointer.js";
 import { fail, type ImportWarning } from "./diagnostics.js";
 
 export type RecordValue = Record<string, unknown>;
 
 export function child(pointer: string, key: string): string {
-  return `${pointer}/${escapeRefToken(key)}`;
+  return `${pointer}/${escapePointerToken(key)}`;
 }
 
 export function isRecord(value: unknown): value is RecordValue {
