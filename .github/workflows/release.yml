@@ -30,6 +30,12 @@ permissions:
   contents: write # creating GitHub Releases on tag push (checkout needs only read)
   id-token: write
 
+# One release pipeline at a time per ref; never cancel mid-publish (a killed
+# publish step is how half-shipped releases happen).
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   verify-and-publish:
     runs-on: ubuntu-latest
@@ -102,9 +108,9 @@ jobs:
             const version = process.argv[1];
             const section = fs.readFileSync("CHANGELOG.md", "utf8")
               .split(/^## /m)
-              .find((s) => s.startsWith(`[${version}]`));
+              .find((s) => s.startsWith("[" + version + "]"));
             if (section === undefined) {
-              throw new Error(`No CHANGELOG.md section for ${version}`);
+              throw new Error("No CHANGELOG.md section for " + version);
             }
             console.log(section.slice(section.indexOf("\n") + 1).trimEnd());
           ' "$VERSION")
