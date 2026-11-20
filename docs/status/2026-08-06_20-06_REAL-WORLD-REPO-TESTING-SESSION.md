@@ -237,7 +237,7 @@ No irreversible damage. No broken builds. No data loss. All changes are additive
 ### High priority — correctness & coverage
 
 ~~1. **Test circular model references** (A → B → A) — does the emitter handle them or crash?~~ done — recursive models test — `test/integration/decorator-validation.test.ts` line 202
-2. **Test arrays of enums** (`Status[]`) — does `refForNamedType()` handle this correctly?
+2. **Test arrays of enums** (`Status[]`) — does `refForNamedType()` handle this correctly? **→ TODO_LIST §Test-Suite Integrity (enum-array + Map/Set type-mapping tests row)**
 ~~3. **Test arrays of scalars** (`int32[]`) — verify `typeToSchema` fallback path~~ done — int32 and boolean array cases in `test/compliance/type-mapping-completeness.test.ts`
 ~~4. **Test nested arrays** (`Item[][]`) — does the emitter handle this?~~ done — nested arrays — `test/validation/schema-emitter-regression.test.ts` line 79
 ~~5. **Test arrays of anonymous models** (`{ x: string }[]`) — inline schema generation~~ done — `test/realworld/pattern-assertions.test.ts` line 108

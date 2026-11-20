@@ -321,6 +321,13 @@ What remains is the gated release chain and the tail:
 - [ ] Lock the diagnostic-code count with a unit test — `src/lib.ts`
       diagnostics registry otherwise grows silently
       (docs/status/2026-10-03_13-58:243).
+- [ ] Type-mapping tests for enum arrays (`Status[]`) plus `Map<T>` /
+      `Set<T>` stdlib shapes — none in
+      `test/compliance/type-mapping-completeness.test.ts`
+      (docs/status/2026-08-06_20-06:240).
+- [ ] End-to-end test importing `@lars-artmann/typespec-asyncapi/shared`
+      from built `dist/` via the package exports map — current tests
+      import from `src/` only (docs/status/2026-08-05_18-14:74).
 - [ ] Extend the mixed-ownership property suite to cover the http-route
       fallback path (docs/status/2026-10-03_13-58:281).
 - [ ] Integration test running BOTH emitters' outputs through AJV in one

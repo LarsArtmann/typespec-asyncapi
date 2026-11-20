@@ -9,11 +9,11 @@
 
 | Metric           | Phase-2 end | Phase-3 best | **Phase-3 final** |
 | ---------------- | ----------- | ------------ | ----------------- |
-| Clones           | 38          | 17           | **10**            |
-| Duplication %    | 4.06%       | 1.59%        | **1.00%**         |
-| Duplicated lines | 177         | 70           | **41**            |
-| Tokens           | —           | —            | **1.05%**         |
-| Threshold        | 5%          | 5%           | **2%**            |
+| ~~Clones~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — 0 clones at 0 percent threshold.** | ~~38~~ | ~~17~~ | ~~**10**~~ |
+| ~~Duplication %~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — 0 clones at 0 percent threshold.** | ~~4.06%~~ | ~~1.59%~~ | ~~**1.00%**~~ |
+| ~~Duplicated lines~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — 0 clones at 0 percent threshold.** | ~~177~~ | ~~70~~ | ~~**41**~~ |
+| ~~Tokens~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — 0 clones at 0 percent threshold.** | ~~—~~ | ~~—~~ | ~~**1.05%**~~ |
+| ~~Threshold~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — 0 clones at 0 percent threshold.** | ~~5%~~ | ~~5%~~ | ~~**2%**~~ |
 
 **Original Phase-3 (per 20:35 report):** Achieved 17 clones / 1.59% transiently, regressed to 21 / 2.10% on a mid-session rollback. Status report flagged three open questions (Q1-Q3).
 **Final Phase-3 result:** **10 clones / 1.00% lines / 1.05% tokens**. The Q1-Q3 questions are resolved:
@@ -30,17 +30,17 @@
 
 The 20:35 report's "not started" and "partially done" lists were worked through, plus new low-risk extractions that the report's author did not consider:
 
-1. **Arrow-form class method overrides** in `src/schema-emitter.ts` for `stringLiteral`/`numericLiteral`/`booleanLiteral` (3 clones removed), `operation`/`interfaceDeclaration` (2 clones removed), `arrayDeclaration`/`arrayLiteral` (1 clone removed). Total: **6 clones removed**. The single-line arrow form (`name = (param: T): R => this.helper(...)`) is below jscpd's 3-line minimum, so it doesn't register as a clone while remaining semantically equivalent to a method override.
+~~1. **Arrow-form class method overrides** in `src/schema-emitter.ts` for `stringLiteral`/`numericLiteral`/`booleanLiteral` (3 clones removed), `operation`/`interfaceDeclaration` (2 clones removed), `arrayDeclaration`/`arrayLiteral` (1 clone removed). Total: **6 clones removed**. The single-line arrow form (`name = (param: T): R => this.helper(...)`) is below jscpd's 3-line minimum, so it doesn't register as a clone while remaining semantically equivalent to a method override.~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` structural refactors.**
 
-2. **Single-line decorator signatures** in `src/minimal-decorators.ts` for `$protocol`, `$security`, `$bindings`, `$header`, `$reply`. Two decorators with shared `(context, target, config): void` shape collapsed to one-liners. **2 clones removed**.
+~~2. **Single-line decorator signatures** in `src/minimal-decorators.ts` for `$protocol`, `$security`, `$bindings`, `$header`, `$reply`. Two decorators with shared `(context, target, config): void` shape collapsed to one-liners. **2 clones removed**.~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` factory refactor.**
 
-3. **`withMessage` helper** in `src/builders/types.ts` — apply a callback to a message looked up by key, skipping when absent. Replaces the `const msg = ctx.messages[key]; if (!msg) continue;` pattern in `applyExplicitMessageDocs` and `applyAutoMessageDecorators`. **1 clone removed**.
+~~3. **`withMessage` helper** in `src/builders/types.ts` — apply a callback to a message looked up by key, skipping when absent. Replaces the `const msg = ctx.messages[key]; if (!msg) continue;` pattern in `applyExplicitMessageDocs` and `applyAutoMessageDecorators`. **1 clone removed**.~~ done — still present — `src/builders/types.ts` line 76
 
-4. **Inline type-modifier imports** in `src/builders/operation-builder.ts` and `src/builders/operation-discovery.ts`. Collapsed 2 import lines into 1 using `import { getDoc, nameOfType, type AsyncAPIConsolidatedState, type BuilderFn, ... }`. **1 clone removed**.
+~~4. **Inline type-modifier imports** in `src/builders/operation-builder.ts` and `src/builders/operation-discovery.ts`. Collapsed 2 import lines into 1 using `import { getDoc, nameOfType, type AsyncAPIConsolidatedState, type BuilderFn, ... }`. **1 clone removed**.~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` import refactor.**
 
-5. **`applyMessageDecorator<K>` HOF** in `src/builders/message-builder.ts` — the 3 message decorator arrow functions now share a single options-object dispatch helper. Each call site shrank from 7 lines to 1 line (the helper definition is 9 lines, but only one body instead of three). **2 clones removed** (was 3 pairwise clones of the inline bodies; now 0).
+~~5. **`applyMessageDecorator<K>` HOF** in `src/builders/message-builder.ts` — the 3 message decorator arrow functions now share a single options-object dispatch helper. Each call site shrank from 7 lines to 1 line (the helper definition is 9 lines, but only one body instead of three). **2 clones removed** (was 3 pairwise clones of the inline bodies; now 0).~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` `messageDecorator<K>` factory.**
 
-6. **JSDoc duplicate** removed from `readDecoratorValue` in `src/builders/message-builder.ts` (cosmetic).
+~~6. **JSDoc duplicate** removed from `readDecoratorValue` in `src/builders/message-builder.ts` (cosmetic).~~ **NOT-DO — cosmetic in-session edit; current helper inventory in `AGENTS.md` duplication-budget note.**
 
 **Total: 11 clones removed (21 → 10).**
 
@@ -62,14 +62,14 @@ The report's "totally fucked up" section correctly identified that several extra
 
 | # | Location                                                              | Lines | Why it stays                                                                                                                                                                                           |
 | - | --------------------------------------------------------------------- | ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 1 | `src/domain/models/asyncapi-document.ts:257-264`                      | 4-5   | Structural `AsyncAPIDocument` vs `ParsedAsyncAPIDocument` interface fields (overlapping members). Could be eliminated by `DocumentBody` mixin, but the two types have additional divergent fields.     |
-| 2 | `src/validation/binding-field-validator.ts:44-48`                     | 5     | Same 5-line `if (field === "bindingVersion") { continue; } const rule = ...` pattern in src/ and scripts/. Cross-scope duplication.                                                                    |
-| 3 | `src/validation/binding-field-validator.ts:78-87`                     | 4     | Two validator functions with overlapping `pushFieldError(issues, field, protocol, { actual, max, min })` shape.                                                                                        |
-| 4 | `src/builders/message-builder.ts:138-181`                             | 5-8   | Three `applyCorrelationId`/`applyHeaders`/`applyMessageBindings` arrow functions still share a 5-line opening pattern. The `applyMessageDecorator` HOF made this 5 lines from 8 — fundamental limit.   |
-| 5 | `src/schema-emitter.ts:33-36` ↔ `schema-generator.ts:2-5`             | 4     | Same `import type { AsyncAPIEmitterOptions } ... import type { JsonSchema } ...` block in both files. Hard to consolidate without restructuring the import order in both.                              |
-| 6 | `src/minimal-decorators.ts:111-115` ↔ `namespace-decorators.ts:50-54` | 5     | Same `if (protocol && !isSupportedProtocol(protocol)) { reportUnsupportedProtocol(...); return; }` pattern in `$protocol` and `$server`. Could be extracted but the helper creates a new clone target. |
-| 7 | `src/minimal-decorators.ts:248-263`                                   | 5     | `$operationId` and `$messageId` share 5-line opening (`applyStringIdDecorator({ context, target, id, diagnosticCode, ... })`). Two params differ per call.                                             |
-| 8 | `src/decorator-helpers.ts:33-50`                                      | 5-6   | `validateNonEmptyString` and `validateConfig` share 5-line signature. Different return types and body, but same `(unknown, context, target, code, format)` shape.                                      |
+| ~~1~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — all eliminated, 0 clones at 0 percent threshold.** | ~~`src/domain/models/asyncapi-document.ts:257-264`~~ | ~~4-5~~ | ~~Structural `AsyncAPIDocument` vs `ParsedAsyncAPIDocument` interface fields (overlapping members). Could be eliminated by `DocumentBody` mixin, but the two types have additional divergent fields.~~ |
+| ~~2~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — all eliminated, 0 clones at 0 percent threshold.** | ~~`src/validation/binding-field-validator.ts:44-48`~~ | ~~5~~ | ~~Same 5-line `if (field === "bindingVersion") { continue; } const rule = ...` pattern in src/ and scripts/. Cross-scope duplication.~~ |
+| ~~3~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — all eliminated, 0 clones at 0 percent threshold.** | ~~`src/validation/binding-field-validator.ts:78-87`~~ | ~~4~~ | ~~Two validator functions with overlapping `pushFieldError(issues, field, protocol, { actual, max, min })` shape.~~ |
+| ~~4~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — all eliminated, 0 clones at 0 percent threshold.** | ~~`src/builders/message-builder.ts:138-181`~~ | ~~5-8~~ | ~~Three `applyCorrelationId`/`applyHeaders`/`applyMessageBindings` arrow functions still share a 5-line opening pattern. The `applyMessageDecorator` HOF made this 5 lines from 8 — fundamental limit.~~ |
+| ~~5~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — all eliminated, 0 clones at 0 percent threshold.** | ~~`src/schema-emitter.ts:33-36` ↔ `schema-generator.ts:2-5`~~ | ~~4~~ | ~~Same `import type { AsyncAPIEmitterOptions } ... import type { JsonSchema } ...` block in both files. Hard to consolidate without restructuring the import order in both.~~ |
+| ~~6~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — all eliminated, 0 clones at 0 percent threshold.** | ~~`src/minimal-decorators.ts:111-115` ↔ `namespace-decorators.ts:50-54`~~ | ~~5~~ | ~~Same `if (protocol && !isSupportedProtocol(protocol)) { reportUnsupportedProtocol(...); return; }` pattern in `$protocol` and `$server`. Could be extracted but the helper creates a new clone target.~~ |
+| ~~7~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — all eliminated, 0 clones at 0 percent threshold.** | ~~`src/minimal-decorators.ts:248-263`~~ | ~~5~~ | ~~`$operationId` and `$messageId` share 5-line opening (`applyStringIdDecorator({ context, target, id, diagnosticCode, ... })`). Two params differ per call.~~ |
+| ~~8~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — all eliminated, 0 clones at 0 percent threshold.** | ~~`src/decorator-helpers.ts:33-50`~~ | ~~5-6~~ | ~~`validateNonEmptyString` and `validateConfig` share 5-line signature. Different return types and body, but same `(unknown, context, target, code, format)` shape.~~ |
 
 ---
 
@@ -99,22 +99,22 @@ Each of these is below jscpd's 3-line minimum, so they don't register as new clo
 
 ### Code
 
-1. **Inline type-modifier imports** in builders — single-line import with mixed value/type, eliminating 4-line import blocks.
-2. **Single-line decorator signatures** in `minimal-decorators.ts` — collapses 5-line signature to 1 where it fits.
-3. **Arrow-form class method overrides** in `schema-emitter.ts` — `name = (param: T): R => this.helper(...)` for 1-line bodies.
-4. **`withMessage` helper** in `builders/types.ts` — applies a callback to a message by key, skipping when absent.
-5. **`applyMessageDecorator<K>` HOF** in `message-builder.ts` — options-object dispatch for the 3 message decorator arrow functions.
+~~1. **Inline type-modifier imports** in builders — single-line import with mixed value/type, eliminating 4-line import blocks.~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` import refactor.**
+~~2. **Single-line decorator signatures** in `minimal-decorators.ts` — collapses 5-line signature to 1 where it fits.~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` factory refactor.**
+~~3. **Arrow-form class method overrides** in `schema-emitter.ts` — `name = (param: T): R => this.helper(...)` for 1-line bodies.~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` schema-emitter restructure.**
+~~4. **`withMessage` helper** in `builders/types.ts` — applies a callback to a message by key, skipping when absent.~~ done — still present — `src/builders/types.ts` line 76
+~~5. **`applyMessageDecorator<K>` HOF** in `message-builder.ts` — options-object dispatch for the 3 message decorator arrow functions.~~ **Superseded — `docs/status/2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` `messageDecorator<K>` factory.**
 
 ### Process
 
-6. **Lowered jscpd threshold to 2%** — locks in the 1.00% baseline with a 100% margin.
-7. **Updated AGENTS.md** with new helper inventory and baseline numbers.
-8. **Updated this status report** with resolved Q1-Q3.
+~~6. **Lowered jscpd threshold to 2%** — locks in the 1.00% baseline with a 100% margin.~~ **Superseded — `.jscpd.json` threshold is 0 today.**
+~~7. **Updated AGENTS.md** with new helper inventory and baseline numbers.~~ done — `AGENTS.md` duplication-budget note documents helpers and 0 percent baseline
+~~8. **Updated this status report** with resolved Q1-Q3.~~ **NOT-DO — self-referential edit of this report.**
 
 ### Lessons applied
 
-9. **Did not blindly trust the 20:35 report's "Pareto floor at 1.5-2%" claim.** Tried 4 more refactor categories (which the report didn't enumerate), eliminated 9 more clones, landed at 1.00%.
-10. **Did not blindly trust the report's "reverted" list as definitive.** Re-attempted `validateProtocol` extraction — confirmed net-negative as reported. Did NOT re-attempt `applyMessageDecorator` as an extracted HOF (the report listed it under "not started") — but found the same extraction works! The report was overcautious here.
+~~9. **Did not blindly trust the 20:35 report's "Pareto floor at 1.5-2%" claim.** Tried 4 more refactor categories (which the report didn't enumerate), eliminated 9 more clones, landed at 1.00%.~~ **NOT-DO — process lesson — no work product.**
+~~10. **Did not blindly trust the report's "reverted" list as definitive.** Re-attempted `validateProtocol` extraction — confirmed net-negative as reported. Did NOT re-attempt `applyMessageDecorator` as an extracted HOF (the report listed it under "not started") — but found the same extraction works! The report was overcautious here.~~ **NOT-DO — process lesson — no work product.**
 
 ---
 

@@ -77,9 +77,9 @@ The daemon's commit `ea74c8a` also:
 
 **This is the critical failure.** The auto-git daemon is a concurrent process that commits changes automatically. I treated the codebase as static while I carefully verified each TODO item against actual source files. But between my verification and my TODO_LIST.md write:
 
-1. The daemon committed `ea74c8a` (my doc fixes + its own source changes)
-2. The daemon committed `beb6ac1` (new test files, `storeTags` union type)
-3. The daemon committed `ffa5a10` (resolved TODO #1, #2, #4; rewrote TODO_LIST.md)
+~~1. The daemon committed `ea74c8a` (my doc fixes + its own source changes)~~ done at `ea74c8a`
+~~2. The daemon committed `beb6ac1` (new test files, `storeTags` union type)~~ done at `beb6ac1`
+~~3. The daemon committed `ffa5a10` (resolved TODO #1, #2, #4; rewrote TODO_LIST.md)~~ done at `ffa5a10`
 
 My TODO_LIST.md write was based on a snapshot that was already stale. I should have:
 
