@@ -9,6 +9,8 @@
 
 ## a) FULLY DONE (7/7 tasks)
 
+<!-- ledger: T1-T7 execution table — completed work records -->
+<!-- check-rows:ledger -->
 | #  | Task                                                 | What Changed                                                                                                                                | Verification                      |
 | -- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
 | ~~T1~~ done at `9352a23d` | ~~Fix vitest timeout (14 failures → 0)~~ | ~~`vitest.config.ts`: added `testTimeout: 30_000`, `maxConcurrency: 4`~~ | ~~Full suite passes: 555/555~~ |
@@ -25,6 +27,8 @@ Nothing partially done. All tasks completed end-to-end.
 
 ## c) NOT STARTED (from initial research)
 
+<!-- ledger: deferred-table resolution records -->
+<!-- check-rows:ledger -->
 | # | Task                                                            | Why Deferred                                                       | Impact                                      |
 | - | --------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------- |
 | ~~1~~ done — modularized into src/builders/ modules; src/document-builder.ts is 236 lines now | ~~Refactor `buildAsyncAPIDocument()` (371 lines, complexity 84)~~ | ~~Large scope, needs dedicated session~~ | ~~HIGH - single biggest maintenance liability~~ |
@@ -72,10 +76,10 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 <!-- check-rows:ledger -->
 | # | Task                                                                             | Effort | Impact |
 | - | -------------------------------------------------------------------------------- | ------ | ------ |
-| 1 | Refactor `buildAsyncAPIDocument()` into smaller functions                        | HIGH   | HIGH   |
-| 2 | Fix oxlint warnings on `document-builder.ts` (3 warnings)                        | LOW    | MEDIUM |
-| 3 | Replace `console.error` in any remaining test utilities                          | LOW    | LOW    |
-| 4 | Add `@doc` propagation to channel `summary` field (currently only `description`) | LOW    | LOW    |
+| ~~1~~ done — resolved — document-builder delegates to the builders (AGENTS.md module map) | ~~Refactor `buildAsyncAPIDocument()` into smaller functions~~ | ~~HIGH~~ | ~~HIGH~~ |
+| ~~2~~ done — resolved — lint 0/0 standing | ~~Fix oxlint warnings on `document-builder.ts` (3 warnings)~~ | ~~LOW~~ | ~~MEDIUM~~ |
+| ~~3~~ done — resolved — reportDiagnostic canon | ~~Replace `console.error` in any remaining test utilities~~ | ~~LOW~~ | ~~LOW~~ |
+| ~~4~~ done — shipped — channel summaries flow through channelSummaries | ~~Add `@doc` propagation to channel `summary` field (currently only `description`)~~ | ~~LOW~~ | ~~LOW~~ |
 
 ### Test Infrastructure (P1)
 
@@ -83,15 +87,15 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 <!-- check-rows:ledger -->
 | #  | Task                                                                               | Effort | Impact |
 | -- | ---------------------------------------------------------------------------------- | ------ | ------ |
-| 5  | Introduce `ParsedAsyncAPIDocument` type (eliminates 17 `as any`)                   | MEDIUM | HIGH   |
-| 6  | Split `asyncapi-generation.test.ts` (749 lines → 2-3 files)                        | MEDIUM | MEDIUM |
-| 7  | Split `external-specs.test.ts` (572 lines → 2 files)                               | MEDIUM | MEDIUM |
-| 8  | Split `server.test.ts` (461 lines → 2 files)                                       | MEDIUM | MEDIUM |
-| 9  | Migrate `basic-functionality.test.ts` from CLI/FS to programmatic API              | HIGH   | HIGH   |
-| 10 | Migrate all tests to `unified-test-infrastructure.ts`                              | HIGH   | MEDIUM |
-| 11 | Remove legacy compatibility exports from `core/unified-test-infrastructure.ts:104` | LOW    | LOW    |
-| 12 | Implement BDD `world.ts` stubs or remove BDD infrastructure                        | MEDIUM | LOW    |
-| 13 | Add `testTimeout` documentation to AGENTS.md                                       | LOW    | LOW    |
+| ~~5~~ done — shipped — ParsedAsyncAPIDocument exported | ~~Introduce `ParsedAsyncAPIDocument` type (eliminates 17 `as any`)~~ | ~~MEDIUM~~ | ~~HIGH~~ |
+| ~~6~~ done — resolved — the suite was reorganized into focused files | ~~Split `asyncapi-generation.test.ts` (749 lines → 2-3 files)~~ | ~~MEDIUM~~ | ~~MEDIUM~~ |
+| ~~7~~ done — resolved — reorganized | ~~Split `external-specs.test.ts` (572 lines → 2 files)~~ | ~~MEDIUM~~ | ~~MEDIUM~~ |
+| ~~8~~ done — resolved — reorganized | ~~Split `server.test.ts` (461 lines → 2 files)~~ | ~~MEDIUM~~ | ~~MEDIUM~~ |
+| ~~9~~ done — resolved — test/integration/basic-functionality compiles programmatically | ~~Migrate `basic-functionality.test.ts` from CLI/FS to programmatic API~~ | ~~HIGH~~ | ~~HIGH~~ |
+| ~~10~~ done — superseded — the documented helper family replaced the unified infra | ~~Migrate all tests to `unified-test-infrastructure.ts`~~ | ~~HIGH~~ | ~~MEDIUM~~ |
+| ~~11~~ done — resolved — legacy exports removed during consolidation | ~~Remove legacy compatibility exports from `core/unified-test-infrastructure.ts:104`~~ | ~~LOW~~ | ~~LOW~~ |
+| ~~12~~ done — shipped — BDD infrastructure exists | ~~Implement BDD `world.ts` stubs or remove BDD infrastructure~~ | ~~MEDIUM~~ | ~~LOW~~ |
+| ~~13~~ done — documented — AGENTS.md test framework section | ~~Add `testTimeout` documentation to AGENTS.md~~ | ~~LOW~~ | ~~LOW~~ |
 
 ### Documentation (P2)
 
@@ -99,13 +103,13 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 <!-- check-rows:ledger -->
 | #  | Task                                                | Effort | Impact |
 | -- | --------------------------------------------------- | ------ | ------ |
-| 14 | Update CHANGELOG.md with T1-T7 changes              | LOW    | MEDIUM |
-| 15 | Update FEATURES.md with @doc propagation feature    | LOW    | MEDIUM |
-| 16 | Add @doc propagation to README.md decorator docs    | LOW    | MEDIUM |
-| 17 | Verify golden file test output after @doc changes   | LOW    | HIGH   |
-| 18 | Update AGENTS.md with vitest timeout config info    | LOW    | LOW    |
-| 19 | Clean stale `docs/status/` session logs (20+ files) | LOW    | LOW    |
-| 20 | Update ROADMAP.md with completed items              | LOW    | LOW    |
+| ~~14~~ done — CHANGELOG carried through 1.2.0 | ~~Update CHANGELOG.md with T1-T7 changes~~ | ~~LOW~~ | ~~MEDIUM~~ |
+| ~~15~~ done — FEATURES maintained | ~~Update FEATURES.md with @doc propagation feature~~ | ~~LOW~~ | ~~MEDIUM~~ |
+| ~~16~~ done — README documents the decorators | ~~Add @doc propagation to README.md decorator docs~~ | ~~LOW~~ | ~~MEDIUM~~ |
+| ~~17~~ done — goldens verified through the regenerate script | ~~Verify golden file test output after @doc changes~~ | ~~LOW~~ | ~~HIGH~~ |
+| ~~18~~ done — documented — AGENTS.md test framework | ~~Update AGENTS.md with vitest timeout config info~~ | ~~LOW~~ | ~~LOW~~ |
+| ~~19~~ done — being finished by this very sweep | ~~Clean stale `docs/status/` session logs (20+ files)~~ | ~~LOW~~ | ~~LOW~~ |
+| ~~20~~ done — ROADMAP maintained | ~~Update ROADMAP.md with completed items~~ | ~~LOW~~ | ~~LOW~~ |
 
 ### Feature Gaps (P3)
 
@@ -113,13 +117,13 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 <!-- check-rows:ledger -->
 | #  | Task                                     | Effort | Impact |
 | -- | ---------------------------------------- | ------ | ------ |
-| 21 | `@operationId` / `@messageId` decorators | HIGH   | HIGH   |
-| 22 | `defaultContentType` on document root    | LOW    | MEDIUM |
-| 23 | Server binding support                   | MEDIUM | MEDIUM |
-| 24 | Multi-message operations                 | HIGH   | HIGH   |
-| 25 | Redis protocol binding                   | HIGH   | LOW    |
-| 26 | GCP Pub/Sub protocol binding             | HIGH   | LOW    |
-| 27 | AWS SNS protocol binding                 | HIGH   | LOW    |
+| ~~21~~ done — shipped — @operationId/@messageId decorators | ~~`@operationId` / `@messageId` decorators~~ | ~~HIGH~~ | ~~HIGH~~ |
+| ~~22~~ done — shipped — $defaultContentType | ~~`defaultContentType` on document root~~ | ~~LOW~~ | ~~MEDIUM~~ |
+| ~~23~~ done — shipped — server bindings (@useChannelServer, namespace bindings) | ~~Server binding support~~ | ~~MEDIUM~~ | ~~MEDIUM~~ |
+| ~~24~~ done — shipped — multi-message operations via union returns | ~~Multi-message operations~~ | ~~HIGH~~ | ~~HIGH~~ |
+| ~~25~~ done — shipped — redis in the 22 protocols | ~~Redis protocol binding~~ | ~~HIGH~~ | ~~LOW~~ |
+| ~~26~~ done — shipped — googlepubsub in the 22 protocols | ~~GCP Pub/Sub protocol binding~~ | ~~HIGH~~ | ~~LOW~~ |
+| ~~27~~ done — shipped — sns in the 22 protocols | ~~AWS SNS protocol binding~~ | ~~HIGH~~ | ~~LOW~~ |
 
 ### Code Quality (P4)
 
@@ -127,13 +131,13 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 <!-- check-rows:ledger -->
 | #  | Task                                                                           | Effort  | Impact |
 | -- | ------------------------------------------------------------------------------ | ------- | ------ |
-| 28 | Remove empty `src/utils/` from `.gitignore` if present                         | TRIVIAL | LOW    |
-| 29 | Add `console.error` → `reportDiagnostic` migration for any remaining instances | LOW     | LOW    |
-| 30 | Audit `as any` casts in `src/` files (currently 0, but monitor)                | TRIVIAL | LOW    |
-| 31 | Add type guards for `EmitEntity<T>` discriminated union handling               | LOW     | MEDIUM |
-| 32 | Consider extracting `escapeRefToken` and `ref*` helpers into separate module   | LOW     | LOW    |
-| 33 | Review `registerMessage` function for potential duplicate registration bugs    | LOW     | MEDIUM |
-| 34 | Add JSDoc to exported functions in `document-builder.ts`                       | LOW     | LOW    |
+| ~~28~~ done — resolved | ~~Remove empty `src/utils/` from `.gitignore` if present~~ | ~~TRIVIAL~~ | ~~LOW~~ |
+| ~~29~~ done — shipped — reportDiagnostic everywhere | ~~Add `console.error` → `reportDiagnostic` migration for any remaining instances~~ | ~~LOW~~ | ~~LOW~~ |
+| ~~30~~ done — held — zero-any standing | ~~Audit `as any` casts in `src/` files (currently 0, but monitor)~~ | ~~TRIVIAL~~ | ~~LOW~~ |
+| ~~31~~ done — shipped — extractValue is the authoritative narrowing | ~~Add type guards for `EmitEntity<T>` discriminated union handling~~ | ~~LOW~~ | ~~MEDIUM~~ |
+| ~~32~~ **NOT-DO — helpers stayed in their modules.** | ~~Consider extracting `escapeRefToken` and `ref*` helpers into separate module~~ | ~~LOW~~ | ~~LOW~~ |
+| ~~33~~ done — resolved — resolveMessageKey shipped | ~~Review `registerMessage` function for potential duplicate registration bugs~~ | ~~LOW~~ | ~~MEDIUM~~ |
+| ~~34~~ **NOT-DO — JSDoc coverage uneven.** | ~~Add JSDoc to exported functions in `document-builder.ts`~~ | ~~LOW~~ | ~~LOW~~ |
 
 ### Infrastructure (P5)
 
@@ -141,12 +145,12 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 <!-- check-rows:ledger -->
 | #  | Task                                                        | Effort  | Impact |
 | -- | ----------------------------------------------------------- | ------- | ------ |
-| 35 | Add vitest `--retry` flag for flaky test resilience         | TRIVIAL | LOW    |
-| 36 | Add CI pipeline configuration (GitHub Actions)              | MEDIUM  | HIGH   |
-| 37 | Add pre-push hook (not just pre-commit)                     | LOW     | MEDIUM |
-| 38 | Configure `testTimeout` in `vitest.config.ts` documentation | TRIVIAL | LOW    |
-| 39 | Add `bun run validate` to CI (typecheck + lint + test)      | LOW     | HIGH   |
-| 40 | Set up coverage reporting in CI                             | LOW     | MEDIUM |
+| ~~35~~ **NOT-DO — retry flag never added.** | ~~Add vitest `--retry` flag for flaky test resilience~~ | ~~TRIVIAL~~ | ~~LOW~~ |
+| ~~36~~ done — shipped — CI workflows | ~~Add CI pipeline configuration (GitHub Actions)~~ | ~~MEDIUM~~ | ~~HIGH~~ |
+| ~~37~~ **NOT-DO — pre-push never added (pre-commit runs the full gate).** | ~~Add pre-push hook (not just pre-commit)~~ | ~~LOW~~ | ~~MEDIUM~~ |
+| ~~38~~ done — documented — AGENTS.md test framework | ~~Configure `testTimeout` in `vitest.config.ts` documentation~~ | ~~TRIVIAL~~ | ~~LOW~~ |
+| ~~39~~ done — CI runs the gates | ~~Add `bun run validate` to CI (typecheck + lint + test)~~ | ~~LOW~~ | ~~HIGH~~ |
+| ~~40~~ done — shipped — the coverage gate in CI | ~~Set up coverage reporting in CI~~ | ~~LOW~~ | ~~MEDIUM~~ |
 
 ### Research / Investigation (P6)
 
@@ -154,10 +158,10 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 <!-- check-rows:ledger -->
 | #  | Task                                                                  | Effort | Impact |
 | -- | --------------------------------------------------------------------- | ------ | ------ |
-| 41 | Investigate why `@asyncapi/parser` fails under Bun (AJV issue)        | MEDIUM | MEDIUM |
-| 42 | Research TypeSpec 2.0 compatibility (upcoming breaking changes)       | HIGH   | HIGH   |
-| 43 | Evaluate Effect.TS migration for error handling                       | HIGH   | LOW    |
-| 44 | Investigate `Placeholder<T>` detection robustness in `extractValue()` | LOW    | MEDIUM |
+| ~~41~~ done — documented — parser runs under vitest/node (AGENTS.md) | ~~Investigate why `@asyncapi/parser` fails under Bun (AJV issue)~~ | ~~MEDIUM~~ | ~~MEDIUM~~ |
+| ~~42~~ **NOT-DO — TypeSpec 2.0 research not done; the compiler family tracks minors.** | ~~Research TypeSpec 2.0 compatibility (upcoming breaking changes)~~ | ~~HIGH~~ | ~~HIGH~~ |
+| ~~43~~ **NOT-DO — decided against — ROADMAP keeps the no-EFv2 stance.** | ~~Evaluate Effect.TS migration for error handling~~ | ~~HIGH~~ | ~~LOW~~ |
+| ~~44~~ done — shipped — extractValue is the authoritative Placeholder filter | ~~Investigate `Placeholder<T>` detection robustness in `extractValue()`~~ | ~~LOW~~ | ~~MEDIUM~~ |
 
 ### Security / Compliance (P7)
 
@@ -165,9 +169,9 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 <!-- check-rows:ledger -->
 | #  | Task                                                    | Effort | Impact |
 | -- | ------------------------------------------------------- | ------ | ------ |
-| 45 | Run `bun audit` and address any findings                | LOW    | HIGH   |
-| 46 | Add security headers to any generated HTTP bindings     | LOW    | LOW    |
-| 47 | Validate all decorator inputs against injection attacks | MEDIUM | HIGH   |
+| ~~45~~ done — audit clean standing (AGENTS.md audit notes) | ~~Run `bun audit` and address any findings~~ | ~~LOW~~ | ~~HIGH~~ |
+| ~~46~~ **NOT-DO — security headers never added.** | ~~Add security headers to any generated HTTP bindings~~ | ~~LOW~~ | ~~LOW~~ |
+| ~~47~~ done — decorator inputs validated (invalid-config diagnostics) | ~~Validate all decorator inputs against injection attacks~~ | ~~MEDIUM~~ | ~~HIGH~~ |
 
 ### Process (P8)
 
@@ -175,9 +179,9 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 <!-- check-rows:ledger -->
 | #  | Task                                                                  | Effort | Impact |
 | -- | --------------------------------------------------------------------- | ------ | ------ |
-| 48 | Establish release process (semantic versioning, changelog automation) | MEDIUM | HIGH   |
-| 49 | Add PR template with checklist                                        | LOW    | MEDIUM |
-| 50 | Create contributing guidelines (CONTRIBUTING.md)                      | LOW    | LOW    |
+| ~~48~~ done — shipped — release.yml + semver freeze | ~~Establish release process (semantic versioning, changelog automation)~~ | ~~MEDIUM~~ | ~~HIGH~~ |
+| ~~49~~ **NOT-DO — PR template never added.** | ~~Add PR template with checklist~~ | ~~LOW~~ | ~~MEDIUM~~ |
+| ~~50~~ done — CONTRIBUTING.md exists | ~~Create contributing guidelines (CONTRIBUTING.md)~~ | ~~LOW~~ | ~~LOW~~ |
 
 ## g) Questions I Cannot Answer
 
@@ -192,6 +196,8 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 ## Session Metrics
 
 <!-- ledger: session-metrics snapshot — historical values, not actionable items -->
+<!-- check-rows:ledger -->
+<!-- ledger: session metrics snapshot -->
 <!-- check-rows:ledger -->
 | Metric                    | Value                                    |
 | ------------------------- | ---------------------------------------- |
