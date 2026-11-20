@@ -293,6 +293,20 @@ What remains is the gated release chain and the tail:
       (docs/status/2026-11-04_17-42:122).
 - [ ] Review favicon manifest `id`/`scope` for PWA installability score
       (Lighthouse pass) (docs/status/2026-11-04_17-42:153).
+- [ ] Lighthouse CI budgets for performance/a11y/SEO
+      (docs/status/2026-10-23_12-00:246).
+- [ ] Playwright smoke tests for nav, theme, copy, and search
+      (docs/status/2026-10-23_12-00:244).
+- [ ] JSON-LD structured data: FAQPage (FAQ), HowTo (Quick Start),
+      TechArticle + BreadcrumbList (docs pages)
+      (docs/status/2026-10-23_12-00:251-253).
+- [ ] Compress `public/og.png` and audit icon weights
+      (docs/status/2026-10-23_12-00:254).
+- [ ] Package-manager tabs on install snippets
+      (docs/status/2026-10-23_12-00:260).
+- [ ] "Copy page as Markdown" button (docs/status/2026-10-23_12-00:261).
+- [ ] "Was this page helpful?" widget opening a prefilled issue
+      (docs/status/2026-10-23_12-00:262).
 - [ ] Reduce llms.txt anchor noise — "Section titled" spam in the llms
       output; try starlight-llms-txt `customSelectors`
       (docs/status/2026-10-23_14-13:206).

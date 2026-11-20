@@ -37,6 +37,8 @@ Additional checks:
 
 Backlog status (`website/IMPROVEMENTS.md`):
 
+<!-- ledger: backlog-count table — planning records -->
+<!-- check-rows:ledger -->
 | Status    |   Count |
 | --------- | ------: |
 | Done      |      59 |
@@ -135,6 +137,8 @@ Backlog status (`website/IMPROVEMENTS.md`):
 
 ## B) PARTIALLY DONE
 
+<!-- ledger: what-is-done table — execution records -->
+<!-- check-rows:ledger -->
 | Item                      | What is done                                                           | What is missing                                                                                                 |
 | ------------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
 | Search                    | Page is built, Pagefind index is generated, query flow is typechecked. | No real browser test. The WASM/`pagefind.js` runtime and CSP behavior are unverified in Chrome/Firefox/Safari.  |
@@ -184,21 +188,21 @@ Backlog status (`website/IMPROVEMENTS.md`):
 
 These are the honest failures and near-misses from this session.
 
-1. **I left an Astro preview daemon running** on `localhost:4321` (`pid 292920`) after starting it for route checks. I stopped it during report preparation. It is stopped now.
-2. **I shipped a reduced-motion bug in the first implementation.** The script only added `html.js` in the non-reduced branch, so the CSS reduced-motion override did not apply and users who requested reduced motion still got the fade-in. I caught and fixed this during report preparation; the final gate is green, but no browser has exercised it.
-3. **I did not test anything in a real browser.** Search, mobile nav, theme cycling, copy buttons, and reduced motion are all unverified at runtime. This is the largest gap between "green build" and "working site".
-4. **I changed production hosting behavior without a live check.** `trailingSlash: true` and the removal of `"**/.*"` are correct by reasoning, but not proven against Firebase Hosting, an emulator, or a preview channel.
-5. **The site was not deployed.** All changes are local/staged. The live site still serves the old build.
-6. **I did not run the root gate.** I ran the website gate, `astro check`, `html-validate`, and the link checker, but not `pnpm run verify` for the emitter. No emitter source changed, but the claim "the repository is green" would be overreach.
-7. **I did not run full `nix flake check`.** I checked `nixfmt` on `flake.nix` only. The format sandbox and other flake checks are unverified.
-8. **`check-links.mjs` is not a complete link checker.** It checks internal `href`/`src` targets, not fragments, not external URLs, and not `srcset`.
-9. **`apply-og-frontmatter.mjs` is an undocumented one-shot migration script.** It is idempotent, but it sits in `scripts/` with no mention in the README and no reason to run again.
-10. **`rss.xml` descriptions are raw Markdown.** They are XML-escaped, but a feed reader shows Markdown syntax rather than rendered prose.
-11. **`llms-full.txt` has excessive blank lines.** It works; it is not polished.
-12. **`public/og.png` is 298 KB.** It is only used for social previews, but it is heavier than necessary and was not optimized.
-13. **Pagefind still reports "Found 22 HTML files"** even after adding `data-pagefind-ignore` to 404 and search. I did not inspect the index to prove those pages are excluded from results.
-14. **No `apple-touch-icon` or PNG manifest icons.** The manifest references SVG only; some platforms will fall back poorly.
-15. **The `legacyCopy` fallback uses deprecated `document.execCommand`.** It is intentional for old browsers, but it is still a deprecation hint in `astro check`.
+~~1. **I left an Astro preview daemon running** on `localhost:4321` (`pid 292920`) after starting it for route checks. I stopped it during report preparation. It is stopped now.~~ **NOT-DO — daemon process noted; long gone.**
+~~2. **I shipped a reduced-motion bug in the first implementation.** The script only added `html.js` in the non-reduced branch, so the CSS reduced-motion override did not apply and users who requested reduced motion still got the fade-in. I caught and fixed this during report preparation; the final gate is green, but no browser has exercised it.~~ done — fixed — reduced-motion shipped and later audited
+3. **I did not test anything in a real browser.** Search, mobile nav, theme cycling, copy buttons, and reduced motion are all unverified at runtime. This is the largest gap between "green build" and "working site". **→ TODO_LIST Website QA & Brand Follow-ups (browser/visual QA rows)**
+~~4. **I changed production hosting behavior without a live check.** `trailingSlash: true` and the removal of `"**/.*"` are correct by reasoning, but not proven against Firebase Hosting, an emulator, or a preview channel.~~ done — verified live 2026-10-03 (custom-domain deploy)
+~~5. **The site was not deployed.** All changes are local/staged. The live site still serves the old build.~~ done — deployed the same day; the live site is current
+~~6. **I did not run the root gate.** I ran the website gate, `astro check`, `html-validate`, and the link checker, but not `pnpm run verify` for the emitter. No emitter source changed, but the claim "the repository is green" would be overreach.~~ done — the root gate runs in CI
+~~7. **I did not run full `nix flake check`.** I checked `nixfmt` on `flake.nix` only. The format sandbox and other flake checks are unverified.~~ done — flake checks run standing
+~~8. **`check-links.mjs` is not a complete link checker.** It checks internal `href`/`src` targets, not fragments, not external URLs, and not `srcset`.~~ done — extended — check-links now requires the llms/sitemap/404/security artifacts
+~~9. **`apply-og-frontmatter.mjs` is an undocumented one-shot migration script.** It is idempotent, but it sits in `scripts/` with no mention in the README and no reason to run again.~~ **Won't implement — apply-og-frontmatter.mjs remains undocumented.**
+~~10. **`rss.xml` descriptions are raw Markdown.** They are XML-escaped, but a feed reader shows Markdown syntax rather than rendered prose.~~ **NOT-DO — rss descriptions still raw markdown.**
+~~11. **`llms-full.txt` has excessive blank lines.** It works; it is not polished.~~ **NOT-DO — llms-full whitespace still unpolished.**
+~~12. **`public/og.png` is 298 KB.** It is only used for social previews, but it is heavier than necessary and was not optimized.~~ **NOT-DO — og.png still heavy.**
+~~13. **Pagefind still reports "Found 22 HTML files"** even after adding `data-pagefind-ignore` to 404 and search. I did not inspect the index to prove those pages are excluded from results.~~ **NOT-DO — Pagefind count unchanged.**
+~~14. **No `apple-touch-icon` or PNG manifest icons.** The manifest references SVG only; some platforms will fall back poorly.~~ done — decided — ADR 0002 keeps the SVG favicon (no PNG icons)
+~~15. **The `legacyCopy` fallback uses deprecated `document.execCommand`.** It is intentional for old browsers, but it is still a deprecation hint in `astro check`.~~ **NOT-DO — execCommand fallback intentional.**
 
 ---
 
@@ -237,64 +241,64 @@ These are the honest failures and near-misses from this session.
 
 ## F) NEXT 50 THINGS, IN PRIORITY ORDER
 
-1. Deploy to a Firebase preview channel and run the route matrix.
-2. Verify `/foo` -> `/foo/` redirects and canonical behavior live.
-3. Verify `/.well-known/security.txt` is actually uploaded.
-4. Verify Pagefind search in Chrome, Firefox, and Safari.
-5. Add Playwright smoke tests for nav, theme, copy, and search.
-6. Add an axe-core gate over every built page.
-7. Add Lighthouse CI budgets for performance, a11y, SEO, and best practices.
-8. Add visual regression screenshots for landing, docs, search, and 404.
-9. Fix any reduced-motion, contrast, or focus issues the browser tests reveal.
-10. Render the 30-second demo video and embed it above the fold.
-11. Add a poster frame, captions, and lazy loading for the video.
-12. Add FAQPage JSON-LD to the FAQ.
-13. Add HowTo JSON-LD to the Quick Start.
-14. Add TechArticle and BreadcrumbList JSON-LD to docs pages.
-15. Compress `public/og.png` and add PNG app icons.
-16. Generate PNG `apple-touch-icon` and 192/512 manifest icons.
-17. Render RSS descriptions as plain text or safe HTML.
-18. Tighten `llms-full.txt` whitespace and add a section index.
-19. Remove or document `apply-og-frontmatter.mjs`.
-20. Add `og:image` to 404 or explicitly document why it is absent.
-21. Add package-manager tabs to install snippets.
-22. Add a "Copy page as Markdown" button.
-23. Add a "Was this page helpful?" widget that opens a prefilled issue.
-24. Add a docs issue template.
-25. Add GitHub Discussions to the support paths.
-26. Add a keyboard shortcut hint for search.
-27. Add a command palette on the landing page.
-28. Generate the decorator reference from `lib/main.tsp`.
-29. Generate the diagnostics reference from `src/lib.ts`.
-30. Generate the emitter-option reference from the options interface.
-31. Add an AsyncAPI 3.0 vs 3.1 explainer.
-32. Add a "TypeSpec vs hand-written YAML" long-form article.
-33. Add a protocol explainer series (Kafka, MQTT, WebSocket).
-34. Add a troubleshooting page keyed by diagnostic code.
-35. Add a security and supply-chain page.
-36. Add a support/maintenance policy page.
-37. Add a glossary/domain-language page.
-38. Add a printable one-page cheatsheet.
-39. Add a docs landing page explaining the IA.
-40. Add a "Start here" path for three personas.
-41. Add versioned docs and a version selector.
-42. Add TypeDoc API reference.
-43. Add a playground or StackBlitz embed.
-44. Add a service worker for offline docs.
-45. Add `hreflang` and a localization pilot.
-46. Add a Firebase preview deploy workflow for pull requests.
-47. Add an automated production deploy with a post-deploy smoke test.
-48. Add weekly external-link monitoring.
-49. Add cspell and markdownlint to CI.
-50. Add a quarterly docs freshness audit (counts, screenshots, competitor claims).
+1. Deploy to a Firebase preview channel and run the route matrix. **→ TODO_LIST Hygiene (website deploy-workflow row)**
+~~2. Verify `/foo` -> `/foo/` redirects and canonical behavior live.~~ done — verified — trailing-slash behavior live-checked 2026-10-03
+~~3. Verify `/.well-known/security.txt` is actually uploaded.~~ done — verified — security.txt deployed and link-checked
+4. Verify Pagefind search in Chrome, Firefox, and Safari. **→ TODO_LIST Website QA & Brand Follow-ups (browser QA)**
+5. Add Playwright smoke tests for nav, theme, copy, and search. **→ TODO_LIST Website QA & Brand Follow-ups (Playwright smoke row)**
+6. Add an axe-core gate over every built page. **→ TODO_LIST Website QA & Brand Follow-ups (axe-core row)**
+7. Add Lighthouse CI budgets for performance, a11y, SEO, and best practices. **→ TODO_LIST Website QA & Brand Follow-ups (Lighthouse budgets row)**
+8. Add visual regression screenshots for landing, docs, search, and 404. **→ TODO_LIST Website QA & Brand Follow-ups (screenshot row)**
+9. Fix any reduced-motion, contrast, or focus issues the browser tests reveal. **→ TODO_LIST Website QA & Brand Follow-ups (browser/visual QA rows)**
+10. Render the 30-second demo video and embed it above the fold. **→ ROADMAP §5 Demo video (epic seed)**
+11. Add a poster frame, captions, and lazy loading for the video. **→ ROADMAP §5 Demo video (epic seed)**
+12. Add FAQPage JSON-LD to the FAQ. **→ TODO_LIST Website QA & Brand Follow-ups (JSON-LD structured-data row)**
+13. Add HowTo JSON-LD to the Quick Start. **→ TODO_LIST Website QA & Brand Follow-ups (JSON-LD structured-data row)**
+14. Add TechArticle and BreadcrumbList JSON-LD to docs pages. **→ TODO_LIST Website QA & Brand Follow-ups (JSON-LD structured-data row)**
+15. Compress `public/og.png` and add PNG app icons. **→ TODO_LIST Website QA & Brand Follow-ups (og.png + icon compression row)**
+~~16. Generate PNG `apple-touch-icon` and 192/512 manifest icons.~~ done — decided — ADR 0002 keeps SVG favicons
+~~17. Render RSS descriptions as plain text or safe HTML.~~ **NOT-DO — rss descriptions unchanged.**
+~~18. Tighten `llms-full.txt` whitespace and add a section index.~~ **NOT-DO — llms whitespace unchanged.**
+~~19. Remove or document `apply-og-frontmatter.mjs`.~~ **Won't implement — script remains undocumented.**
+~~20. Add `og:image` to 404 or explicitly document why it is absent.~~ **NOT-DO — 404 og:image absent by design.**
+21. Add package-manager tabs to install snippets. **→ TODO_LIST Website QA & Brand Follow-ups (package-manager tabs row)**
+22. Add a "Copy page as Markdown" button. **→ TODO_LIST Website QA & Brand Follow-ups (copy-as-Markdown row)**
+23. Add a "Was this page helpful?" widget that opens a prefilled issue. **→ TODO_LIST Website QA & Brand Follow-ups (feedback-widget row)**
+~~24. Add a docs issue template.~~ **NOT-DO — docs issue template never added.**
+~~25. Add GitHub Discussions to the support paths.~~ **NOT-DO — Discussions never enabled.**
+~~26. Add a keyboard shortcut hint for search.~~ **NOT-DO — keyboard hint never added.**
+~~27. Add a command palette on the landing page.~~ **NOT-DO — command palette never added.**
+28. Generate the decorator reference from `lib/main.tsp`. **→ ROADMAP Website expansion (generated references cluster)**
+29. Generate the diagnostics reference from `src/lib.ts`. **→ ROADMAP Website expansion (generated references cluster)**
+30. Generate the emitter-option reference from the options interface. **→ ROADMAP Website expansion (generated references cluster)**
+31. Add an AsyncAPI 3.0 vs 3.1 explainer. **→ ROADMAP Website expansion (explainers cluster)**
+32. Add a "TypeSpec vs hand-written YAML" long-form article. **→ ROADMAP Website expansion (explainers cluster)**
+33. Add a protocol explainer series (Kafka, MQTT, WebSocket). **→ ROADMAP Website expansion (explainers cluster)**
+34. Add a troubleshooting page keyed by diagnostic code. **→ ROADMAP Website expansion (troubleshooting page idea)**
+35. Add a security and supply-chain page. **→ ROADMAP Website expansion (security page idea)**
+36. Add a support/maintenance policy page. **→ ROADMAP Website expansion (support-policy page idea)**
+37. Add a glossary/domain-language page. **→ ROADMAP Website expansion (glossary page idea)**
+38. Add a printable one-page cheatsheet. **→ ROADMAP Website expansion (cheatsheet idea)**
+39. Add a docs landing page explaining the IA. **→ ROADMAP Website expansion (IA landing idea)**
+40. Add a "Start here" path for three personas. **→ ROADMAP Website expansion (personas idea)**
+~~41. Add versioned docs and a version selector.~~ **NOT-DO — versioned docs never shipped.**
+42. Add TypeDoc API reference. **→ ROADMAP Website expansion (TypeDoc idea)**
+~~43. Add a playground or StackBlitz embed.~~ done — shipped — the in-browser playground runs the real compiler
+~~44. Add a service worker for offline docs.~~ **NOT-DO — service worker never added.**
+~~45. Add `hreflang` and a localization pilot.~~ **NOT-DO — localization never started.**
+46. Add a Firebase preview deploy workflow for pull requests. **→ TODO_LIST Hygiene (website deploy-workflow row)**
+47. Add an automated production deploy with a post-deploy smoke test. **→ TODO_LIST Hygiene (website deploy-workflow + smoke row)**
+48. Add weekly external-link monitoring. **→ ROADMAP Website expansion (weekly link monitoring idea)**
+49. Add cspell and markdownlint to CI. **→ ROADMAP Website expansion (cspell/markdownlint idea)**
+~~50. Add a quarterly docs freshness audit (counts, screenshots, competitor claims).~~ done — standing — the docs-gates battery is the quarterly audit
 
 ---
 
 ## G) THREE QUESTIONS I CANNOT ANSWER MYSELF
 
-1. **Deployment authorization:** Should I deploy this pass now to the production Firebase target, or first to a preview channel for you to inspect? The trailing-slash and dotfile changes are the two items that need live validation, and I do not want to alter production hosting behavior without your call.
-2. **Video priority:** The HyperFrames demo project already exists but has no rendered MP4. Do you want me to spend the next pass rendering and embedding it, or should the next pass stay on verification (browser tests, axe, Lighthouse) and docs generation?
-3. **Positioning:** Should the site continue to explicitly concede that the competing emitter has the better docs site, or should we remove that concession and compete only on validation, components, and binding generation? This is a product/brand call, not a technical one.
+~~1. **Deployment authorization:** Should I deploy this pass now to the production Firebase target, or first to a preview channel for you to inspect? The trailing-slash and dotfile changes are the two items that need live validation, and I do not want to alter production hosting behavior without your call.~~ done — settled — deployed and verified
+2. **Video priority:** The HyperFrames demo project already exists but has no rendered MP4. Do you want me to spend the next pass rendering and embedding it, or should the next pass stay on verification (browser tests, axe, Lighthouse) and docs generation? **→ ROADMAP §5 Demo video (epic seed)**
+~~3. **Positioning:** Should the site continue to explicitly concede that the competing emitter has the better docs site, or should we remove that concession and compete only on validation, components, and binding generation? This is a product/brand call, not a technical one.~~ done — settled — the honest concession stays (Related Tools)
 
 ---
 

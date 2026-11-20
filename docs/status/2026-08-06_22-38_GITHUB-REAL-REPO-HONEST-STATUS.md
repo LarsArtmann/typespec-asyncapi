@@ -34,6 +34,9 @@ Exhaustive `gh search code` queries for:
 
 ### 3. Cloned 5 Real GitHub Repositories
 
+<!-- ledger: 2026-08-06 repo-selection snapshot; all five verbatim files live in test/realworld/repos/ today -->
+<!-- check-rows:ledger -->
+
 | Repo                            | File                             | Lines | Why Selected                            |
 | ------------------------------- | -------------------------------- | ----- | --------------------------------------- |
 | `bterlson/typespec-todo`        | `main.tsp`                       | 277   | TypeSpec creator's own sample app       |
@@ -43,9 +46,6 @@ Exhaustive `gh search code` queries for:
 | `milehimikey/typespec-asyncapi` | `examples/kafka-orders/main.tsp` | 153   | Competing AsyncAPI emitter              |
 
 All cloned via `gh repo clone`. Actual `.tsp` files copied **verbatim** into `test/realworld/repos/`.
-
-<!-- ledger: 2026-08-06 repo-selection snapshot; all five verbatim files live in test/realworld/repos/ today -->
-<!-- check-rows:ledger -->
 
 ### 4. Wrote 4 Test Files (37 tests, all passing)
 

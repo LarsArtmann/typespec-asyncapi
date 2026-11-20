@@ -146,3 +146,13 @@ Raw ideas:
 - We do NOT build a VS Code extension (the TypeSpec VS Code extension already provides IDE support)
 - We do NOT convert AsyncAPI 2.x specs to 3.x (use the official AsyncAPI converter)
 - We do NOT build a plugin architecture for community protocol bindings (protocol bindings are defined in code, not extensible at runtime)
+
+
+### 6. Website expansion (raw ideas from the 2026-10-23 overhaul backlog)
+
+- Generated references: decorator reference from `lib/main.tsp`, diagnostics reference from `src/lib.ts`, emitter-option reference from the options interface
+- Explainers: AsyncAPI 3.0 vs 3.1, "TypeSpec vs hand-written YAML", protocol series (Kafka/MQTT/WebSocket)
+- Troubleshooting page keyed by diagnostic code; security/supply-chain page; support/maintenance policy page
+- Glossary/domain-language page; printable one-page cheatsheet; docs IA landing; "Start here" persona paths
+- Versioned docs + version selector; TypeDoc API reference
+- Weekly external-link monitoring; cspell + markdownlint in CI
