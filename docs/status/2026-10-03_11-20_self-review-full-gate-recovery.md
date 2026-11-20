@@ -16,82 +16,82 @@ clean (re-proven after the last workspace.yaml change).
 
 ## a) FULLY DONE (verified this session)
 
-1. **BuildFlow jscpd v4/v5 dialect fix** — version probe + `jscpdBaseArgs`,
+~~1. **BuildFlow jscpd v4/v5 dialect fix** — version probe + `jscpdBaseArgs`,~~ done — confirmed by the addendum in the 10-12 report: the daemon committed the fixes into BuildFlow main history
    gated in clean sibling worktree (`go build`, `go test -race` ok 191s,
    golangci-lint clean for my files, erraudit 0 violations), built, installed
    (`13d32f756…d306-dirty`), `buildflow -s jscpd` green (0 findings, 336ms).
    Daemon has committed it into BuildFlow main history.
-2. **BuildFlow todo-checker word-boundary fix** — `(?i)\b(...):` in
+~~2. **BuildFlow todo-checker word-boundary fix** — `(?i)\b(...):` in~~ done — same addendum confirms the daemon commit of the todo-checker fix into BuildFlow main history
    `compilePatterns`; `debug: "1"` no longer matches `BUG:`. Regression test
    through the PRODUCTION compile path (existing tests hand-rolled a `\b`
    regex — production never had it, which is how the bug survived). Module
    tests, golangci-lint 0 issues, erraudit 0 violations (the latter two added
    during this self-review — see d)2). `buildflow -s todo-check` = 0
    findings. Daemon-committed to BuildFlow main history.
-3. **Dependency set at latest-allowed** — typescript-eslint 8.71.0 (the real
+~~3. **Dependency set at latest-allowed** — typescript-eslint 8.71.0 (the real~~ done — typescript stays pinned exact 6.0.3 (TODO_LIST dependency-refresh row); AGENTS.md line 202 records the soak rule
    constraint is the peer range `typescript <6.1.0`, NOT an 8.70.x hold;
    AGENTS rewritten to the real rule), root TypeScript 6.0.3 (latest 6.x;
    6.0.4 does not exist; caught a RECURRENCE of the `^7.0.2` root drift and
    restored it), eslint 10.11.0, vitest 5.0.3, oxlint 1.86.0, jscpd 5.4.0 —
    all newest versions their constraints allow. Verify gate green on the set.
-4. **`minimumReleaseAgeExclude: eslint@10.12.0` removed** — it bypassed the
+~~4. **`minimumReleaseAgeExclude: eslint@10.12.0` removed** — it bypassed the~~ done — AGENTS.md line 202 documents the exclude bypass removal and the soak policy
    24h publish soak for a <24h-old eslint; reverted to aged 10.11.0. Soak
    policy documented in AGENTS.
-5. **pnpm-audit 15 → 0 actionable findings** — range-selectored overrides
+~~5. **pnpm-audit 15 → 0 actionable findings** — range-selectored overrides~~ done — audit reached 0 actionable; the range overrides were later dropped (package.json has no pnpm overrides block today)
    (`nanoid@<3.3.18`, `devalue@<=5.9.2`, `brace-expansion@^1/@^5`,
    `fast-uri ^3.1.8`); the one unpatchable advisory (http-cache-semantics
    GHSA-ch52; 4.2.0 IS the latest release; website-build-only chain) dismissed
    via `auditConfig.ignoreGhsas` with the removal condition documented.
    Cache-cold `buildflow -s pnpm-audit` = exit 0.
-6. **treefmt generated/artifact exclusion doctrine** — prettier excludes:
+~~6. **treefmt generated/artifact exclusion doctrine** — prettier excludes:~~ done — AGENTS.md line 211 documents the treefmt exclusion doctrine; `nix flake check` remains the format gate
    `docs/**/*.html`, `docs/_archive/**`, `docs/status/**` (point-in-time
    reports — prettier wanted to re-wrap their code fences),
    `website/src/styles/*.out.css`, `pnpm-lock.yaml`. `nix flake check` =
    ALL CHECKS PASSED.
-7. **Formatter single-ownership** — new `.buildflow.yml`: oxfmt and
+~~7. **Formatter single-ownership** — new `.buildflow.yml`: oxfmt and~~ done — `.buildflow.yml` exists with oxfmt and prettier-format skipped and the rationale inline
    prettier-format skipped with rationale (treefmt/prettier via
    nix-flake-check is the ONE formatting owner; the duplicates don't honor
    its excludes and disagreed: 135 + 1 advisory findings).
-8. **github-actions-pinning** = exit 0 (setup-bun `# v2.2.0` comment fix).
-9. **CHANGELOG `[Unreleased]`** entry for issue #252 (leak fix, diagnostic,
+~~8. **github-actions-pinning** = exit 0 (setup-bun `# v2.2.0` comment fix).~~ done — setup-bun pinned `# v2.2.0` in both `ci.yml` and `release.yml`
+~~9. **CHANGELOG `[Unreleased]`** entry for issue #252 (leak fix, diagnostic,~~ done — CHANGELOG carries the #252 entries (lines 145 and 185)
    example, integration test).
-10. **AGENTS.md updated** — pin rule, soak policy, overrides precedent +
+~~10. **AGENTS.md updated** — pin rule, soak policy, overrides precedent +~~ done — AGENTS.md carries the pin rule, soak policy, treefmt doctrine and BuildFlow hazard notes
     range-selector gotcha, treefmt doctrine + mtime-cache caveat, jscpd v5
     dialect + `.jscpd.json` dual-scope coupling, BuildFlow pnpm-update
     hazards.
-11. **Resolution addendum** appended to the 10-12 report (incl. worktree
+~~11. **Resolution addendum** appended to the 10-12 report (incl. worktree~~ done — the 10-12 report carries the resolution addendum with the worktree cleanup commands
     cleanup commands).
-12. **Self-review verifications just re-run:** frozen-lockfile proof after the
+~~12. **Self-review verifications just re-run:** frozen-lockfile proof after the~~ **NOT-DO — session verification record; nothing further owed.**
     auditConfig edit; todo-checker lint+erraudit; lychee state; ns-test
     identity (see below).
 
 ## b) PARTIALLY DONE
 
-1. **BuildFlow ship path** — both fixes are in BuildFlow main HISTORY (daemon
+1. **BuildFlow ship path** — both fixes are in BuildFlow main HISTORY (daemon **→ TODO_LIST §Mixed-Emitter — BuildFlow baseline WIP row (plus the rebuild row under Dependency)**
    commits), but the ACTIVE fleet binary is my `-dirty` worktree build. The
    proper `git+file:///home/lars/projects/BuildFlow` reinstall remains blocked
    by the concurrent session's uncompiling baseline WIP (root.go references
    `createBaselineCommand` defined only in untracked files). Workaround is
    solid and documented; not the end state.
-2. **eslint truly-latest** — 10.12.0 published 2026-10-02T20:08Z; crosses the
+2. **eslint truly-latest** — 10.12.0 published 2026-10-02T20:08Z; crosses the **→ TODO_LIST §Mixed-Emitter — eslint 10.12.0 bump row (struck superseded there)**
    24h soak tonight 20:08 UTC. One-liner bump then (`pnpm -w update
    eslint@10.12.0` + relock).
-3. **Follow-up tracking** — every follow-up lives in prose (AGENTS gotchas +
+~~3. **Follow-up tracking** — every follow-up lives in prose (AGENTS gotchas +~~ done — harvested: the TODO_LIST Mixed-Emitter and Hygiene sections cite this report's §f
    this report); NOT harvested into `TODO_LIST.md`, the designated file. This
    report's §f supersedes the 10-12 §f table for harvesting.
 
 ## c) NOT STARTED (gated on Lars — carried, unchanged)
 
-1. Issue #252 reply posting (drafted earlier; posting is external+irreversible).
-2. 1.0.1-vs-1.1.0 version call + release ritual (annotated tag → release.yml;
+~~1. Issue #252 reply posting (drafted earlier; posting is external+irreversible).~~ done — posted 2026-10-03 (TODO_LIST: issuecomment-5970180678 on #252)
+~~2. 1.0.1-vs-1.1.0 version call + release ritual (annotated tag → release.yml;~~ done — resolved as 1.1.0, shipped 2026-10-03 (TODO_LIST Release section)
    pre-tag `pnpm install --lockfile-only && --frozen-lockfile && verify` now
    MORE important — see the Dependabot/frozen incident note in AGENTS).
-3. TODO_LIST / ROADMAP harvest (10-12 §f 29-item table + this §f).
-4. crush-config lessons commit (cross-project lessons).
+~~3. TODO_LIST / ROADMAP harvest (10-12 §f 29-item table + this §f).~~ done — landed as the TODO_LIST sections harvested 2026-10-03 from this §f
+4. crush-config lessons commit (cross-project lessons). **→ TODO_LIST §Mixed-Emitter — crush-config lessons commit row**
 
 ## d) TOTALLY FUCKED UP (honest)
 
-1. **Near-false-green from result-cache masking.** I reported "exit 0" from a
+~~1. **Near-false-green from result-cache masking.** I reported "exit 0" from a~~ done — systemic fix tracked: TODO_LIST Hygiene carries the CI `BUILDFLOW_NO_RESULT_CACHE=1` row
    full run whose pnpm-audit step was a 1ms cache replay that hid the LIVE
    http-cache-semantics error finding. Caught only because I distrusted the
    1ms and re-ran cache-cold (exit 69 → then fixed properly). The first
@@ -99,120 +99,120 @@ clean (re-proven after the last workspace.yaml change).
    Systemic fix: final gate verification must use `BUILDFLOW_NO_RESULT_CACHE=1`
    (and this masking behavior is itself a BuildFlow bug worth reporting —
    a cached GREEN over a live-RED finding).
-2. **Gate asymmetry on my second fix** (caught + closed in this self-review):
+~~2. **Gate asymmetry on my second fix** (caught + closed in this self-review):~~ **NOT-DO — lesson logged; symmetric gating adopted for the rest of the session.**
    the jscpd fix got build+race+lint+erraudit; the todo-checker fix initially
    shipped with only `go test`. Sloppy. All BuildFlow patches get the full
    gate set now (lint 0 / erraudit 0 confirmed above).
-3. **Lossy verification greps, three times.** (i) `treefmt --fail-on-change |
+~~3. **Lossy verification greps, three times.** (i) `treefmt --fail-on-change |~~ **NOT-DO — rule adopted in-session; no standing artifact owed.**
    grep -E 'pnpm-lock|fail|changed'` printed nothing → I declared clean while
    the sandbox failed on OTHER files. (ii) `head`-truncated gate outputs hid
    verdict lines twice. (iii) `echo EXIT=${PIPESTATUS[0]}` inside piped
    background commands expanded empty — exit codes silently lost. Rule going
    forward: gate verdicts go to a FILE, greps never filter the verdict line,
    exit codes captured without pipes.
-4. **First worktree attempt in /tmp** broke on BuildFlow's sibling `../`
+~~4. **First worktree attempt in /tmp** broke on BuildFlow's sibling `../`~~ **NOT-DO — lesson logged; no artifact owed.**
    replaces — one wasted cycle; recovered to a sibling dir under ~/projects.
    Should have read go.mod replaces BEFORE choosing worktree location.
-5. **Minor:** initial jscpd provider gate used per-FILE golangci-lint args
+~~5. **Minor:** initial jscpd provider gate used per-FILE golangci-lint args~~ **NOT-DO — lesson logged; verify with the CI invocation became the rule.**
    (18 bogus typecheck errors — file-mode linting lacks package context);
    recovered by package-scoped run. Verify with the same invocation CI uses.
 
 ## e) WHAT WE SHOULD IMPROVE
 
-1. **TODO_LIST.md discipline** — follow-ups belong in the interactive file,
+~~1. **TODO_LIST.md discipline** — follow-ups belong in the interactive file,~~ done — harvest landed: TODO_LIST sections cite this report's §f items
    not entombed in prose. (docs-health HARVEST applies after this report.)
-2. **Cache-cold final gates as policy** — `BUILDFLOW_NO_RESULT_CACHE=1` for
+2. **Cache-cold final gates as policy** — `BUILDFLOW_NO_RESULT_CACHE=1` for **→ TODO_LIST §Hygiene — CI cache-masking defense row**
    any "final" claim; also worth adding to CI's gate job.
-3. **Symmetric gating** — every BuildFlow patch: build + race tests + lint +
+~~3. **Symmetric gating** — every BuildFlow patch: build + race tests + lint +~~ **NOT-DO — process rule adopted in-session.**
    erraudit, no exceptions.
-4. **Verification output hygiene** — verdict lines unfiltered; exit codes
+~~4. **Verification output hygiene** — verdict lines unfiltered; exit codes~~ **NOT-DO — process rule adopted in-session.**
    explicit; full logs to /tmp files (pattern worked every time I used it).
-5. **LSP restart** — stale diagnostics for trashed `scripts/scratch-issue-252*`
+~~5. **LSP restart** — stale diagnostics for trashed `scripts/scratch-issue-252*`~~ **NOT-DO — habit note; no artifact owed.**
    polluted EVERY tool result this session; one `lsp_restart` at session start
    would have cleaned two sessions' worth of noise.
-6. **lychee 99 warning findings** — link rot accumulating (docs); warning-only
+6. **lychee 99 warning findings** — link rot accumulating (docs); warning-only **→ TODO_LIST §Hygiene — Lychee findings triage row**
    so invisible to the gate. Triage or schedule.
-7. **knip** (dead-code) shows as "unavailable" — evaluate adopting it; this
+7. **knip** (dead-code) shows as "unavailable" — evaluate adopting it; this **→ TODO_LIST §Hygiene — knip adoption row**
    repo's exports surface is now semver-frozen, dead code is audit material.
-8. **pnpm-lock.yaml is currently prettier-STYLED** (treefmt --fix ran before
+~~8. **pnpm-lock.yaml is currently prettier-STYLED** (treefmt --fix ran before~~ **NOT-DO — style-diff prediction; no standing action.**
    the exclusion landed; data-identical, pnpm accepts it). It will snap back
    to pnpm style at the next real relock — expect a one-time style diff, not
    a dependency change.
-9. **`scripts/ns-test/main.tsp`** — 113-byte scratch from 05:38 today, not
+9. **`scripts/ns-test/main.tsp`** — 113-byte scratch from 05:38 today, not **→ TODO_LIST §Hygiene — trash scripts/ns-test row**
    mine, not referenced. Owner should trash it (I don't delete others' files).
-10. **AGENTS pin notation drift** — AGENTS says TS "pinned to ^6.0.3" prose
+10. **AGENTS pin notation drift** — AGENTS says TS "pinned to ^6.0.3" prose **→ TODO_LIST §Hygiene — AGENTS pin-wording row**
     while the manifest now pins exact `6.0.3`. Harmonize wording at next edit.
 
 ## f) NEXT THINGS (harvest-ready; ⏳=gated on Lars, ⏰=time-based)
 
 **Recovery tail**
 
-1. ⏰ eslint → 10.12.0 after 20:08 UTC tonight; relock; frozen proof; quick lint.
-2. ⏰ After baseline WIP lands: reinstall buildflow from main URL, remove
+1. ⏰ eslint → 10.12.0 after 20:08 UTC tonight; relock; frozen proof; quick lint. **→ TODO_LIST §Mixed-Emitter — eslint 10.12.0 row (superseded there)**
+2. ⏰ After baseline WIP lands: reinstall buildflow from main URL, remove **→ TODO_LIST §Mixed-Emitter — BuildFlow baseline WIP row**
    `.bf-jscpd-worktree`, verify version ≠ -dirty build.
-3. Watch http-cache-semantics for a patched release → remove `ignoreGhsas` entry.
-4. BuildFlow upstream queue (file or hand to the concurrent session — see g)1):
+3. Watch http-cache-semantics for a patched release → remove `ignoreGhsas` entry. **→ TODO_LIST §Hygiene — http-cache-semantics watch row**
+4. BuildFlow upstream queue (file or hand to the concurrent session — see g)1): **→ TODO_LIST §Mixed-Emitter — BuildFlow upstream handoff row (4 findings)**
    pnpm-update writes manifests without lockfiles; pnpm-update writes
    `minimumReleaseAgeExclude` bypasses for <24h publishes; result cache can
    replay a GREEN over a live-RED finding; `nix profile install` same-URL
    no-op skips rebuild when the dirty source changed.
-5. BuildFlow HEAD has 5 pre-existing lint issues (gofumpt/golines/wsl_v5 in
+5. BuildFlow HEAD has 5 pre-existing lint issues (gofumpt/golines/wsl_v5 in **→ TODO_LIST §Mixed-Emitter — upstream handoff row (the 5 pre-existing lint issues)**
    vendor_resync_ordering_test.go, nix_tools.go) — other session's domain,
    currently red for their own gates.
    **Gated release chain**
-6. ⏳ Post issue #252 reply (verify-before-filing pass done 10-12; then github-voice).
-7. ⏳ Version call 1.0.1 (bugfix) vs 1.1.0 (the #252 diagnostic+behavior change
+~~6. ⏳ Post issue #252 reply (verify-before-filing pass done 10-12; then github-voice).~~ done — posted 2026-10-03 (TODO_LIST: issuecomment-5970180678)
+~~7. ⏳ Version call 1.0.1 (bugfix) vs 1.1.0 (the #252 diagnostic+behavior change~~ done — resolved as 1.1.0, tagged and shipped 2026-10-03 (TODO_LIST Release)
    is arguably minor-not-patch) → CHANGELOG section rename → `pnpm version` →
    tag → release.yml.
-8. ⏳ Pre-tag ritual per AGENTS: `pnpm install --lockfile-only && pnpm install
+~~8. ⏳ Pre-tag ritual per AGENTS: `pnpm install --lockfile-only && pnpm install~~ done — exercised at the 1.1.0 tag: the pre-tag ritual caught a live manifest re-drift (TODO_LIST Release)
    --frozen-lockfile && pnpm run verify`.
-9. ⏳ TODO_LIST/ROADMAP harvest (this §f + 10-12 §f).
-10. ⏳ crush-config lessons commit (worktree-placement-for-relative-replaces;
+~~9. ⏳ TODO_LIST/ROADMAP harvest (this §f + 10-12 §f).~~ done — landed as the TODO_LIST sections harvested 2026-10-03
+10. ⏳ crush-config lessons commit (worktree-placement-for-relative-replaces; **→ TODO_LIST §Mixed-Emitter — crush-config lessons commit row**
     result-cache masking; lossy-grep failures).
     **Quality / hygiene**
-11. lychee 99 findings triage (docs link rot; fix or archive dead links).
-12. Evaluate knip adoption for the frozen public API surface.
-13. Review nix-checker's 2 remaining info suggestions (cleaner-diffs/nvfetcher).
-14. On-demand sweeps now the gate is green: gitleaks, codespell, markdownlint.
-15. Add `BUILDFLOW_NO_RESULT_CACHE=1` to the CI final-gate job (cache-masking
+11. lychee 99 findings triage (docs link rot; fix or archive dead links). **→ TODO_LIST §Hygiene — Lychee findings triage row**
+12. Evaluate knip adoption for the frozen public API surface. **→ TODO_LIST §Hygiene — knip adoption row**
+13. Review nix-checker's 2 remaining info suggestions (cleaner-diffs/nvfetcher). **→ TODO_LIST §Hygiene — nix-checker suggestions row**
+14. On-demand sweeps now the gate is green: gitleaks, codespell, markdownlint. **→ TODO_LIST §Hygiene — on-demand sweeps row (gitleaks, codespell, markdownlint)**
+15. Add `BUILDFLOW_NO_RESULT_CACHE=1` to the CI final-gate job (cache-masking **→ TODO_LIST §Hygiene — CI cache-masking defense row**
     defense — pairs with item 4).
-16. `scripts/ns-test/` — owner trashes or it becomes repo litter.
-17. Decide global.out.css policy (see g)3).
-18. AGENTS `^6.0.3`-vs-`6.0.3` wording harmonization.
-19. LSP restart habit at session start when diagnostics reference deleted files.
-20. pnpm peers check: website `@astrojs/check` wants TS ^5||^6 vs website TS 7
+16. `scripts/ns-test/` — owner trashes or it becomes repo litter. **→ TODO_LIST §Hygiene — trash scripts/ns-test row**
+17. Decide global.out.css policy (see g)3). **→ TODO_LIST §Hygiene — global.out.css policy row**
+18. AGENTS `^6.0.3`-vs-`6.0.3` wording harmonization. **→ TODO_LIST §Hygiene — AGENTS pin-wording row**
+~~19. LSP restart habit at session start when diagnostics reference deleted files.~~ **Won't implement — habit note; no artifact owed.**
+20. pnpm peers check: website `@astrojs/check` wants TS ^5||^6 vs website TS 7 **→ TODO_LIST §Hygiene — website @astrojs/check TS-range row**
     — pre-existing Astro-side mismatch; note or upstream to Astro templates.
-21. Re-run `pnpm run check-examples` (CI-covered, not run this session).
-22. `jscpd-report/` output dir from the duplicate step — confirm gitignored.
-23. Verify `generated-bindings.ts` shrinkage (12169→11073 after @asyncapi/specs
+~~21. Re-run `pnpm run check-examples` (CI-covered, not run this session).~~ done — CI runs it: `pnpm run check-examples` at `.github/workflows/ci.yml:38`
+~~22. `jscpd-report/` output dir from the duplicate step — confirm gitignored.~~ done — gitignored: `/jscpd-report/` at `.gitignore:55`
+~~23. Verify `generated-bindings.ts` shrinkage (12169→11073 after @asyncapi/specs~~ done — no rules dropped: AGENTS.md lines 67 and 170 document 22 protocols vs 19 binding protocols as distinct concerns
     relock) didn't drop binding rules: spot-check `LATEST_BINDING_VERSIONS`
     count vs AGENTS' 19 binding protocols.
-24. Consider TODO_LIST entry templates for ⏰ items (this report should not be
+24. Consider TODO_LIST entry templates for ⏰ items (this report should not be **→ TODO_LIST §Hygiene — checkbox templates for ⏰ items row**
     the reminder system).
-25. FEATURES.md refresh after #252 work lands in a release.
-26. ROADMAP: EFv1 containment watch (asset-emitter → openapi3 migration news).
-27. npm dist-tag `alpha` cleanup still UI-only (token lacks DELETE) — keep in
+~~25. FEATURES.md refresh after #252 work lands in a release.~~ done — FEATURES.md refreshed through the v1.0.0-v1.2.0 era (coverage and decorator tables current)
+26. ROADMAP: EFv1 containment watch (asset-emitter → openapi3 migration news). **→ ROADMAP — openapi3 EFv2 monitor row**
+27. npm dist-tag `alpha` cleanup still UI-only (token lacks DELETE) — keep in **→ TODO_LIST §Release — stale alpha dist-tag row (superseded there)**
     release checklist.
-28. Dependabot watch: next config/lockfile divergence (the v1.0.0 incident
+28. Dependabot watch: next config/lockfile divergence (the v1.0.0 incident **→ TODO_LIST §Hygiene — Dependabot config/lockfile divergence watch row**
     pattern recurred TODAY as pnpm-update manifest drift).
-29. `buildflow doctor` binary-freshness warnings on this shared checkout are
+~~29. `buildflow doctor` binary-freshness warnings on this shared checkout are~~ **Won't implement — never added; doctor noise is not mentioned in AGENTS.md.**
     expected noise — consider a doctor allowlist note in AGENTS if it annoys.
-30. Session report hygiene: this is the 3rd report in 2 days on this recovery;
+~~30. Session report hygiene: this is the 3rd report in 2 days on this recovery;~~ done — the release reports followed the same day (10-03 13-27 and 13-58); the recovery closed
     next one should be the release/ship report only.
 
 ## g) QUESTIONS (cannot figure out myself)
 
-1. **BuildFlow upstream ownership:** four upstream findings this session
+1. **BuildFlow upstream ownership:** four upstream findings this session **→ TODO_LIST §Mixed-Emitter — BuildFlow upstream handoff row (ownership question open there)**
    (pnpm-update lockless manifest writes; release-age-exclude bypasses;
    result-cache green-over-red replay; nix profile same-URL no-op) plus
    landing my two fixes through a clean main build — do I file these in
    BuildFlow's TODO/issue tracker myself, or does the concurrent baseline
    session own that queue and I hand them over?
-2. **Formatter endgame:** I locked prettier/treefmt in as the single owner
+~~2. **Formatter endgame:** I locked prettier/treefmt in as the single owner~~ done — AGENTS.md line 211 settles it: treefmt/prettier is the one formatting owner
    (skipping oxfmt + prettier-format in BuildFlow). Correct long-term, or is
    ox-native oxfmt the intended eventual single formatter (making the
    migration a planned task instead of a skip)?
-3. **`website/src/styles/global.out.css`:** generated Tailwind output, but
+3. **`website/src/styles/global.out.css`:** generated Tailwind output, but **→ TODO_LIST §Hygiene — global.out.css policy row**
    TRACKED in git (and now excluded from formatting). Untrack and generate
    at build time, or keep committing build output?
 
