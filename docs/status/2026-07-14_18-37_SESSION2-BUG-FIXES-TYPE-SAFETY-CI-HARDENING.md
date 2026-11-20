@@ -107,12 +107,12 @@
 
 ## C. NOT STARTED
 
-1. **`test/temp-output/` cleanup** — ~90+ empty temp directories from test runs, never cleaned up, tracked by git.
-2. **`test/acceptance/` directory** — empty, no tests.
-3. **`test/core/` directory** — no test files, only `unified-test-infrastructure.ts`.
-4. **Split `ProtocolConfigData` into discriminated union** — currently a flat struct with optional fields for Kafka/MQTT/WS/AMQP. Should be `{ protocol: "kafka", ...kafkaFields } | { protocol: "mqtt", ...mqttFields } | ...`.
-5. **Remove `test/utils/type-guards.ts`** — 348 lines, 27% coverage, mostly dead code.
-6. **README.md badge for coverage** — coverage gate exists but no badge in README.
+~~1. **`test/temp-output/` cleanup** — ~90+ empty temp directories from test runs, never cleaned up, tracked by git.~~ done — git tracks nothing under test/temp-output and .gitignore lists test/temp-output/
+~~2. **`test/acceptance/` directory** — empty, no tests.~~ done — directory removed — no test/acceptance in the tree
+~~3. **`test/core/` directory** — no test files, only `unified-test-infrastructure.ts`.~~ done — directory removed — no test/core in the tree
+~~4. **Split `ProtocolConfigData` into discriminated union** — currently a flat struct with optional fields for Kafka/MQTT/WS/AMQP. Should be `{ protocol: "kafka", ...kafkaFields } | { protocol: "mqtt", ...mqttFields } | ...`.~~ done — discriminated union lives in src/state.ts (Kafka / WebSocket / Mqtt / Generic variants)
+~~5. **Remove `test/utils/type-guards.ts`** — 348 lines, 27% coverage, mostly dead code.~~ done — repurposed as the assertion-helper module (inlineObject, asJsonSchema, assert* — AGENTS.md Test Helpers)
+~~6. **README.md badge for coverage** — coverage gate exists but no badge in README.~~ **Won't implement — no shields coverage badge; the README status table carries the 98.0% metric row instead.**
 
 ---
 
@@ -130,32 +130,32 @@ No regressions, no broken commits, no data loss. Everything was committed increm
 
 ### Architecture
 
-1. **`ProtocolConfigData` is a god type** — It has Kafka, MQTT, WebSocket, and AMQP fields all in one interface with optionals. Should be a discriminated union on `protocol`.
-2. **`test-helpers.ts` is still 437 lines** — `TestSources`, `TestValidationPatterns`, `TestLogging`, `validateAsyncAPIObjectComprehensive` should each be in separate files or deleted if unused.
-3. **`schema-emitter.ts` `typeToSchema` is a 40-line `if/else` chain** — Could use the same const-array/lookup pattern as `intrinsic-mapping.ts`.
-4. **`propertyToSchema` duplicates `typeToSchema` logic** — Both do kind-checking and delegation. Consolidate.
-5. **Decorator config extraction is copy-paste** — `$message`, `$protocol`, `$security` each repeat the same `Model → Record` vs `object → Record` branching. Should be a shared `extractDecoratorConfig()` helper.
+~~1. **`ProtocolConfigData` is a god type** — It has Kafka, MQTT, WebSocket, and AMQP fields all in one interface with optionals. Should be a discriminated union on `protocol`.~~ done — discriminated union in src/state.ts
+~~2. **`test-helpers.ts` is still 437 lines** — `TestSources`, `TestValidationPatterns`, `TestLogging`, `validateAsyncAPIObjectComprehensive` should each be in separate files or deleted if unused.~~ **Won't implement — test-helpers.ts grew with functionality (529 lines); current API documented in AGENTS.md Test Helpers.**
+~~3. **`schema-emitter.ts` `typeToSchema` is a 40-line `if/else` chain** — Could use the same const-array/lookup pattern as `intrinsic-mapping.ts`.~~ **NOT-DO — typeToSchema survives as a delegation method; intrinsic mapping is the table-driven piece (src/intrinsic-mapping.ts).**
+~~4. **`propertyToSchema` duplicates `typeToSchema` logic** — Both do kind-checking and delegation. Consolidate.~~ done — both route through the shared refOrFallback path (src/schema-emitter.ts propertyToSchema / typeToSchema)
+~~5. **Decorator config extraction is copy-paste** — `$message`, `$protocol`, `$security` each repeat the same `Model → Record` vs `object → Record` branching. Should be a shared `extractDecoratorConfig()` helper.~~ done — namedConfigDecorator + makeUseDecorator factories own config extraction (AGENTS.md Decorator Implementations)
 
 ### Testing
 
-6. **`schema-emitter.ts` has ~24% uncovered lines** — Needs tests with enums, tuples, array declarations, scalar instantiations, interface declarations.
-7. **`minimal-decorators.ts` error paths mostly untested** — 17 uncovered lines are all diagnostic emission paths. Need negative tests passing invalid configs.
-8. **No snapshot/golden tests for protocol bindings output** — We test that bindings are attached but don't verify the exact binding structure in the output.
-9. **`test/utils/type-guards.ts` (348 lines, 27% coverage)** — Massive file mostly dead code. Should be deleted or drastically slimmed.
-10. **`test/integration/` has 14 test files** — Some may overlap. An audit for test redundancy would help.
+~~6. **`schema-emitter.ts` has ~24% uncovered lines** — Needs tests with enums, tuples, array declarations, scalar instantiations, interface declarations.~~ done — test/compliance/type-mapping-completeness.test.ts covers enums, tuples, arrays (42 cases)
+~~7. **`minimal-decorators.ts` error paths mostly untested** — 17 uncovered lines are all diagnostic emission paths. Need negative tests passing invalid configs.~~ done — test/integration/decorator-negative.test.ts + negative-tests.test.ts cover error paths
+~~8. **No snapshot/golden tests for protocol bindings output** — We test that bindings are attached but don't verify the exact binding structure in the output.~~ done — test/golden/protocol-bindings.expected.yaml locks binding output
+~~9. **`test/utils/type-guards.ts` (348 lines, 27% coverage)** — Massive file mostly dead code. Should be deleted or drastically slimmed.~~ done — kept and repurposed — assertion helpers per AGENTS.md Test Helpers, not dead code
+~~10. **`test/integration/` has 14 test files** — Some may overlap. An audit for test redundancy would help.~~ **Won't implement — integration suite grew to 30 files; no redundancy audit recorded.**
 
 ### CI/CD
 
-11. **No publish workflow** — No pnpm publish step in CI. Tags exist but no release automation.
-12. **No dependency audit** — `bun audit` or similar not in CI.
-13. **Coverage gate at 75% is generous** — Should ratchet to 80%+ after schema-emitter tests are added.
+~~11. **No publish workflow** — No pnpm publish step in CI. Tags exist but no release automation.~~ done at `d03e157`
+~~12. **No dependency audit** — `bun audit` or similar not in CI.~~ **Won't implement — no audit stage in ci.yml; advisory posture tracked via TODO_LIST §Hygiene (ignoreGhsas watch).**
+~~13. **Coverage gate at 75% is generous** — Should ratchet to 80%+ after schema-emitter tests are added.~~ **Won't implement — gate kept at the 75% per-file floor (AGENTS.md); suite sits at ~98%.**
 
 ### Code Quality
 
-14. **`[key: string]: unknown` on `SchemaObject`** — Intentional for JSON Schema extensibility, but could be replaced with specific keyword unions for the ones we actually emit.
-15. **`any` in test-helpers** — `AsyncAPIObject = Record<string, any>` and several `any` casts remain. Test code can afford looser typing but it's a slippery slope.
-16. **`document-builder.ts` has 3 inline closures** — `getReturnModelName`, `extractChannelParameters`, `ensureChannel` are defined inside `buildAsyncAPIDocument`. Could be module-level functions taking explicit parameters.
-17. **`state.ts` imports unused `ProtocolBindings`** — After type refinement, the import may be only used in type position. (Need to verify.)
+~~14. **`[key: string]: unknown` on `SchemaObject`** — Intentional for JSON Schema extensibility, but could be replaced with specific keyword unions for the ones we actually emit.~~ **NOT-DO — intentional — AGENTS.md document-model bullet keeps the JsonSchema index signature as the standard extension pattern.**
+~~15. **`any` in test-helpers** — `AsyncAPIObject = Record<string, any>` and several `any` casts remain. Test code can afford looser typing but it's a slippery slope.~~ **Won't implement — test typing deliberately relaxed (tsconfig.test.json, AGENTS.md).**
+~~16. **`document-builder.ts` has 3 inline closures** — `getReturnModelName`, `extractChannelParameters`, `ensureChannel` are defined inside `buildAsyncAPIDocument`. Could be module-level functions taking explicit parameters.~~ done — document-builder refactored into src/builders/* (module-level functions)
+~~17. **`state.ts` imports unused `ProtocolBindings`** — After type refinement, the import may be only used in type position. (Need to verify.)~~ **NOT-DO — moot after the state + builders restructure.**
 
 ---
 
@@ -163,62 +163,62 @@ No regressions, no broken commits, no data loss. Everything was committed increm
 
 ### High Impact (P0)
 
-1. Clean up `test/temp-output/` — ~90+ empty temp dirs tracked by git, should be gitignored and deleted
-2. Delete or slim `test/utils/type-guards.ts` (348 lines, 27% coverage)
-3. Add `test/temp-output/` to `.gitignore`
-4. Add schema-emitter tests for enums, tuples, array declarations, scalar instantiations
-5. Add decorator error-path tests (invalid configs for `$server`, `$message`, `$protocol`)
-6. Ratchet coverage gate from 75% to 80% after adding schema-emitter tests
-7. Split `ProtocolConfigData` into discriminated union per protocol
-8. Add `bun audit` to CI
-9. Extract `getReturnModelName`, `extractChannelParameters`, `ensureChannel` out of `buildAsyncAPIDocument` in document-builder.ts
+~~1. Clean up `test/temp-output/` — ~90+ empty temp dirs tracked by git, should be gitignored and deleted~~ done — git tracks nothing under test/temp-output; cleanup happened
+~~2. Delete or slim `test/utils/type-guards.ts` (348 lines, 27% coverage)~~ done — kept — repurposed as assertion helpers (AGENTS.md Test Helpers)
+~~3. Add `test/temp-output/` to `.gitignore`~~ done — test/temp-output listed in .gitignore
+~~4. Add schema-emitter tests for enums, tuples, array declarations, scalar instantiations~~ done — test/compliance/type-mapping-completeness.test.ts (42 cases incl. enums, tuples, arrays)
+~~5. Add decorator error-path tests (invalid configs for `$server`, `$message`, `$protocol`)~~ done — test/integration/decorator-negative.test.ts + negative-tests.test.ts
+~~6. Ratchet coverage gate from 75% to 80% after adding schema-emitter tests~~ **Won't implement — gate stays at the 75% floor (AGENTS.md); coverage ~98%.**
+~~7. Split `ProtocolConfigData` into discriminated union per protocol~~ done — discriminated union in src/state.ts
+~~8. Add `bun audit` to CI~~ **Won't implement — no audit stage in ci.yml; advisories tracked in TODO_LIST §Hygiene.**
+~~9. Extract `getReturnModelName`, `extractChannelParameters`, `ensureChannel` out of `buildAsyncAPIDocument` in document-builder.ts~~ done — builders extracted — src/builders/ (11 files) own channel and operation assembly
 
 ### Medium Impact (P1)
 
-10. Consolidate `propertyToSchema` and `typeToSchema` in schema-emitter.ts
-11. Create shared `extractDecoratorConfig()` helper for `$message`, `$protocol`, `$security`
-12. Audit `test/integration/` for test redundancy (14 files)
-13. Add golden file test for protocol bindings output structure
-14. Add golden file test for security scheme output (OAuth2 flows, API key, etc.)
-15. Add `coverage` badge to README.md
-16. Verify and clean up unused `ProtocolBindings` import in `state.ts` if applicable
-17. Remove `TestLogging` no-op stubs (7 functions that do nothing)
-18. Remove `TestValidationPatterns` if callers can use direct assertions instead
-19. Move `TestSources` to a separate file or inline into tests that use them
-20. Empty `test/acceptance/` directory — either add tests or remove
-21. Add pnpm publish workflow triggered on tag push
-22. Add `real-world` examples to CI smoke test (currently only 5 of 8 examples tested)
-23. Add test for `@protocol` decorator output verification
-24. Add test for `@bindings` decorator on channels vs operations vs messages
-25. Add test for `@correlationId` in message output
+~~10. Consolidate `propertyToSchema` and `typeToSchema` in schema-emitter.ts~~ done — both route through shared refOrFallback + applyMetadata paths (src/schema-emitter.ts)
+~~11. Create shared `extractDecoratorConfig()` helper for `$message`, `$protocol`, `$security`~~ done — namedConfigDecorator + makeUseDecorator factories (AGENTS.md Decorator Implementations)
+~~12. Audit `test/integration/` for test redundancy (14 files)~~ **Won't implement — no redundancy audit; integration suite now 30 files.**
+~~13. Add golden file test for protocol bindings output structure~~ done — test/golden/protocol-bindings.expected.yaml
+~~14. Add golden file test for security scheme output (OAuth2 flows, API key, etc.)~~ done — test/golden/server-security.expected.yaml
+~~15. Add `coverage` badge to README.md~~ **Won't implement — no badge; README status table row states 98.0% coverage.**
+~~16. Verify and clean up unused `ProtocolBindings` import in `state.ts` if applicable~~ **NOT-DO — moot after the state restructure.**
+~~17. Remove `TestLogging` no-op stubs (7 functions that do nothing)~~ **Won't implement — helper inventory churned; current API documented in AGENTS.md Test Helpers.**
+~~18. Remove `TestValidationPatterns` if callers can use direct assertions instead~~ **Won't implement — helper inventory churned; current API documented in AGENTS.md Test Helpers.**
+~~19. Move `TestSources` to a separate file or inline into tests that use them~~ **Won't implement — TestSources not split out; example sources live on in test-helpers + website/src/data/hero.ts.**
+~~20. Empty `test/acceptance/` directory — either add tests or remove~~ done — test/acceptance removed from the tree
+~~21. Add pnpm publish workflow triggered on tag push~~ done at `d03e157`
+~~22. Add `real-world` examples to CI smoke test (currently only 5 of 8 examples tested)~~ done — ci.yml check-examples compiles all 14 examples with 0 diagnostics + AJV validation
+~~23. Add test for `@protocol` decorator output verification~~ done — test/compliance/protocol-bindings.test.ts (23 cases)
+~~24. Add test for `@bindings` decorator on channels vs operations vs messages~~ done — test/unit/binding-placement.test.ts + test/integration/binding-placement.test.ts
+~~25. Add test for `@correlationId` in message output~~ done — correlationId covered in test/compliance/edge-cases.test.ts and reusable-components.test.ts
 
 ### Lower Impact (P2)
 
-26. Replace `typeToSchema` if/else chain with lookup table pattern
-27. Type `AsyncAPIObject` properly instead of `Record<string, any>` in test-helpers
-28. Add `.editorconfig` for consistent editor settings
-29. Add `CONTRIBUTING.md` with development setup instructions
-30. Add `CHANGELOG.md` entry for this session's changes
-31. Add test for multiple `@server` decorators on one namespace
-32. Add test for `@header` on ModelProperty
-33. Add test for nested model `$ref` in array items
-34. Add test for `@tags` with non-string values (should produce diagnostic)
-35. Add test for `@security` on Namespace vs Operation
-36. Add test for empty namespace (no operations, no channels)
-37. Add test for model inheritance (`model B extends A`) in schema output
-38. Add test for `is` expression (`model Foo is Bar`) in schema output
-39. Add test for template spread (`model Foo { ...Base }`) — ref-chain test has this but no schema verification
-40. Add test for union types with mixed string/scalar variants
-41. Add test for optional model properties (should NOT appear in `required` array)
-42. Add test for `@doc` decorator appearing as `description` in schema
-43. Add test for deeply nested model (3+ levels of `$ref`)
-44. Consider adding JSON Schema validation for ALL generated schemas (not just top-level)
-45. Consider adding AsyncAPI Studio preview link in example READMEs
-46. Consider adding a `justfile` or `flake.nix` target for `tsp compile` of all examples
-47. Consider adding semantic versioning check in CI (e.g., release-please)
-48. Consider adding PR template
-49. Consider adding issue templates
-50. Consider renaming `minimal-decorators.ts` to just `decorators.ts` since it's no longer minimal
+~~26. Replace `typeToSchema` if/else chain with lookup table pattern~~ **NOT-DO — typeToSchema survives as a delegation method; intrinsic mapping already table-driven (src/intrinsic-mapping.ts).**
+~~27. Type `AsyncAPIObject` properly instead of `Record<string, any>` in test-helpers~~ **Won't implement — test typing deliberately relaxed (tsconfig.test.json, AGENTS.md).**
+~~28. Add `.editorconfig` for consistent editor settings~~ **Won't implement — never added; formatting owned by treefmt/prettier (flake.nix).**
+~~29. Add `CONTRIBUTING.md` with development setup instructions~~ done — CONTRIBUTING.md exists (106 lines)
+~~30. Add `CHANGELOG.md` entry for this session's changes~~ done — CHANGELOG [0.1.0-alpha] 2026-07-14 section records the session
+~~31. Add test for multiple `@server` decorators on one namespace~~ done — servers + multi-server covered in test/compliance/servers-security.test.ts
+~~32. Add test for `@header` on ModelProperty~~ done — test/compliance/edge-cases.test.ts covers @header
+~~33. Add test for nested model `$ref` in array items~~ done — test/compliance/ref-chain.test.ts
+~~34. Add test for `@tags` with non-string values (should produce diagnostic)~~ done — invalid-config diagnostics covered in test/integration/decorator-negative.test.ts
+~~35. Add test for `@security` on Namespace vs Operation~~ done — namespace and operation security covered in test/compliance/servers-security.test.ts
+~~36. Add test for empty namespace (no operations, no channels)~~ done — empty-namespace case in test/integration/negative-tests.test.ts
+~~37. Add test for model inheritance (`model B extends A`) in schema output~~ done — inheritance covered (test/compliance/model-composition.test.ts + polymorphism golden)
+~~38. Add test for `is` expression (`model Foo is Bar`) in schema output~~ done — is expressions covered in test/compliance/model-composition.test.ts
+~~39. Add test for template spread (`model Foo { ...Base }`) — ref-chain test has this but no schema verification~~ done — test/integration/template-spread-patterns.test.ts
+~~40. Add test for union types with mixed string/scalar variants~~ done — union variants covered in test/compliance/type-mapping-completeness.test.ts
+~~41. Add test for optional model properties (should NOT appear in `required` array)~~ done — exact assertion present — test/compliance/model-composition.test.ts (required does not contain optional)
+~~42. Add test for `@doc` decorator appearing as `description` in schema~~ done — test/compliance/doc-propagation.test.ts
+~~43. Add test for deeply nested model (3+ levels of `$ref`)~~ done — test/e2e/complex-nested-schemas.test.ts
+~~44. Consider adding JSON Schema validation for ALL generated schemas (not just top-level)~~ done — compliance suite AJV-validates every document via compileAndValidateOrThrow (AGENTS.md)
+~~45. Consider adding AsyncAPI Studio preview link in example READMEs~~ **Won't implement — no Studio preview links in examples/README.md.**
+~~46. Consider adding a `justfile` or `flake.nix` target for `tsp compile` of all examples~~ **Won't implement — no flake or just target for compiling examples; pnpm run check-examples owns it.**
+~~47. Consider adding semantic versioning check in CI (e.g., release-please)~~ **Won't implement — no semver automation; annotated v* tags + release.yml.**
+~~48. Consider adding PR template~~ **Won't implement — no PR template in .github/.**
+~~49. Consider adding issue templates~~ **Won't implement — no issue templates in .github/.**
+~~50. Consider renaming `minimal-decorators.ts` to just `decorators.ts` since it's no longer minimal~~ **Won't implement — minimal-decorators.ts kept (388 lines) alongside the src/decorators.ts registry.**
 
 ---
 
