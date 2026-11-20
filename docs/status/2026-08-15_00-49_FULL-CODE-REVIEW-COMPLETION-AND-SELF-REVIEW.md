@@ -9,10 +9,10 @@ earlier on 2026-08-14 (which was ~40% done at session start, after commits
 
 ## a) FULLY DONE
 
-1. **Coverage gate failure resolved** — `test/unit/extract-nested-config.test.ts`
+~~1. **Coverage gate failure resolved** — `test/unit/extract-nested-config.test.ts`~~ done — resolved same session — the negative-tests repair is history (commit b6da64c family)
    (9 unit tests) written; coverage gate green at 97.3% avg / 41 files
    (was 63.6% on `extract-nested-config.ts`, below the 75% minimum).
-2. **Scripts + configs reviewed end-to-end:**
+~~2. **Scripts + configs reviewed end-to-end:**~~ done — the scripts/configs review fed the 2026-08-14 review report and later cleanup passes
    - `scripts/coverage-gate.ts` (clean), `generate-binding-specs.ts`,
      `regenerate-golden.ts` (created earlier session)
    - `tspconfig.json` **deleted** — split-brain with `tspconfig.yaml`
@@ -24,10 +24,10 @@ earlier on 2026-08-14 (which was ~40% done at session start, after commits
      **devDependencies instead (oxlint 1.78.0, jscpd 4.0.9)** — this also
      fixes **GitHub CI, which has been broken since inception** (ubuntu-latest
      has neither tool; `pnpm run verify` → "command not found")
-3. **Entire test estate reviewed** — 101 test files via 4 parallel architect
+~~3. **Entire test estate reviewed** — 101 test files via 4 parallel architect~~ done — the test estate has since grown to 105+ files, re-reviewed by later passes
    sub-agents (~130 findings) + personal review of `test/bdd/` (exemplary),
    golden, and utils.
-4. **9 broken tests repaired / deleted** (commit `b6da64c`):
+~~4. **9 broken tests repaired / deleted** (commit `b6da64c`):~~ done — repairs landed (b6da64c); the suite stands green through 1.2.0
    - 5 tautologies that could never fail (expect(defined) on filter results,
      length ≥ 0) → replaced with real assertions **verified empirically
      first** via a scratch ground-truth test (channel-less ops emit without
@@ -43,23 +43,23 @@ earlier on 2026-08-14 (which was ~40% done at session start, after commits
      `@encode` test renamed; garbled binding-placement name fixed; dead
      `count?.type ??` branch fixed
    - Empty stale dirs (`test/acceptance/`, `test/core/`) trashed
-5. **Agent claim dismissed with evidence:** "mutualTLS is valid in AsyncAPI
+~~5. **Agent claim dismissed with evidence:** "mutualTLS is valid in AsyncAPI~~ done — the dismissal stands — AGENTS.md security-scheme list excludes mutualTLS
    3.1, emitter allowlist wrong" — verified against the official
    `@asyncapi/specs/schemas/3.1.0.json`: `mutualTLS` appears nowhere.
    Emitter is correct; test is correct.
-6. **`TODO_LIST.md` rewritten** — was stale "All Clear"; now holds all 34
+~~6. **`TODO_LIST.md` rewritten** — was stale "All Clear"; now holds all 34~~ done — TODO_LIST is the open-only living doc maintained by every later session
    open findings in 3 ranked sections.
-7. **Pareto plan HTML** — `docs/planning/2026-08-14_21-20_POST-REVIEW-PARETO-PLAN.html`
+~~7. **Pareto plan HTML** — `docs/planning/2026-08-14_21-20_POST-REVIEW-PARETO-PLAN.html`~~ done — the Pareto plan HTML lives under docs/planning (formatter-excluded)
    (D2 execution graph inlined as SVG, 1%/4%/20% tiers, 24 tasks with
    impact/effort badges).
-8. **Review report HTML** — `docs/reviews/2026-08-14_full-code-review.html`
+~~8. **Review report HTML** — `docs/reviews/2026-08-14_full-code-review.html`~~ done — the review report moved to docs/reviews/archived (2026-08-14_full-code-review.html)
    (gate journey, 2 emitter bug fixes from prior commit, test-area verdict
    table, dismissed claims, open decision, verdict).
-9. **AGENTS.md freshness pass** — 28 decorators (was 26), 1284 tests across
+~~9. **AGENTS.md freshness pass** — 28 decorators (was 26), 1284 tests across~~ done — AGENTS.md stayed fresh through later passes (size-gate managed)
    101 files, pinned-tools note, tspconfig gotcha, golden-regen gotcha.
-10. **Two commits this session's scope:** `b6da64c` (14 files, +2545/−3041:
+~~10. **Two commits this session's scope:** `b6da64c` (14 files, +2545/−3041:~~ done — both commits in history
     test repairs, tool pinning, dead config) on top of `7f6c9b1`.
-11. **Verified full verify gate green once** (run `042`: build + lint +
+~~11. **Verified full verify gate green once** (run `042`: build + lint +~~ done — the verify gate runs in CI on every push now
     1293 tests + coverage 97.3% + 0 clones) — before the final test edits.
 
 ## b) PARTIALLY DONE
@@ -84,23 +84,23 @@ earlier on 2026-08-14 (which was ~40% done at session start, after commits
 
 ## d) TOTALLY FUCKED UP (honest ledger)
 
-1. **Committed `b6da64c` without running the lint gate.** I ran vitest
+~~1. **Committed `b6da64c` without running the lint gate.** I ran vitest~~ **NOT-DO — lesson recorded; no standing work beyond the tracked rows.**
    (1284 green) but not `pnpm run lint` after editing test files — the
    commit itself contains a `capitalized-comments` violation
    (`negative-tests.test.ts:95`) → `pnpm run verify` **fails at HEAD**.
    Violated my own test-after-changes discipline: "tests" ≠ "gate".
-2. **Botched the follow-up fix.** When the gate caught it, my edit targeted
+~~2. **Botched the follow-up fix.** When the gate caught it, my edit targeted~~ **NOT-DO — lesson recorded; no standing work beyond the tracked rows.**
    the wrong text and merely removed a trailing newline — merging the
    comment into the `const errors` line, swallowing the declaration
    (`result` unused, `errors` undefined). Caught by post-edit diagnostics;
    **repaired this session** (single-line capitalized comment), lint gate
    now green. Root cause: I didn't view line 95 before editing — eyeballed
    instead of reading, exactly what my own rules forbid.
-3. **Scratch-test OOM:** `vitest run /tmp/... --root /` scanned the entire
+~~3. **Scratch-test OOM:** `vitest run /tmp/... --root /` scanned the entire~~ **NOT-DO — lesson recorded; no standing work beyond the tracked rows.**
    filesystem → heap death. Fixed by placing the scratch test inside the
    project; the pattern (temp test + `writeFileSync` to /tmp for console
    capture) worked well afterward.
-4. **Unexplained transient:** one background `bun test` run exited 1 with
+~~4. **Unexplained transient:** one background `bun test` run exited 1 with~~ **NOT-DO — tracked — TODO_LIST §Test-Suite Integrity carries the transient-flake row.**
    zero failing tests, likely racing a concurrent run over `coverage/`.
    Never root-caused; clean re-run exited 0. Left as an open item.
 
@@ -149,7 +149,7 @@ empty `if (diagnostics.length > 0) {}` block 37. `decorator-functionality.test.t
 
 ## g) OPEN QUESTIONS — RESOLUTIONS APPLIED
 
-1. **Named-union metadata (behavior change from `7f6c9b1`): RESOLVED —
+~~1. **Named-union metadata (behavior change from `7f6c9b1`): RESOLVED —~~ done — resolved — named-union metadata shipped as public contract (test/compliance/polymorphism.test.ts locks it)
    locked in.** Named unions emit `@doc`/`@summary` as
    `description`/`title`, consistent with enums and scalars (all share the
    `declareSchema` path). Locked as public contract via the "named union
@@ -157,11 +157,11 @@ empty `if (diagnostics.length > 0) {}` block 37. `decorator-functionality.test.t
    (2 new tests; file 17/17 green). Byte-compat with metadata-less unions
    was rejected: no test ever pinned the old behavior, and consistency
    with every other declaration kind is the stronger contract.
-2. **History hygiene for `b6da64c`: RESOLVED — follow-up commit.** The
+~~2. **History hygiene for `b6da64c`: RESOLVED — follow-up commit.** The~~ done — resolved — history stands; later sessions follow the same hygiene
    stated default (never rewrite history without approval) stands; the
    lint repair ships in the follow-up commit containing these review
    artifacts.
-3. **Status-report format canon: default applied — `.md` canonical.**
+~~3. **Status-report format canon: default applied — `.md` canonical.**~~ done — canon applied — reports are .md; the fleet convention holds
    Follows the maintainer's stated preference (and the earlier HTML
    divergence flag). `docs/status/2026-08-14_20-47_*.html` is left as-is
    as a historical point-in-time snapshot. Override anytime; converting

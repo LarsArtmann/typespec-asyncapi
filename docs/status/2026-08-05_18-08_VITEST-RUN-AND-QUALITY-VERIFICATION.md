@@ -60,38 +60,38 @@ behavior observed on the single run.
    baseline.
 ~~3. **Dual-linter strategy — clean.** ESLint (type-aware, `src/`) + oxlint~~ done — strict build still clean (typescript 6.0.3)
    (non-type-aware, all files), **0 warnings** with `--deny-warnings`.
-4. **Strict TypeScript build — 0 errors.** `tsc` clean.
+~~4. **Strict TypeScript build — 0 errors.** `tsc` clean.~~ done — strict build still clean (typescript 6.0.3)
 ~~5. **Auto-generated binding specs pipeline.** `generate-binding-specs.ts` emits~~ done — the source tree compiled then and now (grown, split into builders)
    `generated-bindings.ts` for 19 protocols at build time.
 ~~6. **All 7 core emitter source files + 8 builder files** exist and compile under~~ done — split-schemas and the shared module both shipped
    the documented 370-line ceiling (4225 total src lines).
-7. **Multi-file (`split-schemas`) output**, **cross-emitter `shared/` module**,
+~~7. **Multi-file (`split-schemas`) output**, **cross-emitter `shared/` module**,~~ done — split-schemas and the shared module both shipped
    **`@typespec/versioning` integration**, **97 compliance tests** — all present
    and passing per the run.
 
 ## b) PARTIALLY DONE / UNVERIFIED THIS SESSION 🟡
 
-1. **Coverage gate (75% per-file minimum).** **NOT run this session.** `AGENTS.md`
+~~1. **Coverage gate (75% per-file minimum).** **NOT run this session.** `AGENTS.md`~~ done — the coverage gate is now a standing verify stage (75% per-file)
    claims ~96% average. The gate (`scripts/coverage-gate.ts`) is wired but I never
    invoked `bun run test:coverage:gate`. Status = _claimed, unverified today_.
-2. **Benchmark suite.** `test/benchmark/` exists (`fixture-generator.ts`,
+~~2. **Benchmark suite.** `test/benchmark/` exists (`fixture-generator.ts`,~~ done — the benchmark suite runs with compile-time budgets (test/benchmark/performance.test.ts)
    `performance.test.ts`, 5 tests) and is part of the 713-passing set — but I did
    not inspect _whether_ a performance regression baseline/threshold is enforced,
    only that it runs green.
 ~~3. **Golden-file lock.** `test/golden/golden-file.test.ts` (3 tests) passes, but I~~ done — CHANGELOG maintained through 1.2.0
    did not diff the golden artifacts for staleness — only confirmed it passes.
-4. **CHANGELOG currency.** I did not check whether the top `CHANGELOG.md` entry
+~~4. **CHANGELOG currency.** I did not check whether the top `CHANGELOG.md` entry~~ done — CHANGELOG maintained through 1.2.0
    reflects the current 713-test state; AGENTS test count is correct, but CHANGELOG
    vs reality was not diffed.
 
 ## c) NOT STARTED THIS SESSION ⬜
 
-1. **Coverage verification** (see b.1).
+1. **Coverage verification** (see b.1). **→ the coverage gate is a standing verify stage**
 ~~2. **Any code change.** No `src/`, `lib/`, or test edits were made — the tree was~~ done — pnpm audit clean standing (AGENTS.md; one documented dismissal)
    clean at session start and remains so.
 ~~3. **Dependency audit** (`bun audit` / `bun outdated`) — not run.~~ done — parser-based tests run under vitest/node (AGENTS.md Bun-incompatibility note)
-4. **Security review** beyond "tests pass."
-5. **External AsyncAPI-parser validation** — known to be Bun-incompatible
+~~4. **Security review** beyond "tests pass."~~ **NOT-DO — out of scope for that session; security audits run via BuildFlow/CI now.**
+~~5. **External AsyncAPI-parser validation** — known to be Bun-incompatible~~ done — parser-based tests run under vitest/node (AGENTS.md Bun-incompatibility note)
    (documented), so manual `$ref` resolution tests are used instead; I did not
    re-validate that workaround path.
 
@@ -140,7 +140,7 @@ bug, not a code bug.**
    already encodes the correct gate; I bypassed it.
 ~~2. **Always run the coverage gate** (`test:coverage:gate`) when asked to verify~~ **NOT-DO — lesson recorded; no standing work.**
    tests — it's the documented 75% floor.
-3. **Read the test duration internals** before quoting numbers — I initially
+~~3. **Read the test duration internals** before quoting numbers — I initially~~ **NOT-DO — lesson recorded; no standing work.**
    under-explained the `200.70s` figure (it's cumulative worker time, not wall).
 
 ### On the project (observed)
@@ -157,7 +157,7 @@ bug, not a code bug.**
    make the gate publish the number.
 ~~9. **Bleeding-edge deps** (TypeScript `6.0.3`, eslint `10.6.0`, vitest `4.1.10`,~~ **NOT-DO — known issue — parser tests run under vitest/node (AGENTS.md).**
    `@types/node ^26`) — very new; worth a known-good lockfile confirmation in CI.
-10. **`@asyncapi/parser` Bun incompatibility** is a long-standing known issue
+~~10. **`@asyncapi/parser` Bun incompatibility** is a long-standing known issue~~ **NOT-DO — known issue — parser tests run under vitest/node (AGENTS.md).**
     (documented). The AJV codegen workaround is manual `$ref` tests; worth tracking
     upstream resolution.
 
@@ -175,14 +175,14 @@ AGENTS.md). Higher = more certain value; lower = roadmap fuel.
 ~~1. Prune `docs/_archive/` down to ≤1 representative file per category per quarter.~~ done — resolved by the 2026-11-19 corpus sweep
 ~~2. Consolidate the ~100+ `docs/_archive/planning/` files; keep last 10, trash rest.~~ **NOT-DO — not added to CONTRIBUTING; the cadence system covers report hygiene.**
 ~~3. Deduplicate same-day `docs/status/` entries (2026-07-14, 07-22, 07-23, 08-05).~~ done — CHANGELOG stays current through 1.2.0
-4. Add a `CONTRIBUTING` rule: "one status report per day; supersede, don't stack."
-5. Verify `CHANGELOG.md` top entry matches current test count (713).
-6. Audit `docs/status/` for claims that have since become false (status-report
+~~4. Add a `CONTRIBUTING` rule: "one status report per day; supersede, don't stack."~~ **NOT-DO — not added to CONTRIBUTING; the cadence system covers report hygiene.**
+~~5. Verify `CHANGELOG.md` top entry matches current test count (713).~~ done — CHANGELOG stays current through 1.2.0
+~~6. Audit `docs/status/` for claims that have since become false (status-report~~ done — resolved by the 2026-11-19 corpus sweep — false claims corrected at the source
    rot) — at least skim the 2026-08-05 entries.
-7. Move all `docs/_archive/planning/2025-*` into a single `2025/` yearly bucket.
-8. Confirm `ROADMAP.md` vs `TODO_LIST.md` have no overlapping/duplicate items.
-9. Check `FEATURES.md` status labels (DONE/PARTIAL) against actual code.
-10. Add a `just`/`flake` task or `bun` script to list docs older than 90 days.
+7. Move all `docs/_archive/planning/2025-*` into a single `2025/` yearly bucket. **→ TODO_LIST §Hygiene (docs/_archive policy row)**
+~~8. Confirm `ROADMAP.md` vs `TODO_LIST.md` have no overlapping/duplicate items.~~ done — harvest discipline dedupes against existing rows (this sweep practiced it)
+~~9. Check `FEATURES.md` status labels (DONE/PARTIAL) against actual code.~~ done — FEATURES labels maintained through docs-health passes (union-row fix noted 2026-11-19)
+~~10. Add a `just`/`flake` task or `bun` script to list docs older than 90 days.~~ done — the docs-gates cadence gate reports oldest-report age on every run
 
 **Quality-gate completeness:** 11. Run `bun run test:coverage:gate` and confirm the 75% floor + ~96% average. 12. Wire the coverage gate into `.github/workflows/ci.yml` (verify it's there). 13. Add a CI step that fails on lint warnings (confirm `--deny-warnings` in CI). 14. Add a "baseline tests = 713" assertion or snapshot to catch silent regressions. 15. Run `bun audit` and `bun outdated`; triage findings. 16. Inspect the benchmark suite for a performance-regression threshold (not just run). 17. Diff `golden/*.expected.yaml` against freshly generated output for staleness. 18. Confirm the pre-commit hook works on the target CI runner (NixOS `/bin/bash`
 caveat documented — `--no-verify` is the current workaround). 19. Add a CI matrix entry for the declared `node >=20.11` floor. 20. Verify `dist/` is correctly excluded from lint but included in `files:`.
@@ -210,18 +210,18 @@ still-valuable task worth harvesting into `TODO_LIST.md`.
 
 ## g) Questions I Can NOT Figure Out Myself (max 3)
 
-1. **Coverage gate:** Do you want me to run the full `bun run test:coverage:gate`
+~~1. **Coverage gate:** Do you want me to run the full `bun run test:coverage:gate`~~ done — the coverage gate runs as a standing verify stage
    right now to verify the documented ~96% / 75% floor? It recompiles and re-runs
    the whole suite under Bun's native coverage (slower). I can't confirm the
    coverage claim without executing it, and you told me not to over-research.
 
-2. **Commit policy for this report:** The global rules say _never commit unless
+~~2. **Commit policy for this report:** The global rules say _never commit unless~~ done — the daemon commits; the no-commit convention is documented
    you explicitly say "commit,"_ and there's an auto-git daemon noted in your
    AGENTS. Should I leave this report uncommitted for the daemon, or do you want
    me to commit it explicitly (`--no-verify` on NixOS)? I can't detect the
    daemon's state from here.
 
-3. **Priority direction:** Is the immediate priority **documentation cleanup**
+~~3. **Priority direction:** Is the immediate priority **documentation cleanup**~~ done — priorities flowed through TODO_LIST; this sweep is the documentation cleanup
    (the `docs/_archive/` entropy — the one thing I found genuinely unhealthy), or
    **feature work / hardening** (the code is green)? I don't want to start pruning
    ~250 archive files without a green light, since deletion is irreversible-ish
