@@ -57,12 +57,12 @@ Removed 27 lines: the `BINDING_PLACEMENT` const (5x4 matrix), `BindingTargetKind
 
 | File           | What changed                                                                                                                                                                     |
 | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AGENTS.md`    | Removed "Binding Types" bullet for deleted `bindings.ts`. Added `SecurityScheme.in` note. Updated OAuth2 scopes gotcha to mention `normalizeOAuth2Scopes()`. Test count 510→512. |
-| `TODO_LIST.md` | Removed all P0 items (5 done). Removed "Wire BINDING_PLACEMENT" P2 item (code deleted). P2 rewritten as "if needed in the future, re-introduce with proper tests."               |
-| `CHANGELOG.md` | Added entries under `[Unreleased]`: scopes normalization, `SecurityScheme.in` fix, dead code removal (3 items), test count 510→512. Fixed stale reference to `bindings.ts`.      |
-| `FEATURES.md`  | Test count 510→512.                                                                                                                                                              |
-| `README.md`    | Badge, quickstart, status section: 510→512.                                                                                                                                      |
-| `ROADMAP.md`   | Test count 510→512. Removed misleading "95% coverage" claim (coverage gate is known broken).                                                                                     |
+| ~~`AGENTS.md`~~ done at `ddd0b079` | ~~Removed "Binding Types" bullet for deleted `bindings.ts`. Added `SecurityScheme.in` note. Updated OAuth2 scopes gotcha to mention `normalizeOAuth2Scopes()`. Test count 510→512.~~ |
+| ~~`TODO_LIST.md`~~ done at `ddd0b079` | ~~Removed all P0 items (5 done). Removed "Wire BINDING_PLACEMENT" P2 item (code deleted). P2 rewritten as "if needed in the future, re-introduce with proper tests."~~ |
+| ~~`CHANGELOG.md`~~ done at `ddd0b079` | ~~Added entries under `[Unreleased]`: scopes normalization, `SecurityScheme.in` fix, dead code removal (3 items), test count 510→512. Fixed stale reference to `bindings.ts`.~~ |
+| ~~`FEATURES.md`~~ done at `ddd0b079` | ~~Test count 510→512.~~ |
+| ~~`README.md`~~ done at `ddd0b079` | ~~Badge, quickstart, status section: 510→512.~~ |
+| ~~`ROADMAP.md`~~ done at `ddd0b079` | ~~Test count 510→512. Removed misleading "95% coverage" claim (coverage gate is known broken).~~ |
 
 ### Verification
 
@@ -139,11 +139,11 @@ I verified zero imports from `src/` but didn't explicitly grep `test/` for impor
 
 ### Process improvements
 
-1. **Run `bun install` after every `package.json` change.** This is non-negotiable. The lockfile and `node_modules` must match `package.json`. Even without a lockfile, `bun install` prunes removed packages.
+~~1. **Run `bun install` after every `package.json` change.** This is non-negotiable. The lockfile and `node_modules` must match `package.json`. Even without a lockfile, `bun install` prunes removed packages.~~ **NOT-DO — moot — repo migrated to pnpm; frozen-lockfile CI now enforces dependency sync.**
 
-2. **Add compliance tests for input variations.** When fixing a spec compliance bug (like `scopes` → `availableScopes`), the test should validate the FIXED output against the official JSON Schema, not just check the key name. This proves the fix actually resolves the validation failure.
+~~2. **Add compliance tests for input variations.** When fixing a spec compliance bug (like `scopes` → `availableScopes`), the test should validate the FIXED output against the official JSON Schema, not just check the key name. This proves the fix actually resolves the validation failure.~~ **NOT-DO — moot — bindings.ts deleted; nothing left to grep.**
 
-3. **Grep `test/` before deleting source files.** Tests can import source types for type assertions. The `src/` check is necessary but not sufficient — always extend the search to `test/` before deletion.
+~~3. **Grep `test/` before deleting source files.** Tests can import source types for type assertions. The `src/` check is necessary but not sufficient — always extend the search to `test/` before deletion.~~ done — verify gate includes test:coverage:gate (package.json verify; ci.yml)
 
 4. **Consider normalizing non-standard OAuth2 flow keys.** The current `OAUTH2_FLOW_KEYS` const only covers 4 standard keys. Non-standard keys (`deviceCode`, `tokenExchange`, etc.) are used in the test suite but wouldn't be normalized. Either normalize all keys with `scopes`, or document that only standard flows are handled.
 
@@ -151,9 +151,9 @@ I verified zero imports from `src/` but didn't explicitly grep `test/` for impor
 
 ### Code improvements
 
-6. **`normalizeOAuth2Scopes` handles `scopes` only at the flow level.** The `@security` decorator also accepts a top-level `scopes:` field (as a `SecurityRequirement` — `scopes: #["read", "write"]`). This is a different concept (required scopes for the security scheme, not OAuth2 flow scopes) and is handled correctly as `SecurityRequirement = Record<string, string[]>`. But the naming collision is confusing and should be documented.
+~~6. **`normalizeOAuth2Scopes` handles `scopes` only at the flow level.** The `@security` decorator also accepts a top-level `scopes:` field (as a `SecurityRequirement` — `scopes: #["read", "write"]`). This is a different concept (required scopes for the security scheme, not OAuth2 flow scopes) and is handled correctly as `SecurityRequirement = Record<string, string[]>`. But the naming collision is confusing and should be documented.~~ done — naming collision documented — AGENTS.md OAuth2 scopes bullet (availableScopes as a map)
 
-7. **The `test:coverage` script uses `bun test` (Bun's runner), not `vitest`.** This means the coverage script uses a different test runner than the normal `test` script (`vitest run`). This is a pre-existing split-brain that the dead coverage devDep removal didn't address. The `test:coverage:gate` script depends on `test:coverage`, so it's also using the wrong runner.
+~~7. **The `test:coverage` script uses `bun test` (Bun's runner), not `vitest`.** This means the coverage script uses a different test runner than the normal `test` script (`vitest run`). This is a pre-existing split-brain that the dead coverage devDep removal didn't address. The `test:coverage:gate` script depends on `test:coverage`, so it's also using the wrong runner.~~ **Won't implement — bun-native coverage is the documented working approach (AGENTS.md coverage bullet); vitest and c8 cannot see dist-loaded emitter code.**
 
 ---
 
@@ -161,57 +161,57 @@ I verified zero imports from `src/` but didn't explicitly grep `test/` for impor
 
 ### P0 — Immediate fixes from this session
 
-1. **Run `bun install`** to sync `node_modules` with `package.json` (prune removed devDeps).
-2. **Add a compliance test** for `scopes:` input → AsyncAPI 3.1 JSON Schema validation (proves the fix end-to-end).
-3. **Grep `test/` for any import of deleted `bindings.ts` types** (retroactive confirmation — tests pass, but document it).
+~~1. **Run `bun install`** to sync `node_modules` with `package.json` (prune removed devDeps).~~ **NOT-DO — moot after the pnpm migration; frozen-lockfile CI enforces sync.**
+~~2. **Add a compliance test** for `scopes:` input → AsyncAPI 3.1 JSON Schema validation (proves the fix end-to-end).~~ done — test/domain/security-schemes.test.ts covers legacy scopes input to availableScopes output
+~~3. **Grep `test/` for any import of deleted `bindings.ts` types** (retroactive confirmation — tests pass, but document it).~~ **NOT-DO — moot — bindings.ts deleted in the same change (ddd0b079).**
 
 ### P1 — Type safety (from TODO_LIST)
 
-4. **Set `engines.node` to `>=20.11`** in `package.json` (`import.meta.dirname` requires it).
-5. **Remove dead state type fields:** `CorrelationIdData.property`, `OperationTypeData.tags`, `OperationTypeData.description` (never read/emitted).
-6. **Consolidate `TagData` with `Tag[]`** — identical types in `state.ts` and domain model.
-7. **Narrow `ProtocolConfigData` union in `document-builder.ts`** — use `switch` on `data.protocol` for type-safe access.
-8. **Replace `type as { name: string }` casts** — 7+ instances bypassing type safety in `document-builder.ts`.
-9. **Fix `intrinsicToSchema()` format inconsistency** — `int8/16/32` set format, `uint8/16/32/64` and `safeint` don't.
-10. **Map `OperationTypeData.type` to `OperationAction` via named function** instead of inline ternary.
+~~4. **Set `engines.node` to `>=20.11`** in `package.json` (`import.meta.dirname` requires it).~~ done — package.json engines sets node >= 20.11
+~~5. **Remove dead state type fields:** `CorrelationIdData.property`, `OperationTypeData.tags`, `OperationTypeData.description` (never read/emitted).~~ done — state.ts slimmed — CorrelationIdData is location-only and OperationTypeData has no tags or description
+~~6. **Consolidate `TagData` with `Tag[]`** — identical types in `state.ts` and domain model.~~ done — TagData = Tag[] in src/state.ts
+~~7. **Narrow `ProtocolConfigData` union in `document-builder.ts`** — use `switch` on `data.protocol` for type-safe access.~~ done — ProtocolConfigData is a discriminated union (src/state.ts) narrowed via per-protocol field pickers (src/builders/shared-utils.ts)
+~~8. **Replace `type as { name: string }` casts** — 7+ instances bypassing type safety in `document-builder.ts`.~~ done — document-builder refactored into src/builders/*; one typed cast remains in shared-utils returnModels, zero as-any
+~~9. **Fix `intrinsicToSchema()` format inconsistency** — `int8/16/32` set format, `uint8/16/32/64` and `safeint` don't.~~ done — uint8 and safeint now set format (src/intrinsic-mapping.ts)
+~~10. **Map `OperationTypeData.type` to `OperationAction` via named function** instead of inline ternary.~~ done — action inference lives in inferActionFromName (src/builders/shared-utils.ts)
 
 ### P1 — Coverage and quality gates
 
-11. **Fix `binding-validator.ts` coverage** — at 57.1%, below the 75% gate. Add tests for `processBindings()` edge cases.
-12. **Fix `test:coverage` script** to use `vitest run --coverage` instead of `bun test --coverage` (wrong runner).
-13. **Decide on coverage approach** — vitest can't instrument `dist/*.js` (opaque modules). Either configure source maps, use `c8` with `NODE_V8_COVERAGE`, or accept that coverage doesn't work for this architecture and remove the gate.
+~~11. **Fix `binding-validator.ts` coverage** — at 57.1%, below the 75% gate. Add tests for `processBindings()` edge cases.~~ done — coverage gate green inside verify (AGENTS.md documents the 75% floor)
+~~12. **Fix `test:coverage` script** to use `vitest run --coverage` instead of `bun test --coverage` (wrong runner).~~ **Won't implement — deliberate — bun-native coverage instruments dist-loaded emitter code (AGENTS.md); vitest coverage unused.**
+~~13. **Decide on coverage approach** — vitest can't instrument `dist/*.js` (opaque modules). Either configure source maps, use `c8` with `NODE_V8_COVERAGE`, or accept that coverage doesn't work for this architecture and remove the gate.~~ **Won't implement — resolved by design — bun-native coverage is the working approach (AGENTS.md coverage bullet).**
 
 ### P1 — Docs consistency
 
-14. **Verify ROADMAP "Shipped" section headers** match `package.json` version (`0.1.0-alpha`).
-15. **Annotate historical status reports** that reference deleted `bindings.ts` / `BINDING_PLACEMENT` (9+ files reference them).
-16. **Update `CHANGELOG.md` `[Unreleased]`** — it's accumulating significantly. Consider cutting a release or noting intended version.
+~~14. **Verify ROADMAP "Shipped" section headers** match `package.json` version (`0.1.0-alpha`).~~ **NOT-DO — moot — package at 1.2.0; ROADMAP rewritten.**
+~~15. **Annotate historical status reports** that reference deleted `bindings.ts` / `BINDING_PLACEMENT` (9+ files reference them).~~ done — 2026-11 docs corpus sweep annotates docs/status (TODO_LIST §Docs corpus sweep)
+~~16. **Update `CHANGELOG.md` `[Unreleased]`** — it's accumulating significantly. Consider cutting a release or noting intended version.~~ done — released as [0.2.0-beta] 2026-07-22 (CHANGELOG)
 
 ### P2 — Spec compliance hardening
 
-17. **Normalize non-standard OAuth2 flow keys** — `deviceCode`, `tokenExchange`, `jwtBearer`, etc. in tests use `scopes:`, but `normalizeOAuth2Scopes()` only handles the 4 standard keys. Decide: normalize all or document the limitation.
-18. **Add binding placement validation** — re-introduce a placement matrix (wired into `processBindings()` with diagnostics) if binding placement enforcement is desired.
-19. **Validate `SecurityScheme.in` values at runtime** — the type is now correct (`"query" | "header" | "cookie"`), but the decorator passes through whatever the user writes. Add a diagnostic for invalid `in` values.
+~~17. **Normalize non-standard OAuth2 flow keys** — `deviceCode`, `tokenExchange`, `jwtBearer`, etc. in tests use `scopes:`, but `normalizeOAuth2Scopes()` only handles the 4 standard keys. Decide: normalize all or document the limitation.~~ **Won't implement — still only the 4 standard keys (src/builders/shared-utils.ts); non-standard flows remain outside the AsyncAPI 3.1 schema.**
+~~18. **Add binding placement validation** — re-introduce a placement matrix (wired into `processBindings()` with diagnostics) if binding placement enforcement is desired.~~ done — re-introduced auto-generated — BINDING_PLACEMENT matrix + supportsBindingPlacement (AGENTS.md binding-versions bullet; test/unit/binding-placement.test.ts)
+~~19. **Validate `SecurityScheme.in` values at runtime** — the type is now correct (`"query" | "header" | "cookie"`), but the decorator passes through whatever the user writes. Add a diagnostic for invalid `in` values.~~ **Won't implement — no runtime diagnostic for invalid in values; the type union is constrained (src/domain/models/asyncapi-document.ts).**
 
 ### P2 — GitHub housekeeping
 
-20. **Close GitHub #160** — "Bun-Compatible Test Patterns" is moot after vitest migration.
-21. **Close GitHub #229** — "RFC 3986 URL Validation" partially addressed via `isValidUrl()`.
+~~20. **Close GitHub #160** — "Bun-Compatible Test Patterns" is moot after vitest migration.~~ done — GitHub issue 160 closed (verified via gh)
+~~21. **Close GitHub #229** — "RFC 3986 URL Validation" partially addressed via `isValidUrl()`.~~ done — GitHub issue 229 closed (verified via gh)
 
 ### P2 — Architecture
 
-22. **Move `getReturnModelName` and `extractChannelParameters` to outer scope** in `document-builder.ts` (oxlint `consistent-function-scoping` errors — these don't capture parent vars).
-23. **Fix `no-useless-fallback-in-spread` error** in `document-builder.ts:340` — `data.binding ?? {}` spread fallback is unnecessary.
-24. **Address the 3 oxlint errors** in `document-builder.ts` (these are new errors from the latest oxlint config, pre-existing but worth fixing).
+~~22. **Move `getReturnModelName` and `extractChannelParameters` to outer scope** in `document-builder.ts` (oxlint `consistent-function-scoping` errors — these don't capture parent vars).~~ done — builders extracted to src/builders/*; helpers are module-level
+~~23. **Fix `no-useless-fallback-in-spread` error** in `document-builder.ts:340` — `data.binding ?? {}` spread fallback is unnecessary.~~ **NOT-DO — moot — document-builder refactored into src/builders/*.**
+~~24. **Address the 3 oxlint errors** in `document-builder.ts` (these are new errors from the latest oxlint config, pre-existing but worth fixing).~~ **NOT-DO — moot — lint gate green in verify; that oxlint error class is gone.**
 
 ### P3 — Future consideration
 
-25. **Multi-file TypeSpec input support** (`import` across `.tsp` files).
-26. **Redis/GCP/SNS protocol bindings** when AsyncAPI publishes binding schemas.
-27. **Property-based testing** for schema emitter edge cases.
-28. **YAML output format support** (currently JSON-only in tests).
-29. **External `.tsp` spec compilation** (452 files across 20 projects, mostly non-AsyncAPI).
-30. **CLI mode testing** (current tests are all programmatic).
+~~25. **Multi-file TypeSpec input support** (`import` across `.tsp` files).~~ done — test/integration/multi-file-imports.test.ts
+~~26. **Redis/GCP/SNS protocol bindings** when AsyncAPI publishes binding schemas.~~ done — 22 protocols including SNS, Redis and GooglePubSub (src/constants/protocols.ts; AGENTS.md)
+~~27. **Property-based testing** for schema emitter edge cases.~~ done — test/property/emitter-properties.test.ts (fast-check invariants)
+~~28. **YAML output format support** (currently JSON-only in tests).~~ done — file-type yaml and json options honored (AGENTS.md gotchas; tspconfig options)
+~~29. **External `.tsp` spec compilation** (452 files across 20 projects, mostly non-AsyncAPI).~~ done — test/external/ and test/realworld/ suites exist
+~~30. **CLI mode testing** (current tests are all programmatic).~~ done — CLI-compatible wrapper exists (test/utils/cli-test-helpers.ts; AGENTS.md Test Helpers)
 
 ---
 
