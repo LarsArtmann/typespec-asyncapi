@@ -18,9 +18,9 @@
 ~~5. **New warning `event-op-in-service-namespace`** — `src/lib.ts` code + `src/builders/cross-emitter-validation.ts` (warns when event ops sit inside a service subtree while http is loaded; http/https AsyncAPI servers exempt as intentional AsyncAPI-over-HTTP; `#suppress`-able), wired into `document-builder.ts`.~~ done — AGENTS gotchas and the FEATURES mixed-emitter row exist
 ~~6. **Test infrastructure** — `@typespec/http` auto-detection in `test/utils/test-helpers.ts` (mirrors the versioning pattern); 7 new tests in `test/integration/mixed-http-emitters.test.ts`, all passing.~~ done — posted 2026-10-03 (TODO_LIST: issuecomment-5970180678)
 ~~7. **`examples/mixed-rest-events/`** — canonical split pattern emitting both OpenAPI 3.1 and AsyncAPI 3.1 from one spec; verified clean separation (`getHealth`/`createOrder` REST-only, `health/pong`/`orders/created` AsyncAPI-only); passes `check-examples` (now 15 examples).~~ done — verify gate green; 1.1.0 shipped through it the same day
-8. **Docs updated** — AGENTS.md: two new gotchas (ambient-namespace relative nesting; http routing semantics + shipped mitigations). FEATURES.md: mixed-emitter row, examples count 14→15, diagnostics count corrected.
-9. **Issue reply drafted** (twice: pre- and post-implementation wording) — NOT posted, awaiting go-ahead.
-10. **Full verify gate green** after all changes.
+~~8. **Docs updated** — AGENTS.md: two new gotchas (ambient-namespace relative nesting; http routing semantics + shipped mitigations). FEATURES.md: mixed-emitter row, examples count 14→15, diagnostics count corrected.~~ done — AGENTS gotchas and the FEATURES mixed row exist (AGENTS lines 169 and 190)
+~~9. **Issue reply drafted** (twice: pre- and post-implementation wording) — NOT posted, awaiting go-ahead.~~ done — posted 2026-10-03 (TODO_LIST: issuecomment-5970180678)
+~~10. **Full verify gate green** after all changes.~~ done — gate green; 1.1.0 shipped through it the same day
 
 ## b) PARTIALLY DONE
 

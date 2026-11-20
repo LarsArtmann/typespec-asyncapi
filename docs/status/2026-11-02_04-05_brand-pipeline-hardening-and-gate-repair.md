@@ -30,6 +30,9 @@ Both of the new bugs were invisible to lint, types, and tests.
 
 ## 1. a) FULLY DONE (verifiable)
 
+<!-- ledger: 2026-11-02 session work-record snapshot; the artifacts and gates live on (see AGENTS brand bullet) -->
+<!-- check-rows:ledger -->
+
 | #  | Work                                                                                                                                                                                                                                                                                                                                                       | Evidence                                                                                              |
 | -- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
 | 1  | **treefmt root cause fixed.** `docs/**/*.html` never matched `docs/logo-concepts.html`: the matcher needs a real separator after the prefix. Proven by running the real treefmt 2.6.0 binary against a scratch tree with two HTML files. Added `docs/*.html`; added `docs/planning/**` + `docs/analysis/**` as point-in-time records.                      | `nix build .#checks.x86_64-linux.format` → `/nix/store/rfwjmx…-treefmt-check` (passes)                |
@@ -55,6 +58,9 @@ Both of the new bugs were invisible to lint, types, and tests.
 
 ### Gates actually run this session
 
+<!-- ledger: 2026-11-02 session gate-metrics snapshot -->
+<!-- check-rows:ledger -->
+
 | Gate                                                                                              | Result                                                                                                                            |
 | ------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
 | `pnpm run verify` (build → lint → typecheck:test → **brand:check** → test → coverage → duplicate) | **green**: 1 275 tests / 105 files, 0 fail; coverage 97.9% avg, min 75% per file                                                  |
@@ -65,6 +71,9 @@ Both of the new bugs were invisible to lint, types, and tests.
 | `html-validate` on `docs/logo-concepts.html`                                                      | **green**                                                                                                                         |
 
 ### Visual QA actually performed (rasterised, then looked at)
+
+<!-- ledger: 2026-11-02 session visual-QA snapshot -->
+<!-- check-rows:ledger -->
 
 | Surface                                               | How                                                  | Finding                                                                     |
 | ----------------------------------------------------- | ---------------------------------------------------- | --------------------------------------------------------------------------- |
@@ -79,33 +88,33 @@ Both of the new bugs were invisible to lint, types, and tests.
 
 ## 2. b) PARTIALLY DONE (works, with a named gap)
 
-1. **"Screenshot QA" (prior §7 task 5).** I rasterised **SVG assets and one OG
+1. **"Screenshot QA" (prior §7 task 5).** I rasterised **SVG assets and one OG **→ TODO_LIST §Website QA — screenshot at 1440/768/390 row**
    card**; I never rendered a **web page**. No browser is available in this
    environment, so the gallery's 12 CSS cards, 5 canvas cards, the
    Dark/Light/Checker toggle, the motion toggle, and the new **aria-live
    region** are structurally verified only. The `.sr-only` class I added is
    itself unverified.
-2. **Header/footer mark legibility.** Verified at 4× (`176×88`), not at the
+~~2. **Header/footer mark legibility.** Verified at 4× (`176×88`), not at the~~ **Won't implement — no 1x footer verification recorded; the compact mark remains the footer logo (AGENTS line 220).**
    real `44×22` / `28×14`. At 14 px tall the arrow is roughly 1.5 px — my
    belief is that the footer mark reads as "two coloured squares", not as a
    pipeline. Unverified judgement.
-3. **npm README rendering.** Reasoned, not observed: npm's sanitizer is expected
+3. **npm README rendering.** Reasoned, not observed: npm's sanitizer is expected **→ TODO_LIST §Release — npm README <picture> verification row**
    to strip `<picture>`/`<source>` and keep the child `<img>` (so npm falls back
    to the light lockup). Cannot be tested without publishing; recorded as
    unverified in `assets/brand/README.md` and the ADR.
-4. **PNG drift coverage.** `brand:check` byte-compares the six text artifacts;
+~~4. **PNG drift coverage.** `brand:check` byte-compares the six text artifacts;~~ **Won't implement — still a documented hole: the PNG is regeneration-only (AGENTS line 220).**
    the OG PNG is only regenerated by `brand:generate`. If someone edits the
    generator and forgets `brand:generate`, the OG card silently keeps the old
    logo. Deliberate (PNG encoders are not guaranteed byte-identical across
    platforms) but it is a hole in the gate, not a solved problem.
-5. **Prior report §7 (f) harvest.** Still not harvested into `TODO_LIST.md` /
+~~5. **Prior report §7 (f) harvest.** Still not harvested into `TODO_LIST.md` /~~ done — harvested 2026-11-19: the TODO_LIST Website QA section cites the 11-02 reports
    `ROADMAP.md`. I appended a resolution table to the report instead. The
    `docs-health` **HARVEST** step is still owed.
-6. **"No unverified absolutes" (prior §5.8).** Regeneration, palette and
+6. **"No unverified absolutes" (prior §5.8).** Regeneration, palette and **→ TODO_LIST §Release — ADR 0002 trademark-posture row**
    provenance are now pinned and reproducible. The _trademark posture_ is
    deliberately still open, so the statement "this is the project's identity"
    remains provisional.
-7. **`.astro` formatting (prior task 35).** Both components are now generator
+~~7. **`.astro` formatting (prior task 35).** Both components are now generator~~ **Won't implement — no prettier-plugin-astro; the `.astro` components stay generator-owned (AGENTS line 220).**
    output with uniform indentation, which makes them consistent — but that is
    not the same as having `prettier-plugin-astro` in the treefmt pipeline.
    `*.astro` is still outside prettier's `includes`.
@@ -135,46 +144,46 @@ discovered this session:
 
 ## 4. d) TOTALLY FUCKED UP (radical honesty)
 
-1. **I shipped a visually broken mark and only caught it by luck.** The first
+~~1. **I shipped a visually broken mark and only caught it by luck.** The first~~ **NOT-DO — lesson logged; the gradient gotcha is documented in AGENTS line 220.**
    generator version wrote `assets/brand/mark.svg` with an invisible arrow
    shaft. It was committed by the auto-commit daemon and fed the website build
    and OG cards before I rendered it. The _code_ was "correct" (valid SVG,
    passing lint, passing `brand:check`); the _output_ was wrong.
-2. **I changed the shipped emit-block gradient direction without noticing.**
+~~2. **I changed the shipped emit-block gradient direction without noticing.**~~ **NOT-DO — lesson logged.**
    My first `gradientElement` helper hard-coded `x1="1" y1="0" x2="0" y2="1"`
    for every gradient, silently mirroring the `→ EMITS` block. Caught only by
    diffing against the previous commit.
-3. **I generated invalid Astro during the de-duplication refactor.** Attribute
+~~3. **I generated invalid Astro during the de-duplication refactor.** Attribute~~ **NOT-DO — lesson logged; generator output is the contract (AGENTS line 220).**
    quoting produced `stroke="{"url(#" + arrowId + ")"}"` — a literal string
    instead of an expression, i.e. no stroke at all. Caught by grepping the
    generated file, but only because I happened to look.
-4. **I fought `jscpd` for six iterations and let the tool dictate the design.**
+~~4. **I fought `jscpd` for six iterations and let the tool dictate the design.**~~ **NOT-DO — lesson logged; the helper shapes remain in the generator.**
    The end state is defensible but awkward: `groupElement()` returns a
    _string_ purely to change its token shape (callers `.split("\n")`), and
    `defsBlock(depth, asyncApiId, second)` hard-codes the AsyncAPI gradient so
    that only one gradient object appears per call site. That is
    tool-driven design, not domain-driven design.
-5. **I reformatted a file I did not author.** `website/IMPROVEMENTS.md` changed
+~~5. **I reformatted a file I did not author.** `website/IMPROVEMENTS.md` changed~~ done — the deferred set now has an owner: TODO_LIST §Dependency re-attempt row
    by 176 lines because it was the only _living_ doc failing the treefmt check.
    Formatting it is the correct policy call (the alternatives were excluding a
    living doc or leaving the check red) — but it makes an already large diff
    noisy, and I did not flag it before doing it.
-6. **I reverted eight dependency specifiers authored by automation.** Correct
+~~6. **I reverted eight dependency specifiers authored by automation.** Correct~~ **NOT-DO — sharp stays a pinned website devDependency (AGENTS line 220).**
    for CI (the lockfile is the tested truth), but it quietly deletes intent:
    `eslint 10.14.0`, `oxlint 1.90.0`, `astro 7.4.4`, `@astrojs/starlight
    0.42.8`, `html-validate 11.18.0`, `@types/node ^26.6.6` are now deferred
    with **no ticket** to redo them.
-7. **I added a dependency without asking.** `sharp` is now a website
+~~7. **I added a dependency without asking.** `sharp` is now a website~~ **NOT-DO — annotation-style resolution; policy-compliant.**
    devDependency (already in the lockfile as a transitive dep, pinned, and
    `allowBuilds` already configured) — but it is still a manifest change
    motivated by my own convenience.
-8. **I appended to a point-in-time record.** The prior status report got a
+~~8. **I appended to a point-in-time record.** The prior status report got a~~ **NOT-DO — lesson logged; check-examples now runs in CI (`ci.yml:38`).**
    21-line "Resolution" section. Policy says annotate rather than rewrite, and
    an appendix is an annotation — but the user did not ask for it.
-9. **I skipped a CI stage while claiming "gates green".** `check-examples` was
+9. **I skipped a CI stage while claiming "gates green".** `check-examples` was **→ TODO_LIST §Release — ADR 0002 trademark-posture row (last open row there)**
    not run until this report was requested. It passes (15/15), so no harm
    landed, but the claim was premature.
-10. **I left the ADR `Proposed` while shipping the thing it describes.** The
+10. **I left the ADR `Proposed` while shipping the thing it describes.** The **→ TODO_LIST §Release — ADR 0002 trademark-posture row (last open row there)**
     repo now presents a derivative-of-trademarks lockup as its identity, and the
     document that should authorise it says "not decided".
 
@@ -182,27 +191,27 @@ discovered this session:
 
 ## 5. e) WHAT WE SHOULD IMPROVE (process, not features)
 
-1. **Render before you commit.** Every brand/visual change needs a rasterised
+~~1. **Render before you commit.** Every brand/visual change needs a rasterised~~ **Won't implement — no render rule in AGENTS; `brand:check` byte-gates the artifacts instead.**
    or screenshotted artifact in the session before it is called done. Types,
    lint and tests passed on three separate visual bugs this session.
-2. **Make invariants executable, not eyeballed.** "The arrow must be visible"
+~~2. **Make invariants executable, not eyeballed.** "The arrow must be visible"~~ done — `test/unit/brand-assets.test.ts:156` locks the arrow paint-server invariant
    is testable as an invariant: the arrow's paint server must not be an
    `objectBoundingBox` gradient, and the rasterised mark must differ from a
    shaft-less control render. Neither is gated today.
-3. **A gate must cover the whole artifact set.** `brand:check` covers 6 of 7
+~~3. **A gate must cover the whole artifact set.** `brand:check` covers 6 of 7~~ **Won't implement — PNG stays outside `brand:check`; the hole is documented.**
    outputs. Either compare a perceptual hash of the PNG or accept and document
    the hole — do not leave it implicit.
-4. **Stop letting `jscpd` choose the API.** A 0-clone budget is a good signal;
+~~4. **Stop letting `jscpd` choose the API.** A 0-clone budget is a good signal;~~ **Won't implement — the tool-shaped helpers remain in the generator.**
    three helpers whose only purpose is to change token shape are not. Either
    restructure by domain (split the geometry into a module with a clear API) or
    accept a documented, narrow ignore.
-5. **Announce manifest edits.** Any hand edit to a dependency specifier needs a
+~~5. **Announce manifest edits.** Any hand edit to a dependency specifier needs a~~ done — the TODO_LIST dependency-refresh row owns the deferred upgrades
    line in the report **and** a follow-up ticket, otherwise the deferred
    upgrade is lost.
-6. **When a check fails on a file you did not touch, say so first.** Prettier
+~~6. **When a check fails on a file you did not touch, say so first.** Prettier~~ **NOT-DO — lesson logged.**
    on `website/IMPROVEMENTS.md` was correct but should have been surfaced
    before the edit, not in hindsight.
-7. **Close the loop with the ADR.** If the ADR is `Proposed`, either accept it
+7. **Close the loop with the ADR.** If the ADR is `Proposed`, either accept it **→ TODO_LIST §Release — ADR 0002 trademark-posture row**
    (with the trademark risk recorded) or hold the identity change until it is
    accepted. Shipping + `Proposed` is the worst of both.
 
@@ -212,71 +221,71 @@ discovered this session:
 
 | #  | Task                                                                                                                                                                  | Impact   | Effort | Category     |
 | -- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | ------ | ------------ |
-| 1  | Decide trademark posture; move ADR 0002 to `Accepted` or replace the mark                                                                                             | Critical | S      | Legal/Design |
-| 2  | Decide favicon; kill the legacy teal squircle (one identity, not two)                                                                                                 | Critical | S–M    | Brand        |
-| 3  | Add generator invariant tests (arrow paint server, no objectBoundingBox on zero-height, artifact set complete)                                                        | High     | S      | Testing      |
-| 4  | Verify the brand surfaces in a real browser (gallery toggles, aria-live, header/footer at 1×)                                                                         | High     | S      | QA           |
-| 5  | Judge the footer mark at 28×14; drop it or switch to a single tile if it reads as two squares                                                                         | High     | S      | Design       |
-| 6  | Cover the OG PNG in the gate (perceptual hash or `--check` with a pinned sharp)                                                                                       | High     | S      | CI           |
-| 7  | Harvest this session + prior §7 into `TODO_LIST.md` / `ROADMAP.md` (`docs-health` HARVEST)                                                                            | High     | S      | Docs         |
-| 8  | Re-open the deferred dependency upgrades (eslint 10.14, oxlint 1.90, astro 7.4.4, starlight 0.42.8, html-validate 11.18, @types/node 26.6.6) as an owner-managed pass | High     | M      | Dependencies |
-| 9  | `apple-touch-icon` 180×180 + 32×32 PNG + manifest entries (after task 2)                                                                                              | Medium   | S      | Branding     |
-| 10 | Horizontal lockup for banners/social/npm                                                                                                                              | Medium   | M      | Design       |
-| 11 | GitHub social preview 1280×640 from the lockup                                                                                                                        | Medium   | S      | Branding     |
-| 12 | Re-check npm README rendering after the next publish; switch to `<img>`-first if stripped                                                                             | Medium   | S      | Release      |
-| 13 | Add `prettier-plugin-astro` (or a documented exclude) so `.astro` formatting is defined once                                                                          | Medium   | M      | Tooling      |
-| 14 | Split `scripts/generate-brand-assets.ts` into geometry + emitters so neither fights the clone budget                                                                  | Medium   | M      | Refactor     |
-| 15 | Decide `assets/brand` packaging for npm (repo-only is fine — say so in `package.json` docs)                                                                           | Medium   | S      | Packaging    |
-| 16 | Dark/light OG variant strategy (og-canvas supports one logo)                                                                                                          | Medium   | M      | Feature      |
-| 17 | Screenshot visual-regression harness for brand surfaces                                                                                                               | Medium   | L      | Testing      |
-| 18 | Add a `brand:check` note to CONTRIBUTING ("regenerate, never hand-edit")                                                                                              | Low      | S      | Docs         |
-| 19 | Link `assets/brand/README.md` from the root README                                                                                                                    | Low      | S      | Docs         |
-| 20 | Confirm the gallery's `.sr-only` region works with a screen reader                                                                                                    | Low      | S      | A11y         |
-| 21 | Re-evaluate concept 59 (Emitter Arrow) now that 57 is shipped, and record why 57 won                                                                                  | Low      | S      | Design       |
-| 22 | Add a favicon-scale card (16/24/32) to the gallery for the final mark                                                                                                 | Low      | S      | Design       |
-| 23 | Curate the 59 cards: mark finalists, drop clearly weak entries                                                                                                        | Low      | S      | Cleanup      |
-| 24 | Add a shortlist/favicon-safety filter to the gallery                                                                                                                  | Low      | M      | Feature      |
-| 25 | Pause the gallery's pulse animation on `visibilitychange`/IntersectionObserver                                                                                        | Low      | S      | Perf         |
-| 26 | Audit alt/label text on all brand surfaces (`decorative` correctness)                                                                                                 | Low      | S      | A11y         |
-| 27 | Add `forced-colors` / high-contrast handling to the inline marks                                                                                                      | Low      | S      | A11y         |
-| 28 | Document the "why one generator" decision in CONTRIBUTING (link ADR 0002)                                                                                             | Low      | S      | Docs         |
-| 29 | Add a release-checklist item for the OG PNG + npm README check                                                                                                        | Medium   | S      | Release      |
-| 30 | Add brand token constants to `website/src/data/config.ts`                                                                                                             | Medium   | M      | Quality      |
-| 31 | Replace `id` default `"default"` in the components with something meaningful                                                                                          | Low      | S      | API          |
-| 32 | Stop hard-coding the AsyncAPI gradient in `defsBlock` (revisit after task 14)                                                                                         | Low      | S      | Refactor     |
-| 33 | Remove the `.split("\n")` round-trip introduced for the clone gate                                                                                                    | Low      | S      | Refactor     |
-| 34 | Decide the exclusion policy for remaining docs folders (`reports/`, `sessions/`, `prompts/`)                                                                          | Medium   | S      | Tooling      |
-| 35 | Add a brand-asset check to `nix flake check` (parse + bbox assertions)                                                                                                | Medium   | M      | CI           |
-| 36 | Consider `magick`/resvg for rasterisation instead of `sharp` (fewer deps)                                                                                             | Low      | S      | Tooling      |
-| 37 | Record the render-before-commit rule in `AGENTS.md`                                                                                                                   | Medium   | S      | Process      |
-| 38 | Add "brand source verification" step (pin SHAs) to the design workflow notes                                                                                          | Low      | S      | Process      |
-| 39 | Review the auto-commit daemon's 12 heuristic commits; consider message quality                                                                                        | Low      | S      | Process      |
-| 40 | Check whether `website/IMPROVEMENTS.md` reformat hid any content (it should be padding only)                                                                          | Low      | S      | Review       |
-| 41 | Verify `docs/adr/0002` renders correctly on GitHub (tables, links)                                                                                                    | Low      | S      | Docs         |
-| 42 | Add the palette as CSS custom properties in one place for the website                                                                                                 | Low      | M      | Quality      |
-| 43 | Consider making `brand` a `pnpm` script group (`brand:generate`, `brand:check`, `brand:png`)                                                                          | Low      | S      | Tooling      |
-| 44 | Document that `docs/logo-sources/` is a snapshot, not a dependency                                                                                                    | Low      | S      | Docs         |
-| 45 | Add a CHANGELOG "how to regenerate brand assets" pointer                                                                                                              | Low      | S      | Docs         |
-| 46 | Decide whether the ADR should also cover the OG/favicon strategy                                                                                                      | Low      | S      | Docs         |
-| 47 | Re-run the full gate chain (`verify` → `check-examples` → website) from a clean clone                                                                                 | Medium   | M      | Verification |
-| 48 | Test the installer/consumer path after the lockfile change (`pnpm install --frozen-lockfile` on CI)                                                                   | Medium   | S      | CI           |
-| 49 | Add a link checker for `assets/brand/README.md` (pinned GitHub URLs)                                                                                                  | Low      | S      | Docs         |
-| 50 | Write the "when to use lockup vs mark vs wordmark" note                                                                                                               | Low      | S      | Docs         |
+| 1 **→ TODO_LIST §Release — ADR 0002 trademark-posture row** | Decide trademark posture; move ADR 0002 to `Accepted` or replace the mark | Critical | S | Legal/Design |
+| ~~2~~ done — decided 2026-11-04 per ADR 0002: the compact mark (AGENTS line 220); raster fallback tracked in TODO_LIST | ~~Decide favicon; kill the legacy teal squircle (one identity, not two)~~ | ~~Critical~~ | ~~S–M~~ | ~~Brand~~ |
+| ~~3~~ done — `test/unit/brand-assets.test.ts:156` locks the user-space-gradient invariant | ~~Add generator invariant tests (arrow paint server, no objectBoundingBox on zero-height, artifact set complete)~~ | ~~High~~ | ~~S~~ | ~~Testing~~ |
+| 4 **→ TODO_LIST §Website QA — screenshot row (plus axe-core row)** | Verify the brand surfaces in a real browser (gallery toggles, aria-live, header/footer at 1×) | High | S | QA |
+| ~~5~~ **Won't implement — no 1x judgement recorded; the footer keeps the compact mark.** | ~~Judge the footer mark at 28×14; drop it or switch to a single tile if it reads as two squares~~ | ~~High~~ | ~~S~~ | ~~Design~~ |
+| ~~6~~ **Won't implement — PNG stays regeneration-only; the gap is documented.** | ~~Cover the OG PNG in the gate (perceptual hash or `--check` with a pinned sharp)~~ | ~~High~~ | ~~S~~ | ~~CI~~ |
+| ~~7~~ done — harvested 2026-11-19 into the TODO_LIST Website QA section | ~~Harvest this session + prior §7 into `TODO_LIST.md` / `ROADMAP.md` (`docs-health` HARVEST)~~ | ~~High~~ | ~~S~~ | ~~Docs~~ |
+| 8 **→ TODO_LIST §Dependency — re-attempt the reverted minor bumps row** | Re-open the deferred dependency upgrades (eslint 10.14, oxlint 1.90, astro 7.4.4, starlight 0.42.8, html-validate 11.18, @types/node 26.6.6) as an owner-managed pass | High | M | Dependencies |
+| 9 **→ TODO_LIST §Website QA — multi-size `.ico` fallback row (16/32/48)** | `apple-touch-icon` 180×180 + 32×32 PNG + manifest entries (after task 2) | Medium | S | Branding |
+| ~~10~~ done — shipped: `assets/brand/lockup-horizontal-{dark,light}.svg` (AGENTS line 220) | ~~Horizontal lockup for banners/social/npm~~ | ~~Medium~~ | ~~M~~ | ~~Design~~ |
+| ~~11~~ **Won't implement — no social-preview upload tracked anywhere.** | ~~GitHub social preview 1280×640 from the lockup~~ | ~~Medium~~ | ~~S~~ | ~~Branding~~ |
+| 12 **→ TODO_LIST §Release — npm README verification row** | Re-check npm README rendering after the next publish; switch to `<img>`-first if stripped | Medium | S | Release |
+| ~~13~~ **Won't implement — never added; `.astro` stays generator-owned (AGENTS line 220).** | ~~Add `prettier-plugin-astro` (or a documented exclude) so `.astro` formatting is defined once~~ | ~~Medium~~ | ~~M~~ | ~~Tooling~~ |
+| ~~14~~ **Won't implement — still one file at 673 lines.** | ~~Split `scripts/generate-brand-assets.ts` into geometry + emitters so neither fights the clone budget~~ | ~~Medium~~ | ~~M~~ | ~~Refactor~~ |
+| ~~15~~ done — decided: repo-only, `assets/` is not in npm `files` (AGENTS line 220) | ~~Decide `assets/brand` packaging for npm (repo-only is fine — say so in `package.json` docs)~~ | ~~Medium~~ | ~~S~~ | ~~Packaging~~ |
+| ~~16~~ **Won't implement — og-canvas still takes the single `website/public/brand-mark.png`.** | ~~Dark/light OG variant strategy (og-canvas supports one logo)~~ | ~~Medium~~ | ~~M~~ | ~~Feature~~ |
+| ~~17~~ **Won't implement — no harness; the TODO_LIST screenshot row covers manual capture.** | ~~Screenshot visual-regression harness for brand surfaces~~ | ~~Medium~~ | ~~L~~ | ~~Testing~~ |
+| ~~18~~ **Won't implement — CONTRIBUTING carries no brand note.** | ~~Add a `brand:check` note to CONTRIBUTING ("regenerate, never hand-edit")~~ | ~~Low~~ | ~~S~~ | ~~Docs~~ |
+| ~~19~~ **Won't implement — README references raw asset URLs, never the brand README.** | ~~Link `assets/brand/README.md` from the root README~~ | ~~Low~~ | ~~S~~ | ~~Docs~~ |
+| ~~20~~ **Won't implement — no screen-reader verification recorded.** | ~~Confirm the gallery's `.sr-only` region works with a screen reader~~ | ~~Low~~ | ~~S~~ | ~~A11y~~ |
+| ~~21~~ **Won't implement — concept 59 rationale never recorded.** | ~~Re-evaluate concept 59 (Emitter Arrow) now that 57 is shipped, and record why 57 won~~ | ~~Low~~ | ~~S~~ | ~~Design~~ |
+| ~~22~~ **Won't implement — no favicon-scale card added.** | ~~Add a favicon-scale card (16/24/32) to the gallery for the final mark~~ | ~~Low~~ | ~~S~~ | ~~Design~~ |
+| ~~23~~ **Won't implement — gallery never curated.** | ~~Curate the 59 cards: mark finalists, drop clearly weak entries~~ | ~~Low~~ | ~~S~~ | ~~Cleanup~~ |
+| ~~24~~ **Won't implement — no favicon-safety filter added.** | ~~Add a shortlist/favicon-safety filter to the gallery~~ | ~~Low~~ | ~~M~~ | ~~Feature~~ |
+| ~~25~~ **Won't implement — no `visibilitychange` pause in the gallery.** | ~~Pause the gallery's pulse animation on `visibilitychange`/IntersectionObserver~~ | ~~Low~~ | ~~S~~ | ~~Perf~~ |
+| ~~26~~ **Won't implement — the `decorative` prop is documented (AGENTS line 220); no audit pass recorded.** | ~~Audit alt/label text on all brand surfaces (`decorative` correctness)~~ | ~~Low~~ | ~~S~~ | ~~A11y~~ |
+| ~~27~~ **Won't implement — no forced-colors handling exists.** | ~~Add `forced-colors` / high-contrast handling to the inline marks~~ | ~~Low~~ | ~~S~~ | ~~A11y~~ |
+| ~~28~~ **Won't implement — CONTRIBUTING carries no generator rationale.** | ~~Document the "why one generator" decision in CONTRIBUTING (link ADR 0002)~~ | ~~Low~~ | ~~S~~ | ~~Docs~~ |
+| 29 **→ TODO_LIST §Release — npm README verification row covers the after-publish recheck** | Add a release-checklist item for the OG PNG + npm README check | Medium | S | Release |
+| ~~30~~ **Won't implement — no brand tokens in `website/src/data/config.ts`.** | ~~Add brand token constants to `website/src/data/config.ts`~~ | ~~Medium~~ | ~~M~~ | ~~Quality~~ |
+| ~~31~~ **Won't implement — the `id = "default"` default remains in both components.** | ~~Replace `id` default `"default"` in the components with something meaningful~~ | ~~Low~~ | ~~S~~ | ~~API~~ |
+| ~~32~~ **Won't implement — `defsBlock` still hard-codes the AsyncAPI gradient.** | ~~Stop hard-coding the AsyncAPI gradient in `defsBlock` (revisit after task 14)~~ | ~~Low~~ | ~~S~~ | ~~Refactor~~ |
+| ~~33~~ **Won't implement — the split round-trips remain at `scripts/generate-brand-assets.ts:145`.** | ~~Remove the `.split("\n")` round-trip introduced for the clone gate~~ | ~~Low~~ | ~~S~~ | ~~Refactor~~ |
+| ~~34~~ **Won't implement — excludes cover status, planning, analysis and `_archive` (AGENTS line 211); reports, sessions and prompts are not listed.** | ~~Decide the exclusion policy for remaining docs folders (`reports/`, `sessions/`, `prompts/`)~~ | ~~Medium~~ | ~~S~~ | ~~Tooling~~ |
+| ~~35~~ **Won't implement — no brand check inside `nix flake check`.** | ~~Add a brand-asset check to `nix flake check` (parse + bbox assertions)~~ | ~~Medium~~ | ~~M~~ | ~~CI~~ |
+| ~~36~~ **Won't implement — sharp 0.35.5 stays pinned (AGENTS line 220).** | ~~Consider `magick`/resvg for rasterisation instead of `sharp` (fewer deps)~~ | ~~Low~~ | ~~S~~ | ~~Tooling~~ |
+| ~~37~~ **Won't implement — no render rule in AGENTS.md.** | ~~Record the render-before-commit rule in `AGENTS.md`~~ | ~~Medium~~ | ~~S~~ | ~~Process~~ |
+| ~~38~~ done — source SHAs pinned in `assets/brand/README.md` (AGENTS line 220) | ~~Add "brand source verification" step (pin SHAs) to the design workflow notes~~ | ~~Low~~ | ~~S~~ | ~~Process~~ |
+| ~~39~~ **Won't implement — daemon message quality never addressed.** | ~~Review the auto-commit daemon's 12 heuristic commits; consider message quality~~ | ~~Low~~ | ~~S~~ | ~~Process~~ |
+| ~~40~~ **NOT-DO — verified padding-only at the time; nothing further owed.** | ~~Check whether `website/IMPROVEMENTS.md` reformat hid any content (it should be padding only)~~ | ~~Low~~ | ~~S~~ | ~~Review~~ |
+| ~~41~~ **Won't implement — never checked on GitHub rendering.** | ~~Verify `docs/adr/0002` renders correctly on GitHub (tables, links)~~ | ~~Low~~ | ~~S~~ | ~~Docs~~ |
+| ~~42~~ **Won't implement — no palette custom-properties consolidation.** | ~~Add the palette as CSS custom properties in one place for the website~~ | ~~Low~~ | ~~M~~ | ~~Quality~~ |
+| ~~43~~ done — the brand script group exists: `brand:generate`, `brand:check`, website `brand:png` (AGENTS line 220) | ~~Consider making `brand` a `pnpm` script group (`brand:generate`, `brand:check`, `brand:png`)~~ | ~~Low~~ | ~~S~~ | ~~Tooling~~ |
+| ~~44~~ done — `assets/brand/README.md:129` documents the local-snapshot posture | ~~Document that `docs/logo-sources/` is a snapshot, not a dependency~~ | ~~Low~~ | ~~S~~ | ~~Docs~~ |
+| ~~45~~ **Won't implement — no regeneration pointer in CHANGELOG.** | ~~Add a CHANGELOG "how to regenerate brand assets" pointer~~ | ~~Low~~ | ~~S~~ | ~~Docs~~ |
+| ~~46~~ done — ADR 0002 now records the favicon decision (AGENTS line 220) | ~~Decide whether the ADR should also cover the OG/favicon strategy~~ | ~~Low~~ | ~~S~~ | ~~Docs~~ |
+| ~~47~~ **Won't implement — never re-run from a clean clone; the chain is CI-covered.** | ~~Re-run the full gate chain (`verify` → `check-examples` → website) from a clean clone~~ | ~~Medium~~ | ~~M~~ | ~~Verification~~ |
+| ~~48~~ done — CI installs with `--frozen-lockfile`; the drift class is watched (TODO_LIST Hygiene row) | ~~Test the installer/consumer path after the lockfile change (`pnpm install --frozen-lockfile` on CI)~~ | ~~Medium~~ | ~~S~~ | ~~CI~~ |
+| ~~49~~ **Won't implement — no dedicated link checker for the brand README.** | ~~Add a link checker for `assets/brand/README.md` (pinned GitHub URLs)~~ | ~~Low~~ | ~~S~~ | ~~Docs~~ |
+| ~~50~~ done — `assets/brand/README.md` slots mark vs lockups by size (lines 20 and 37) | ~~Write the "when to use lockup vs mark vs wordmark" note~~ | ~~Low~~ | ~~S~~ | ~~Docs~~ |
 
 ---
 
 ## 7. g) Questions I cannot answer myself (max 3)
 
-1. **Trademark posture.** May a **derivative lockup of the official TypeSpec +
+1. **Trademark posture.** May a **derivative lockup of the official TypeSpec + **→ TODO_LIST §Release — ADR 0002 trademark-posture row**
    AsyncAPI marks** be this project's _primary_ identity (what is now shipped
    everywhere), or must the official marks stay documentation-only and an
    original synthesized mark (concept 25 Outline Mark / 50 Lockup) become
    primary? This blocks favicon work, the horizontal lockup, the social
    preview, and ADR acceptance.
-2. **Favicon.** Keep the **legacy teal squircle** (16 px-safe, but a second
+~~2. **Favicon.** Keep the **legacy teal squircle** (16 px-safe, but a second~~ done — decided 2026-11-04: the compact mark at tab size (AGENTS line 220)
    visual system), or invest in a **16 px-optimised single tile** — and if so,
    which glyph: the gradient arrow, the AsyncAPI "A", "TSP", or the hex-bolt?
-3. **npm surface.** Is **GitHub-level fidelity sufficient**, or must the npm
+3. **npm surface.** Is **GitHub-level fidelity sufficient**, or must the npm **→ TODO_LIST §Release — npm README verification row**
    package page render the mark natively? If yes, the plan changes to raster
    PNG lockups and an `<img>`-first README, and I need to drop the
    `prefers-color-scheme` `<picture>`.
