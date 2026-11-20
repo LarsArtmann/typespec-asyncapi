@@ -20,14 +20,14 @@ Root causes identified and fixed:
 
 | #   | Failure                 | Root Cause                                                             | Fix                                                       |
 | --- | ----------------------- | ---------------------------------------------------------------------- | --------------------------------------------------------- |
-| 1   | `server.variables enum` | `enum` is a reserved keyword in TypeSpec `#{}` value literals          | Added `values` → `enum` mapping in `server-builder.ts`    |
-| 2   | `server.security`       | Object `{ sasl: [...] }` not wrapped in array                          | Added `normalizeSecurity()` to wrap single objects        |
-| 3   | `channel.servers`       | `buildServers` ran AFTER `attachChannelServerRefs` — servers map empty | Reordered pipeline in `document-builder.ts`               |
-| 4-5 | `message.schemaFormat`  | `storeMessageConfig` stripped `schemaFormat` from stored config        | Changed to store full `MessageConfigData`                 |
-| 6   | `message.examples`      | Same root cause as schemaFormat — examples stripped                    | Same fix                                                  |
-| 7   | `operation.security`    | Emitted `{ jwt: [] }` (OpenAPI style), AsyncAPI 3.1 needs `$ref`       | Changed to `{ $ref: "#/components/securitySchemes/jwt" }` |
-| 8   | `User.id property ref`  | Test placed `model` before `namespace` (syntax error)                  | Moved namespace before models                             |
-| 9   | `combined full graph`   | Namespace-level decorators inside namespace body + syntax errors       | Moved decorators before `namespace` keyword               |
+| ~~1~~ done at `72a4dc09`, `b5a437cc`, `c6762a64` | ~~`server.variables enum`~~ | ~~`enum` is a reserved keyword in TypeSpec `#{}` value literals~~ | ~~Added `values` → `enum` mapping in `server-builder.ts`~~ |
+| ~~2~~ done at `72a4dc09`, `b5a437cc`, `c6762a64` | ~~`server.security`~~ | ~~Object `{ sasl: [...] }` not wrapped in array~~ | ~~Added `normalizeSecurity()` to wrap single objects~~ |
+| ~~3~~ done at `72a4dc09`, `b5a437cc`, `c6762a64` | ~~`channel.servers`~~ | ~~`buildServers` ran AFTER `attachChannelServerRefs` — servers map empty~~ | ~~Reordered pipeline in `document-builder.ts`~~ |
+| ~~4-5~~ done at `72a4dc09`, `b5a437cc`, `c6762a64` | ~~`message.schemaFormat`~~ | ~~`storeMessageConfig` stripped `schemaFormat` from stored config~~ | ~~Changed to store full `MessageConfigData`~~ |
+| ~~6~~ done at `72a4dc09`, `b5a437cc`, `c6762a64` | ~~`message.examples`~~ | ~~Same root cause as schemaFormat — examples stripped~~ | ~~Same fix~~ |
+| ~~7~~ done at `72a4dc09`, `b5a437cc`, `c6762a64` | ~~`operation.security`~~ | ~~Emitted `{ jwt: [] }` (OpenAPI style), AsyncAPI 3.1 needs `$ref`~~ | ~~Changed to `{ $ref: "#/components/securitySchemes/jwt" }`~~ |
+| ~~8~~ done at `72a4dc09`, `b5a437cc`, `c6762a64` | ~~`User.id property ref`~~ | ~~Test placed `model` before `namespace` (syntax error)~~ | ~~Moved namespace before models~~ |
+| ~~9~~ done at `72a4dc09`, `b5a437cc`, `c6762a64` | ~~`combined full graph`~~ | ~~Namespace-level decorators inside namespace body + syntax errors~~ | ~~Moved decorators before `namespace` keyword~~ |
 
 **Files changed:**
 
@@ -160,27 +160,27 @@ The plan called for a final push. I did not push any commits to the remote.
 
 ### Process Improvements
 
-1. **Read code before debugging** — Static analysis (reading the source) would have identified the pipeline ordering bug and the `storeMessageConfig` stripping bug in under 2 minutes each. Instead, I spent 15+ minutes writing throwaway debug tests.
+~~1. **Read code before debugging** — Static analysis (reading the source) would have identified the pipeline ordering bug and the `storeMessageConfig` stripping bug in under 2 minutes each. Instead, I spent 15+ minutes writing throwaway debug tests.~~ **Won't implement — process lesson recorded in this report; no separate artifact.**
 
-2. **Never leave debug code in source files** — The auto-commit daemon will commit it. Write debug output to `/tmp/` files or use `console.error` that gets immediately removed before the next tool call.
+~~2. **Never leave debug code in source files** — The auto-commit daemon will commit it. Write debug output to `/tmp/` files or use `console.error` that gets immediately removed before the next tool call.~~ **Won't implement — process lesson; the daemon-committed debug code was reverted within the same session.**
 
-3. **Understand TypeSpec syntax before writing tests** — Many of the original test failures were due to incorrect TypeSpec syntax (`enum` as a keyword, models before namespace). The tests were written by a previous session that didn't verify syntax.
+~~3. **Understand TypeSpec syntax before writing tests** — Many of the original test failures were due to incorrect TypeSpec syntax (`enum` as a keyword, models before namespace). The tests were written by a previous session that didn't verify syntax.~~ **Won't implement — process lesson; TypeSpec syntax gotchas now live in `AGENTS.md:107`.**
 
-4. **Run coverage gate** — The `pnpm run verify` command exists for a reason. Not running it means we don't know if the new code is adequately covered.
+~~4. **Run coverage gate** — The `pnpm run verify` command exists for a reason. Not running it means we don't know if the new code is adequately covered.~~ done — the coverage gate is part of the standing verify pipeline ( `FEATURES.md:10` )
 
-5. **Consider the AsyncAPI spec before writing emitter code** — The security format bug (`{ jwt: [] }` vs `{ $ref: "..." }`) was an emitter implementation that didn't match the spec. The AsyncAPI 3.1 JSON Schema should have been consulted when implementing the feature.
+~~5. **Consider the AsyncAPI spec before writing emitter code** — The security format bug (`{ jwt: [] }` vs `{ $ref: "..." }`) was an emitter implementation that didn't match the spec. The AsyncAPI 3.1 JSON Schema should have been consulted when implementing the feature.~~ done — AJV validation is standing policy across the compliance suite ( `AGENTS.md:115` )
 
 ### Code Quality Improvements
 
-6. **`storeProtocolConfig` extraction is a band-aid** — The file was extracted solely to satisfy the 400-line lint rule. A better approach would be to split `state-writers.ts` by domain (message writers, server writers, security writers, reusable component writers).
+~~6. **`storeProtocolConfig` extraction is a band-aid** — The file was extracted solely to satisfy the 400-line lint rule. A better approach would be to split `state-writers.ts` by domain (message writers, server writers, security writers, reusable component writers).~~ **Won't implement — never split further; the extraction stands as the max-lines precedent ( `AGENTS.md:32` ).**
 
-7. **Server variable `values` → `enum` mapping is a leaky abstraction** — Users have to know that `enum` is reserved and use `values` instead. A better solution would be to support both `enum` and `values` as input keys, or to document this prominently in the decorator JSDoc.
+~~7. **Server variable `values` → `enum` mapping is a leaky abstraction** — Users have to know that `enum` is reserved and use `values` instead. A better solution would be to support both `enum` and `values` as input keys, or to document this prominently in the decorator JSDoc.~~ done — both `values` and `enum` input keys are accepted ( `src/builders/server-builder.ts:22` )
 
-8. **`normalizeSecurity` in server-builder is in the wrong layer** — Security normalization belongs in the state writer or decorator, not in the builder. The builder should receive already-typed data.
+~~8. **`normalizeSecurity` in server-builder is in the wrong layer** — Security normalization belongs in the state writer or decorator, not in the builder. The builder should receive already-typed data.~~ **Won't implement — `normalizeSecurity` still lives in `src/builders/server-builder.ts:43`; output locked by goldens.**
 
-9. **`SecurityRequirement` type is too loose** — `Ref | Partial<SecurityScheme>` allows any partial security scheme. It should be a proper discriminated union matching the AsyncAPI 3.1 schema.
+~~9. **`SecurityRequirement` type is too loose** — `Ref | Partial<SecurityScheme>` allows any partial security scheme. It should be a proper discriminated union matching the AsyncAPI 3.1 schema.~~ **Won't implement — type unchanged ( `src/domain/models/asyncapi-document.ts:155` ); behavior locked by AJV tests and `test/golden/server-security.test.ts`.**
 
-10. **No integration test for the full pipeline ordering** — The `buildServers` before `attachChannelServerRefs` ordering bug was only caught by a specific test. A "full pipeline smoke test" that exercises every builder in sequence would catch ordering issues systematically.
+~~10. **No integration test for the full pipeline ordering** — The `buildServers` before `attachChannelServerRefs` ordering bug was only caught by a specific test. A "full pipeline smoke test" that exercises every builder in sequence would catch ordering issues systematically.~~ **Won't implement — no dedicated whole-pipeline test; ordering locked by `test/golden/server-security.test.ts` and the compliance suite.**
 
 ---
 
@@ -188,65 +188,65 @@ The plan called for a final push. I did not push any commits to the remote.
 
 ### Critical (must do)
 
-1. **Push all commits to remote** — 6 commits are unpushed
-2. **Run `pnpm run verify`** — Coverage gate + duplicate analysis not verified
-3. **Run `pnpm run duplicate`** — Verify the `storeProtocolConfig` extraction didn't add duplication
-4. **Remove debug commits from git history** — Consider squashing `767a224` and `279216c` (debug code) into the fix commits
+~~1. **Push all commits to remote** — 6 commits are unpushed~~ done — pushed long since; `v1.2.0` tagged 2026-11-19
+~~2. **Run `pnpm run verify`** — Coverage gate + duplicate analysis not verified~~ done — the full verify gate is standing policy ( `AGENTS.md:26` )
+~~3. **Run `pnpm run duplicate`** — Verify the `storeProtocolConfig` extraction didn't add duplication~~ done — jscpd is a standing verify stage, 0 clones ( `FEATURES.md:9` )
+~~4. **Remove debug commits from git history** — Consider squashing `767a224` and `279216c` (debug code) into the fix commits~~ **Won't implement — history kept as-is; `767a224` and `279216c` remain, reverted by follow-up commits in the same session.**
 
 ### High Priority
 
-5. **Create adapted milehimikey test that COMPILES** — Current test only documents failures; create an adapted version that uses our decorator API and validates the output
-6. **Re-test bterlson/typespec-todo verbatim file** — Now that `@typespec/http` is installed, see if it compiles (will still fail on `@visibility("read")` string syntax)
-7. **Add protocol binding tests to adapted fixtures** — None of the adapted fixtures test `@protocol`, `@bindings`, or binding output
-8. **Add security scheme tests to adapted fixtures** — None test `@security` + `@operationSecurity` end-to-end
-9. **Add server config tests to adapted fixtures** — None test `@server` with variables, protocolVersion, pathname
-10. **Add correlation ID tests to adapted fixtures** — None test `@correlationId` on messages
-11. **Add operation reply tests to adapted fixtures** — None test `@reply` request-reply patterns
-12. **Add reusable component tests to adapted fixtures** — None test `@operationTrait`, `@messageTrait`, `@parameter`, `@reusableBinding`
-13. **Golden file for bterlson adapted output** — Lock the adapted fixture output as regression guard
-14. **Golden file for DanSnow adapted output** — Same
-15. **Golden file for Azure EventGrid adapted output** — Same
-16. **Document golden file regeneration** — Add a script or documented command for regenerating golden files
+~~5. **Create adapted milehimikey test that COMPILES** — Current test only documents failures; create an adapted version that uses our decorator API and validates the output~~ done — `test/realworld/cross-emitter-milehimikey.test.ts` compiles an adapted source through this emitter
+~~6. **Re-test bterlson/typespec-todo verbatim file** — Now that `@typespec/http` is installed, see if it compiles (will still fail on `@visibility("read")` string syntax)~~ done — verbatim repos compiled by `test/realworld/github-actual-files.test.ts` ( incl. `bterlson-typespec-todo.tsp` )
+~~7. **Add protocol binding tests to adapted fixtures** — None of the adapted fixtures test `@protocol`, `@bindings`, or binding output~~ **NOT-DO — subsumed by the compliance suite: `test/compliance/protocol-bindings.test.ts` and `new-protocol-bindings.test.ts`.**
+~~8. **Add security scheme tests to adapted fixtures** — None test `@security` + `@operationSecurity` end-to-end~~ **NOT-DO — subsumed by `test/domain/security-schemes.test.ts` ( 13 AJV tests, `CHANGELOG.md:265` ).**
+~~9. **Add server config tests to adapted fixtures** — None test `@server` with variables, protocolVersion, pathname~~ **NOT-DO — subsumed by `test/compliance/servers-security.test.ts` and `test/golden/server-security.test.ts`.**
+~~10. **Add correlation ID tests to adapted fixtures** — None test `@correlationId` on messages~~ **NOT-DO — subsumed by the correlationIds coverage in `test/compliance/reusable-components.test.ts`.**
+~~11. **Add operation reply tests to adapted fixtures** — None test `@reply` request-reply patterns~~ **NOT-DO — subsumed by `test/compliance/operation-reply.test.ts`.**
+~~12. **Add reusable component tests to adapted fixtures** — None test `@operationTrait`, `@messageTrait`, `@parameter`, `@reusableBinding`~~ **NOT-DO — subsumed by `test/compliance/reusable-components.test.ts` ( 43 tests ).**
+~~13. **Golden file for bterlson adapted output** — Lock the adapted fixture output as regression guard~~ **Won't implement — no golden for the adapted fixture; `test/realworld/golden/` holds only the xyd capture.**
+~~14. **Golden file for DanSnow adapted output** — Same~~ **Won't implement — no golden for the adapted fixture; `test/realworld/golden/` holds only the xyd capture.**
+~~15. **Golden file for Azure EventGrid adapted output** — Same~~ **Won't implement — no golden for the adapted fixture; `test/realworld/golden/` holds only the xyd capture.**
+~~16. **Document golden file regeneration** — Add a script or documented command for regenerating golden files~~ done — `scripts/regenerate-golden.ts` exists
 
 ### Medium Priority
 
-17. **Split `state-writers.ts` by domain** — Instead of one 400-line file + extracted protocol config, split into `message-state-writers.ts`, `server-state-writers.ts`, `security-state-writers.ts`, `reusable-state-writers.ts`
-18. **Fix `SecurityRequirement` type** — Make it a proper discriminated union matching AsyncAPI 3.1 schema `securityRequirements` definition
-19. **Move `normalizeSecurity` to state writer layer** — Builders should receive typed data, not normalize at build time
-20. **Support `enum` as input key in server variables** — Accept both `enum` and `values` for ergonomics (even though `enum` is reserved in `#{}`, model-expression `{}` syntax can use it)
-21. **Add full pipeline ordering test** — Test that exercises every builder function and verifies the output is complete
-22. **Consult AsyncAPI 3.1 JSON Schema for every feature** — The security format bug proves we need schema-driven development
-23. **Add `@visibility` migration helper** — Detect `@visibility("read")` string syntax and suggest `Lifecycle.Read` enum syntax
-24. **Test message `examples` with `@example` decorator** — Current test uses `@message(#{examples: [...]})` but doesn't test `@example` decorator on model properties
-25. **Test `schemaFormat` with external schema refs** — When `schemaFormat` is non-JSON, the payload ref should point to external schema
-26. **Add `data_base64` to bytes format mapping test** — Azure fixture tests `bytes` → `{type:"string", format:"byte"}`, but doesn't test the actual `data_base64` property name from CloudEvents spec
-27. **Test `unknown` type rendering** — Azure fixture checks `data` property is defined but doesn't assert its schema representation
-28. **Run adapted fixtures through AsyncAPI 3.1 schema validation** — Currently only the combined test uses `compileAndValidateOrThrow`; adapted fixtures should too
-29. **Add negative tests to adapted fixtures** — What happens when models have circular references? Missing properties? Invalid types?
-30. **Document the cross-emitter API differences in a comparison table** — milehimikey vs this emitter decorator-by-decorator
-31. **Search for MORE GitHub repos using TypeSpec** — The previous search found zero repos using `TypeSpec.AsyncAPI`; re-search with different terms as the ecosystem grows
-32. **Create example specs in this repo** — `examples/` directory with real-world patterns users can copy
-33. **Add CI workflow** — GitHub Actions running `pnpm run verify` on every push/PR
-34. **Add CHANGELOG entry** — The security format change is a breaking change that should be documented
-35. **Update README with real-world testing section** — Mention the GitHub repos tested and what compiles
+~~17. **Split `state-writers.ts` by domain** — Instead of one 400-line file + extracted protocol config, split into `message-state-writers.ts`, `server-state-writers.ts`, `security-state-writers.ts`, `reusable-state-writers.ts`~~ **Won't implement — never split further; `store-protocol-config.ts` extraction stands ( `AGENTS.md:32` precedent ).**
+~~18. **Fix `SecurityRequirement` type** — Make it a proper discriminated union matching AsyncAPI 3.1 schema `securityRequirements` definition~~ **Won't implement — type remains `Ref | Partial<SecurityScheme>` ( `src/domain/models/asyncapi-document.ts:155` ).**
+~~19. **Move `normalizeSecurity` to state writer layer** — Builders should receive typed data, not normalize at build time~~ **Won't implement — still in the builder layer ( `src/builders/server-builder.ts:43` ).**
+~~20. **Support `enum` as input key in server variables** — Accept both `enum` and `values` for ergonomics (even though `enum` is reserved in `#{}`, model-expression `{}` syntax can use it)~~ done — both `values` and `enum` accepted as input keys ( `src/builders/server-builder.ts:22` )
+~~21. **Add full pipeline ordering test** — Test that exercises every builder function and verifies the output is complete~~ **Won't implement — no dedicated pipeline test; ordering locked by `test/golden/server-security.test.ts`.**
+~~22. **Consult AsyncAPI 3.1 JSON Schema for every feature** — The security format bug proves we need schema-driven development~~ done — schema-driven AJV validation is standing policy ( `AGENTS.md:115` )
+~~23. **Add `@visibility` migration helper** — Detect `@visibility("read")` string syntax and suggest `Lifecycle.Read` enum syntax~~ **Won't implement — `@visibility` mapping handled in `src/constraint-mapper.ts:162`; no migration helper diagnostic was added.**
+~~24. **Test message `examples` with `@example` decorator** — Current test uses `@message(#{examples: [...]})` but doesn't test `@example` decorator on model properties~~ done — `@example` covered in `test/compliance/constraint-decorators.test.ts` and `doc-propagation.test.ts`
+~~25. **Test `schemaFormat` with external schema refs** — When `schemaFormat` is non-JSON, the payload ref should point to external schema~~ **Won't implement — only message-level `schemaFormat` is tested ( `test/integration/asyncapi-3.1-features.test.ts` ); external-schema refs never tested.**
+~~26. **Add `data_base64` to bytes format mapping test** — Azure fixture tests `bytes` → `{type:"string", format:"byte"}`, but doesn't test the actual `data_base64` property name from CloudEvents spec~~ done — asserted in `test/realworld/adapted/azure-eventgrid-adapted.test.ts:86`
+~~27. **Test `unknown` type rendering** — Azure fixture checks `data` property is defined but doesn't assert its schema representation~~ done — `unknown` mapping asserted in `test/compliance/type-mapping-completeness.test.ts:190`
+~~28. **Run adapted fixtures through AsyncAPI 3.1 schema validation** — Currently only the combined test uses `compileAndValidateOrThrow`; adapted fixtures should too~~ **Won't implement — adapted fixtures are compile-only; AJV validation lives in the compliance suite ( `AGENTS.md:115` ).**
+~~29. **Add negative tests to adapted fixtures** — What happens when models have circular references? Missing properties? Invalid types?~~ **NOT-DO — subsumed by `test/integration/reusable-components-negative.test.ts` and `decorator-negative.test.ts`.**
+~~30. **Document the cross-emitter API differences in a comparison table** — milehimikey vs this emitter decorator-by-decorator~~ done — comparison table shipped in `README.md:40`
+~~31. **Search for MORE GitHub repos using TypeSpec** — The previous search found zero repos using `TypeSpec.AsyncAPI`; re-search with different terms as the ecosystem grows~~ done — five verbatim GitHub repos under test ( `test/realworld/github-actual-files.test.ts`, `test/realworld/repos/` )
+~~32. **Create example specs in this repo** — `examples/` directory with real-world patterns users can copy~~ done — runnable examples workspace ( `README.md:356`, `CHANGELOG.md:246` )
+~~33. **Add CI workflow** — GitHub Actions running `pnpm run verify` on every push/PR~~ done — `.github/workflows/ci.yml` runs the full gate
+~~34. **Add CHANGELOG entry** — The security format change is a breaking change that should be documented~~ done — recorded at `CHANGELOG.md:413` and `:427`
+~~35. **Update README with real-world testing section** — Mention the GitHub repos tested and what compiles~~ done — real-world regression guards documented at `README.md:340`
 
 ### Lower Priority
 
-36. **Test performance with large specs** — Benchmark suite exists but doesn't test with real-world model complexity
-37. **Add property-based testing** — Generate random valid AsyncAPI specs and verify they compile
-38. **Add snapshot testing for error messages** — Diagnostic messages should be stable across versions
-39. **Test with TypeSpec nightly** — Ensure compatibility with upcoming TypeSpec versions
-40. **Add migration guide from OpenAPI** — For users coming from `@typespec/openapi3`
-41. **Add migration guide from milehimikey emitter** — Document decorator API differences
-42. **Test multi-file output with adapted fixtures** — `split-schemas` option with real-world models
-43. **Test YAML output format** — All tests use JSON; verify YAML output is correct
-44. **Add JSDoc to `storeProtocolConfig`** — The extraction file has minimal documentation
-45. **Review `extractMessageConfig` for completeness** — Are there other `@message` config fields we're dropping?
-46. **Test `@message` with model-expression `{}` syntax** — All tests use `#{}` value literals; verify `{}` also works
-47. **Test server bindings output** — Namespace-level `@bindings` producing server bindings
-48. **Add test for `@tags` on adapted fixtures** — Rich tag objects with `externalDocs`
-49. **Test channel parameters with `@parameter`** — `{userId}` channel address with reusable parameter
-50. **Create a "kitchen sink" test** — One massive test that uses every decorator and validates against the AsyncAPI schema
+~~36. **Test performance with large specs** — Benchmark suite exists but doesn't test with real-world model complexity~~ **Won't implement — benchmarks use synthetic fixtures only ( `test/benchmark/fixture-generator.ts` ); no real-world-model benchmark added.**
+~~37. **Add property-based testing** — Generate random valid AsyncAPI specs and verify they compile~~ done — `test/property/emitter-properties.test.ts` and `mixed-ownership-properties.test.ts` exist
+~~38. **Add snapshot testing for error messages** — Diagnostic messages should be stable across versions~~ **Won't implement — no error-message snapshot tests were ever added.**
+~~39. **Test with TypeSpec nightly** — Ensure compatibility with upcoming TypeSpec versions~~ **Won't implement — no nightly CI job exists ( `.github/workflows/` ).**
+~~40. **Add migration guide from OpenAPI** — For users coming from `@typespec/openapi3`~~ done — migration guide shipped at `website/src/content/docs/getting-started/migration.md`
+~~41. **Add migration guide from milehimikey emitter** — Document decorator API differences~~ **Won't implement — no milehimikey-named guide; API differences documented in `test/realworld/cross-emitter-milehimikey.test.ts`.**
+~~42. **Test multi-file output with adapted fixtures** — `split-schemas` option with real-world models~~ **NOT-DO — subsumed by `examples/split-schemas` and the e2e split-schemas tests.**
+~~43. **Test YAML output format** — All tests use JSON; verify YAML output is correct~~ done — YAML flavor covered in compliance and e2e tests ( `test/compliance/protocol-bindings.test.ts` )
+~~44. **Add JSDoc to `storeProtocolConfig`** — The extraction file has minimal documentation~~ done — header docs present in `src/store-protocol-config.ts`
+~~45. **Review `extractMessageConfig` for completeness** — Are there other `@message` config fields we're dropping?~~ done — `extractMessageConfig` handles the full set incl. `schemaFormat` and `examples` ( `src/decorator-helpers.ts:290` )
+~~46. **Test `@message` with model-expression `{}` syntax** — All tests use `#{}` value literals; verify `{}` also works~~ done — model-expression syntax exercised in `test/external/external-specs.test.ts:439`
+~~47. **Test server bindings output** — Namespace-level `@bindings` producing server bindings~~ done — server bindings covered ( `FEATURES.md:115`, `test/golden/server-security.test.ts` )
+~~48. **Add test for `@tags` on adapted fixtures** — Rich tag objects with `externalDocs`~~ **NOT-DO — subsumed by `test/compliance/components-tags.test.ts` and `test/golden/tag-rich.test.ts`.**
+~~49. **Test channel parameters with `@parameter`** — `{userId}` channel address with reusable parameter~~ done — channel-parameter `$ref` upgrade covered in `test/compliance/reusable-components.test.ts`
+~~50. **Create a "kitchen sink" test** — One massive test that uses every decorator and validates against the AsyncAPI schema~~ **Won't implement — never added as one test; `examples/reusable-components` and the compliance suite cover the matrix.**
 
 ---
 
@@ -270,14 +270,14 @@ Commits `767a224` (debug dump test) and `279216c` (debug logging in channel-buil
 
 | Metric                         | Value                                                      |
 | ------------------------------ | ---------------------------------------------------------- |
-| Tests at start                 | 1256 (9 failing)                                           |
-| Tests at end                   | 1282 (0 failing)                                           |
-| New tests added                | 26 (3 adapted suites + 3 golden file)                      |
-| Bug fixes                      | 9 test failures resolved                                   |
-| Files created                  | 5 (adapted tests + golden file + store-protocol-config.ts) |
-| Files modified                 | 7 (source + test + AGENTS.md)                              |
-| Commits                        | 6                                                          |
-| Pushed                         | 0                                                          |
-| Coverage verified              | No                                                         |
-| Duplicate analysis run         | No                                                         |
-| Debug code left in git history | Yes (2 commits)                                            |
+| ~~Tests at start~~ done — point-in-time; counts are dated-audited in `FEATURES.md:4` | ~~1256 (9 failing)~~ |
+| ~~Tests at end~~ done — the rewritten suite survives as `test/integration/asyncapi-3.1-features.test.ts` | ~~1282 (0 failing)~~ |
+| ~~New tests added~~ done — the adapted suites live in `test/realworld/adapted/` | ~~26 (3 adapted suites + 3 golden file)~~ |
+| ~~Bug fixes~~ done — fixes locked by `test/integration/asyncapi-3.1-features.test.ts` | ~~9 test failures resolved~~ |
+| ~~Files created~~ done — artifacts survive ( `src/store-protocol-config.ts`, `test/realworld/adapted/` ) | ~~5 (adapted tests + golden file + store-protocol-config.ts)~~ |
+| ~~Files modified~~ done — session commits verified in history ( `72a4dc09` .. `0a72e75b` ) | ~~7 (source + test + AGENTS.md)~~ |
+| ~~Commits~~ done — six commits from `767a224` through `646c2460` in git history | ~~6~~ |
+| ~~Pushed~~ done — everything pushed since; `v1.2.0` tagged 2026-11-19 | ~~0~~ |
+| ~~Coverage verified~~ done — coverage gate standing ( `FEATURES.md:10` ) | ~~No~~ |
+| ~~Duplicate analysis run~~ done — jscpd gate standing, 0 clones ( `FEATURES.md:9` ) | ~~No~~ |
+| ~~Debug code left in git history~~ **Won't implement — the two daemon commits remain in history; the debug code itself was reverted in-session.** | ~~Yes (2 commits)~~ |
