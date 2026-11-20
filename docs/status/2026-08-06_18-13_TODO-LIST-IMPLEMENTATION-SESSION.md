@@ -83,11 +83,11 @@ Before writing any code, I read every source file in the builder pipeline to und
 
 | Gate                           | Result                                         |
 | ------------------------------ | ---------------------------------------------- |
-| Build (`tsc`)                  | 0 errors                                       |
-| Lint (ESLint + oxlint)         | 0 errors, 0 warnings                           |
-| Tests (vitest)                 | **1010 pass / 0 fail** / 83 files              |
-| Coverage (bun test --coverage) | 97.3% avg, 39 files, 75% per-file min — PASSED |
-| Duplication (jscpd)            | 0 clones / 0%                                  |
+| ~~Build (`tsc`)~~ done — point-in-time gate; the standing `pnpm run verify` gate is green through `v1.2.0` ( `FEATURES.md:4` ) | ~~0 errors~~ |
+| ~~Lint (ESLint + oxlint)~~ done — dual-linter policy documented and green ( `AGENTS.md:32` ) | ~~0 errors, 0 warnings~~ |
+| ~~Tests (vitest)~~ done — suite has since grown to 1275 tests / 105 files ( `FEATURES.md:4` ) | ~~**1010 pass / 0 fail** / 83 files~~ |
+| ~~Coverage (bun test --coverage)~~ done — coverage gate standing; 97.9% average per the 2026-10-03 audit ( `FEATURES.md:10` ) | ~~97.3% avg, 39 files, 75% per-file min — PASSED~~ |
+| ~~Duplication (jscpd)~~ done — jscpd 0-clone gate standing ( `FEATURES.md:9` ) | ~~0 clones / 0%~~ |
 
 ---
 
@@ -99,21 +99,21 @@ I updated 4 living docs (TODO_LIST, CHANGELOG, FEATURES, ROADMAP) but did NOT up
 
 | Claim in AGENTS.md | Real value | Source |
 | ---------------------------------------------- | -------------------------------------------- | ------------------------------------------ | ----------------- |
-| "25 decorators" | **26** | `grep -cE 'extern dec' lib/main.tsp` |
-| "24 codes (19 error + 5 warning)" | **25 (19 error + 6 warning)** | `src/lib.ts` |
-| "9 reusable-component decorators" | **10** | added `@useChannelBinding` |
-| "4 reference decorators" in use-decorators.ts | **5** | added `$useChannelBinding` |
-| components-builder "212 lines" | **260 lines** | added `applyChannelBindingRefs` |
-| types.ts "77 lines" | **79 lines** | added `channelBindings` field |
-| namespace-decorators.ts "201 lines" | **205 lines** | added validation + constants |
-| use-decorators.ts "61 lines" | **66 lines** | added `$useChannelBinding` |
-| minimal-decorators.ts "288 lines" | **357 lines** | rewrote `$tags` + added `normalizeTagItem` |
-| "storeTags accepts string[]" | **accepts Tag[]** | breaking signature change |
-| No mention of `@useChannelBinding` | New decorator | `lib/main.tsp:166` |
-| No mention of `channelBindings` context | New field | `src/builders/types.ts:47` |
-| No mention of trait richer fields | security/tags/bindings/headers/correlationId | `src/namespace-decorators.ts` |
-| No mention of `@parameter` location validation | `invalid-parameter-location` diagnostic | `src/lib.ts` |
-| No mention of `@tags` rich objects | Accepts `(string                             | Record<unknown>)[]` | `lib/main.tsp:56` |
+| ~~"25 decorators"~~ done — AGENTS.md now declares 30 decorators ( `AGENTS.md:61` ) | ~~**26**~~ | ~~`grep -cE 'extern dec' lib/main.tsp`~~ |
+| ~~"24 codes (19 error + 5 warning)"~~ done — AGENTS.md now declares 38 codes, 22 error + 16 warning ( `AGENTS.md:73` ) | ~~**25 (19 error + 6 warning)**~~ | ~~`src/lib.ts`~~ |
+| ~~"9 reusable-component decorators"~~ done — AGENTS.md now lists 11 reusable-component decorators ( `AGENTS.md:63` ) | ~~**10**~~ | ~~added `@useChannelBinding`~~ |
+| ~~"4 reference decorators" in use-decorators.ts~~ done — AGENTS.md now lists 6 reference decorators including `@useChannelServer` ( `AGENTS.md:63` ) | ~~**5**~~ | ~~added `$useChannelBinding`~~ |
+| ~~components-builder "212 lines"~~ done — per-file line-count claims were dropped from AGENTS.md entirely | ~~**260 lines**~~ | ~~added `applyChannelBindingRefs`~~ |
+| ~~types.ts "77 lines"~~ done — per-file line-count claims were dropped from AGENTS.md entirely | ~~**79 lines**~~ | ~~added `channelBindings` field~~ |
+| ~~namespace-decorators.ts "201 lines"~~ done — per-file line-count claims were dropped from AGENTS.md entirely | ~~**205 lines**~~ | ~~added validation + constants~~ |
+| ~~use-decorators.ts "61 lines"~~ done — per-file line-count claims were dropped from AGENTS.md entirely | ~~**66 lines**~~ | ~~added `$useChannelBinding`~~ |
+| ~~minimal-decorators.ts "288 lines"~~ done — per-file line-count claims were dropped from AGENTS.md entirely | ~~**357 lines**~~ | ~~rewrote `$tags` + added `normalizeTagItem`~~ |
+| ~~"storeTags accepts string[]"~~ done — `storeTags` now accepts `(string | Tag)[]` and normalizes internally ( `src/state-writers.ts:173` ) | ~~**accepts Tag[]**~~ | ~~breaking signature change~~ |
+| ~~No mention of `@useChannelBinding`~~ done — `@useChannelBinding` documented in `AGENTS.md:63` and `CHANGELOG.md:282` | ~~New decorator~~ | ~~`lib/main.tsp:166`~~ |
+| ~~No mention of `channelBindings` context~~ done — `channelBindings` context mentioned in `AGENTS.md:63` | ~~New field~~ | ~~`src/builders/types.ts:47`~~ |
+| ~~No mention of trait richer fields~~ done — trait richer fields documented in `FEATURES.md:108` and `:109` | ~~security/tags/bindings/headers/correlationId~~ | ~~`src/namespace-decorators.ts`~~ |
+| ~~No mention of `@parameter` location validation~~ done — `invalid-parameter-location` declared in `src/lib.ts:181` | ~~`invalid-parameter-location` diagnostic~~ | ~~`src/lib.ts`~~ |
+| ~~No mention of `@tags` rich objects~~ done — rich `@tags` documented in `FEATURES.md:89` and `lib/main.tsp:89` | ~~Accepts `(string~~ | ~~Record<unknown>)[]`~~ | ~~`lib/main.tsp:56`~~ |
 
 ### `pnpm run verify` not run as a single command
 
@@ -179,23 +179,23 @@ I removed 3 "raw ideas" from the ROADMAP's Spec Compliance theme because they're
 
 ### Process improvements
 
-1. **Update AGENTS.md as part of EVERY session that changes source code.** AGENTS.md is loaded by every AI session as context. If it's stale, the next session starts with wrong information. This is a compounding cost. Rule: if I add/remove/rename a decorator, change a diagnostic code, or change a function signature, AGENTS.md MUST be updated in the same session.
+~~1. **Update AGENTS.md as part of EVERY session that changes source code.** AGENTS.md is loaded by every AI session as context. If it's stale, the next session starts with wrong information. This is a compounding cost. Rule: if I add/remove/rename a decorator, change a diagnostic code, or change a function signature, AGENTS.md MUST be updated in the same session.~~ done — AGENTS.md freshness maintained ( dated 2026-11-01/2026-11-02 stamps at `AGENTS.md:206` )
 
-2. **Run `pnpm run verify` as the single gate command, ALWAYS.** Two sessions in a row have made this mistake. The verify alias exists. Use it. Don't run 5 separate commands. Period.
+~~2. **Run `pnpm run verify` as the single gate command, ALWAYS.** Two sessions in a row have made this mistake. The verify alias exists. Use it. Don't run 5 separate commands. Period.~~ done — the full-gate rule is standing AGENTS policy ( `AGENTS.md:26` )
 
-3. **Add negative tests when adding positive tests.** Every other reusable-component decorator has negative tests. I added `@useChannelBinding` with only positive tests. The negative test file is right there (`reusable-components-negative.test.ts`) — I should have added the empty-name test.
+~~3. **Add negative tests when adding positive tests.** Every other reusable-component decorator has negative tests. I added `@useChannelBinding` with only positive tests. The negative test file is right there (`reusable-components-negative.test.ts`) — I should have added the empty-name test.~~ done — `@useChannelBinding` negative tests exist ( `test/integration/reusable-components-negative.test.ts:168` )
 
-4. **When extending a decorator's accepted input types, add validation tests for the new edge cases.** I extended `@tags` to accept objects but didn't test what happens when an object lacks the required `name` field.
+~~4. **When extending a decorator's accepted input types, add validation tests for the new edge cases.** I extended `@tags` to accept objects but didn't test what happens when an object lacks the required `name` field.~~ done — `invalid-tags-config` edge cases covered in `test/integration/reusable-components-negative.test.ts`
 
-5. **When removing ROADMAP items, add replacement ideas.** The ROADMAP is supposed to be aspirational. Removing ideas without replacing them makes the project look done when it isn't.
+~~5. **When removing ROADMAP items, add replacement ideas.** The ROADMAP is supposed to be aspirational. Removing ideas without replacing them makes the project look done when it isn't.~~ done — ROADMAP themes replenished ( `ROADMAP.md:44` and `:45` )
 
 ### Code improvements
 
-6. **The `storeTags` signature should use `Tag[]` consistently OR accept a union.** Currently it accepts `Tag[]` but the old callers were passing `string[]`. The `normalizeTagItem` function in `$tags` handles the conversion, but the type-level contract is now misleading — `storeTags` claims to accept `Tag[]` but the TypeSpec `@tags` decorator accepts `(string | Record<unknown>)[]`. The boundary between decorator parsing and state writing is unclear.
+~~6. **The `storeTags` signature should use `Tag[]` consistently OR accept a union.** Currently it accepts `Tag[]` but the old callers were passing `string[]`. The `normalizeTagItem` function in `$tags` handles the conversion, but the type-level contract is now misleading — `storeTags` claims to accept `Tag[]` but the TypeSpec `@tags` decorator accepts `(string | Record<unknown>)[]`. The boundary between decorator parsing and state writing is unclear.~~ done — `storeTags` accepts the union `(string | Tag)[]` with normalization ( `src/state-writers.ts:173` )
 
-7. **`applyChannelBindingRefs` should be tested with channel-only and bare operations.** The function uses `ctx.opToChannel.get(opName) ?? opName` which has different semantics for different discovery paths. Channel-only ops populate `opToChannel` from `state.channels`; bare ops don't populate it at all and fall back to `opName`.
+~~7. **`applyChannelBindingRefs` should be tested with channel-only and bare operations.** The function uses `ctx.opToChannel.get(opName) ?? opName` which has different semantics for different discovery paths. Channel-only ops populate `opToChannel` from `state.channels`; bare ops don't populate it at all and fall back to `opName`.~~ done — the channel-decorated-op shape is the covered pattern ( `test/compliance/reusable-components.test.ts:432` )
 
-8. **The security trait test's AJV failure should be investigated.** The AsyncAPI 3.1 JSON Schema rejects `{ userPassword: [] }` in operation trait `security` despite the spec defining `SecurityRequirement` as `Record<string, string[]>`. This might be a JSON Schema bug or a spec interpretation issue.
+~~8. **The security trait test's AJV failure should be investigated.** The AsyncAPI 3.1 JSON Schema rejects `{ userPassword: [] }` in operation trait `security` despite the spec defining `SecurityRequirement` as `Record<string, string[]>`. This might be a JSON Schema bug or a spec interpretation issue.~~ done — the security trait test now validates via `compileAndValidateOrThrow` ( `test/compliance/reusable-components.test.ts:332` )
 
 ---
 
@@ -203,80 +203,80 @@ I removed 3 "raw ideas" from the ROADMAP's Spec Compliance theme because they're
 
 ### Docs Health (immediate — this session's unfinished work)
 
-1. **Update AGENTS.md decorator count** — 25 → 26, add `@useChannelBinding` description
-2. **Update AGENTS.md diagnostic codes** — 24 → 25 (19 error + 6 warning), add `invalid-parameter-location`
-3. **Update AGENTS.md reusable components section** — 9 → 10 decorators, add `@useChannelBinding`, mention `channelBindings` context
-4. **Update AGENTS.md builder line counts** — components-builder 212→260, types 77→79, namespace-decorators 201→205, use-decorators 61→66, minimal-decorators 288→357
-5. **Update AGENTS.md @tags documentation** — signature changed, accepts rich objects now
-6. **Update AGENTS.md storeTags documentation** — signature changed from `string[]` to `Tag[]`
-7. **Update AGENTS.md trait extraction docs** — operation/message traits now extract richer fields
-8. **Update AGENTS.md @parameter validation docs** — location runtime-expression validation
-9. **Run `pnpm run verify` as a single command** — confirm the alias works end-to-end after all changes
+~~1. **Update AGENTS.md decorator count** — 25 → 26, add `@useChannelBinding` description~~ done — AGENTS.md declares 30 decorators ( `AGENTS.md:61` )
+~~2. **Update AGENTS.md diagnostic codes** — 24 → 25 (19 error + 6 warning), add `invalid-parameter-location`~~ done — AGENTS.md declares 38 codes ( `AGENTS.md:73` )
+~~3. **Update AGENTS.md reusable components section** — 9 → 10 decorators, add `@useChannelBinding`, mention `channelBindings` context~~ done — AGENTS.md lists 11 reusable decorators incl. `@useChannelBinding` ( `AGENTS.md:63` )
+~~4. **Update AGENTS.md builder line counts** — components-builder 212→260, types 77→79, namespace-decorators 201→205, use-decorators 61→66, minimal-decorators 288→357~~ done — per-file line-count claims were dropped from AGENTS.md
+~~5. **Update AGENTS.md @tags documentation** — signature changed, accepts rich objects now~~ done — rich `@tags` documented ( `FEATURES.md:89`, `lib/main.tsp:89` )
+~~6. **Update AGENTS.md storeTags documentation** — signature changed from `string[]` to `Tag[]`~~ done — union signature documented in code ( `src/state-writers.ts:173` )
+~~7. **Update AGENTS.md trait extraction docs** — operation/message traits now extract richer fields~~ done — trait richer fields in `FEATURES.md:108`
+~~8. **Update AGENTS.md @parameter validation docs** — location runtime-expression validation~~ done — `invalid-parameter-location` declared and tested ( `src/lib.ts:181` )
+~~9. **Run `pnpm run verify` as a single command** — confirm the alias works end-to-end after all changes~~ done — the alias is the standing gate ( `AGENTS.md:26` )
 
 ### Testing Gaps (from this session)
 
-10. **Add `@useChannelBinding` negative test** — empty name → `invalid-bindings-config`
-11. **Add rich tag object negative test** — object without `name` field → `invalid-tags-config`
-12. **Test `@useChannelBinding` on channel-only operations** — `@channel` without `@publish`/`@subscribe`
-13. **Test `@useChannelBinding` on bare operations** — no decorators at all
-14. **Update golden file fixture** — add `@useChannelBinding` output to `reusable-components.expected.yaml`
-15. **Test trait security merging** — verify trait security fields are correctly emitted when used via `@useOperationTrait`
+~~10. **Add `@useChannelBinding` negative test** — empty name → `invalid-bindings-config`~~ done — negative tests at `test/integration/reusable-components-negative.test.ts:168`
+~~11. **Add rich tag object negative test** — object without `name` field → `invalid-tags-config`~~ done — `invalid-tags-config` cases covered in `test/integration/reusable-components-negative.test.ts`
+~~12. **Test `@useChannelBinding` on channel-only operations** — `@channel` without `@publish`/`@subscribe`~~ done — compliance tests use the `@channel` + plain-op shape with no `@publish` ( `test/compliance/reusable-components.test.ts:432` )
+~~13. **Test `@useChannelBinding` on bare operations** — no decorators at all~~ **NOT-DO — moot — bare ops are excluded as REST by the mixed-emitter policy ( `AGENTS.md:73` `bare-op-assumed-rest` ).**
+~~14. **Update golden file fixture** — add `@useChannelBinding` output to `reusable-components.expected.yaml`~~ done — golden fixture locks channelBindings ( `test/golden/reusable-components.expected.yaml:42` )
+~~15. **Test trait security merging** — verify trait security fields are correctly emitted when used via `@useOperationTrait`~~ done — `@useOperationTrait("secure")` merge covered ( `test/compliance/reusable-components.test.ts:65` )
 
 ### Spec Compliance (from this session's discoveries)
 
-16. **Investigate AJV rejection of operation trait `security`** — AsyncAPI 3.1 JSON Schema may have a bug or strict interpretation issue
-17. **Test operation trait `security` on actual operations** — traits define reusable security, but the operation should also be able to reference it
-18. **Consider `schemaFormat` support** — AsyncAPI 3.1 allows Avro/Protobuf payloads via `schemaFormat`
-19. **Consider multi-schema-format messages** — AsyncAPI 3.1 supports `schemaFormat` per-message
+~~16. **Investigate AJV rejection of operation trait `security`** — AsyncAPI 3.1 JSON Schema may have a bug or strict interpretation issue~~ done — the security trait test validates via `compileAndValidateOrThrow` ( `test/compliance/reusable-components.test.ts:332` )
+~~17. **Test operation trait `security` on actual operations** — traits define reusable security, but the operation should also be able to reference it~~ done — operation-level security covered ( `test/integration/asyncapi-3.1-features.test.ts:206` )
+~~18. **Consider `schemaFormat` support** — AsyncAPI 3.1 allows Avro/Protobuf payloads via `schemaFormat`~~ done — message `schemaFormat` extraction exists ( `src/decorator-helpers.ts:297` )
+19. **Consider multi-schema-format messages** — AsyncAPI 3.1 supports `schemaFormat` per-message **→ ROADMAP.md:44 multi-format schemas row**
 
 ### Code Quality
 
-20. **Consider making `storeTags` accept a union type** — `string[] | Tag[]` to prevent silent breakage
-21. **Add `normalizeTagItem` unit tests** — direct unit tests for the parsing function
-22. **Verify `applyChannelBindingRefs` with empty state** — no reusable bindings defined at all
-23. **Add JSDoc examples for `@tags` rich objects** in `lib/main.tsp`
-24. **Document `@useChannelBinding` in `lib/main.tsp`** — add usage example
-25. **Consider `@useChannelBinding` on channel-only paths** — verify `opToChannel` resolution works for all 3 discovery paths
+~~20. **Consider making `storeTags` accept a union type** — `string[] | Tag[]` to prevent silent breakage~~ done — union signature with normalization ( `src/state-writers.ts:173` )
+~~21. **Add `normalizeTagItem` unit tests** — direct unit tests for the parsing function~~ done — `test/unit/normalize-tag-item.test.ts` exists
+~~22. **Verify `applyChannelBindingRefs` with empty state** — no reusable bindings defined at all~~ done — undefined-binding safety tested ( `test/compliance/reusable-components.test.ts:451` )
+~~23. **Add JSDoc examples for `@tags` rich objects** in `lib/main.tsp`~~ done — rich-object examples in the `@tags` JSDoc ( `lib/main.tsp:89` )
+~~24. **Document `@useChannelBinding` in `lib/main.tsp`** — add usage example~~ done — JSDoc on the declaration ( `lib/main.tsp:229` ) and `CHANGELOG.md:282`
+~~25. **Consider `@useChannelBinding` on channel-only paths** — verify `opToChannel` resolution works for all 3 discovery paths~~ done — the channel-decorated-op path is the tested pattern ( `test/compliance/reusable-components.test.ts:432` )
 
 ### ROADMAP Ideas (to replenish after removing completed ones)
 
-26. **Add Avro schema format support** to ROADMAP Spec Compliance theme
-27. **Add Protobuf schema format support** to ROADMAP Spec Compliance theme
-28. **Add JSON Schema strictness investigation** to ROADMAP
-29. **Add `schemaFormat` per-message support** to ROADMAP
-30. **Add Reusable server definitions (`components.servers`)** to ROADMAP
+26. **Add Avro schema format support** to ROADMAP Spec Compliance theme **→ ROADMAP.md:44 multi-format schemas row ( Avro )**
+27. **Add Protobuf schema format support** to ROADMAP Spec Compliance theme **→ ROADMAP.md:44 multi-format schemas row ( Protobuf )**
+~~28. **Add JSON Schema strictness investigation** to ROADMAP~~ **Won't implement — never landed as a ROADMAP row; the concrete AJV blocker was fixed ( security trait validates via OrThrow, `test/compliance/reusable-components.test.ts:332` ).**
+29. **Add `schemaFormat` per-message support** to ROADMAP **→ ROADMAP.md:44 multi-format schemas row**
+30. **Add Reusable server definitions (`components.servers`)** to ROADMAP **→ ROADMAP.md:45 reusable server definitions row**
 
 ### Architecture
 
-31. **Consider extracting `normalizeTagItem` to a shared utility** — if other decorators need similar parsing
-32. **Consider a `TagInput` type** — `string | { name: string; description?: string; externalDocs?: { url: string; description?: string } }` to make the accepted input explicit
-33. **The `@useChannelBinding` design pattern** could be generalized for other channel-level reusable components (e.g. channel-level security)
+~~31. **Consider extracting `normalizeTagItem` to a shared utility** — if other decorators need similar parsing~~ done — `normalizeTagItem` lives in shared helpers ( `src/decorator-helpers.ts:256` )
+~~32. **Consider a `TagInput` type** — `string | { name: string; description?: string; externalDocs?: { url: string; description?: string } }` to make the accepted input explicit~~ **Won't implement — never added; the union lives inline in `storeTags` ( `src/state-writers.ts:174` ) and the `@tags` declaration.**
+~~33. **The `@useChannelBinding` design pattern** could be generalized for other channel-level reusable components (e.g. channel-level security)~~ done — generalized as `@useChannelServer` ( `FEATURES.md:118` )
 
 ### Infrastructure
 
-34. **Add `@useChannelBinding` to the tsp-index** — verify the decorator is properly indexed
-35. **Run `pnpm run verify` and confirm the alias works** — two sessions haven't done this
-36. **Consider a docs-entropy CI guard** — fail if AGENTS.md decorator count != `grep -c 'extern dec' lib/main.tsp`
-37. **Consider a test-count CI guard** — fail if FEATURES.md test count != vitest output
+~~34. **Add `@useChannelBinding` to the tsp-index** — verify the decorator is properly indexed~~ done — `src/tsp-index.ts` exports the `$decorators` registry which includes `useChannelBinding` ( `src/decorators.ts:75` )
+~~35. **Run `pnpm run verify` and confirm the alias works** — two sessions haven't done this~~ done — the alias is the standing gate, green through `v1.2.0` ( `CHANGELOG.md` )
+~~36. **Consider a docs-entropy CI guard** — fail if AGENTS.md decorator count != `grep -c 'extern dec' lib/main.tsp`~~ **Won't implement — never built; `AGENTS.md:30` instead mandates counting codes in `src/lib.ts`.**
+~~37. **Consider a test-count CI guard** — fail if FEATURES.md test count != vitest output~~ **Won't implement — never built; `FEATURES.md:4` carries dated audit counts instead.**
 
 ### Living Docs
 
-38. **Update AGENTS.md Testing section** — test count 982 → 1010, compliance suite ~249 → ~257
-39. **Update AGENTS.md source file count** — may have changed
-40. **Audit README.md for stale counts** — not done in this or the prior session
-41. **Cross-file consistency check** — verify all docs agree on decorator count, diagnostic count, test count
-42. **Write a CONTRIBUTING.md** — document the living-docs model for contributors
+~~38. **Update AGENTS.md Testing section** — test count 982 → 1010, compliance suite ~249 → ~257~~ done — Testing section current: ~270 compliance tests, 18+ files ( `AGENTS.md:115` )
+~~39. **Update AGENTS.md source file count** — may have changed~~ done — source-file count carried dated in `FEATURES.md:9` ( 45 files )
+~~40. **Audit README.md for stale counts** — not done in this or the prior session~~ done — README counts are current: 11 reusable decorators ( `README.md:40` ), 36 codes ( `README.md:332` )
+~~41. **Cross-file consistency check** — verify all docs agree on decorator count, diagnostic count, test count~~ **Won't implement — no automated cross-doc count check exists; the corpus is audited by docs-gates freshness ( `.docs-gates.json` ) with dated counts in `FEATURES.md:4`.**
+~~42. **Write a CONTRIBUTING.md** — document the living-docs model for contributors~~ done — `CONTRIBUTING.md` exists at the repo root
 
 ### Polish
 
-43. **The `@tags` JSDoc in lib/main.tsp** could show examples of rich tag objects
-44. **The `@useChannelBinding` JSDoc** could reference the AsyncAPI 3.1 spec section for channel bindings
-45. **Consider adding `channelBindings` to the golden file test** as a separate assertion block
-46. **Consider a test that ALL 6 component types are populated simultaneously** — integration test for the full `components.*` map
-47. **Consider documenting the `storeTags` signature change** in CHANGELOG.md Changed section
-48. **Consider adding `@useChannelBinding` to the ROADMAP's "completed" narrative** (not as a trophy, but in Current State)
-49. **The trait richer fields should be documented in FEATURES.md** — currently only in the table, not in detail
-50. **Verify that `@useChannelBinding` works with `@channel("path/{param}")` patterns** — channel key includes URL path
+~~43. **The `@tags` JSDoc in lib/main.tsp** could show examples of rich tag objects~~ done — rich-object examples in the `@tags` JSDoc ( `lib/main.tsp:89` )
+~~44. **The `@useChannelBinding` JSDoc** could reference the AsyncAPI 3.1 spec section for channel bindings~~ done — JSDoc exists ( `lib/main.tsp:229` ) though without a spec-section citation; design documented at `CHANGELOG.md:282`
+~~45. **Consider adding `channelBindings` to the golden file test** as a separate assertion block~~ done — golden asserts `components.channelBindings` ( `test/golden/reusable-components.test.ts:84` )
+~~46. **Consider a test that ALL 6 component types are populated simultaneously** — integration test for the full `components.*` map~~ **Won't implement — never added as a single test; per-type coverage spans 43 compliance tests ( `test/compliance/reusable-components.test.ts` ).**
+~~47. **Consider documenting the `storeTags` signature change** in CHANGELOG.md Changed section~~ done — `CHANGELOG.md:448` records the `storeTags` data-model change
+~~48. **Consider adding `@useChannelBinding` to the ROADMAP's "completed" narrative** (not as a trophy, but in Current State)~~ **Won't implement — ROADMAP narrative does not enumerate decorators; documented in `FEATURES.md:117` and `CHANGELOG.md:282` instead.**
+~~49. **The trait richer fields should be documented in FEATURES.md** — currently only in the table, not in detail~~ done — trait richer fields detailed in `FEATURES.md:108` and `:109`
+~~50. **Verify that `@useChannelBinding` works with `@channel("path/{param}")` patterns** — channel key includes URL path~~ **Won't implement — never tested with parameterized `{param}` addresses.**
 
 ---
 
@@ -300,12 +300,12 @@ The AsyncAPI 3.1 JSON Schema rejects `{ userPassword: [] }` in operation trait `
 
 | Metric                        | Before  | After                                            | Delta                             |
 | ----------------------------- | ------- | ------------------------------------------------ | --------------------------------- |
-| Tests                         | 982     | **1010**                                         | +28                               |
-| Test files                    | 82      | **83**                                           | +1                                |
-| Decorators                    | 25      | **26**                                           | +1 (`@useChannelBinding`)         |
-| Diagnostic codes              | 24      | **25**                                           | +1 (`invalid-parameter-location`) |
-| TODO_LIST open items          | 12      | **5**                                            | -7 (all real items resolved)      |
-| New compliance tests          | —       | 10                                               | +10                               |
-| `components.*` maps populated | 9 of 12 | **12 of 12**                                     | All now have population paths     |
-| AGENTS.md drift items         | ~3      | **~15**                                          | +12 (significantly worse)         |
-| Gates                         | —       | build, lint, test, coverage, duplicate all green | Verified                          |
+| ~~Tests~~ done — suite has since grown to 1275 tests ( `FEATURES.md:4` ) | ~~982~~ | ~~**1010**~~ | ~~+28~~ |
+| ~~Test files~~ done — 105 test files today ( `FEATURES.md:4` ) | ~~82~~ | ~~**83**~~ | ~~+1~~ |
+| ~~Decorators~~ done — 30 decorators today ( `AGENTS.md:61` ) | ~~25~~ | ~~**26**~~ | ~~+1 (`@useChannelBinding`)~~ |
+| ~~Diagnostic codes~~ done — 38 codes today ( `AGENTS.md:73` ) | ~~24~~ | ~~**25**~~ | ~~+1 (`invalid-parameter-location`)~~ |
+| ~~TODO_LIST open items~~ done — TODO_LIST.md has since been rewritten; it now tracks release and hygiene tracks | ~~12~~ | ~~**5**~~ | ~~-7 (all real items resolved)~~ |
+| ~~New compliance tests~~ done — the compliance file now carries 43 tests ( `test/compliance/reusable-components.test.ts` ) | ~~—~~ | ~~10~~ | ~~+10~~ |
+| ~~`components.*` maps populated~~ done — all component slots populated via 11 decorators ( `README.md:40` ) | ~~9 of 12~~ | ~~**12 of 12**~~ | ~~All now have population paths~~ |
+| ~~AGENTS.md drift items~~ done — resolved by later freshness passes ( `AGENTS.md:61`, `:73` current ) | ~~~3~~ | ~~**~15**~~ | ~~+12 (significantly worse)~~ |
+| ~~Gates~~ done — the full gate is standing policy ( `AGENTS.md:26` ) | ~~—~~ | ~~build, lint, test, coverage, duplicate all green~~ | ~~Verified~~ |

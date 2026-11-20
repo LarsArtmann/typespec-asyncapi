@@ -12,9 +12,9 @@
 
 Performed a systematic gap analysis comparing the project's current capabilities against:
 
-1. **Latest TypeSpec compiler** (1.14.0 — we're on 1.13.0)
-2. **Latest AsyncAPI spec** (3.1.0 — we target this, but miss many fields)
-3. **TypeSpec built-in stdlib decorators** (16 constraint/metadata decorators — none handled)
+~~1. **Latest TypeSpec compiler** (1.14.0 — we're on 1.13.0)~~ done — compiler since upgraded far past 1.14: `@typespec/compiler` ^1.17.0 (`package.json`)
+~~2. **Latest AsyncAPI spec** (3.1.0 — we target this, but miss many fields)~~ done — ~270 compliance tests now validate against the official 3.1 schema (`test/compliance/`)
+~~3. **TypeSpec built-in stdlib decorators** (16 constraint/metadata decorators — none handled)~~ done — all 16 now handled table-driven in `src/constraint-mapper.ts`
 
 Methodology:
 
@@ -51,32 +51,32 @@ The `JsonSchema` interface **declares** 30+ fields, but the emitter only **gener
 
 | Field                                   | In Type? | Actually Generated? | Notes                                                                                                     |
 | --------------------------------------- | -------- | ------------------- | --------------------------------------------------------------------------------------------------------- |
-| `type`, `properties`, `required`        | YES      | YES                 | Core functionality                                                                                        |
-| `description`                           | YES      | YES                 | Via `@doc`                                                                                                |
-| `items`                                 | YES      | YES                 | Arrays                                                                                                    |
-| `enum`                                  | YES      | YES                 | Enums and string unions                                                                                   |
-| `anyOf`                                 | YES      | YES                 | Non-const unions                                                                                          |
-| `additionalProperties`                  | YES      | YES                 | `Record<>` types                                                                                          |
-| `$ref`                                  | YES      | YES                 | Named model references                                                                                    |
-| `format`                                | YES      | PARTIAL             | Only hardcoded scalar formats (int32, date-time, etc.). `@format` decorator ignored                       |
-| `allOf`                                 | YES      | **NO**              | Declared but never generated                                                                              |
-| `oneOf`                                 | YES      | **NO**              | Declared but never generated                                                                              |
-| `nullable`                              | YES      | **NO**              | Declared but AsyncAPI 3.1 (Draft-07) doesn't use `nullable` — this is an OpenAPI 3.0 concept. Dead field. |
-| `readOnly` / `writeOnly`                | YES      | **NO**              | Could map to TypeSpec visibility but never checked                                                        |
-| `deprecated`                            | YES      | **NO**              | `@deprecated` decorator exists in TypeSpec but we never call `isDeprecated()`                             |
-| `default`                               | YES      | **NO**              | TypeSpec default values not extracted                                                                     |
-| `minimum` / `maximum`                   | YES      | **NO**              | `@minValue` / `@maxValue` not handled                                                                     |
-| `exclusiveMinimum` / `exclusiveMaximum` | YES      | **NO**              | `@minValueExclusive` / `@maxValueExclusive` not handled                                                   |
-| `minLength` / `maxLength`               | YES      | **NO**              | `@minLength` / `@maxLength` not handled                                                                   |
-| `minItems` / `maxItems`                 | YES      | **NO**              | `@minItems` / `@maxItems` not handled                                                                     |
-| `pattern`                               | YES      | **NO**              | `@pattern` not handled                                                                                    |
-| `uniqueItems`                           | YES      | **NO**              | Never generated                                                                                           |
-| `example` / `examples`                  | YES      | **NO**              | `@example` not handled                                                                                    |
-| `discriminator`                         | YES      | **NO**              | `@discriminator` not handled                                                                              |
-| `xml`                                   | YES      | **NO**              | Never generated                                                                                           |
-| `externalDocs`                          | YES      | **NO**              | Never generated                                                                                           |
-| `const`                                 | YES      | YES                 | String/numeric/boolean literals                                                                           |
-| `title`                                 | YES      | **NO**              | `@summary` not handled for schema properties                                                              |
+| ~~`type`, `properties`, `required`~~ done — core generation locked by `test/compliance/type-mapping-completeness.test.ts` | ~~YES~~ | ~~YES~~ | ~~Core functionality~~ |
+| ~~`description`~~ done — `@doc` mapping locked by `test/compliance/doc-propagation.test.ts` | ~~YES~~ | ~~YES~~ | ~~Via `@doc`~~ |
+| ~~`items`~~ done — array `items` mapping locked by `test/compliance/type-mapping-completeness.test.ts` | ~~YES~~ | ~~YES~~ | ~~Arrays~~ |
+| ~~`enum`~~ done — enum/string unions locked by `test/compliance/type-mapping-completeness.test.ts` | ~~YES~~ | ~~YES~~ | ~~Enums and string unions~~ |
+| ~~`anyOf`~~ done — mixed unions still `anyOf`; model unions `oneOf` (`src/schema-fragments.ts`) | ~~YES~~ | ~~YES~~ | ~~Non-const unions~~ |
+| ~~`additionalProperties`~~ done — `Record<>` inline mapping in `src/intrinsic-mapping.ts` | ~~YES~~ | ~~YES~~ | ~~`Record<>` types~~ |
+| ~~`$ref`~~ done — `$ref` chain locked by `test/compliance/ref-chain.test.ts` | ~~YES~~ | ~~YES~~ | ~~Named model references~~ |
+| ~~`format`~~ done — `@format` override now honored per `test/compliance/constraint-decorators.test.ts` | ~~YES~~ | ~~PARTIAL~~ | ~~Only hardcoded scalar formats (int32, date-time, etc.). `@format` decorator ignored~~ |
+| ~~`allOf`~~ done — model inheritance emits `allOf` per `test/compliance/model-composition.test.ts` | ~~YES~~ | ~~**NO**~~ | ~~Declared but never generated~~ |
+| ~~`oneOf`~~ done — model unions emit `oneOf` per `test/compliance/polymorphism.test.ts` | ~~YES~~ | ~~**NO**~~ | ~~Declared but never generated~~ |
+| ~~`nullable`~~ done — field removed from `JsonSchema` in `src/domain/models/asyncapi-document.ts` | ~~YES~~ | ~~**NO**~~ | ~~Declared but AsyncAPI 3.1 (Draft-07) doesn't use `nullable` — this is an OpenAPI 3.0 concept. Dead field.~~ |
+| ~~`readOnly` / `writeOnly`~~ done — implemented from `@visibility` in `src/constraint-mapper.ts`; locked by `test/compliance/constraint-decorators.test.ts` | ~~YES~~ | ~~**NO**~~ | ~~Could map to TypeSpec visibility but never checked~~ |
+| ~~`deprecated`~~ done — `isDeprecated()` applied in `src/constraint-mapper.ts` | ~~YES~~ | ~~**NO**~~ | ~~`@deprecated` decorator exists in TypeSpec but we never call `isDeprecated()`~~ |
+| ~~`default`~~ done — `=` defaults map to `default` in `src/constraint-mapper.ts` | ~~YES~~ | ~~**NO**~~ | ~~TypeSpec default values not extracted~~ |
+| ~~`minimum` / `maximum`~~ done — locked by `test/compliance/constraint-decorators.test.ts` numeric constraints | ~~YES~~ | ~~**NO**~~ | ~~`@minValue` / `@maxValue` not handled~~ |
+| ~~`exclusiveMinimum` / `exclusiveMaximum`~~ done — locked by `test/compliance/constraint-decorators.test.ts` exclusive constraints | ~~YES~~ | ~~**NO**~~ | ~~`@minValueExclusive` / `@maxValueExclusive` not handled~~ |
+| ~~`minLength` / `maxLength`~~ done — locked by `test/compliance/constraint-decorators.test.ts` string constraints | ~~YES~~ | ~~**NO**~~ | ~~`@minLength` / `@maxLength` not handled~~ |
+| ~~`minItems` / `maxItems`~~ done — locked by `test/compliance/constraint-decorators.test.ts` array constraints | ~~YES~~ | ~~**NO**~~ | ~~`@minItems` / `@maxItems` not handled~~ |
+| ~~`pattern`~~ done — locked by `test/compliance/constraint-decorators.test.ts` `@pattern` → `pattern` | ~~YES~~ | ~~**NO**~~ | ~~`@pattern` not handled~~ |
+| ~~`uniqueItems`~~ **Won't implement — never given a dedicated mapping; settable case-by-case via `@jsonSchemaExtension` (`src/extension-decorators.ts`).** | ~~YES~~ | ~~**NO**~~ | ~~Never generated~~ |
+| ~~`example` / `examples`~~ done — `@example` mapping locked by `test/compliance/constraint-decorators.test.ts` | ~~YES~~ | ~~**NO**~~ | ~~`@example` not handled~~ |
+| ~~`discriminator`~~ done — `@discriminator` mapping locked by `test/compliance/polymorphism.test.ts` | ~~YES~~ | ~~**NO**~~ | ~~`@discriminator` not handled~~ |
+| ~~`xml`~~ done — field removed from `JsonSchema` in `src/domain/models/asyncapi-document.ts` | ~~YES~~ | ~~**NO**~~ | ~~Never generated~~ |
+| ~~`externalDocs`~~ **Won't implement — no schema-level generator; `info.externalDocs` option and rich tag " `externalDocs` " cover the shipped needs (`src/document-builder.ts`).** | ~~YES~~ | ~~**NO**~~ | ~~Never generated~~ |
+| ~~`const`~~ done — const values locked by `test/compliance/polymorphism.test.ts` | ~~YES~~ | ~~YES~~ | ~~String/numeric/boolean literals~~ |
+| ~~`title`~~ done — `@summary` maps to `title` in `src/constraint-mapper.ts` | ~~YES~~ | ~~**NO**~~ | ~~`@summary` not handled for schema properties~~ |
 
 ### Server Object
 
@@ -143,43 +143,43 @@ The compiler provides `getPattern()`, `getMinValue()`, `getMaxValue()`, `getMinL
 
 | Decorator            | Compiler API                         | JSON Schema Output           | Impact                                   |
 | -------------------- | ------------------------------------ | ---------------------------- | ---------------------------------------- |
-| `@pattern`           | `getPattern()`                       | `pattern`                    | HIGH — validation rules silently dropped |
-| `@minValue`          | `getMinValue()`                      | `minimum`                    | HIGH                                     |
-| `@maxValue`          | `getMaxValue()`                      | `maximum`                    | HIGH                                     |
-| `@minValueExclusive` | `getMinValueExclusive()`             | `exclusiveMinimum`           | HIGH                                     |
-| `@maxValueExclusive` | `getMaxValueExclusive()`             | `exclusiveMaximum`           | HIGH                                     |
-| `@minLength`         | `getMinLength()`                     | `minLength`                  | HIGH                                     |
-| `@maxLength`         | `getMaxLength()`                     | `maxLength`                  | HIGH                                     |
-| `@minItems`          | `getMinItems()`                      | `minItems`                   | MEDIUM                                   |
-| `@maxItems`          | `getMaxItems()`                      | `maxItems`                   | MEDIUM                                   |
-| `@format`            | `getFormat()`                        | `format` (override)          | MEDIUM                                   |
-| `@deprecated`        | `getDeprecated()` / `isDeprecated()` | `deprecated: true`           | MEDIUM                                   |
-| `@example`           | `getExamples()`                      | `examples` / `example`       | MEDIUM                                   |
-| `@summary`           | `getSummary()`                       | `summary`                    | LOW                                      |
-| `@discriminator`     | `getDiscriminator()`                 | `discriminator`              | MEDIUM (polymorphism)                    |
-| `@encode`            | `getEncode()`                        | Custom encoding              | LOW                                      |
-| `@secret`            | (no getter, stored as state)         | Should flag sensitive fields | LOW                                      |
+| ~~`@pattern`~~ done — `@pattern` handled in `src/constraint-mapper.ts` | ~~`getPattern()`~~ | ~~`pattern`~~ | ~~HIGH — validation rules silently dropped~~ |
+| ~~`@minValue`~~ done — `@minValue` handled in `src/constraint-mapper.ts` | ~~`getMinValue()`~~ | ~~`minimum`~~ | ~~HIGH~~ |
+| ~~`@maxValue`~~ done — `@maxValue` handled in `src/constraint-mapper.ts` | ~~`getMaxValue()`~~ | ~~`maximum`~~ | ~~HIGH~~ |
+| ~~`@minValueExclusive`~~ done — `@minValueExclusive` handled in `src/constraint-mapper.ts` | ~~`getMinValueExclusive()`~~ | ~~`exclusiveMinimum`~~ | ~~HIGH~~ |
+| ~~`@maxValueExclusive`~~ done — `@maxValueExclusive` handled in `src/constraint-mapper.ts` | ~~`getMaxValueExclusive()`~~ | ~~`exclusiveMaximum`~~ | ~~HIGH~~ |
+| ~~`@minLength`~~ done — `@minLength` handled in `src/constraint-mapper.ts` | ~~`getMinLength()`~~ | ~~`minLength`~~ | ~~HIGH~~ |
+| ~~`@maxLength`~~ done — `@maxLength` handled in `src/constraint-mapper.ts` | ~~`getMaxLength()`~~ | ~~`maxLength`~~ | ~~HIGH~~ |
+| ~~`@minItems`~~ done — `@minItems` handled in `src/constraint-mapper.ts` | ~~`getMinItems()`~~ | ~~`minItems`~~ | ~~MEDIUM~~ |
+| ~~`@maxItems`~~ done — `@maxItems` handled in `src/constraint-mapper.ts` | ~~`getMaxItems()`~~ | ~~`maxItems`~~ | ~~MEDIUM~~ |
+| ~~`@format`~~ done — `@format` override honored in `src/constraint-mapper.ts` | ~~`getFormat()`~~ | ~~`format` (override)~~ | ~~MEDIUM~~ |
+| ~~`@deprecated`~~ done — `#deprecated` → `deprecated` via `isDeprecated()` in `src/constraint-mapper.ts` | ~~`getDeprecated()` / `isDeprecated()`~~ | ~~`deprecated: true`~~ | ~~MEDIUM~~ |
+| ~~`@example`~~ done — `getExamples()` mapped to `examples` in `src/constraint-mapper.ts` | ~~`getExamples()`~~ | ~~`examples` / `example`~~ | ~~MEDIUM~~ |
+| ~~`@summary`~~ done — mapped, but to `title` keyword (`src/constraint-mapper.ts`) | ~~`getSummary()`~~ | ~~`summary`~~ | ~~LOW~~ |
+| ~~`@discriminator`~~ done — `@discriminator` handled in `src/builders/operation-discovery.ts` and `src/schema-fragments.ts` | ~~`getDiscriminator()`~~ | ~~`discriminator`~~ | ~~MEDIUM (polymorphism)~~ |
+| ~~`@encode`~~ done — `@encode` consumed via `getEncode()` for example/default serialization (`src/constraint-mapper.ts`) | ~~`getEncode()`~~ | ~~Custom encoding~~ | ~~LOW~~ |
+| ~~`@secret`~~ **Won't implement — never implemented; no `@secret` handling exists in `src/` and no living doc tracks it.** | ~~(no getter, stored as state)~~ | ~~Should flag sensitive fields~~ | ~~LOW~~ |
 
 ### AsyncAPI Info Object Fields
 
 | Field                 | Description            | Status                                              |
 | --------------------- | ---------------------- | --------------------------------------------------- |
-| `info.contact`        | `{ name, email, url }` | **Not generated** — no decorator, no emitter option |
-| `info.license`        | `{ name, url }`        | **Not generated** — no decorator, no emitter option |
-| `info.termsOfService` | URL string             | **Not generated**                                   |
-| `info.externalDocs`   | `{ url, description }` | **Not generated**                                   |
-| `info.tags`           | Document-level tags    | **Not generated**                                   |
+| ~~`info.contact`~~ done — supported via emitter options (`src/document-builder.ts`) | ~~`{ name, email, url }`~~ | ~~**Not generated** — no decorator, no emitter option~~ |
+| ~~`info.license`~~ done — supported via emitter options (`src/document-builder.ts`) | ~~`{ name, url }`~~ | ~~**Not generated** — no decorator, no emitter option~~ |
+| ~~`info.termsOfService`~~ done — supported via emitter options (`src/document-builder.ts`) | ~~URL string~~ | ~~**Not generated**~~ |
+| ~~`info.externalDocs`~~ done — supported via emitter options (`src/document-builder.ts`) | ~~`{ url, description }`~~ | ~~**Not generated**~~ |
+| ~~`info.tags`~~ done — `info.tags` populated from `@tags` state (`src/document-builder.ts`) | ~~Document-level tags~~ | ~~**Not generated**~~ |
 
 ### JSON Schema Draft-07 Keywords
 
 | Keyword             | Status                                      |
 | ------------------- | ------------------------------------------- |
-| `not`               | **Never generated** (schema negation)       |
-| `contains`          | **Never generated** (array contains)        |
-| `propertyNames`     | **Never generated**                         |
-| `patternProperties` | **Never generated**                         |
-| `multipleOf`        | **Never generated**                         |
-| `$id`               | **Never generated** (schema identification) |
+| ~~`not`~~ **Won't implement — no negation generator; `not` only declared in `JsonSchema`; `@jsonSchemaExtension` is the escape hatch.** | ~~**Never generated** (schema negation)~~ |
+| ~~`contains`~~ **Won't implement — no array-contains generator; `@jsonSchemaExtension` is the escape hatch.** | ~~**Never generated** (array contains)~~ |
+| ~~`propertyNames`~~ **Won't implement — no generator; `@jsonSchemaExtension` is the escape hatch.** | ~~**Never generated**~~ |
+| ~~`patternProperties`~~ **Won't implement — no regex-keyed property generator; `@jsonSchemaExtension` is the escape hatch.** | ~~**Never generated**~~ |
+| ~~`multipleOf`~~ **Won't implement — no dedicated mapping; settable via `@jsonSchemaExtension` (`src/extension-decorators.ts`).** | ~~**Never generated**~~ |
+| ~~`$id`~~ **Won't implement — no schema `$id` generator; the `asyncapi-id` option covers the root document `id` only.** | ~~**Never generated** (schema identification)~~ |
 
 ### Other Missing Features
 
@@ -196,15 +196,15 @@ The compiler provides `getPattern()`, `getMinValue()`, `getMaxValue()`, `getMinL
 
 ### Nothing is "fucked up" per se, but:
 
-1. **The `nullable` field in `JsonSchema` is a lie.** It's declared as `nullable?: boolean` but AsyncAPI 3.1 uses JSON Schema Draft-07, which does NOT have `nullable`. This is an OpenAPI 3.0 concept. It should be removed or the type should use `type: ["string", "null"]` instead. Dead code that misleads.
+~~1. **The `nullable` field in `JsonSchema` is a lie.** It's declared as `nullable?: boolean` but AsyncAPI 3.1 uses JSON Schema Draft-07, which does NOT have `nullable`. This is an OpenAPI 3.0 concept. It should be removed or the type should use `type: ["string", "null"]` instead. Dead code that misleads.~~ done — removed from `JsonSchema` (`src/domain/models/asyncapi-document.ts`)
 
-2. **The `xml` field in `JsonSchema` is dead code.** Declared but never generated. No decorator reads it. No test covers it.
+~~2. **The `xml` field in `JsonSchema` is dead code.** Declared but never generated. No decorator reads it. No test covers it.~~ done — removed from `JsonSchema` (`src/domain/models/asyncapi-document.ts`)
 
-3. **`readOnly` / `writeOnly` in `JsonSchema` are dead code.** Declared but never generated. These could map to TypeSpec visibility (`@visibility("read")` / `@visibility("write")`) but the emitter never checks visibility.
+~~3. **`readOnly` / `writeOnly` in `JsonSchema` are dead code.** Declared but never generated. These could map to TypeSpec visibility (`@visibility("read")` / `@visibility("write")`) but the emitter never checks visibility.~~ done — implemented from `@visibility` visibility classes (`src/constraint-mapper.ts`)
 
-4. **12 of 18 `components` sub-objects are declared in the type but never populated.** This gives a false sense of completeness — the types suggest support that doesn't exist.
+~~4. **12 of 18 `components` sub-objects are declared in the type but never populated.** This gives a false sense of completeness — the types suggest support that doesn't exist.~~ done — traits, bindings, parameters, correlationIds, and tags now populated (`src/use-decorators.ts`, `src/builders/components-builder.ts`)
 
-5. **`components.parameters` is declared but never populated** despite the emitter extracting channel path parameters. Parameters are only emitted inline on channels, never as reusable components.
+~~5. **`components.parameters` is declared but never populated** despite the emitter extracting channel path parameters. Parameters are only emitted inline on channels, never as reusable components.~~ done — `@parameter` populates `components.parameters` (`src/use-decorators.ts`)
 
 ---
 
@@ -212,31 +212,31 @@ The compiler provides `getPattern()`, `getMinValue()`, `getMaxValue()`, `getMinL
 
 ### Architecture / Design
 
-1. **Delegate schema generation to `@typespec/json-schema`** — The official `@typespec/json-schema` package handles ALL constraint decorators (`@pattern`, `@minValue`, etc.) correctly. We could use it as a dependency and get all of this for free, instead of reimplementing a subset. This would be the single highest-leverage architectural change.
+~~1. **Delegate schema generation to `@typespec/json-schema`** — The official `@typespec/json-schema` package handles ALL constraint decorators (`@pattern`, `@minValue`, etc.) correctly. We could use it as a dependency and get all of this for free, instead of reimplementing a subset. This would be the single highest-leverage architectural change.~~ **Won't implement — evaluated and rejected: constraints implemented natively in `src/constraint-mapper.ts`; the in-house emitter is retained per ROADMAP §EFv1.**
 
-2. **Read TypeSpec built-in `@tag` (singular)** — We only read our custom `@tags` (plural, array). The built-in `@tag` is the standard. Both should work.
+~~2. **Read TypeSpec built-in `@tag` (singular)** — We only read our custom `@tags` (plural, array). The built-in `@tag` is the standard. Both should work.~~ **Won't implement — never adopted; custom `@tags` accepts strings and rich tag objects (FEATURES.md §Decorator System).**
 
-3. **Remove dead fields from `JsonSchema`** — `nullable`, `xml`, `readOnly`, `writeOnly`, `uniqueItems`, `discriminator` are declared but never generated. Either implement them or remove them to stop misleading readers.
+~~3. **Remove dead fields from `JsonSchema`** — `nullable`, `xml`, `readOnly`, `writeOnly`, `uniqueItems`, `discriminator` are declared but never generated. Either implement them or remove them to stop misleading readers.~~ done — largely resolved: `nullable`/`xml` removed, `readOnly`/`writeOnly`/`discriminator` implemented; only `uniqueItems` stays declared-only
 
-4. **Add missing component types to `ComponentsObject`** — operationTraits, messageTraits, operationBindings, messageBindings, channelBindings, serverBindings, replies, replyAddresses, externalDocs, serverVariables.
+~~4. **Add missing component types to `ComponentsObject`** — operationTraits, messageTraits, operationBindings, messageBindings, channelBindings, serverBindings, replies, replyAddresses, externalDocs, serverVariables.~~ done — ComponentsObject now declares traits, bindings, parameters, correlationIds, and tags (`src/domain/models/asyncapi-document.ts`)
 
-5. **Consider `auto dec` migration** — TypeSpec 1.14.0's auto decorators eliminate boilerplate. Many of our 16 decorator implementations are thin wrappers around `storeX()` calls that could be `auto dec`.
+~~5. **Consider `auto dec` migration** — TypeSpec 1.14.0's auto decorators eliminate boilerplate. Many of our 16 decorator implementations are thin wrappers around `storeX()` calls that could be `auto dec`.~~ **Won't implement — never migrated; all 30 decorators remain JS-backed `extern dec` for compile-time validation (`lib/main.tsp`).**
 
 ### Testing
 
-6. **No test verifies constraint decorator output** — There is no test that compiles `model Foo { @minValue(0) age: int32 }` and checks for `minimum: 0` in the output. If one existed, it would immediately expose the gap.
+~~6. **No test verifies constraint decorator output** — There is no test that compiles `model Foo { @minValue(0) age: int32 }` and checks for `minimum: 0` in the output. If one existed, it would immediately expose the gap.~~ done — `test/compliance/constraint-decorators.test.ts` compiles specs and asserts output
 
-7. **No test verifies `@deprecated` propagation** — Same gap.
+~~7. **No test verifies `@deprecated` propagation** — Same gap.~~ done — `#deprecated` propagation locked by `test/compliance/constraint-decorators.test.ts`
 
-8. **No test verifies `@example` propagation** — Same gap.
+~~8. **No test verifies `@example` propagation** — Same gap.~~ done — `@example` propagation locked by `test/compliance/constraint-decorators.test.ts`
 
 ### Process / Session Quality
 
-9. **I should have empirically verified claims.** I asserted `@pattern` is ignored by reading code, but never compiled a test spec to confirm. One quick `compileAsyncAPI()` call would have been conclusive.
+~~9. **I should have empirically verified claims.** I asserted `@pattern` is ignored by reading code, but never compiled a test spec to confirm. One quick `compileAsyncAPI()` call would have been conclusive.~~ **NOT-DO — process note; compile-based empirical verification now exists (`test/compliance/constraint-decorators.test.ts`).**
 
-10. **I should have checked `@typespec/json-schema` as a potential solution** during the analysis, not just identified the problem.
+~~10. **I should have checked `@typespec/json-schema` as a potential solution** during the analysis, not just identified the problem.~~ **NOT-DO — process note; the evaluation happened later — in-house emitter retained (ROADMAP §EFv1).**
 
-11. **I should have read FEATURES.md / TODO_LIST.md FIRST** to understand what the project already claims before presenting "discoveries" that may be known gaps.
+~~11. **I should have read FEATURES.md / TODO_LIST.md FIRST** to understand what the project already claims before presenting "discoveries" that may be known gaps.~~ **NOT-DO — process note; TODO_LIST.md preamble records the 2026-08-21 and 2026-09-13 re-verification passes.**
 
 ---
 
@@ -244,71 +244,71 @@ The compiler provides `getPattern()`, `getMinValue()`, `getMaxValue()`, `getMinL
 
 ### Tier 1: Critical Functional Gaps (Constraint Decorators)
 
-1. **Handle `@pattern`** → `pattern` in `propertyToSchema()` / `modelDeclaration()`
-2. **Handle `@minValue`** → `minimum`
-3. **Handle `@maxValue`** → `maximum`
-4. **Handle `@minValueExclusive`** → `exclusiveMinimum`
-5. **Handle `@maxValueExclusive`** → `exclusiveMaximum`
-6. **Handle `@minLength`** → `minLength`
-7. **Handle `@maxLength`** → `maxLength`
-8. **Handle `@minItems`** → `minItems`
-9. **Handle `@maxItems`** → `maxItems`
-10. **Handle `@format`** → `format` (custom override on scalar)
-11. **Evaluate `@typespec/json-schema` as schema generation backend** — may eliminate items 1-10
-12. **Add tests for each constraint decorator** — compile + assert output
+~~1. **Handle `@pattern`** → `pattern` in `propertyToSchema()` / `modelDeclaration()`~~ done — `@pattern` locks in `test/compliance/constraint-decorators.test.ts`
+~~2. **Handle `@minValue`** → `minimum`~~ done — minimum locks in `test/compliance/constraint-decorators.test.ts`
+~~3. **Handle `@maxValue`** → `maximum`~~ done — maximum locks in `test/compliance/constraint-decorators.test.ts`
+~~4. **Handle `@minValueExclusive`** → `exclusiveMinimum`~~ done — exclusiveMinimum locks in `test/compliance/constraint-decorators.test.ts`
+~~5. **Handle `@maxValueExclusive`** → `exclusiveMaximum`~~ done — exclusiveMaximum locks in `test/compliance/constraint-decorators.test.ts`
+~~6. **Handle `@minLength`** → `minLength`~~ done — minLength locks in `test/compliance/constraint-decorators.test.ts`
+~~7. **Handle `@maxLength`** → `maxLength`~~ done — maxLength locks in `test/compliance/constraint-decorators.test.ts`
+~~8. **Handle `@minItems`** → `minItems`~~ done — minItems locks in `test/compliance/constraint-decorators.test.ts`
+~~9. **Handle `@maxItems`** → `maxItems`~~ done — maxItems locks in `test/compliance/constraint-decorators.test.ts`
+~~10. **Handle `@format`** → `format` (custom override on scalar)~~ done — format override locks in `test/compliance/constraint-decorators.test.ts`
+~~11. **Evaluate `@typespec/json-schema` as schema generation backend** — may eliminate items 1-10~~ **Won't implement — evaluation outcome: rejected; constraints were implemented natively instead (`src/constraint-mapper.ts`, ROADMAP §EFv1).**
+~~12. **Add tests for each constraint decorator** — compile + assert output~~ done — per-decorator tests: `test/compliance/constraint-decorators.test.ts` (~40 AJV-validated tests)
 
 ### Tier 2: High-Value Missing Features
 
-13. **Handle `@deprecated`** → `deprecated: true` on schema properties and messages
-14. **Handle `@example`** → `examples` array on messages and schemas
-15. **Handle `@discriminator`** → `discriminator` field for polymorphic unions
-16. **Handle `@summary`** → `summary` on schemas, messages, operations
-17. **Read built-in `@tag` (singular)** in addition to custom `@tags`
-18. **Add `info.contact` support** — decorator or emitter option
-19. **Add `info.license` support** — decorator or emitter option
-20. **Add `info.termsOfService` support** — emitter option
-21. **Add `externalDocs` support** — `@externalDocs` decorator on all applicable targets
-22. **Add `@parameter` decorator** for explicit channel parameters (not just auto-extracted from `{var}`)
+~~13. **Handle `@deprecated`** → `deprecated: true` on schema properties and messages~~ done — `#deprecated` directive sets `deprecated` (`src/constraint-mapper.ts`)
+~~14. **Handle `@example`** → `examples` array on messages and schemas~~ done — examples on schemas (`src/constraint-mapper.ts`) and message-level examples (`src/builders/message-builder.ts`)
+~~15. **Handle `@discriminator`** → `discriminator` field for polymorphic unions~~ done — discriminator emitted with auto-required enforcement (`src/schema-fragments.ts`, `test/compliance/polymorphism.test.ts`)
+~~16. **Handle `@summary`** → `summary` on schemas, messages, operations~~ done — maps to title on schemas (`src/constraint-mapper.ts`) and summary on operations (`src/builders/operation-builder.ts`)
+~~17. **Read built-in `@tag` (singular)** in addition to custom `@tags`~~ done — never adopted; `@tags` accepts strings and rich tag objects (FEATURES.md §Decorator System)
+~~18. **Add `info.contact` support** — decorator or emitter option~~ done — `info.contact` emitter option (`src/document-builder.ts`, `test/compliance/info-object.test.ts`)
+~~19. **Add `info.license` support** — decorator or emitter option~~ done — `info.license` emitter option (`src/document-builder.ts`, `test/compliance/info-object.test.ts`)
+~~20. **Add `info.termsOfService` support** — emitter option~~ done — `info.termsOfService` emitter option (`src/document-builder.ts`, `test/compliance/info-object.test.ts`)
+~~21. **Add `externalDocs` support** — `@externalDocs` decorator on all applicable targets~~ done — `info.externalDocs` option plus rich tag externalDocs objects (`src/document-builder.ts`, `test/compliance/info-object.test.ts`)
+~~22. **Add `@parameter` decorator** for explicit channel parameters (not just auto-extracted from `{var}`)~~ done — `@parameter` decorator for reusable channel parameters (`src/use-decorators.ts`)
 
 ### Tier 3: AsyncAPI Component Coverage
 
-23. **Populate `components.parameters`** for reusable channel parameters
-24. **Add traits support** — `@trait` decorator, `components.operationTraits` / `components.messageTraits`
-25. **Add reusable bindings** — `components.operationBindings`, `components.messageBindings`, etc.
-26. **Populate `operation.security`** — per-operation security requirements
-27. **Add `operation.traits`** reference support
-28. **Add `message.traits`** reference support
-29. **Add `reply.channel`** support — reply referencing a different channel
-30. **Populate `server.protocolVersion`** from `@server` config
-31. **Populate `server.tags`** from `@tags` on namespace
+~~23. **Populate `components.parameters`** for reusable channel parameters~~ done — `components.parameters` populated by `@parameter` (`src/use-decorators.ts`)
+~~24. **Add traits support** — `@trait` decorator, `components.operationTraits` / `components.messageTraits`~~ done — `@operationTrait` / `@messageTrait` define named traits (`src/use-decorators.ts`)
+~~25. **Add reusable bindings** — `components.operationBindings`, `components.messageBindings`, etc.~~ done — `@reusableBinding` defines reusable bindings (`src/use-decorators.ts`)
+~~26. **Populate `operation.security`** — per-operation security requirements~~ done — `@operationSecurity` emits operation-level security refs (`src/decorators.ts`)
+~~27. **Add `operation.traits`** reference support~~ done — `@useOperationTrait` refs traits from operations (`src/use-decorators.ts`)
+~~28. **Add `message.traits`** reference support~~ done — `@useMessageTrait` refs traits from models (`src/use-decorators.ts`)
+~~29. **Add `reply.channel`** support — reply referencing a different channel~~ **Won't implement — never built; `@reply` emits address and messages on the operation's own channel (`src/builders/operation-builder.ts`).**
+~~30. **Populate `server.protocolVersion`** from `@server` config~~ done — `protocolVersion` from `@server` config (`src/builders/server-builder.ts`, `test/integration/asyncapi-3.1-features.test.ts`)
+~~31. **Populate `server.tags`** from `@tags` on namespace~~ done — namespace tags propagate to `server.tags` (`src/builders/server-builder.ts`)
 
 ### Tier 4: Schema Quality
 
-32. **Remove `nullable` from `JsonSchema`** — dead OpenAPI 3.0 concept in AsyncAPI 3.1
-33. **Remove `xml` from `JsonSchema`** — dead field, never generated
-34. **Implement or remove `readOnly`/`writeOnly`** — map to `@visibility` or delete
-35. **Add `multipleOf` support** — via `@multipleOf` or custom decorator
-36. **Add `patternProperties` support** — for regex-keyed object properties
-37. **Add `not` schema support** — schema negation
-38. **Verify recursive/circular model handling** — `type Tree { children: Tree[] }`
-39. **Add `$id` to schema objects** — for schema identification
-40. **Add `default` values** — TypeSpec property defaults → `default` in schema
+~~32. **Remove `nullable` from `JsonSchema`** — dead OpenAPI 3.0 concept in AsyncAPI 3.1~~ done — `nullable` removed from `JsonSchema` (`src/domain/models/asyncapi-document.ts`)
+~~33. **Remove `xml` from `JsonSchema`** — dead field, never generated~~ done — `xml` removed from `JsonSchema` (`src/domain/models/asyncapi-document.ts`)
+~~34. **Implement or remove `readOnly`/`writeOnly`** — map to `@visibility` or delete~~ done — implemented from `@visibility` classes (`src/constraint-mapper.ts`, `test/compliance/constraint-decorators.test.ts`)
+~~35. **Add `multipleOf` support** — via `@multipleOf` or custom decorator~~ **Won't implement — no dedicated mapping; settable via `@jsonSchemaExtension` (`src/extension-decorators.ts`).**
+~~36. **Add `patternProperties` support** — for regex-keyed object properties~~ **Won't implement — no regex-keyed property generator; `@jsonSchemaExtension` is the escape hatch.**
+~~37. **Add `not` schema support** — schema negation~~ **Won't implement — `not` only declared in `JsonSchema`; no negation generator exists.**
+~~38. **Verify recursive/circular model handling** — `type Tree { children: Tree[] }`~~ done — recursion/self-`$ref` exercised by `test/e2e/complex-nested-schemas.test.ts` and `test/unit/shared-schema-types.test.ts` circular-entity tests
+~~39. **Add `$id` to schema objects** — for schema identification~~ **Won't implement — no schema `$id` generator; the `asyncapi-id` option covers the root `id` only.**
+~~40. **Add `default` values** — TypeSpec property defaults → `default` in schema~~ done — `=` defaults map to `default` (`src/constraint-mapper.ts`)
 
 ### Tier 5: TypeSpec Ecosystem & Version
 
-41. **Upgrade to `@typespec/compiler` 1.14.0** — auto decorators, memory leak fix, entrypoint fix
-42. **Migrate simple decorators to `auto dec`** — reduces boilerplate
-43. **Evaluate `@typespec/http` interop** — `@route` → channel addresses, `@parameter` extraction
-44. **Add `@encode` support** — custom scalar encoding
-45. **Add `@encodedName` support** — property rename in output
-46. **Add `@secret` awareness** — flag sensitive fields (masking, warning)
-47. **Handle `@error` models** — error response semantics
+~~41. **Upgrade to `@typespec/compiler` 1.14.0** — auto decorators, memory leak fix, entrypoint fix~~ done — `@typespec/compiler` now ^1.17.0 (`package.json`)
+~~42. **Migrate simple decorators to `auto dec`** — reduces boilerplate~~ **Won't implement — never migrated; all 30 decorators stay JS-backed `extern dec` for compile-time validation (`lib/main.tsp`).**
+~~43. **Evaluate `@typespec/http` interop** — `@route` → channel addresses, `@parameter` extraction~~ done — mixed programs get route-table ownership (`src/builders/http-route-facts.ts`, `test/integration/mixed-http-emitters.test.ts`)
+~~44. **Add `@encode` support** — custom scalar encoding~~ done — `@encode` consumed for example/default serialization (`src/constraint-mapper.ts`)
+~~45. **Add `@encodedName` support** — property rename in output~~ done — `@encodedName` drives wire keys (`src/schema-emitter.ts`, `test/compliance/encoded-names.test.ts`)
+~~46. **Add `@secret` awareness** — flag sensitive fields (masking, warning)~~ **Won't implement — never implemented; no `@secret` handling exists in `src/` and nothing tracks it.**
+~~47. **Handle `@error` models** — error response semantics~~ **Won't implement — never implemented; `@error` models have no AsyncAPI error-response mapping.**
 
 ### Tier 6: Advanced / Future
 
-48. **Multi-format schema support** — `schemaFormat: "application/avro+json"`, Avro schema embedding
-49. **AsyncAPI Studio round-trip verification** — emit → import → validate → export → compare
-50. **Channel→server linking** — `channel.servers` array referencing server names
+48. **Multi-format schema support** — `schemaFormat: "application/avro+json"`, Avro schema embedding **→ ROADMAP §Spec Compliance Depth — multi-format schemas raw idea**
+~~49. **AsyncAPI Studio round-trip verification** — emit → import → validate → export → compare~~ done — in substance — `test/validation/studio-compatibility.test.ts` parses emitted output via `@asyncapi/parser`
+~~50. **Channel→server linking** — `channel.servers` array referencing server names~~ done — `@useChannelServer` binds channels to named servers (`src/use-decorators.ts`)
 
 ---
 
