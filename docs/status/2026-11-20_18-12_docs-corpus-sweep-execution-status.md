@@ -110,3 +110,99 @@ P3 — do not regress:
 ---
 
 _Annotated point-in-time snapshot. Corrections to THIS report go inline (docs-health ANNOTATE mode). Harvest state: the §f list above is the live remainder — freshness will check it once this is the newest report._
+
+## g.4) Archive manifest (2026-11-20 closing pass)
+
+> 89 files moved to `docs/status/archived/`; every file carried zero unmarked items and passed `check-rows --strict` + `bare-rows` before the move. Deciding reason per file below (classification: all items struck/routed with judge-verified evidence).
+
+- `2026-07-14_13-35_SPEC-COMPLIANCE-TYPE-SAFETY-RECOVERY.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-14_14-11_DOCS-HEALTH-AUDIT-SESSION-WRAP-UP.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-14_15-55_PARETO-EXECUTION-SESSION-RESULTS.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-14_16-30_COMMIT-RECOVERY-AND-TEST-CLEANUP.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-14_17-16_TYPESPEC-1.13-ALIGNMENT-AND-QUALITY-OVERHAUL.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-14_17-46_TYPESPEC-1.13-ALIGNMENT-QUALITY-OVERHAUL-COMPLETION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-14_18-37_SESSION2-BUG-FIXES-TYPE-SAFETY-CI-HARDENING.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-21_10-41_OPEN-ISSUES-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-21_14-40_REAL-SPEC-TESTING-SESSION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-21_15-52_TYPE-SAFETY-AND-PROTOCOL-CORRECTNESS.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-21_15-56_ASYNCAPI-3.1-UPGRADE-BRUTAL-SELF-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_03-46_SPLIT-BRAIN-FIX-VITEST-MIGRATION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_05-31_PROTOCOL-BINDING-AND-SPEC-COMPLIANCE.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_05-58_TYPE-SYSTEM-IMPROVEMENT-SELF-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_06-40_DOCS-HEALTH-AND-UPDATE-OLD-DOCS.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_06-54_P0-SPEC-COMPLIANCE-AND-DEAD-CODE-CLEANUP.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_07-29_TYPE-SAFETY-AND-BINDING-PLACEMENT-VALIDATION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_08-38_TEST-SUITE-FIX-SESSION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_11-28_oxlint-zero-errors-zero-warnings.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_17-57_TODO-LIST-EXECUTION-SESSION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_18-13_QUALITY-AND-CLEANUP-SPRINT.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-22_20-09_PARETO-EXECUTION-16-OF-25-COMPLETE.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-23_03-52_PARETO-COMPLETE-SELF-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-07-23_05-09_SCHEMAOBJECT-RENAME-CLEANUP.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_17-31_ROADMAP-AUDIT-VERIFICATION-AND-CORRECTION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_18-01_TODO-EXECUTION-SESSION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_18-08_VITEST-RUN-AND-QUALITY-VERIFICATION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_18-14_SHARED-MODULE-HARDENING-AND-SELF-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_18-20_TYPESPEC-ASYNCAPI-GAP-ANALYSIS.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_18-33_TEST-GAP-ANALYSIS-AND-COVERAGE-EXPANSION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_19-01_BUG-FIXES-AND-TEST-HARDENING-SESSION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_19-50_DEDUPLICATION-EXECUTION-COMPLETE.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_20-08_PHASE-2-DEDUPLICATION-STATUS.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_20-35_PHASE-3-DEDUPLICATION-STATUS.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_20-46_PHASE-3-DEDUPLICATION-FINAL.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_21-12_PHASE-4-ZERO-CLONES.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_21-33_DOCS-HEALTH-AND-LIVING-DOCS-REWRITE.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_22-01_CONSTRAINT-DECORATORS-SELF-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-05_23-38_CONSTRAINT-EXPANSION-SELF-REVIEW-II.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_00-44_ALLOF-ONEOF-DISCRIMINATOR-IMPLEMENTATION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_09-02_CONSTRAINT-EXPANSION-CONTINUATION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_09-46_CONSTRAINT-EXPANSION-CONTINUATION-II.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_12-38_BUN-TO-PNPM-MIGRATION-STATUS.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_12-57_COMPONENTS-TAGS-POPULATION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_13-33_LINTER-CONFIG-IMPROVEMENT.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_13-50_REUSABLE-COMPONENTS.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_14-25_REUSABLE-COMPONENTS-FOLLOWUP.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_14-42_DOCS-HEALTH-LIVING-DOCS-REBUILD.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_17-56_TODO-LIST-EXECUTION-SPEC-COMPLIANCE.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_18-13_TODO-LIST-IMPLEMENTATION-SESSION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_18-50_TODO-LIST-FRESHNESS-AUDIT.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_18-53_TODO-LIST-FULL-EXECUTION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_19-38_PHASE-1-3-EXECUTION-SESSION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_20-06_REAL-WORLD-REPO-TESTING-SESSION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_22-22_ASYNCAPI-3.1-GAP-CLOSURE-SESSION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_22-30_GITHUB-REAL-REPO-TESTING.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-06_22-38_GITHUB-REAL-REPO-HONEST-STATUS.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-07_00-41_CRITICAL-BUGFIXES-REALWORLD-TESTING-SESSION-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-15_00-49_FULL-CODE-REVIEW-COMPLETION-AND-SELF-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-15_01-34_REVIEW-CLOSEOUT-BRUTAL-SELF-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-21_12-03_V0.3.0-PHASE1-NPM-BETA-LIVE-M15-MIDSURGERY.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-21_21-04_V0.3.0-PHASES-1-3-COMPLETE-SELF-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-21_21-29_DOCS-HEALTH-AUDIT-SELF-REVIEW.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-21_22-57_STATUS-UPDATE.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-21_23-11_EFV1-REVIEW-SELF-CRITIQUE.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-21_23-36_TEST-SUITE-TYPECHECK-HARDENING.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-08-22_00-17_INTRINSIC-BUGFIXES-AND-TEST-HARDENING-COMPLETION.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-09-13_13-57_TODO-EXECUTION-PROTOCOL-MODEL-BINDINGS-STATUS.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-09-13_14-47_CICD-GREEN-RECOVERY.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-03_06-31_issue-252-mixed-emitter-support.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-03_10-12_buildflow-failure-recovery.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-03_11-20_self-review-full-gate-recovery.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-03_13-27_mixed-emitter-ownership-execution.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-03_13-58_mixed-emitter-ownership-session-2-completion.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-03_14-41_upstream-issue-12105-and-github-voice-lessons.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-03_15-15_release-1.1.0.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-03_15-35_session-review-toolchain-restore.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-03_16-48_1.1.0-release-252-close-self-review.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-04_03-00_website-deploy-custom-domain-fix.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-23_09-46_pr-and-ci-recovery.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-23_12-00_website-overhaul-status.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-23_14-13_starlight-llms-txt-integration.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-10-23_14-25_website-deploy-csp-hardening.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-11-01_23-58_dependency-pr-review-merge-cycle.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-11-02_01-20_brand-identity-logo-system.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-11-02_04-05_brand-pipeline-hardening-and-gate-repair.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-11-02_05-08_horizontal-lockup-shipped.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-11-02_06-06_ci-green-but-security-red.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+- `2026-11-19_07-36_merge-sequence-phase2.md` — fully annotated (all items struck/routed, judge-verified); gates green pre-move.
+
+The 15 retained reports (2026-11-02 → 2026-11-20) carry live-routed §f items and stay unarchived per cadence thresholds.

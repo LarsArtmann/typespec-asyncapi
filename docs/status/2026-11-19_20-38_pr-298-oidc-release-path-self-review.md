@@ -268,7 +268,7 @@ Nothing catastrophic this session. The honest ledger:
     that bypasses OAuth scopes (security posture note).
 
 **Session-derived process rules (candidates for lessons file):**
-29. "Extract, don't transcribe" for audit values.
+~~29. "Extract, don't transcribe" for audit values.~~ done — adopted — the sweep protocol mandates extracted evidence over transcription
 30. "Exit codes don't survive pipes" — always PIPESTATUS.
 
 ## g) QUESTIONS (cannot be answered without you)

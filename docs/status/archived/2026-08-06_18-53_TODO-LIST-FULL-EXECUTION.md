@@ -255,7 +255,7 @@ The status report at `docs/status/archived/2026-08-06_18-50_TODO-LIST-FRESHNESS-
 46. **OpenAPI cross-emitter type sharing** — `src/shared/` module ready but no external consumer
 47. **`@asyncapi/generator` CLI testing** — structural tests exist but real generator never run
 48. **Cross-emitter shared module integration test** — verify `./shared` subpath exports work
-49. **Kafka-specific schema registry support** — `schemaIdLocation`, `schemaLookupStrategy`
+~~49. **Kafka-specific schema registry support** — `schemaIdLocation`, `schemaLookupStrategy`~~ done — shipped — schemaIdLocation/schemaLookupStrategy validated (AGENTS.md kafka placement note)
 50. **WebSocket subprotocol validation** — verify `protocol` matches binding subprotocol
 
 ---

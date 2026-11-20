@@ -215,7 +215,7 @@ I computed "~249 tests" by grepping `it(`/`test(` in `test/compliance/*.test.ts`
 11. **Annotate `2026-08-06_00-44_ALLOF-ONEOF-DISCRIMINATOR-IMPLEMENTATION.md`** — all 3 TODO items done; 50-item list partially done
 12. **Validate the CI fix by triggering a run** — push a no-op commit or use `act` to verify the rewritten `ci.yml` works
 13. **Run `pnpm run verify` as a single command** — confirm the alias works end-to-end after all changes
-14. **Get exact compliance test count** — run `vitest run test/compliance/ --reporter verbose` and count, replace "~249" estimate
+~~14. **Get exact compliance test count** — run `vitest run test/compliance/ --reporter verbose` and count, replace "~249" estimate~~ done — resolved — counts derive from the repo now (sync-stats; AGENTS.md count-in-lib note)
 
 ### TODO_LIST items (the 12 open items harvested this session)
 
@@ -229,7 +229,7 @@ I computed "~249 tests" by grepping `it(`/`test(` in `test/compliance/*.test.ts`
 22. **Add `externalDocs` to `Tag` interface** — AsyncAPI 3.1 spec includes it (TODO #8)
 23. **Validate `@parameter` `location`** against runtime-expression pattern (TODO #9)
 24. **Verify `@summary`/`@doc` channel propagation** through all discovery paths (TODO #10)
-25. **Add golden file test** for reusable components (TODO #11)
+~~25. **Add golden file test** for reusable components (TODO #11)~~ done — shipped — test/golden/reusable-components.expected.yaml
 26. **Test `@useBinding` on Namespace with NO servers** (TODO #12)
 
 ### Docs Infrastructure

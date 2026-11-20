@@ -156,7 +156,7 @@ every living doc, not just the docs I remember writing.**
    the utils harness).
 8. Delete or make real `test/integration/cli-simple-emitter.test.ts`
    (fake CLI wrapper around the programmatic API).
-9. Delete `test/validation/real-world-examples.test.ts` (subsumed by
+~~9. Delete `test/validation/real-world-examples.test.ts` (subsumed by~~ done — resolved — the file is gone (subsumed by all-examples-validation + the realworld suite)
    all-examples-validation).
 10. Fix `asyncapi-generation.test.ts:679` "spec compliant" 2-field stub →
     real AJV.
@@ -167,7 +167,7 @@ every living doc, not just the docs I remember writing.**
 
 **Tier 3 — emitter/test cleanups (20% effort, 80% cumulative):**
 
-13. O(n²) operation-type lookup in `operation-builder.ts:37` → Set/Map.
+~~13. O(n²) operation-type lookup in `operation-builder.ts:37` → Set/Map.~~ done — resolved — the O(n²) lookup was replaced (2026-08-21 status-update T1)
 14. Unify `registerMessage` vs `mergeExplicitMessages` paths.
 15. ~~Collapse 7 near-identical `ref*` constructors in `shared-utils.ts`.~~
     done (now 8 one-line wrappers over a shared `ref()` in
@@ -178,18 +178,18 @@ every living doc, not just the docs I remember writing.**
 18. Dual export `SCHEME_TYPE_LIST` vs `VALID_SCHEME_TYPES` — keep one.
 19. Orphan comment above `SECURITY_SCHEME_TYPES` describes a removed
     concept.
-20. `ParsedAsyncAPIDocument.asyncapi` comment/type contradiction in
+~~20. `ParsedAsyncAPIDocument.asyncapi` comment/type contradiction in~~ done — resolved — the contradiction was fixed (2026-08-21 status-update T4)
     `type-guards.ts`.
 21. Document or change tag-dedup last-wins semantics in `tag-builder.ts`.
 22. Remove unreachable fallback defaults in `storeServerConfig`.
-23. Generalize `pickOpt<T, K>` helper.
+~~23. Generalize `pickOpt<T, K>` helper.~~ done — resolved — pickOpt generalized (2026-08-21 status-update T10)
 24. `multi-file-output.test.ts` — 9× `as never` option casts → typed
     options.
 25. `multi-protocol-comprehensive.test.ts` — promises bindings, asserts
     none; empty `if` block.
 26. `external-specs.test.ts` — 7/14 tests are `not.toBeNull()` smoke.
 27. `studio-compatibility.test.ts` — 3 tests assert less than their names.
-28. `round-trip-verification.test.ts` — module-level `doc` set by first
+~~28. `round-trip-verification.test.ts` — module-level `doc` set by first~~ **NOT-DO — module-level doc kept.**
     test → `beforeAll`.
 29. `realworld-ecommerce.test.ts:336` — protocol diversity via substring
     on serialized JSON → inspect `servers[*].protocol`.

@@ -259,7 +259,15 @@ What remains is the gated release chain and the tail:
       (pnpm-update manifest drift); consider a daemon/preflight guard.
 - [ ] Consider checkbox templates for ⏰ items so reports aren't the reminder
       system.
-- [ ] Docs corpus sweep (2026-11-19): 272 unharvested open items across 99
+~~- [ ] Docs corpus sweep (2026-11-19): 272 unharvested open items across 99
+      reports in `docs/status/` — harvest into TODO_LIST/ROADMAP or annotate
+      resolved (docs-health ANNOTATE ritual), then archive per cadence
+      thresholds (15 reports / 21 days, currently 99 / oldest 128d).
+      `audit_max: 267` in `.docs-gates.json` is the ratchet pin (ratcheted
+      from 272 the moment this row landed): NEVER raise it; every future item
+      gets an inline verdict or a TODO_LIST/ROADMAP row, and the pin steps
+      down as the corpus drains. Source: `docs-gates freshness . --audit-all`
+      evidence.~~ done — the sweep ran 2026-11-19/20: 88 reports annotated item-by-item (every hash judge-verified), archived to `docs/status/archived/` with Live-remainder banners, audit_max ratcheted 267 → 11, full battery PASS
       reports in `docs/status/` — harvest into TODO_LIST/ROADMAP or annotate
       resolved (docs-health ANNOTATE ritual), then archive per cadence
       thresholds (15 reports / 21 days, currently 99 / oldest 128d).

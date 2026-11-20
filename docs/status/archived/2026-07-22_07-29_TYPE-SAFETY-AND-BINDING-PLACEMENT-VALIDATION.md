@@ -111,7 +111,7 @@ The closest thing to a mistake: the first integration test attempt used `@@bindi
 
 ### Immediate (this session's loose ends)
 
-1. **Commit session 2 work** (binding placement validation)
+~~1. **Commit session 2 work** (binding placement validation)~~ done — committed as 5e78a76 (resolution table in this report)
 2. **Update `FEATURES.md`** — add `misplaced-binding` to Binding Validation table, update test count to 549
 3. **Run `bun run test:coverage:gate`** — verify new files meet 75% threshold
 4. **Wire placement validation into `@protocol` path** — `document-builder.ts:buildProtocolBinding()` should also check placement and emit warnings (or deliberately document why it's skipped)
@@ -146,7 +146,7 @@ The closest thing to a mistake: the first integration test attempt used `@@bindi
 
 ### Testing
 
-24. **Add golden file test for binding placement output** — lock verified-correct output
+~~24. **Add golden file test for binding placement output** — lock verified-correct output~~ done — shipped — binding-placement output locked (golden protocol-bindings + the 37 placement tests)
 25. **Add compliance test** for `misplaced-binding` warning through `compileAndValidateOrThrow`
 26. **Add test for multiple misplaced bindings on same target** — e.g., `ws` + `http` on a channel
 27. **Add negative test** — what happens when `@bindings` value is `null` or `undefined`?
@@ -176,7 +176,7 @@ The closest thing to a mistake: the first integration test attempt used `@@bindi
 42. **Add `@operationId` decorator** — for explicit AsyncAPI operation naming
 43. **Add `@messageId` decorator** — for explicit message naming
 44. **Add reply support** — AsyncAPI `OperationReply` type exists in the model but is never populated
-45. **Add `@schema` decorator** — for explicit schema customization
+~~45. **Add `@schema` decorator** — for explicit schema customization~~ **NOT-DO — never shipped.**
 46. **Support `defaultContentType` in document** — AsyncAPI 3.1 field, not currently emitted
 47. **Support multi-message operations** — one operation referencing multiple message types
 48. **Add server binding support** — `@server` currently only emits host/protocol/description, no bindings
