@@ -208,6 +208,12 @@ What remains is the gated release chain and the tail:
       excludes archives from link checks, the storage-growth call does not
       exist yet).
 - [ ] Trash `scripts/ns-test/` (113-byte scratch, not referenced; owner call).
+- [ ] Refresh ROADMAP to the current era — Current State exists but no
+      1.2.0-era mentions yet; upstream-watch section references #12105
+      (docs/status/2026-10-03_16-48:53,128).
+- [ ] github-voice skill: add the `test -s body` non-empty guard step to
+      the posting procedure (repo: crush-config)
+      (docs/status/2026-10-03_16-48:134).
 - [ ] Decide `global.out.css` policy (11-20 report g)3).
 - [ ] Harmonize AGENTS pin wording (`^6.0.3` prose vs exact `6.0.3` manifest).
 - [ ] Note or upstream: website `@astrojs/check` wants TS `^5||^6` while
@@ -250,6 +256,9 @@ What remains is the gated release chain and the tail:
       (docs/status/2026-11-04_17-42:122).
 - [ ] Review favicon manifest `id`/`scope` for PWA installability score
       (Lighthouse pass) (docs/status/2026-11-04_17-42:153).
+- [ ] Reduce llms.txt anchor noise — "Section titled" spam in the llms
+      output; try starlight-llms-txt `customSelectors`
+      (docs/status/2026-10-23_14-13:206).
 - [ ] Update `website/README.md` pages/ listing: drop the manual llms.txt
       endpoints line, document `starlight-llms-txt` plugin generation
       (docs/status/2026-10-23_14-13:215).
