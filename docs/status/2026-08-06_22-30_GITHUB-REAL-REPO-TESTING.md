@@ -14,7 +14,8 @@ Searched all of GitHub for `.tsp` files using AsyncAPI decorators. **Result: zer
 
 Found 5 real repos with `.tsp` files worth testing:
 
-<!-- check-rows:ledger --> <!-- reference survey table: completed repo inventory, no actionable rows -->
+<!-- ledger: reference survey table: completed repo inventory, no actionable rows -->
+<!-- check-rows:ledger -->
 | Repo                            | File                          | Lines | Stars | Type                                        |
 | ------------------------------- | ----------------------------- | ----- | ----- | ------------------------------------------- |
 | `bterlson/typespec-todo`        | `main.tsp`                    | 277   | 10    | HTTP/REST API (TypeSpec creator's sample)   |
@@ -51,7 +52,8 @@ The only repo that compiles without errors. Pure data models (no external decora
 
 #### bterlson/typespec-todo — 29 error diagnostics
 
-<!-- check-rows:ledger --> <!-- reference survey table: completed diagnostic inventory, no actionable rows -->
+<!-- ledger: reference survey table: completed diagnostic inventory, no actionable rows -->
+<!-- check-rows:ledger -->
 | Category                | Diagnostic Codes         | Count                                                                                                                                                   |
 | ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Missing packages        | `import-not-found`       | 5 (`@typespec/http`, `/rest`, `/openapi`, `/openapi3`, `/json-schema`)                                                                                  |
@@ -74,7 +76,8 @@ Cannot resolve `@typespec/versioning`, `@azure-tools/typespec-azure-core` import
 
 With ONLY the import path changed (`"typespec-asyncapi"` → `"@lars-artmann/typespec-asyncapi"`), 4 decorator API differences surface:
 
-<!-- check-rows:ledger --> <!-- reference comparison table: documented API differences, no actionable rows -->
+<!-- ledger: reference comparison table: documented API differences, no actionable rows -->
+<!-- check-rows:ledger -->
 | Decorator        | milehimikey API                                            | This emitter API                                                   | Diagnostic                                   |
 | ---------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------- |
 | `@server`        | `@server("name", "host", "protocol", "desc")` (positional) | `@server("name", #{ url, protocol, description })` (value literal) | `invalid-argument`, `invalid-argument-count` |
@@ -102,8 +105,8 @@ The emitter correctly handles all model patterns from the one repo that can comp
 
 **There are no real-world AsyncAPI TypeSpec specs on GitHub outside this project.** The entire testable surface is:
 
-1. Pure data models from other repos (stripped of HTTP/OpenAPI decorators) → emitter handles correctly
-2. The competing milehimikey emitter's examples → API incompatibilities are by design, not bugs
-3. HTTP/REST specs from Azure/bterlson → fundamentally not AsyncAPI specs
+~~1. Pure data models from other repos (stripped of HTTP/OpenAPI decorators) → emitter handles correctly~~ done — locked by `test/realworld/livesession-xyd-output.test.ts` (deep-output tests over the xyd models)
+~~2. The competing milehimikey emitter's examples → API incompatibilities are by design, not bugs~~ done — no milehimikey port shipped; `examples/` holds only compatible patterns; the by-design differences are documented in this report's comparison table
+~~3. HTTP/REST specs from Azure/bterlson → fundamentally not AsyncAPI specs~~ done — mixed-emitter ownership rules shipped — AGENTS.md documents `bare-op-assumed-rest` and the http-route-facts ownership rule
 
 The previous session's "real-world testing" was recreating model patterns from local sibling projects. This session actually cloned, copied verbatim, and compiled real GitHub files — proving the emitter works on production data models while documenting the ecosystem's compatibility gaps.
