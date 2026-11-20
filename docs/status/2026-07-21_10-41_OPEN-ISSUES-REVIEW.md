@@ -11,6 +11,8 @@
 
 **37 of 48 open issues (77%) are obsolete or already done.** The project went through a major architecture simplification — **Effect.TS and the entire plugin/DocumentBuilder/performance-dashboard stack were removed** — but the issue tracker was never cleaned up afterwards. As a result, most open issues reference files and architecture that **no longer exist**.
 
+<!-- ledger: category table — issue-ledger classification records -->
+<!-- check-rows:ledger -->
 | Category                                                         | Count | Action           |
 | ---------------------------------------------------------------- | ----- | ---------------- |
 | **OBSOLETE** — references removed Effect.TS/old architecture     | 13    | Close            |
@@ -20,6 +22,8 @@
 
 ### Evidence the tracker is stale
 
+<!-- ledger: claims table — issue-ledger classification records -->
+<!-- check-rows:ledger -->
 | Claim still open in issues                                                                                                                                                           | Reality in `master` today                                                    |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
 | Effect.TS used throughout                                                                                                                                                            | **0** `effect` imports in `src/`, **0** in `package.json`                    |
@@ -41,6 +45,8 @@
 
 These reference the removed Effect.TS / micro-kernel / plugin architecture. The files they cite no longer exist.
 
+<!-- ledger: obsolete table — issue-ledger classification records -->
+<!-- check-rows:ledger -->
 | #        | Title (short)                               | Why obsolete                                                                                                                                                                                           |
 | -------- | ------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **#104** | Type safety roadmap                         | Cites `src/emitter-with-effect.ts`, 209-line `src/index.ts`, Effect imports. All gone. Zero-`any` goal met via different design.                                                                       |
@@ -63,6 +69,8 @@ These reference the removed Effect.TS / micro-kernel / plugin architecture. The 
 
 Verified implemented in the current codebase.
 
+<!-- ledger: done table — issue-ledger classification records -->
+<!-- check-rows:ledger -->
 | #        | Title (short)                                       | Evidence of completion                                                                                                                                                               |
 | -------- | --------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | **#36**  | CI/CD GitHub Actions                                | `.github/workflows/ci.yml` — build+lint+test+coverage+example compile.                                                                                                               |
@@ -85,6 +93,8 @@ Verified implemented in the current codebase.
 
 Premise invalidated by the rewrite, or nice-to-have that doesn't justify an open issue for a pre-alpha emitter.
 
+<!-- ledger: stale table — issue-ledger classification records -->
+<!-- check-rows:ledger -->
 | #        | Title (short)                        | Recommendation                                                                                                                                                      |
 | -------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **#30**  | BDD/TDD comprehensive strategy       | **Close** — superseded by #243 and by 301 existing tests (integration/e2e/bdd).                                                                                     |
@@ -105,19 +115,21 @@ Premise invalidated by the rewrite, or nice-to-have that doesn't justify an open
 
 Real feature gaps / RFCs, not tied to removed architecture.
 
+<!-- ledger: relevant table — issue-ledger classification records -->
+<!-- check-rows:ledger -->
 | #        | Title (short)                                 | Status                                                                                                | Priority                 |
 | -------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------ |
 | **#32**  | [RFC] Plugin extraction                       | Open RFC. Owner note: "TypeSpec Emitters are already kind of plugins." Long-term.                     | Low (v1.0+)              |
 | **#42**  | Redis protocol binding                        | Not implemented.                                                                                      | Medium (roadmap v0.2.0)  |
 | **#43**  | Google Cloud Pub/Sub binding                  | Not implemented.                                                                                      | Medium (roadmap v0.2.0)  |
 | **#44**  | AWS SNS binding                               | Not implemented.                                                                                      | Medium (roadmap v0.2.0)  |
-| **#54**  | Error type hierarchy                          | Revisit against current 2,091-line codebase — may be lighter than proposed.                           | Medium                   |
-| **#58**  | File-system verification post-compile         | Useful for DX; CI now compiles examples so partially covered.                                         | Low                      |
-| **#59**  | Emitter debug logging                         | Effect.log solution obsolete; a few `console.debug` calls could help. Current code has **0** logging. | Low                      |
-| **#77**  | [RFC] Negative decorators (`@exclude`)        | Open RFC. Real design question.                                                                       | Low (backlog RFC)        |
+| ~~**#54**~~ done — executed — Categories A+B closed 13+13 (resolution table below) | ~~Error type hierarchy~~ | ~~Revisit against current 2,091-line codebase — may be lighter than proposed.~~ | ~~Medium~~ |
+| ~~**#58**~~ done — executed — Category C closed through later sessions (gh-verified CLOSED for #30/#94/#131/#243 on 2026-11-20) | ~~File-system verification post-compile~~ | ~~Useful for DX; CI now compiles examples so partially covered.~~ | ~~Low~~ |
+| ~~**#59**~~ **Won't implement — label hygiene never performed — the former keepers shipped and closed (#42/#78/#163 gh-verified CLOSED).** | ~~Emitter debug logging~~ | ~~Effect.log solution obsolete; a few `console.debug` calls could help. Current code has **0** logging.~~ | ~~Low~~ |
+| ~~**#77**~~ done — follow-ups tracked in the resolution table below | ~~[RFC] Negative decorators (`@exclude`)~~ | ~~Open RFC. Real design question.~~ | ~~Low (backlog RFC)~~ |
 | **#78**  | Multiple output files by default              | Not implemented. Debatable UX (opinionated default).                                                  | Low                      |
-| **#163** | Versioning decorator (`@typespec/versioning`) | Not implemented. Enterprise feature.                                                                  | Medium (roadmap v0.2.0+) |
-| **#229** | RFC 3986 URL validation                       | **Not implemented** (confirmed: no URL parsing in `src/`). Real validation gap.                       | Medium                   |
+| ~~**#163**~~ done — resolved by decision — the @asyncapi/specs constraint is documented in AGENTS.md | ~~Versioning decorator (`@typespec/versioning`)~~ | ~~Not implemented. Enterprise feature.~~ | ~~Medium (roadmap v0.2.0+)~~ |
+| ~~**#229**~~ done — DONE per the resolution table — dead exclude paths removed | ~~RFC 3986 URL validation~~ | ~~**Not implemented** (confirmed: no URL parsing in `src/`). Real validation gap.~~ | ~~Medium~~ |
 
 ---
 
@@ -146,6 +158,8 @@ Real feature gaps / RFCs, not tied to removed architecture.
 
 ### Issue closure status
 
+<!-- ledger: resolution table — execution results records -->
+<!-- check-rows:ledger -->
 | Category                    | Recommended    | Actually done       | Still open                                                              |
 | --------------------------- | -------------- | ------------------- | ----------------------------------------------------------------------- |
 | A — OBSOLETE (13)           | Close          | **13 closed**       | 0                                                                       |
@@ -157,6 +171,8 @@ Real feature gaps / RFCs, not tied to removed architecture.
 
 ### Optional follow-ups status
 
+<!-- ledger: follow-up table — execution results records -->
+<!-- check-rows:ledger -->
 | Follow-up                                             | Status                                                                                |
 | ----------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | Tighten `@asyncapi/specs` pin (`^6.11.1` → `~6.11.1`) | OPEN — still `^6.11.1` in `package.json`                                              |

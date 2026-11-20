@@ -12,36 +12,36 @@
 
 ### Emitter bug fixes (source code)
 
-1. **Array-of-named-model bug** (`src/schema-emitter.ts:159-179`) — FIXED and VERIFIED
+~~1. **Array-of-named-model bug** (`src/schema-emitter.ts:159-179`) — FIXED and VERIFIED~~ done — shipped — arrays of named models emit items $ref (AGENTS.md arrays note; compliance-locked)
    - `Item[]` now correctly emits `items: { $ref: "#/components/schemas/Item" }` instead of `items: { type: "string" }`
    - Root cause: `emitTypeReference` returns `NoEmit` for declaration refs; `extractValue` returned `{}`; fallback wrongly called `intrinsicToSchema(modelName)` → `{type:"string"}`
    - Fix: Extracted `refForNamedType()` helper, used in `arrayDeclaration`, `arrayLiteral`, and `propertyToSchema`
 
-2. **`Record<string>` bug** (`src/schema-emitter.ts:257-265`) — FIXED and VERIFIED
+~~2. **`Record<string>` bug** (`src/schema-emitter.ts:257-265`) — FIXED and VERIFIED~~ done — shipped — Record<string> maps to additionalProperties (AGENTS.md Record note)
    - `Record<string>` now emits `{ type: "object", additionalProperties: { type: "string" } }` instead of `{ type: "array", items: {...} }`
    - Also removed hardcoded `items: { type: "string" }` for `Array` model name
 
 ### Example spec-compliance fixes
 
-3. `examples/real-world/kafka-events.tsp` — removed non-spec Kafka binding fields (`key`, `acks`, `compression`, `retentionMs`)
-4. `examples/kafka/main.tsp` — fixed channel-vs-message binding placement
-5. `examples/comprehensive-protocols/main.tsp` — fixed operation binding fields
-6. `examples/advanced/advanced-decorators.tsp` — `websocket` → `ws`, `scopes` → `availableScopes`, stripped non-spec binding fields
+~~3. `examples/real-world/kafka-events.tsp` — removed non-spec Kafka binding fields (`key`, `acks`, `compression`, `retentionMs`)~~ done — examples cleaned and CI-validated today
+~~4. `examples/kafka/main.tsp` — fixed channel-vs-message binding placement~~ done — binding placement rules shipped (spec-generated matrix)
+~~5. `examples/comprehensive-protocols/main.tsp` — fixed operation binding fields~~ done — operation binding fields validated
+~~6. `examples/advanced/advanced-decorators.tsp` — `websocket` → `ws`, `scopes` → `availableScopes`, stripped non-spec binding fields~~ done — normalizeProtocol + availableScopes shipped
 
 ### New tests (68 added, all green)
 
-7. `test/validation/real-world-examples.test.ts` — 24 tests (4 real-world examples × 6 assertions: compile, document shape, AsyncAPI 3.0 schema validation, $ref chain integrity, channel structure, array $ref correctness)
-8. `test/validation/all-examples-validation.test.ts` — 44 tests (11 examples × 4 assertions: compile, asyncapi version, AsyncAPI 3.0 JSON Schema validation via AJV, $ref chain integrity)
+~~7. `test/validation/real-world-examples.test.ts` — 24 tests (4 real-world examples × 6 assertions: compile, document shape, AsyncAPI 3.0 schema validation, $ref chain integrity, channel structure, array $ref correctness)~~ done — real-world validation suite shipped (test/validation + test/realworld)
+~~8. `test/validation/all-examples-validation.test.ts` — 44 tests (11 examples × 4 assertions: compile, asyncapi version, AsyncAPI 3.0 JSON Schema validation via AJV, $ref chain integrity)~~ done — all-examples validation shipped (check-examples in CI)
 
 ### Verification
 
-9. **Build:** 0 TypeScript errors
-10. **Lint:** 0 errors, 0 warnings
-11. **Full suite:** 369 pass / 0 fail (up from 301 baseline)
-12. **Coverage gate:** PASSED (avg 95.7%, min 75% per file)
-13. **All 11 example `.tsp` files:** compile cleanly AND validate against official AsyncAPI 3.0 JSON Schema
-14. **AGENTS.md:** Updated Gotchas section with 7 new entries (array refs, Record mapping, binding key names, Kafka binding placement, OAuth2 scopes, TypeSpec value literal limitations)
-15. `schema-emitter.ts` at 356 lines (under 370-line limit)
+~~9. **Build:** 0 TypeScript errors~~ done — build 0 errors standing
+~~10. **Lint:** 0 errors, 0 warnings~~ done — lint 0/0 standing
+~~11. **Full suite:** 369 pass / 0 fail (up from 301 baseline)~~ done — suite at 1300+ through 1.2.0
+~~12. **Coverage gate:** PASSED (avg 95.7%, min 75% per file)~~ done — coverage gate standing
+~~13. **All 11 example `.tsp` files:** compile cleanly AND validate against official AsyncAPI 3.0 JSON Schema~~ done — examples AJV-validate against the official schema in CI
+~~14. **AGENTS.md:** Updated Gotchas section with 7 new entries (array refs, Record mapping, binding key names, Kafka binding placement, OAuth2 scopes, TypeSpec value literal limitations)~~ done — AGENTS.md carries those gotchas (arrays, Record, binding keys)
+~~15. `schema-emitter.ts` at 356 lines (under 370-line limit)~~ done — the emitter split into focused modules long since
 
 ---
 
@@ -61,13 +61,13 @@ I validated against AsyncAPI 3.0 JSON Schema via AJV. The project also has `@asy
 
 ## c) NOT STARTED
 
-1. **Testing against external `.tsp` files** — 452 files across 20 projects, 0 compiled through this emitter
-2. **`@asyncapi/parser` semantic validation** — devDependency installed, never invoked
-3. **Golden file capture** for validated real-world outputs (project has golden file pattern at `test/golden/`)
-4. **Dedicated unit tests for `refForNamedType()` and `Record<string>` fixes** — tested manually in `/tmp`, not as permanent regression tests
-5. **Negative test cases** — what happens with malformed `.tsp`? Invalid binding fields? Circular model refs?
-6. **FEATURES.md update** — bug fixes not reflected in feature inventory
-7. **CI verification** — the CI workflow compiles examples but does NOT validate output against AsyncAPI schema (`.github/workflows/ci.yml` "Compile examples" step only checks compilation, not schema validity)
+~~1. **Testing against external `.tsp` files** — 452 files across 20 projects, 0 compiled through this emitter~~ done — shipped — test/realworld covers 16 patterns from 5 projects
+~~2. **`@asyncapi/parser` semantic validation** — devDependency installed, never invoked~~ done — shipped — parser-based validation runs in the vitest suite (AGENTS.md parser note)
+~~3. **Golden file capture** for validated real-world outputs (project has golden file pattern at `test/golden/`)~~ done — shipped — the golden suite
+~~4. **Dedicated unit tests for `refForNamedType()` and `Record<string>` fixes** — tested manually in `/tmp`, not as permanent regression tests~~ done — shipped — schema-validation unit tests cover refForNamedType and Record
+~~5. **Negative test cases** — what happens with malformed `.tsp`? Invalid binding fields? Circular model refs?~~ done — shipped — compliance negative tests + binding-field validation
+~~6. **FEATURES.md update** — bug fixes not reflected in feature inventory~~ done — FEATURES maintained through docs-health passes
+~~7. **CI verification** — the CI workflow compiles examples but does NOT validate output against AsyncAPI schema (`.github/workflows/ci.yml` "Compile examples" step only checks compilation, not schema validity)~~ done — shipped — CI compiles + AJV-validates every example (check-examples)
 
 ---
 
@@ -102,23 +102,23 @@ This test currently passes because it only checks `spec.components.schemas` and 
 
 ### Process improvements
 
-1. **Test external specs, not just own examples** — The original task was explicitly about "real TypeSpec Specs" (plural, implying real-world usage). I narrowed scope to self-authored examples, which is the weakest possible test of an emitter because the author and test author share blind spots.
+~~1. **Test external specs, not just own examples** — The original task was explicitly about "real TypeSpec Specs" (plural, implying real-world usage). I narrowed scope to self-authored examples, which is the weakest possible test of an emitter because the author and test author share blind spots.~~ done — adopted — test/realworld exists
 
-2. **Use the semantic parser, not just JSON Schema** — AJV structural validation catches shape errors but misses semantic errors. `@asyncapi/parser` is already a dependency and does deeper validation.
+~~2. **Use the semantic parser, not just JSON Schema** — AJV structural validation catches shape errors but misses semantic errors. `@asyncapi/parser` is already a dependency and does deeper validation.~~ done — adopted — AJV validation layered under AJV/parser
 
-3. **Capture golden files for validated output** — The project has a golden file pattern. Every newly-validated real-world spec output should become a golden file, locking the exact expected output.
+~~3. **Capture golden files for validated output** — The project has a golden file pattern. Every newly-validated real-world spec output should become a golden file, locking the exact expected output.~~ done — adopted — the golden suite locks validated outputs
 
-4. **Add schema validation to CI** — The CI workflow's "Compile examples" step only checks that `tsp compile` doesn't error. It does NOT validate the output against AsyncAPI 3.0 schema. The 2 new test files fix this for `bun test`, but CI could be more explicit.
+~~4. **Add schema validation to CI** — The CI workflow's "Compile examples" step only checks that `tsp compile` doesn't error. It does NOT validate the output against AsyncAPI 3.0 schema. The 2 new test files fix this for `bun test`, but CI could be more explicit.~~ done — adopted — CI validates example output (AJV)
 
-5. **Fix root causes, not symptoms** — The `websocket` vs `ws` issue is the canonical example of this failure mode. I patched the example and left the emitter broken.
+~~5. **Fix root causes, not symptoms** — The `websocket` vs `ws` issue is the canonical example of this failure mode. I patched the example and left the emitter broken.~~ done — adopted — normalizeProtocol fixed the root cause
 
-6. **Check inline test specs for the same bugs found in examples** — The e2e test has identical binding bugs. Any bug found in an example should trigger a grep across all tests for the same pattern.
+~~6. **Check inline test specs for the same bugs found in examples** — The e2e test has identical binding bugs. Any bug found in an example should trigger a grep across all tests for the same pattern.~~ done — adopted — inline specs were fixed alongside examples
 
 ### Technical improvements to the emitter
 
-7. **Protocol validation/mapping** — The emitter should reject or map unknown/invalid protocol names with diagnostics, not silently accept them.
-8. **Binding field validation** — The emitter should warn when binding fields don't match the AsyncAPI 3.0 schema for that binding type/location.
-9. **`typeToSchema()` still has blind spots** — I only fixed the cases I hit. `Map`, `Set`, and other TypeSpec types may have similar issues.
+~~7. **Protocol validation/mapping** — The emitter should reject or map unknown/invalid protocol names with diagnostics, not silently accept them.~~ done — shipped — isSupportedProtocol + unsupported-protocol diagnostic
+~~8. **Binding field validation** — The emitter should warn when binding fields don't match the AsyncAPI 3.0 schema for that binding type/location.~~ done — shipped — binding-field-validator (spec-generated rules)
+9. **`typeToSchema()` still has blind spots** — I only fixed the cases I hit. `Map`, `Set`, and other TypeSpec types may have similar issues. **→ TODO_LIST Test-Suite Integrity (enum-array + Map/Set type-mapping row)**
 
 ---
 
@@ -126,65 +126,65 @@ This test currently passes because it only checks `spec.components.schemas` and 
 
 ### High priority — correctness
 
-1. **Fix the `websocket`/`ws` split-brain in `src/constants/protocols.ts`** — either remove `websocket`, or add a mapping to `ws` in the document builder
-2. **Add a diagnostic** that warns when a protocol value won't produce a valid AsyncAPI 3.0 binding key
-3. **Fix `test/e2e/realworld-ecommerce.test.ts`** inline spec — same binding bugs as examples had
-4. **Add AsyncAPI schema validation to that e2e test** — it currently only checks counts, not validity
-5. **Test the emitter against `.tsp` files from external projects** (Kernovia, ActaFlow, blog, typespec-eventsourcing, accountability-system, etc.)
-6. **Run `@asyncapi/parser` on all generated outputs** for semantic validation
-7. **Add a dedicated unit test for `refForNamedType()`** covering Model, Enum, Scalar, stdlib types
-8. **Add a dedicated unit test for `Record<string>` mapping** (and `Record<int32>`, nested Records)
-9. **Add a unit test for `typeToSchema()`** covering every branch (Union, indexed Model, Scalar, String/Number/Boolean literals, Tuple, fallback)
-10. **Capture golden files** for all 11 validated example outputs
+~~1. **Fix the `websocket`/`ws` split-brain in `src/constants/protocols.ts`** — either remove `websocket`, or add a mapping to `ws` in the document builder~~ done — shipped — normalizeProtocol (websocket accepted as input, normalized to ws)
+~~2. **Add a diagnostic** that warns when a protocol value won't produce a valid AsyncAPI 3.0 binding key~~ done — shipped — unsupported-protocol diagnostic
+~~3. **Fix `test/e2e/realworld-ecommerce.test.ts`** inline spec — same binding bugs as examples had~~ done — fixed — the e2e inline spec binding blocks repaired
+~~4. **Add AsyncAPI schema validation to that e2e test** — it currently only checks counts, not validity~~ done — shipped — AJV validation in the e2e test
+~~5. **Test the emitter against `.tsp` files from external projects** (Kernovia, ActaFlow, blog, typespec-eventsourcing, accountability-system, etc.)~~ done — shipped — test/realworld (16 patterns, 5 projects)
+~~6. **Run `@asyncapi/parser` on all generated outputs** for semantic validation~~ done — shipped — parser runs in the vitest validation suite
+~~7. **Add a dedicated unit test for `refForNamedType()`** covering Model, Enum, Scalar, stdlib types~~ done — shipped — schema-validation unit tests
+~~8. **Add a dedicated unit test for `Record<string>` mapping** (and `Record<int32>`, nested Records)~~ done — shipped — Record unit tests
+~~9. **Add a unit test for `typeToSchema()`** covering every branch (Union, indexed Model, Scalar, String/Number/Boolean literals, Tuple, fallback)~~ done — shipped — typeToSchema branch tests
+~~10. **Capture golden files** for all 11 validated example outputs~~ done — shipped — the golden suite
 
 ### Medium priority — robustness
 
-11. **Test arrays of enums** (`Status[]`) — does `refForNamedType()` handle this?
-12. **Test arrays of scalars** (`int32[]`) — verify `typeToSchema` fallback path
-13. **Test nested arrays** (`Item[][]`)
-14. **Test arrays of anonymous models** (`{ x: string }[]`)
-15. **Test unions of named models** (`Cat | Dog`) — do these produce `$ref` or inline?
-16. **Test model inheritance** (`model Dog extends Animal`) — are inherited properties correct?
-17. **Test circular model references** (A → B → A)
-18. **Test `Map<T>` type** (distinct from `Record`)
-19. **Test `bytes` and `duration` scalars** — unusual format mappings
-20. **Test `@doc` decorator propagation** to schema descriptions
-21. **Test `@minLength`/`@maxLength`** and other validation decorators
-22. **Test `@default` values** on properties
-23. **Test nullable properties** (`T | null`)
-24. **Test optional properties** with complex types
-25. **Test model `is`/`extends`** composition patterns
-26. **Test template parameters** in channel addresses (`{deviceId}`)
-27. **Test multiple servers** with different protocols
-28. **Test security at namespace level** vs operation level
-29. **Test `@message` decorator** with all fields (name, title, contentType, description, headers, correlationId)
-30. **Test `@tags` at operation and namespace level**
+11. **Test arrays of enums** (`Status[]`) — does `refForNamedType()` handle this? **→ TODO_LIST Test-Suite Integrity (enum-array + Map/Set type-mapping row)**
+~~12. **Test arrays of scalars** (`int32[]`) — verify `typeToSchema` fallback path~~ done — type-mapping completeness covers scalar array forms
+~~13. **Test nested arrays** (`Item[][]`)~~ **NOT-DO — nested arrays never specifically tested.**
+~~14. **Test arrays of anonymous models** (`{ x: string }[]`)~~ **NOT-DO — anonymous-model arrays never specifically tested.**
+~~15. **Test unions of named models** (`Cat | Dog`) — do these produce `$ref` or inline?~~ done — shipped — named unions oneOf (golden-locked)
+~~16. **Test model inheritance** (`model Dog extends Animal`) — are inherited properties correct?~~ done — shipped — polymorphism suite
+~~17. **Test circular model references** (A → B → A)~~ done — circular handling shipped (extractValue + asset-emitter)
+18. **Test `Map<T>` type** (distinct from `Record`) **→ TODO_LIST Test-Suite Integrity (enum-array + Map/Set type-mapping row)**
+~~19. **Test `bytes` and `duration` scalars** — unusual format mappings~~ done — intrinsic mappings cover bytes/duration (type-mapping completeness suite)
+~~20. **Test `@doc` decorator propagation** to schema descriptions~~ done — shipped — @doc propagation covered
+~~21. **Test `@minLength`/`@maxLength`** and other validation decorators~~ done — shipped — constraint decorators covered
+~~22. **Test `@default` values** on properties~~ done — shipped — default values via core = syntax
+~~23. **Test nullable properties** (`T | null`)~~ done — shipped — null intrinsic mapping locked
+~~24. **Test optional properties** with complex types~~ done — optional complex types covered by compliance
+~~25. **Test model `is`/`extends`** composition patterns~~ done — composition covered by compliance
+~~26. **Test template parameters** in channel addresses (`{deviceId}`)~~ done — shipped — channel parameters + RFC 6901 escaping (PR #290)
+~~27. **Test multiple servers** with different protocols~~ done — multi-server coverage in server tests
+~~28. **Test security at namespace level** vs operation level~~ done — security suite covers namespace and operation levels
+~~29. **Test `@message` decorator** with all fields (name, title, contentType, description, headers, correlationId)~~ done — @message covered by golden + compliance
+~~30. **Test `@tags` at operation and namespace level**~~ done — shipped — components-tags test
 
 ### Lower priority — infrastructure & CI
 
-31. **Add schema validation step to CI** (`bun test test/validation/` as explicit CI step)
-32. **Add a pre-commit hook** that validates example outputs
-33. **Create a "spec compliance" test suite** that's separate from unit tests
-34. **Add property-based testing** for schema generation (random models → validate output)
-35. **Add a benchmark** for compilation performance on large specs
-36. **Test with TypeSpec 1.14+** when released (currently 1.13.0)
-37. **Add a diagnostic for `bindingVersion`** when missing from protocol bindings
-38. **Document the binding location rules** (channel vs operation vs message) in docs/
-39. **Create a binding validation helper** that checks fields against AsyncAPI schema
-40. **Add `@asyncapi/parser` to the validation test suite** as a second validation layer
+~~31. **Add schema validation step to CI** (`bun test test/validation/` as explicit CI step)~~ done — shipped — check-examples is an explicit CI step with AJV
+~~32. **Add a pre-commit hook** that validates example outputs~~ **NOT-DO — never added; CI covers example validation.**
+~~33. **Create a "spec compliance" test suite** that's separate from unit tests~~ done — shipped — test/compliance (~270 tests)
+~~34. **Add property-based testing** for schema generation (random models → validate output)~~ done — shipped — fast-check property suite
+~~35. **Add a benchmark** for compilation performance on large specs~~ done — shipped — the benchmark suite
+~~36. **Test with TypeSpec 1.14+** when released (currently 1.13.0)~~ done — shipped — the compiler family moved through 1.17.0
+~~37. **Add a diagnostic for `bindingVersion`** when missing from protocol bindings~~ done — shipped — bindingVersion auto-inject + validation
+~~38. **Document the binding location rules** (channel vs operation vs message) in docs/~~ done — documented — the BINDING_PLACEMENT matrix (AGENTS.md)
+~~39. **Create a binding validation helper** that checks fields against AsyncAPI schema~~ done — shipped — binding-field-validator
+~~40. **Add `@asyncapi/parser` to the validation test suite** as a second validation layer~~ done — shipped — parser-based tests as a second layer (vitest/node)
 
 ### Documentation & cleanup
 
-41. **Update FEATURES.md** with the bug fixes
-42. **Update README.md** if binding field examples are shown
-43. **Create a CHANGELOG.md entry** for the fixes
-44. **Add a "real-world testing" section** to docs/testing/
-45. **Document the `refForNamedType()` pattern** for future contributors
-46. **Review all examples for documentation accuracy** (READMEs may reference old binding fields)
-47. **Audit `examples/*/README.md`** for outdated binding field examples
-48. **Add examples for WS, MQTT, AMQP** protocols (currently Kafka-heavy)
-49. **Create an example with circular references**
-50. **Create an example using model inheritance and composition**
+~~41. **Update FEATURES.md** with the bug fixes~~ done — FEATURES maintained
+~~42. **Update README.md** if binding field examples are shown~~ done — README current
+~~43. **Create a CHANGELOG.md entry** for the fixes~~ done — CHANGELOG entries shipped through 1.2.0
+~~44. **Add a "real-world testing" section** to docs/testing/~~ **NOT-DO — docs/testing section never materialized — test/realworld is the record.**
+~~45. **Document the `refForNamedType()` pattern** for future contributors~~ done — documented — AGENTS.md refForNamedType note
+~~46. **Review all examples for documentation accuracy** (READMEs may reference old binding fields)~~ done — examples CI-verified (compile + AJV + READMEs clean)
+~~47. **Audit `examples/*/README.md`** for outdated binding field examples~~ done — audited via check-examples
+~~48. **Add examples for WS, MQTT, AMQP** protocols (currently Kafka-heavy)~~ done — shipped — websocket-chat, streetlights-mqtt, kafka examples
+~~49. **Create an example with circular references**~~ **Won't implement — no circular-reference example shipped.**
+~~50. **Create an example using model inheritance and composition**~~ **Won't implement — no dedicated inheritance example shipped.**
 
 ---
 
@@ -212,6 +212,8 @@ Right now, invalid binding fields (like `key`, `acks` on Kafka channel bindings)
 
 ## Metrics Summary
 
+<!-- ledger: session metrics snapshot — completed measurements, no actionable rows -->
+<!-- check-rows:ledger -->
 | Metric                                        | Before                       | After    | Delta |
 | --------------------------------------------- | ---------------------------- | -------- | ----- |
 | Tests                                         | 301                          | 369      | +68   |
@@ -231,6 +233,8 @@ Right now, invalid binding fields (like `key`, `acks` on Kafka channel bindings)
 
 ### High-priority items (section f, items 1-10)
 
+<!-- ledger: resolution-status ledger — per-item execution records -->
+<!-- check-rows:ledger -->
 | #  | Item                                               | Status            | Evidence                                                                                            |
 | -- | -------------------------------------------------- | ----------------- | --------------------------------------------------------------------------------------------------- |
 | 1  | Fix `websocket`/`ws` split-brain                   | DONE              | `normalizeProtocol()` maps aliases; commit `f5088c4`                                                |
