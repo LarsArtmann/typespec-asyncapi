@@ -219,6 +219,22 @@ What remains is the gated release chain and the tail:
 - [ ] Retire `tsx` remnants: swap the typecheck runner to plain `tsc`
       (docs/status/2026-10-23_09-46:125).
 - [ ] Trash `scripts/ns-test/` (113-byte scratch, not referenced; owner call).
+- [ ] Dependabot automerge policy decision — enable green-CI + gates
+      automerge for minor/patch + security groups, majors stay manual
+      (docs/status/2026-11-01_23-58:73).
+- [ ] CI gate: `pnpm audit` on the root workspace (currently manual only;
+      the one advisory is the documented minimatch dismissal)
+      (docs/status/2026-11-01_23-58:72).
+- [ ] CI check: fail when the lockfile's embedded root manifest disagrees
+      with `package.json` — the drift class that bit twice
+      (docs/status/2026-11-01_23-58:74).
+- [ ] Scheduled `pnpm outdated` report workflow so bumps arrive in batches
+      (docs/status/2026-11-01_23-58:75).
+- [ ] Branch protection review — direct master pushes are possible; decide
+      if that stays (docs/status/2026-11-01_23-58:76).
+- [ ] Revisit `website/video` npm overrides on every hyperframes bump —
+      floor pins can mask or conflict with newer trees
+      (docs/status/2026-11-01_23-58:64).
 - [ ] Refresh CONTRIBUTING.md commands/testing guidance from Bun/bun:test
       to pnpm + Vitest (Bun stays for coverage)
       (docs/status/2026-07-22_03-46:267).
