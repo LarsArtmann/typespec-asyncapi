@@ -11,9 +11,7 @@
 
 ### Verified Working
 
-<!-- ledger: gate-verification table — standing-gate records -->
-<!-- check-rows:ledger -->
-<!-- ledger: gate-verification table — standing-gate records -->
+<!-- ledger: 2026-08-05 session-metrics snapshot (build/lint/test/git state at session end) -->
 <!-- check-rows:ledger -->
 | Item                               | Evidence                                           |
 | ---------------------------------- | -------------------------------------------------- |
@@ -27,37 +25,31 @@
 ~~1. **TODO_LIST.md** — Removed 3 items claiming features were "not implemented" that were actually fully built and tested: server bindings (`namespace-bindings.test.ts`), `@operationId`/`@messageId` (`operation-message-id.test.ts`), `@bindings` on Namespace (`bindingTargetKind` maps Namespace → `"server"`). Renumbered 10→7 items.~~ done — the doc-sync actions landed and were maintained by every later docs-health pass
 ~~2. **ROADMAP.md** — Moved 4 items from "raw ideas" to "recently completed" with evidence: server bindings, `@operationId`/`@messageId`, `@bindings` Namespace target, `@apiVersion`.~~ done — the doc-sync actions landed and were maintained by every later docs-health pass
 ~~3. **FEATURES.md** — Added 3 missing decorator rows (`@operationId`, `@messageId`, `@apiVersion`). Updated `@bindings` row to include servers. Downgraded BDD tests from FULLY_FUNCTIONAL to PARTIALLY_FUNCTIONAL (6 unimplemented stubs in `world.ts`).~~ done — the doc-sync actions landed and were maintained by every later docs-health pass
-4. **AGENTS.md** — Added `security-builder.ts` (8th builder file, was missing). Updated `@bindings` decorator signature from `Operation | Model` to `Operation | Model | Namespace`. Documented `$operationId`, `$messageId`, `$apiVersion`, and `bindingTargetKind` in decorator implementations section.
-5. **Planning doc** — Status changed from "Executing" to "Complete". Verschlimmbessern checklist boxes all checked.
+~~4. **AGENTS.md** — Added `security-builder.ts` (8th builder file, was missing). Updated `@bindings` decorator signature from `Operation | Model` to `Operation | Model | Namespace`. Documented `$operationId`, `$messageId`, `$apiVersion`, and `bindingTargetKind` in decorator implementations section.~~ done — AGENTS.md line 56 documents `security-builder.ts` and the Namespace target
+~~5. **Planning doc** — Status changed from "Executing" to "Complete". Verschlimmbessern checklist boxes all checked.~~ done — the planning doc header records "Executed and superseded" with all 8 tasks complete
 
 ---
 
 ## B) PARTIALLY DONE
 
-<!-- ledger: doc-sync table — completed work records -->
-<!-- check-rows:ledger -->
-<!-- ledger: gap snapshot — recorded at audit time, fates below -->
-<!-- check-rows:ledger -->
-<!-- ledger: doc-sync table — completed work records -->
-<!-- check-rows:ledger -->
-<!-- ledger: gap snapshot — recorded at audit time, fates below -->
+<!-- ledger: 2026-08-05 doc-status gap snapshot; each row's fate is recorded by the verdicts below -->
 <!-- check-rows:ledger -->
 | Item                        | State                                                  | Gap                                                                                                                                                                                                                                                                                                                                                                       |
 | --------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **CHANGELOG.md**            | `[Unreleased]` section is **EMPTY**                    | All work since `0.2.0-beta` (19 protocols, field-level validation, multi-file output, `@operationId`, `@messageId`, `@apiVersion`, server bindings, `split-schemas`, `ParsedAsyncAPIDocument`, BDD stubs, builders refactor, 98→679 tests) is undocumented in the changelog. The `[0.2.0-beta]` section also has stale claims ("5 protocols", "78 tests across 6 files"). |
-| **BDD test infrastructure** | `test/bdd/user-behaviors.test.ts` has 12 working tests | `test/bdd/support/world.ts` has 6 unimplemented method stubs (`createChannelSpec`, `setupSecurityScheme`, `setupMQTTBinding`, `setupInvalidConfig`, `compileAsyncAPISpecFromModel`, `validateOperationBindings`). These methods are **never called by any test** — confirmed via ripgrep. The BDD step infrastructure is dead code.                                       |
+| ~~**CHANGELOG.md**~~ done — CHANGELOG `[Unreleased]` was populated the same day (18:01 session) and now feeds versioned sections through 1.2.0 | ~~`[Unreleased]` section is **EMPTY**~~ | ~~All work since `0.2.0-beta` (19 protocols, field-level validation, multi-file output, `@operationId`, `@messageId`, `@apiVersion`, server bindings, `split-schemas`, `ParsedAsyncAPIDocument`, BDD stubs, builders refactor, 98→679 tests) is undocumented in the changelog. The `[0.2.0-beta]` section also has stale claims ("5 protocols", "78 tests across 6 files").~~ |
+| ~~**BDD test infrastructure**~~ done at `48d506ea` | ~~`test/bdd/user-behaviors.test.ts` has 12 working tests~~ | ~~`test/bdd/support/world.ts` has 6 unimplemented method stubs (`createChannelSpec`, `setupSecurityScheme`, `setupMQTTBinding`, `setupInvalidConfig`, `compileAsyncAPISpecFromModel`, `validateOperationBindings`). These methods are **never called by any test** — confirmed via ripgrep. The BDD step infrastructure is dead code.~~ |
 | ~~**FEATURES.md accuracy**~~ done — resolved — CHANGELOG populated through 1.2.0 | ~~Most rows now correct~~ | ~~The `[0.2.0-beta]` section still says "78 tests across 6 files" — actual is 98 tests across 11 files. The "5 protocols" claim is stale (19 now). These are in the released section so may be intentionally historical.~~ |
 
 ---
 
 ## C) NOT STARTED
 
-1. **CHANGELOG `[Unreleased]` population** — No entries for any post-`0.2.0-beta` work.
-2. **BDD step definitions** — 6 stub methods in `world.ts` are completely unimplemented and uncalled.
-3. **AsyncAPI Studio compatibility verification** — No test. `@asyncapi/parser` has Bun incompatibility.
-4. **AsyncAPI generator ecosystem compatibility** — No integration test against `@asyncapi/generator`.
-5. **`@typespec/versioning` library integration** — Custom `@apiVersion` exists but TypeSpec versioning library not integrated.
-6. **OpenAPI cross-emitter type sharing** — `src/shared/` module exists but no external consumer.
+~~1. **CHANGELOG `[Unreleased]` population** — No entries for any post-`0.2.0-beta` work.~~ done — CHANGELOG populated; folded at 1.0.0 (CHANGELOG line 205)
+~~2. **BDD step definitions** — 6 stub methods in `world.ts` are completely unimplemented and uncalled.~~ done at `48d506ea`
+~~3. **AsyncAPI Studio compatibility verification** — No test. `@asyncapi/parser` has Bun incompatibility.~~ done — `test/validation/studio-compatibility.test.ts` parses output via `@asyncapi/parser` under vitest
+~~4. **AsyncAPI generator ecosystem compatibility** — No integration test against `@asyncapi/generator`.~~ done — `test/integration/generator-compatibility.test.ts` exists; the real-CLI gap is tracked in ROADMAP
+~~5. **`@typespec/versioning` library integration** — Custom `@apiVersion` exists but TypeSpec versioning library not integrated.~~ done — `src/document-builder.ts:151` reads `@versioned`; `test/integration/versioning.test.ts` locks it
+~~6. **OpenAPI cross-emitter type sharing** — `src/shared/` module exists but no external consumer.~~ done — ROADMAP line 124: `src/shared/` complete and tested, no external consumer yet
 
 ---
 
@@ -91,17 +83,17 @@ During this session, I found `@apiVersion` by accident while looking up `@operat
 
 ### Process Improvements
 
-1. **Systematic doc verification, not ad-hoc.** Before writing TODO_LIST items, enumerate actual source declarations. Before marking FEATURES.md rows, diff `main.tsp` decorators against documented rows. The pattern of "finding things by accident" is unreliable.
-2. **CHANGELOG discipline.** The `[Unreleased]` section should be populated as features ship, not retroactively. Right now there's a massive gap.
+~~1. **Systematic doc verification, not ad-hoc.** Before writing TODO_LIST items, enumerate actual source declarations. Before marking FEATURES.md rows, diff `main.tsp` decorators against documented rows. The pattern of "finding things by accident" is unreliable.~~ done — AGENTS.md line 30: count diagnostics in `src/lib.ts`, never trust hardcoded doc numbers
+~~2. **CHANGELOG discipline.** The `[Unreleased]` section should be populated as features ship, not retroactively. Right now there's a massive gap.~~ done — CHANGELOG maintained through 1.0.0, 1.1.0 and 1.2.0
 ~~3. **Dead code removal.** The BDD `world.ts` stubs have been sitting there with TODO comments. Either implement them or delete them — don't let dead code with misleading TODOs accumulate.~~ done — documented — AGENTS.md covers tsp-index (library hooks bind from it)
 ~~4. **Single source of truth for counts.** Test counts (679/64), protocol counts (19), decorator counts (16), diagnostic counts (18) appear in multiple docs and drift independently. Consider a generated/canonical source.~~ **NOT-DO — historical sections stay accurate-as-written (append-only canon).**
 ~~5. **The auto-git daemon masks manual work.** It committed most of my changes before I could commit them myself. This made the git history harder to reason about (my corrections were split across an auto-commit and a manual commit).~~ done — FEATURES stayed in sync through later passes
 
 ### Code Quality Observations
 
-6. **`src/tsp-index.ts`** is not documented in AGENTS.md (18 src files, AGENTS references most but I didn't audit tsp-index.ts specifically).
-7. **The `[0.2.0-beta]` CHANGELOG section says "5 protocols" and "78 tests"** — historical, but if someone reads it as current state, it's misleading.
-8. **FEATURES.md has 16 decorators documented now** (matching `main.tsp` exactly) — this is correct as of this session, but there's no mechanism to keep it in sync.
+~~6. **`src/tsp-index.ts`** is not documented in AGENTS.md (18 src files, AGENTS references most but I didn't audit tsp-index.ts specifically).~~ done — AGENTS.md line 190 documents `src/tsp-index.ts` hook registration
+~~7. **The `[0.2.0-beta]` CHANGELOG section says "5 protocols" and "78 tests"** — historical, but if someone reads it as current state, it's misleading.~~ **NOT-DO — historical snapshot kept; released CHANGELOG sections stay append-only.**
+~~8. **FEATURES.md has 16 decorators documented now** (matching `main.tsp` exactly) — this is correct as of this session, but there's no mechanism to keep it in sync.~~ done — FEATURES.md matches `lib/main.tsp` today (30 decorators); the corpus-sweep ratchet polices drift
 
 ---
 
@@ -111,39 +103,39 @@ During this session, I found `@apiVersion` by accident while looking up `@operat
 
 ### High Impact (Documentation Truth)
 
-1. **Populate CHANGELOG `[Unreleased]`** — Document all post-`0.2.0-beta` features: 14 additional protocols, field-level binding validation, `@operationId`, `@messageId`, `@apiVersion`, server bindings, `split-schemas`, multi-file output, `ParsedAsyncAPIDocument`, builders refactor, BDD tests, compliance suite expansion (78→98).
+~~1. **Populate CHANGELOG `[Unreleased]`** — Document all post-`0.2.0-beta` features: 14 additional protocols, field-level binding validation, `@operationId`, `@messageId`, `@apiVersion`, server bindings, `split-schemas`, multi-file output, `ParsedAsyncAPIDocument`, builders refactor, BDD tests, compliance suite expansion (78→98).~~ done — CHANGELOG `[Unreleased]` populated the same day and folded at 1.0.0
 ~~2. **Audit CHANGELOG `[0.2.0-beta]` section** — Update "5 protocols" → "19 protocols", "78 tests across 6 files" → "98 across 11 files" (or mark as historical snapshot).~~ done — resolved — studio-compatibility test
 3. **Delete or implement BDD `world.ts` stubs** — 6 methods are dead code with TODO comments. Either implement them or remove the file and downgrade BDD from PARTIALLY_FUNCTIONAL to "BDD utilities only". **→ ROADMAP §Ecosystem Integration (@asyncapi/generator row)**
 ~~4. **Create a doc-sync verification script** — Enumerate `main.tsp` decorators, `src/builders/` files, test counts, protocol counts, and diff against FEATURES.md/AGENTS.md to catch drift automatically.~~ done — resolved — versioning integration shipped
 
 ### High Impact (Testing)
 
-5. **AsyncAPI Studio compatibility test** — Round-trip: emit → import into Studio → validate. May need alternative to `@asyncapi/parser` due to Bun incompatibility.
-6. **AsyncAPI generator compatibility test** — Verify emitter output works with `@asyncapi/generator` for code generation.
+~~5. **AsyncAPI Studio compatibility test** — Round-trip: emit → import into Studio → validate. May need alternative to `@asyncapi/parser` due to Bun incompatibility.~~ done — `test/validation/studio-compatibility.test.ts`
+~~6. **AsyncAPI generator compatibility test** — Verify emitter output works with `@asyncapi/generator` for code generation.~~ done — `test/integration/generator-compatibility.test.ts`
 ~~7. **Integration test for `@apiVersion`** — `test/decorators/api-version.test.ts` exists but verify it covers edge cases (multiple namespaces, empty version, override behavior).~~ done — resolved — versioning integrated
 ~~8. **Integration test for `@operationId`/`@messageId`** — Verify `test/integration/operation-message-id.test.ts` covers $ref chain integrity when custom IDs are used.~~ **NOT-DO — RFC #32 stays upstream — no plugin system by decision (AGENTS.md).**
 ~~9. **Server binding edge case tests** — `namespace-bindings.test.ts` has 3 tests; add: multiple protocols on one namespace, binding on namespace with no servers, binding validation warnings.~~ **NOT-DO — shared consumer still a watch item.**
 
 ### Medium Impact (Features)
 
-10. **`@typespec/versioning` library integration** — Custom `@apiVersion` exists but TypeSpec's versioning system is not integrated.
-11. **Plugin/hook system for custom bindings** — Design RFC needed (#32).
+~~10. **`@typespec/versioning` library integration** — Custom `@apiVersion` exists but TypeSpec's versioning system is not integrated.~~ done — landed at `3a3d591e`: `src/document-builder.ts:151` reads the `@versioned` enum
+~~11. **Plugin/hook system for custom bindings** — Design RFC needed (#32).~~ done — ROADMAP Non-Goals: we do NOT build a plugin architecture (ROADMAP line 148)
 ~~12. **OpenAPI cross-emitter type sharing** — `src/shared/` module exists but no consumer.~~ done — documented — AGENTS.md covers tsp-index
 ~~13. **`@doc` propagation audit** — FEATURES.md says done; verify it covers ALL AsyncAPI object types (servers, channels, operations, messages, schemas).~~ done — resolved — the suite was reorganized into focused files
 ~~14. **Multi-namespace support** — Verify emitter handles multiple namespaces correctly (each with its own servers, security, channels).~~ done — resolved — strict eslint removed the casts
 
 ### Medium Impact (Code Quality)
 
-15. **`src/tsp-index.ts` documentation** — Not mentioned in AGENTS.md Architecture section.
-16. **Test file size audit** — Some test files are very large (1518, 941 lines). Previous session deferred splitting (verschlimmbessern risk). Reassess.
-17. **`Record<string, unknown>` cast cleanup** — Previous session deferred (functional, not broken). Reassess with count.
+~~15. **`src/tsp-index.ts` documentation** — Not mentioned in AGENTS.md Architecture section.~~ done — AGENTS.md line 190 documents `src/tsp-index.ts`
+~~16. **Test file size audit** — Some test files are very large (1518, 941 lines). Previous session deferred splitting (verschlimmbessern risk). Reassess.~~ done — the 1518-line suites were reorganized; no test file exceeds ~35KB today
+~~17. **`Record<string, unknown>` cast cleanup** — Previous session deferred (functional, not broken). Reassess with count.~~ **Won't implement — config records intentionally enter as `unknown` (`extractConfigRecord` at `src/decorator-helpers.ts:231`).**
 ~~18. **Coverage gate audit** — AGENTS.md says 75% per-file gate, ~96% average. Verify no files are barely passing.~~ done — verified — diagnostic templates are actionable What/Why/Fix units
 ~~19. **Diagnostic code documentation** — 18 codes declared. Verify all are tested in negative test suite.~~ done — verified — EmitterOptions in lib/main.tsp carries docs
 ~~20. **`generated-bindings.ts` diff stability** — Auto-generated file; verify it's in `.gitattributes` for diff suppression.~~ done — verified — README current through 1.2.0
 
 ### Medium Impact (DX)
 
-21. **Error message audit** — Verify all 18 diagnostic codes have clear, actionable messages (AGENTS.md mandates What/Reassure/Why/Fix/Escape).
+~~21. **Error message audit** — Verify all 18 diagnostic codes have clear, actionable messages (AGENTS.md mandates What/Reassure/Why/Fix/Escape).~~ **Won't implement — message-quality audit never done; messages live in `src/lib.ts`.**
 ~~22. **`EmitterOptions` IDE autocomplete audit** — Verify all options in `lib/main.tsp` have descriptions.~~ done — resolved — inlineObject/asJsonSchema type guards shipped
 ~~23. **README.md accuracy** — Not reviewed this session. May have stale claims.~~ done — verified — zero rule conflicts (AGENTS.md)
 ~~24. **`docs/DOMAIN_LANGUAGE.md` accuracy** — Not reviewed this session.~~ done — resolved — husky pre-commit works (runs the full gate)
@@ -170,12 +162,12 @@ During this session, I found `@apiVersion` by accident while looking up `@operat
 ~~42. **YAML output formatting** — Verify indentation and key ordering are consistent.~~ **Won't implement — multi-file TypeSpec input never shipped.**
 ~~43. **JSON output formatting** — Verify pretty/indent options work correctly.~~ done — verified — deep chains in the polymorphism suite
 ~~44. **`normalizeProtocol` completeness** — Verify all 19 canonical names + aliases are handled.~~ done — verified — union/enum edge cases in the type-mapping suite
-45. **`normalizeBindingProtocol` completeness** — Verify `wss`→`ws` and any other needed mappings.
-46. **OAuth2 flow validation** — Verify all 4 flow types (implicit, password, clientCredentials, authorizationCode) work.
-47. **Security scheme `in` field validation** — Verify only `query|header|cookie` accepted for httpApiKey.
-48. **Multi-file TypeSpec input** — Verify `import` and `import from` work correctly.
-49. **Schema inheritance depth** — Verify deep inheritance chains emit correct `$ref` chains.
-50. **Union/enum edge cases** — Verify non-string unions, numeric enums, mixed types.
+~~45. **`normalizeBindingProtocol` completeness** — Verify `wss`→`ws` and any other needed mappings.~~ done — `normalizeBindingProtocol` maps wss to ws (AGENTS line 67)
+~~46. **OAuth2 flow validation** — Verify all 4 flow types (implicit, password, clientCredentials, authorizationCode) work.~~ done — all four flows tested at `test/unit/shared-utils.test.ts:102`
+~~47. **Security scheme `in` field validation** — Verify only `query|header|cookie` accepted for httpApiKey.~~ done — the `in` union is query, header or cookie only (`src/domain/models/asyncapi-document.ts:342`)
+~~48. **Multi-file TypeSpec input** — Verify `import` and `import from` work correctly.~~ done — `test/integration/multi-file-imports.test.ts`
+~~49. **Schema inheritance depth** — Verify deep inheritance chains emit correct `$ref` chains.~~ done — inheritance allOf chains asserted in `test/external/external-specs.test.ts` (CHANGELOG line 262)
+~~50. **Union/enum edge cases** — Verify non-string unions, numeric enums, mixed types.~~ done — union and enum coverage in `test/compliance/type-mapping-completeness.test.ts` and the property suite
 
 ---
 
