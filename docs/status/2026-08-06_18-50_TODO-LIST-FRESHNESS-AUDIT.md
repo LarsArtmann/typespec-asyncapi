@@ -12,20 +12,20 @@
 
 | Doc           | What was stale                                                                                       | Fixed to                                                        |
 | ------------- | ---------------------------------------------------------------------------------------------------- | --------------------------------------------------------------- |
-| `AGENTS.md`   | "25 decorators"                                                                                      | **26** (16 core + 10 reusable-component)                        |
-| `AGENTS.md`   | "24 codes (19 error + 5 warning)"                                                                    | **25 codes (19 error + 6 warning)**                             |
-| `AGENTS.md`   | "9 reusable-component decorators"                                                                    | **10** (5 definition + 5 reference, added `@useChannelBinding`) |
-| `AGENTS.md`   | "4 reference decorators" in `use-decorators.ts`                                                      | **5** (added `$useChannelBinding`)                              |
-| `AGENTS.md`   | Builder file count "10 files"                                                                        | **11 files** (added `_imports.ts`)                              |
-| `AGENTS.md`   | 8 stale line counts (emitter.ts, schema-emitter.ts, constraint-mapper.ts, document-builder.ts, etc.) | All corrected to actual `wc -l` values                          |
-| `AGENTS.md`   | "~208 tests across 18 files" (compliance suite)                                                      | **~272 tests** across 18 files                                  |
-| `AGENTS.md`   | "38 tests" constraint decorators                                                                     | **54 tests**                                                    |
-| `AGENTS.md`   | "13 tests" polymorphism                                                                              | **15 tests**                                                    |
-| `AGENTS.md`   | "14 tests" reusable components                                                                       | **41 tests** (added channelBindings)                            |
-| `AGENTS.md`   | "components.messageBindings" only                                                                    | Added **components.channelBindings**                            |
-| `FEATURES.md` | Split-brain: line 7 said "26 decorators" but line 51 said "25 decorators" and "9 reusable-component" | Line 51 corrected to **26** and **10**                          |
-| `README.md`   | "22 compile-time diagnostics (17 error + 5 warning)"                                                 | **25 (19 error + 6 warning)**                                   |
-| `README.md`   | "24 codes (19 error + 5 warning)" in metrics table                                                   | **25 codes (19 error + 6 warning)**                             |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~"25 decorators"~~ | ~~**26** (16 core + 10 reusable-component)~~ |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~"24 codes (19 error + 5 warning)"~~ | ~~**25 codes (19 error + 6 warning)**~~ |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~"9 reusable-component decorators"~~ | ~~**10** (5 definition + 5 reference, added `@useChannelBinding`)~~ |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~"4 reference decorators" in `use-decorators.ts`~~ | ~~**5** (added `$useChannelBinding`)~~ |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~Builder file count "10 files"~~ | ~~**11 files** (added `_imports.ts`)~~ |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~8 stale line counts (emitter.ts, schema-emitter.ts, constraint-mapper.ts, document-builder.ts, etc.)~~ | ~~All corrected to actual `wc -l` values~~ |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~"~208 tests across 18 files" (compliance suite)~~ | ~~**~272 tests** across 18 files~~ |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~"38 tests" constraint decorators~~ | ~~**54 tests**~~ |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~"13 tests" polymorphism~~ | ~~**15 tests**~~ |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~"14 tests" reusable components~~ | ~~**41 tests** (added channelBindings)~~ |
+| ~~`AGENTS.md`~~ done at `ea74c8a` | ~~"components.messageBindings" only~~ | ~~Added **components.channelBindings**~~ |
+| ~~`FEATURES.md`~~ done at `ea74c8a` | ~~Split-brain: line 7 said "26 decorators" but line 51 said "25 decorators" and "9 reusable-component"~~ | ~~Line 51 corrected to **26** and **10**~~ |
+| ~~`README.md`~~ done at `ea74c8a` | ~~"22 compile-time diagnostics (17 error + 5 warning)"~~ | ~~**25 (19 error + 6 warning)**~~ |
+| ~~`README.md`~~ done at `ea74c8a` | ~~"24 codes (19 error + 5 warning)" in metrics table~~ | ~~**25 codes (19 error + 6 warning)**~~ |
 
 ### Verification performed
 
@@ -97,16 +97,16 @@ When `pnpm run verify` failed with `minimal-decorators.ts:425 lines (max 400)`, 
 
 ### Process improvements
 
-1. **Auto-git daemon awareness** — Every manual edit competes with the daemon. Before writing ANY file the daemon might touch (TODO_LIST.md, AGENTS.md, CHANGELOG.md), check `git log --oneline -3` first. After writing, check again.
-2. **TODO_LIST.md ownership ambiguity** — Both I and the daemon write to TODO_LIST.md. This is a split-brain. Either the daemon should not touch it, or I should treat it as read-only and append-only.
-3. **Test count is a moving target** — The daemon adds tests. Hardcoding "1010" or "1017" in docs guarantees drift. Consider removing exact counts from FEATURES.md/ROADMAP.md or using "1000+" phrasing.
-4. **Line counts in AGENTS.md are inherently stale** — Any source file line count documented in AGENTS.md will drift on the next formatting pass. Consider removing per-file line counts or replacing with "under 400 lines" phrasing (which is what the linter enforces).
-5. **Doc verification should be atomic** — I verified facts, then wrote fixes, then the daemon changed things. The verification and fix should happen in one atomic pass: verify → write → commit immediately.
+~~1. **Auto-git daemon awareness** — Every manual edit competes with the daemon. Before writing ANY file the daemon might touch (TODO_LIST.md, AGENTS.md, CHANGELOG.md), check `git log --oneline -3` first. After writing, check again.~~ **NOT-DO — process lesson — no work product.**
+~~2. **TODO_LIST.md ownership ambiguity** — Both I and the daemon write to TODO_LIST.md. This is a split-brain. Either the daemon should not touch it, or I should treat it as read-only and append-only.~~ done — `AGENTS.md` tooling notes document the auto-commit daemon and CI alerting
+3. **Test count is a moving target** — The daemon adds tests. Hardcoding "1010" or "1017" in docs guarantees drift. Consider removing exact counts from FEATURES.md/ROADMAP.md or using "1000+" phrasing. **→ ROADMAP §Developer Experience — docs-entropy CI guard raw idea**
+~~4. **Line counts in AGENTS.md are inherently stale** — Any source file line count documented in AGENTS.md will drift on the next formatting pass. Consider removing per-file line counts or replacing with "under 400 lines" phrasing (which is what the linter enforces).~~ **Won't implement — AGENTS.md keeps line counts but the enforced bound is the lint 400-line cap.**
+~~5. **Doc verification should be atomic** — I verified facts, then wrote fixes, then the daemon changed things. The verification and fix should happen in one atomic pass: verify → write → commit immediately.~~ **NOT-DO — process lesson — no work product.**
 
 ### Technical improvements
 
-6. **`normalizeTagItem` extraction was good** — The daemon extracted `normalizeTagItem` from `minimal-decorators.ts` to `decorator-helpers.ts` to fix the 425→397 line overflow. This is the right pattern: keep files under the 400-line lint limit.
-7. **Security format fix reveals a documentation gap** — The trait security test was using AsyncAPI 2.x format (`{ userPassword: [] }`) instead of 3.1 (`{ type: "userPassword" }`). This suggests the trait config extraction in `namespace-decorators.ts` may not be fully documented. The AGENTS.md gotcha about `SecuritySchemeType` lists valid types but doesn't show the `SecurityRequirement` shape.
+~~6. **`normalizeTagItem` extraction was good** — The daemon extracted `normalizeTagItem` from `minimal-decorators.ts` to `decorator-helpers.ts` to fix the 425→397 line overflow. This is the right pattern: keep files under the 400-line lint limit.~~ done — lives in `src/decorator-helpers.ts` with `test/unit/normalize-tag-item.test.ts`
+~~7. **Security format fix reveals a documentation gap** — The trait security test was using AsyncAPI 2.x format (`{ userPassword: [] }`) instead of 3.1 (`{ type: "userPassword" }`). This suggests the trait config extraction in `namespace-decorators.ts` may not be fully documented. The AGENTS.md gotcha about `SecuritySchemeType` lists valid types but doesn't show the `SecurityRequirement` shape.~~ done — `AGENTS.md` line 188 documents the `SecurityRequirement` shape
 
 ---
 
@@ -114,65 +114,65 @@ When `pnpm run verify` failed with `minimal-decorators.ts:425 lines (max 400)`, 
 
 ### High priority — correctness and regression prevention
 
-1. **Add golden file test for `@discriminator` polymorphic output** — Only remaining TODO_LIST item. Lock `allOf`/`discriminator`/auto-required format.
-2. **Review daemon's `normalizeTagItem` in `decorator-helpers.ts`** — Verify it handles edge cases: empty string, numeric name, null externalDocs.url, circular references.
-3. **Review daemon's `storeTags` union type change** — `storeTags` now accepts `(string | Tag)[]`. Verify all callers handle both shapes correctly.
-4. **Review daemon's security trait test fix** — Verify the 3.1 `SecurityScheme` format is what the emitter actually outputs, not just what the test expects.
-5. **Update FEATURES.md test count** — 1010→1017 (or remove hardcoded count).
-6. **Update ROADMAP.md test count** — Same.
-7. **Verify CHANGELOG.md reflects daemon commits** — `beb6ac1` and `ffa5a10` added features/tests.
+~~1. **Add golden file test for `@discriminator` polymorphic output** — Only remaining TODO_LIST item. Lock `allOf`/`discriminator`/auto-required format.~~ done — `test/golden/polymorphism.expected.yaml` locks discriminator output at line 46
+~~2. **Review daemon's `normalizeTagItem` in `decorator-helpers.ts`** — Verify it handles edge cases: empty string, numeric name, null externalDocs.url, circular references.~~ done — `test/unit/normalize-tag-item.test.ts`
+~~3. **Review daemon's `storeTags` union type change** — `storeTags` now accepts `(string | Tag)[]`. Verify all callers handle both shapes correctly.~~ done — `src/state-writers.ts` line 173 plus mixed-shape tests in `test/compliance/components-tags.test.ts`
+~~4. **Review daemon's security trait test fix** — Verify the 3.1 `SecurityScheme` format is what the emitter actually outputs, not just what the test expects.~~ done — `test/golden/server-security.expected.yaml`
+~~5. **Update FEATURES.md test count** — 1010→1017 (or remove hardcoded count).~~ done — FEATURES.md carries audit-verified counts from 2026-10-03
+~~6. **Update ROADMAP.md test count** — Same.~~ done — ROADMAP.md carries audit-verified counts from 2026-10-03
+~~7. **Verify CHANGELOG.md reflects daemon commits** — `beb6ac1` and `ffa5a10` added features/tests.~~ done — `CHANGELOG.md` entries cover the golden channelBindings and JSDoc work at lines 280 and 282
 
 ### Medium priority — architecture and testing gaps
 
-8. **Add CI consolidation to TODO** — `.github/workflows/ci.yml` runs 6 separate steps instead of `pnpm run verify`. Consider consolidating.
-9. **Profile constraint table loop on 200-channel benchmark** — Verify performance hasn't regressed with new tag normalization.
-10. **Add property-based test for `normalizeTagItem`** — Fuzz with arbitrary `unknown` inputs, verify never throws.
-11. **Add test for `@useChannelBinding` with multiple channels** — Current test has one channel; verify multi-channel doesn't cross-contaminate.
-12. **Add test for mixed string/object `@tags` array** — `@tags(["foo", #{name: "bar", description: "baz"}])` should normalize both.
-13. **Review `@parameter` location validation** — Concurrent process added `validateParameterLocation()`. Verify the `$message.#` regex pattern is correct.
-14. **Add golden file for tag-rich output** — Lock the `info.tags` / `channel.tags` / `server.tags` output format.
-15. **Add golden file for `@example` message output** — Lock `MessageObject.examples` format.
-16. **Add integration test for full polymorphic chain** — Base → Derived with discriminator, verify `$ref` chain end-to-end.
-17. **Verify `@tags` deduplication across scopes** — Same tag name on operation + channel + namespace should produce one `components.tags` entry.
-18. **Add test for `@discriminator` on optional property** — Verify auto-required enforcement behavior.
-19. **Add test for multi-level inheritance (A → B → C)** — Verify `allOf` chain depth.
-20. **Add negative test: `@discriminator` on union** — Should produce compiler error, not emitter crash.
+~~8. **Add CI consolidation to TODO** — `.github/workflows/ci.yml` runs 6 separate steps instead of `pnpm run verify`. Consider consolidating.~~ done — `.github/workflows/ci.yml` runs one `pnpm run verify` step plus `check-examples`
+~~9. **Profile constraint table loop on 200-channel benchmark** — Verify performance hasn't regressed with new tag normalization.~~ done — `test/benchmark/performance.test.ts`
+~~10. **Add property-based test for `normalizeTagItem`** — Fuzz with arbitrary `unknown` inputs, verify never throws.~~ done — `test/unit/normalize-tag-item.test.ts`
+~~11. **Add test for `@useChannelBinding` with multiple channels** — Current test has one channel; verify multi-channel doesn't cross-contaminate.~~ **Won't implement — only single-channel `@useChannelBinding` cases exist — `test/compliance/reusable-components.test.ts` line 429; no cross-contamination test.**
+~~12. **Add test for mixed string/object `@tags` array** — `@tags(["foo", #{name: "bar", description: "baz"}])` should normalize both.~~ done — mixed string and object tags — `test/compliance/components-tags.test.ts` line 237
+~~13. **Review `@parameter` location validation** — Concurrent process added `validateParameterLocation()`. Verify the `$message.#` regex pattern is correct.~~ done — `src/namespace-decorators.ts` line 203 validates the `$message.#` pattern
+~~14. **Add golden file for tag-rich output** — Lock the `info.tags` / `channel.tags` / `server.tags` output format.~~ done — `test/golden/tag-rich.expected.yaml`
+~~15. **Add golden file for `@example` message output** — Lock `MessageObject.examples` format.~~ done — `test/golden/example-message.expected.yaml`
+~~16. **Add integration test for full polymorphic chain** — Base → Derived with discriminator, verify `$ref` chain end-to-end.~~ done — full polymorphic pattern test — `test/compliance/polymorphism.test.ts` line 109
+~~17. **Verify `@tags` deduplication across scopes** — Same tag name on operation + channel + namespace should produce one `components.tags` entry.~~ done — dedup across sources — `test/compliance/components-tags.test.ts` line 54
+~~18. **Add test for `@discriminator` on optional property** — Verify auto-required enforcement behavior.~~ done — `test/compliance/polymorphism.test.ts` line 167
+~~19. **Add test for multi-level inheritance (A → B → C)** — Verify `allOf` chain depth.~~ done — 4-level chain — `test/compliance/polymorphism.test.ts` line 67
+~~20. **Add negative test: `@discriminator` on union** — Should produce compiler error, not emitter crash.~~ **Won't implement — compiler rejects `@discriminator` on unions per `AGENTS.md` Gotchas; no emitter-side negative test.**
 
 ### Low priority — polish and documentation
 
-21. **Consider removing exact line counts from AGENTS.md** — They drift every formatting pass. Replace with "under N lines (lint-enforced)".
-22. **Consider removing exact test counts from FEATURES.md/ROADMAP.md** — They drift every test addition. Replace with "1000+".
-23. **Add AGENTS.md note about auto-git daemon TODO_LIST ownership** — Warn future sessions that TODO_LIST.md may be overwritten by the daemon.
-24. **Document `normalizeTagItem` in AGENTS.md** — New shared helper in `decorator-helpers.ts`, not mentioned in current architecture docs.
-25. **Add `components.channelBindings` to AGENTS.md `$ref` chain documentation** — Current chain docs stop at `components.messages`.
-26. **Update AGENTS.md `@tags` decorator signature** — Now accepts `valueof (string | Record<unknown>)[]`, document the rich object shape.
-27. **Add JSDoc to `@useChannelBinding` in `lib/main.tsp`** — Other `@use*` decorators have JSDoc; this one may not.
-28. **Review `reusable-components-negative.test.ts`** — New file added by daemon. Verify test quality and coverage.
-29. **Add `verify` script to CI as single step** — Currently 6 steps; consolidate to reduce CI time.
-30. **Consider `info.tags` `$ref` to `components.tags`** — Currently inline objects; spec allows `$ref`. Design decision needed.
+~~21. **Consider removing exact line counts from AGENTS.md** — They drift every formatting pass. Replace with "under N lines (lint-enforced)".~~ **Won't implement — AGENTS.md keeps exact line counts, refreshed per audit; lint cap enforces the bound.**
+22. **Consider removing exact test counts from FEATURES.md/ROADMAP.md** — They drift every test addition. Replace with "1000+". **→ ROADMAP §Developer Experience — docs-entropy CI guard raw idea**
+~~23. **Add AGENTS.md note about auto-git daemon TODO_LIST ownership** — Warn future sessions that TODO_LIST.md may be overwritten by the daemon.~~ done — `AGENTS.md` tooling notes cover the auto-commit daemon
+~~24. **Document `normalizeTagItem` in AGENTS.md** — New shared helper in `decorator-helpers.ts`, not mentioned in current architecture docs.~~ **Won't implement — helper documented only in code and `test/unit/normalize-tag-item.test.ts`, not in the AGENTS architecture list.**
+~~25. **Add `components.channelBindings` to AGENTS.md `$ref` chain documentation** — Current chain docs stop at `components.messages`.~~ done — `AGENTS.md` line 63 lists `components.channelBindings` in the chain
+~~26. **Update AGENTS.md `@tags` decorator signature** — Now accepts `valueof (string | Record<unknown>)[]`, document the rich object shape.~~ done — `AGENTS.md` line 184 documents rich `@tags` objects
+~~27. **Add JSDoc to `@useChannelBinding` in `lib/main.tsp`** — Other `@use*` decorators have JSDoc; this one may not.~~ done — JSDoc present above `useChannelBinding` in `lib/main.tsp` line 233
+~~28. **Review `reusable-components-negative.test.ts`** — New file added by daemon. Verify test quality and coverage.~~ done — file exists and green — `test/integration/reusable-components-negative.test.ts`
+~~29. **Add `verify` script to CI as single step** — Currently 6 steps; consolidate to reduce CI time.~~ done — CI runs `pnpm run verify` as a single gate step
+~~30. **Consider `info.tags` `$ref` to `components.tags`** — Currently inline objects; spec allows `$ref`. Design decision needed.~~ **Won't implement — inline tags are the shipped output contract, semver-frozen since 1.0.0.**
 
 ### Future enhancements
 
-31. **Add `@deprecated` to message/channel level** — Currently only on model properties.
-32. **Add `externalDocs` decorator** — `Tag.externalDocs` type exists but no dedicated decorator.
-33. **Add `@schemaFormat` support** — AsyncAPI 3.1 allows schema format declaration.
-34. **Add multi-document output** — Split operations/channels/schemas into separate files.
-35. **Add `@serverBinding` dedicated decorator** — Currently via `@bindings` on Namespace.
-36. **Add AsyncAPI Extensions (`x-*`) support** — Custom key passthrough.
-37. **Add `@defaultContentType` per-operation override** — Currently namespace-level only.
-38. **Add reply address validation** — Verify reply address matches channel pattern.
-39. **Add `@ messageId` template support** — Dynamic message ID generation.
-40. **Add server variable validation** — Verify variables match server URL template.
-41. **Add `@security` per-channel override** — Currently operation/namespace level.
-42. **Add Kafka-specific schema registry support** — `schemaIdLocation`, `schemaLookupStrategy`.
-43. **Add WebSocket subprotocol validation** — Verify `protocol` matches binding subprotocol.
-44. **Add `@correlationId` on operation level** — Currently model-level only.
-45. **Add operation `summary`/`description` to golden file** — Lock output format.
-46. **Add server `security` to golden file** — Lock `components.securitySchemes` format.
-47. **Add multi-namespace test** — Verify namespace isolation for servers/security/bindings.
-48. **Add `@versioned` compatibility test** — Verify version enum affects `info.version`.
-49. **Add `@encoded` constraint test** — Verify `resolveEncode()` path in constraint-mapper.
-50. **Add cross-emitter shared module integration test** — Verify `@lars-artmann/typespec-asyncapi/shared` exports work from external consumer.
+~~31. **Add `@deprecated` to message/channel level** — Currently only on model properties.~~ **Won't implement — `#deprecated` maps on properties, models, enums via `src/constraint-mapper.ts`; no message or channel level.**
+32. **Add `externalDocs` decorator** — `Tag.externalDocs` type exists but no dedicated decorator. **→ ROADMAP §Spec Compliance — dedicated `@externalDocs` decorator raw idea**
+33. **Add `@schemaFormat` support** — AsyncAPI 3.1 allows schema format declaration. **→ ROADMAP §Spec Compliance — `@schemaFormat` decorator raw idea**
+~~34. **Add multi-document output** — Split operations/channels/schemas into separate files.~~ done — `split-schemas` option ships — `src/schema-splitter.ts` plus `test/integration/multi-file-output.test.ts`
+~~35. **Add `@serverBinding` dedicated decorator** — Currently via `@bindings` on Namespace.~~ **Won't implement — server bindings reachable via `@bindings` on Namespace and `@reusableBinding` — FEATURES.md documents both.**
+~~36. **Add AsyncAPI Extensions (`x-*`) support** — Custom key passthrough.~~ done — `@extension` decorator ships `x-` keys — `src/extension-decorators.ts` plus `test/compliance/spec-extensions.test.ts`
+~~37. **Add `@defaultContentType` per-operation override** — Currently namespace-level only.~~ **Won't implement — `@defaultContentType` stays namespace-level — `src/namespace-decorators.ts`.**
+~~38. **Add reply address validation** — Verify reply address matches channel pattern.~~ **Won't implement — reply `address` is emitted in `test/compliance/operation-reply.test.ts` line 31 but never validated.**
+~~39. **Add `@ messageId` template support** — Dynamic message ID generation.~~ **Won't implement — `@messageId` takes a literal id — `src/builders/message-builder.ts`; no templating.**
+~~40. **Add server variable validation** — Verify variables match server URL template.~~ **Won't implement — variables extracted from `{var}` host tokens — `test/compliance/servers-security.test.ts` line 67; no template-match validation.**
+~~41. **Add `@security` per-channel override** — Currently operation/namespace level.~~ **Won't implement — `@security` is namespace-level and `@operationSecurity` operation-level; no channel target.**
+~~42. **Add Kafka-specific schema registry support** — `schemaIdLocation`, `schemaLookupStrategy`.~~ done — kafka `schemaIdLocation` asserted in `test/domain/protocol-model-bindings.test.ts` line 139
+43. **Add WebSocket subprotocol validation** — Verify `protocol` matches binding subprotocol. **→ ROADMAP §Spec Compliance — WebSocket subprotocol negotiation raw idea**
+44. **Add `@correlationId` on operation level** — Currently model-level only. **→ ROADMAP §Spec Compliance — `@correlationId` on operations raw idea**
+~~45. **Add operation `summary`/`description` to golden file** — Lock output format.~~ **Won't implement — operation summary and description covered by `test/compliance/doc-propagation.test.ts`; no golden lock.**
+~~46. **Add server `security` to golden file** — Lock `components.securitySchemes` format.~~ done — `test/golden/server-security.expected.yaml`
+~~47. **Add multi-namespace test** — Verify namespace isolation for servers/security/bindings.~~ done — `test/integration/multi-namespace-isolation.test.ts`
+~~48. **Add `@versioned` compatibility test** — Verify version enum affects `info.version`.~~ done — `test/integration/versioning.test.ts`
+~~49. **Add `@encoded` constraint test** — Verify `resolveEncode()` path in constraint-mapper.~~ done — `test/compliance/encoded-names.test.ts`
+~~50. **Add cross-emitter shared module integration test** — Verify `@lars-artmann/typespec-asyncapi/shared` exports work from external consumer.~~ done — `test/unit/shared-schema-types.test.ts` barrel contract tests
 
 ---
 
@@ -196,15 +196,15 @@ Currently tags are inline `Tag[]` objects on `info.tags`. The AsyncAPI 3.1 spec 
 
 | Metric               | Session start   | Session end                                                          | Delta                |
 | -------------------- | --------------- | -------------------------------------------------------------------- | -------------------- |
-| Tests                | 1010            | 1017                                                                 | +7 (daemon)          |
-| Compliance tests     | ~208 (reported) | ~272+ (actual)                                                       | +64 (was miscounted) |
-| Coverage             | 97.3%           | 97.4%                                                                | +0.1%                |
-| Diagnostic codes     | 24 (reported)   | 25 (actual)                                                          | was miscounted       |
-| Decorators           | 25 (reported)   | 26 (actual)                                                          | was miscounted       |
-| Clones               | 0               | 0                                                                    | —                    |
-| Lint warnings        | 0               | 0                                                                    | —                    |
-| Build errors         | 0               | 0                                                                    | —                    |
-| Commits this session | —               | 4 (`ea74c8a`, `beb6ac1`, `ffa5a10`, + my doc fixes inside `ea74c8a`) | —                    |
+| ~~Tests~~ done at `ea74c8a`, `beb6ac1`, `ffa5a10` | ~~1010~~ | ~~1017~~ | ~~+7 (daemon)~~ |
+| ~~Compliance tests~~ done at `ea74c8a`, `beb6ac1`, `ffa5a10` | ~~~208 (reported)~~ | ~~~272+ (actual)~~ | ~~+64 (was miscounted)~~ |
+| ~~Coverage~~ done at `ea74c8a`, `beb6ac1`, `ffa5a10` | ~~97.3%~~ | ~~97.4%~~ | ~~+0.1%~~ |
+| ~~Diagnostic codes~~ done at `ea74c8a`, `beb6ac1`, `ffa5a10` | ~~24 (reported)~~ | ~~25 (actual)~~ | ~~was miscounted~~ |
+| ~~Decorators~~ done at `ea74c8a`, `beb6ac1`, `ffa5a10` | ~~25 (reported)~~ | ~~26 (actual)~~ | ~~was miscounted~~ |
+| ~~Clones~~ done at `ea74c8a`, `beb6ac1`, `ffa5a10` | ~~0~~ | ~~0~~ | ~~—~~ |
+| ~~Lint warnings~~ done at `ea74c8a`, `beb6ac1`, `ffa5a10` | ~~0~~ | ~~0~~ | ~~—~~ |
+| ~~Build errors~~ done at `ea74c8a`, `beb6ac1`, `ffa5a10` | ~~0~~ | ~~0~~ | ~~—~~ |
+| ~~Commits this session~~ done at `ea74c8a`, `beb6ac1`, `ffa5a10` | ~~—~~ | ~~4 (`ea74c8a`, `beb6ac1`, `ffa5a10`, + my doc fixes inside `ea74c8a`)~~ | ~~—~~ |
 
 ## Key lesson
 
