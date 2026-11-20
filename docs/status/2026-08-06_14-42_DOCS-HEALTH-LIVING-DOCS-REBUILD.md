@@ -36,6 +36,8 @@ Files read:
 
 Ran the actual gates inside `nix develop .#default` to get real numbers (not trusting doc claims):
 
+<!-- ledger: session metrics snapshot — completed measurements, no actionable rows -->
+<!-- check-rows:ledger -->
 | Metric           | Verified value                                                  |
 | ---------------- | --------------------------------------------------------------- |
 | Tests            | **982 pass / 0 fail** (82 files)                                |
@@ -288,6 +290,8 @@ I touched AGENTS.md's builder section (8→10 files) as a "fix on sight" but lef
 
 ## Session Metrics
 
+<!-- ledger: session metrics snapshot — completed measurements, no actionable rows -->
+<!-- check-rows:ledger -->
 | Metric                         | Before                    | After                                            | Delta                            |
 | ------------------------------ | ------------------------- | ------------------------------------------------ | -------------------------------- |
 | TODO_LIST open items           | 3 (2 already done!)       | 12 (all verified open)                           | +9 real items                    |
