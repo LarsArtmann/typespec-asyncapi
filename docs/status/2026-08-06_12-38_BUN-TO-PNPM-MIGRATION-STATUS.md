@@ -141,14 +141,13 @@
 | ~~39~~ **NOT-DO — .npmrc exclusion documented as intentional in the repo.** | ~~Add a `prepare:ci` script that mirrors what CI would run~~ | ~~Low~~ | ~~Low~~ |
 | ~~40~~ **NOT-DO — moot — bun.lock is gone.** | ~~Document the `.gitignore` `.npmrc` exclusion — is it intentional?~~ | ~~Low~~ | ~~Low~~ |
 | ~~41~~ **Won't implement — packageManager field never added.** | ~~Consider whether `bun.lock` should be in `.gitignore` as a safety net~~ | ~~Low~~ | ~~Low~~ |
-| ~~42~~ **NOT-DO — no bin field needed.** | ~~Review `packageManager` field in `package.json` (pnpm supports `packageManager: "pnpm@11.18.0"`)~~ | ~~Low~~ | ~~Low~~ |
+| ~~42~~ **NOT-DO — packageManager field never added.** | ~~Review `packageManager` field in `package.json` (pnpm supports `packageManager: "pnpm@11.18.0"`)~~ | ~~Low~~ | ~~Low~~ |
 | ~~44~~ **NOT-DO — catalogs never adopted.** | ~~Evaluate pnpm catalog feature for centralized version management~~ | ~~Low~~ | ~~Medium~~ |
 | ~~45~~ done — documented — AGENTS.md workspace-level overrides notes | ~~Consider adding `overrides` documentation — pnpm supports `overrides` same as pnpm~~ | ~~Low~~ | ~~Low~~ |
 | ~~46~~ done — husky hooks work with pnpm | ~~Review whether `husky` hooks need updating for pnpm~~ | ~~Low~~ | ~~Low~~ |
 | ~~47~~ **NOT-DO — doctor script never added.** | ~~Add a `doctor` or `diagnose` script that checks toolchain health~~ | ~~Low~~ | ~~Low~~ |
 | ~~48~~ **NOT-DO — the effect-reports gitignore entry is kept.** | ~~Consider whether the `effect-reports/` gitignore entry is still needed~~ | ~~Low~~ | ~~Low~~ |
 | ~~49~~ **NOT-DO — the redirects review was never done.** | ~~Review all 2>/dev/null redirect patterns in scripts for correctness under pnpm~~ | ~~Low~~ | ~~Low~~ |
-| ~~49~~ **NOT-DO — aliases review never done.** | ~~Review all `2>/dev/null~~ | ~~~~ | ~~true` patterns in scripts for correctness under pnpm~~ | ~~Low~~ | ~~Low~~ |
 | ~~50~~ done — superseded — the release flow is documented in AGENTS.md | ~~Add a `RELEASING.md` document with pnpm-based release steps~~ | ~~Low~~ | ~~Low~~ |
 
 ---
