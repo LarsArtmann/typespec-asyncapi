@@ -226,9 +226,9 @@ The identity is **shipped and gate-verified** on four surfaces (README, landing 
 
 ## 8. g) Questions I cannot answer myself (max 3)
 
-1. **Trademark posture.** Should the project's primary identity be a **derivative lockup of the official TypeSpec + AsyncAPI marks** (what shipped), or should the **official marks stay documentation-only** and our own synthesized mark (concept 25 Outline Mark / 50 Lockup) become primary? I can implement either; I cannot decide the legal/positioning risk appetite. _(Blocks tasks 3, 13, 14, 50.)_
+1. **Trademark posture.** Should the project's primary identity be a **derivative lockup of the official TypeSpec + AsyncAPI marks** (what shipped), or should the **official marks stay documentation-only** and our own synthesized mark (concept 25 Outline Mark / 50 Lockup) become primary? I can implement either; I cannot decide the legal/positioning risk appetite. _(Blocks tasks 3, 13, 14, 50.)_ **→ TODO_LIST §Release (ADR npm-surface decision row)**
 ~~2. **Favicon direction.** Keep the **legacy teal squircle** (recognizable, 16 px-safe, but a different visual system), or invest in a **16 px-optimized single-tile mark** — and if so, which glyph: gradient arrow, AsyncAPI "A", TSP, or our hex-bolt? _(Blocks tasks 2, 15, 23.)_~~ done — decided 2026-11-04 — favicon is the compact mark (ADR 0002 decision 6)
-3. **npm/PyPI surface requirement.** Is **GitHub fidelity sufficient**, or must npm's package page also render the logo? If yes, I will ship raster PNG lockups and a `<img>`-first structure instead of relying on `<picture>`. _(Blocks tasks 7, 12, 30.)_
+3. **npm/PyPI surface requirement.** Is **GitHub fidelity sufficient**, or must npm's package page also render the logo? If yes, I will ship raster PNG lockups and a `<img>`-first structure instead of relying on `<picture>`. _(Blocks tasks 7, 12, 30.)_ **→ TODO_LIST §Release (ADR npm-surface decision row)**
 
 ---
 

@@ -29,6 +29,9 @@ removal.
   - [ ] ADR npm-surface decision (`docs/adr/0002`): trademark posture + npm
       package surface — the last open row there; unblocks README and
       release-checklist work (docs/status/2026-11-04_17-42:134).
+- [ ] Verify the npm package page renders the README `<picture>` logo
+      after the next publish; add a raster fallback if npm strips it
+      (docs/status/2026-11-02_01-20:231).
 - [ ] Register npm trusted publisher — **remaining Lars action, narrowed
         2026-11-19 evening**: Lars dispatched the real publish (run 44603780129) and the publish job FAILED with **E404 on PUT** — OIDC
         exchange and provenance signing work (sigstore logIndex 4005319347),
@@ -199,6 +202,11 @@ What remains is the gated release chain and the tail:
       markdownlint.
 - [ ] Add `BUILDFLOW_NO_RESULT_CACHE=1` to the CI final-gate job
       (cache-masking defense).
+- [ ] Decide `docs/_archive/` policy — prune/move the archived reports or
+      declare the archive permanent (harvested from the 2026-10-03
+      toolchain-restore + 2026-08-21 phase-1 reports; lychee already
+      excludes archives from link checks, the storage-growth call does not
+      exist yet).
 - [ ] Trash `scripts/ns-test/` (113-byte scratch, not referenced; owner call).
 - [ ] Decide `global.out.css` policy (11-20 report g)3).
 - [ ] Harmonize AGENTS pin wording (`^6.0.3` prose vs exact `6.0.3` manifest).
