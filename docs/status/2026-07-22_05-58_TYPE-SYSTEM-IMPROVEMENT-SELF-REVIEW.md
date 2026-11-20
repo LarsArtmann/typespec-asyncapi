@@ -84,35 +84,35 @@ The tests pass because:
 
 ### Type System Issues Identified During Review
 
-1. **`bindings.ts` is 100% dead code** — `src/domain/models/bindings.ts` (177 lines) is imported by NOTHING in `src/`. Zero imports anywhere in the codebase. It's pure documentation weight. The binding types are never used for validation, never referenced at runtime, never imported. `ProtocolBindings = Record<string, Record<string, unknown>>` is what everything actually uses.
+~~1. **`bindings.ts` is 100% dead code** — `src/domain/models/bindings.ts` (177 lines) is imported by NOTHING in `src/`. Zero imports anywhere in the codebase. It's pure documentation weight. The binding types are never used for validation, never referenced at runtime, never imported. `ProtocolBindings = Record<string, Record<string, unknown>>` is what everything actually uses.~~ done — resolved — bindings.ts deleted; validation lives in src/validation
 
-2. **`supportsBindingPlacement()` is never called** — `src/constants/binding-versions.ts:105` defines `supportsBindingPlacement()` and `BINDING_PLACEMENT` (the 5x4 matrix of which protocols support which binding targets). Neither is imported or called anywhere in the codebase.
+~~2. **`supportsBindingPlacement()` is never called** — `src/constants/binding-versions.ts:105` defines `supportsBindingPlacement()` and `BINDING_PLACEMENT` (the 5x4 matrix of which protocols support which binding targets). Neither is imported or called anywhere in the codebase.~~ done — resolved — supportsBindingPlacement wired into validation (AGENTS.md)
 
-3. **`SchemaObject` has `[key: string]: unknown` index signature** — This undermines the type safety of the entire schema emission pipeline. Any typo in a schema property name is silently accepted. The AGENTS.md says "No index signatures except `SchemaObject` (standard JSON Schema extension pattern)" — but this is a deliberate tradeoff, not an oversight.
+~~3. **`SchemaObject` has `[key: string]: unknown` index signature** — This undermines the type safety of the entire schema emission pipeline. Any typo in a schema property name is silently accepted. The AGENTS.md says "No index signatures except `SchemaObject` (standard JSON Schema extension pattern)" — but this is a deliberate tradeoff, not an oversight.~~ done — resolved-by-design — JsonSchema keeps the index signature (AGENTS.md extension pattern)
 
-4. **Pervasive `as { name: string }` type assertions** — `document-builder.ts` has 7+ instances of `type as { name: string }` for TypeSpec compiler types. The actual `Type` type from `@typespec/compiler` has proper interfaces (`Operation`, `Model`, `Namespace`) with `.name` properties. These casts bypass type safety entirely.
+~~4. **Pervasive `as { name: string }` type assertions** — `document-builder.ts` has 7+ instances of `type as { name: string }` for TypeSpec compiler types. The actual `Type` type from `@typespec/compiler` has proper interfaces (`Operation`, `Model`, `Namespace`) with `.name` properties. These casts bypass type safety entirely.~~ done — resolved — strict eslint removed the casts
 
-5. **`ProtocolConfigData` discriminated union is created but never narrowed** — `state.ts` defines a beautiful discriminated union (`KafkaConfigData | WebSocketConfigData | MqttConfigData | GenericProtocolConfigData`) but `document-builder.ts:310-324` accesses it as a generic object: `data.protocol`, `data.binding` — without narrowing on the discriminant. The discriminated union provides zero runtime benefit.
+~~5. **`ProtocolConfigData` discriminated union is created but never narrowed** — `state.ts` defines a beautiful discriminated union (`KafkaConfigData | WebSocketConfigData | MqttConfigData | GenericProtocolConfigData`) but `document-builder.ts:310-324` accesses it as a generic object: `data.protocol`, `data.binding` — without narrowing on the discriminant. The discriminated union provides zero runtime benefit.~~ done — resolved — the union is narrowed via ProtocolConfigData
 
-6. **`OperationTypeData.type` is `"publish" | "subscribe"` but AsyncAPI uses `"send" | "receive"`** — The mapping `opData.type === "publish" ? "send" : "receive"` in `document-builder.ts:147` is a string-level translation. `OperationTypeData` should store the AsyncAPI action directly, or at minimum the mapping should be a named function.
+~~6. **`OperationTypeData.type` is `"publish" | "subscribe"` but AsyncAPI uses `"send" | "receive"`** — The mapping `opData.type === "publish" ? "send" : "receive"` in `document-builder.ts:147` is a string-level translation. `OperationTypeData` should store the AsyncAPI action directly, or at minimum the mapping should be a named function.~~ done — resolved — typed action mapping shipped
 
-7. **`MessageHeaderData` has untyped `value?: unknown`** — Headers have `type?: string` that accepts any string, not a constrained JSON Schema type union.
+~~7. **`MessageHeaderData` has untyped `value?: unknown`** — Headers have `type?: string` that accepts any string, not a constrained JSON Schema type union.~~ done — resolved — headers typed via the @message config path
 
-8. **`SecurityScheme.in` type is `"user" | "password" | "query" | "header" | "cookie"`** — The `"user" | "password"` values are wrong per AsyncAPI 3.1 spec. API key location should be `"query" | "header" | "cookie"` only. The `user`/`password` are for `userPassword` scheme type, not for the `in` field.
+~~8. **`SecurityScheme.in` type is `"user" | "password" | "query" | "header" | "cookie"`** — The `"user" | "password"` values are wrong per AsyncAPI 3.1 spec. API key location should be `"query" | "header" | "cookie"` only. The `user`/`password` are for `userPassword` scheme type, not for the `in` field.~~ done — resolved — SecurityScheme.in matches AsyncAPI 3.1 exactly (AGENTS.md)
 
-9. **No branded/opaque types** — Stringly-typed values like protocol names, security scheme names, and binding keys have no type-level distinction. A `string` channel key and a `string` message name are interchangeable at the type level.
+~~9. **No branded/opaque types** — Stringly-typed values like protocol names, security scheme names, and binding keys have no type-level distinction. A `string` channel key and a `string` message name are interchangeable at the type level.~~ **NOT-DO — not adopted — type guards narrow instead.**
 
-10. **`storeServerConfig` stores as `ServerConfigEntry[]` but `ServerConfigData` in `state.ts` is a single object** — The state type says `Map<Type, ServerConfigData[]>` (multi-value), but `ServerConfigData` has single fields. The array-wrapping happens in `state-writers.ts` ad-hoc.
+~~10. **`storeServerConfig` stores as `ServerConfigEntry[]` but `ServerConfigData` in `state.ts` is a single object** — The state type says `Map<Type, ServerConfigData[]>` (multi-value), but `ServerConfigData` has single fields. The array-wrapping happens in `state-writers.ts` ad-hoc.~~ done — resolved — ServerConfigData is the single type (Pick precedent)
 
-11. **`ProtocolConfigBase.binding` is `Record<string, unknown>`** — Could use the typed binding interfaces from `bindings.ts` IF that file were actually imported and connected.
+~~11. **`ProtocolConfigBase.binding` is `Record<string, unknown>`** — Could use the typed binding interfaces from `bindings.ts` IF that file were actually imported and connected.~~ done — resolved — typed binding maps shipped
 
-12. **`CorrelationIdData` has `property?: string`** but it's never used — `document-builder.ts:239` only reads `.location`, never `.property`. Dead field.
+~~12. **`CorrelationIdData` has `property?: string`** but it's never used — `document-builder.ts:239` only reads `.location`, never `.property`. Dead field.~~ done — resolved — dead field removed
 
-13. **`OperationTypeData` has `tags?: string[]` and `description?: string`** but neither is read in `document-builder.ts` — the tags come from `state.tags` (a separate state map), and the description is never emitted.
+~~13. **`OperationTypeData` has `tags?: string[]` and `description?: string`** but neither is read in `document-builder.ts` — the tags come from `state.tags` (a separate state map), and the description is never emitted.~~ done — resolved — dead fields removed
 
-14. **`intrinsicToSchema()` return type is `SchemaObject` but some branches return inconsistent shapes** — e.g., `int8/16/32` set `format` but `uint8/16/32/64` and `safeint` don't. The format omission looks like a bug, not a design choice.
+~~14. **`intrinsicToSchema()` return type is `SchemaObject` but some branches return inconsistent shapes** — e.g., `int8/16/32` set `format` but `uint8/16/32/64` and `safeint` don't. The format omission looks like a bug, not a design choice.~~ done — resolved — formats consistent (type-mapping suite)
 
-15. **`state.ts:TagData = { name: string }[]`** — This is an array of `{name: string}`, which is just `Tag[]` from the domain model but redefined. Split-brain between `Tag` and `{ name: string }`.
+~~15. **`state.ts:TagData = { name: string }[]`** — This is an array of `{name: string}`, which is just `Tag[]` from the domain model but redefined. Split-brain between `Tag` and `{ name: string }`.~~ done — resolved — TagData consolidated with Tag[]
 
 ---
 
@@ -177,7 +177,7 @@ I changed the type to match the spec but didn't add the runtime transformation. 
 ~~12. Remove `OperationTypeData.tags` (never read; tags come from separate state map)~~ done at `07f8b107`
 ~~13. Remove `OperationTypeData.description` (never emitted)~~ done at `07f8b107`
 ~~14. Consolidate `TagData` = `Tag[]` (duplicate definitions)~~ done at `07f8b107`
-15. Check if `messageSchemas` state symbol is used (declared in lib.ts but may be dead)
+~~15. Check if `messageSchemas` state symbol is used (declared in lib.ts but may be dead)~~ **NOT-DO — superseded during state consolidation.**
 
 ### Type Safety Improvements
 
