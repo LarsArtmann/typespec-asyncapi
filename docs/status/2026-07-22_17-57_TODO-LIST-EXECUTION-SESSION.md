@@ -90,7 +90,7 @@ None — all 4 TODO items were completed.
 ~~16. Remove dead `const actualContent = content;` assignment~~ done — the dead alias was removed from `test/utils/test-helpers.ts`
 ~~17. Review all `as Record<string, any>` casts in test files — replace with proper types where feasible~~ **Won't implement — test casts are now typed as `Record<string, unknown>` or narrowed through `test/utils/type-guards.ts`; remaining dynamic-spec boundary casts are intentional.**
 ~~18. Audit `test/utils/test-helpers.ts` for remaining type unsafety (the `AsyncAPIObject = Record<string, any>` on line 20)~~ done — `AsyncAPIObject` is now an alias of `ParsedAsyncAPIDocument` in `test/utils/test-helpers.ts`
-19. Consider extracting `compileAndGetDoc` helper into shared test utils (it's duplicated across test files)
+19. Consider extracting `compileAndGetDoc` helper into shared test utils (it's duplicated across test files) **→ TODO_LIST §Test-Suite Integrity (compileAndGetDoc consolidation row)**
 ~~20. Review if `compileAsyncAPIWithoutErrors` vs `compileAsyncAPISpecWithoutErrors` naming is confusing~~ **Won't implement — both helper names remain and are documented in the `test/utils/test-helpers.ts` header; no naming confusion was reported since.**
 
 ### Documentation

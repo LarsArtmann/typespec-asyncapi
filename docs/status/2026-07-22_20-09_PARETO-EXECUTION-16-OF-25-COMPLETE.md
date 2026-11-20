@@ -51,7 +51,7 @@
 | ~~**2**~~ done at `53aaf4bb` | ~~`@defaultContentType` decorator with full state pipeline~~ |
 | ~~**3**~~ done at `53aaf4bb` | ~~`@doc` propagation verified, 3 compliance tests added~~ |
 | ~~**4**~~ done at `53aaf4bb` | ~~`@reply` decorator for request-response patterns~~ |
-| ~~**5**~~ done at `53aaf4bb` | ~~Multi-message operations via union return types (`op foo(): Bar \| Baz`)~~ |
+| ~~**5**~~ done at `53aaf4bb` | ~~Multi-message operations via union return types (`op foo(): Bar/Baz` unions)~~ |
 | ~~**6**~~ done at `53aaf4bb` | ~~Removed `as AsyncAPIObject` casts (22 → 2 legitimate boundary casts)~~ |
 
 ### Task 20: DROPPED
@@ -131,7 +131,7 @@ These should be refactored by extracting functions/modules.
 | ~~**10**~~ done — `src/document-builder.ts` integrates `@typespec/versioning` | ~~**Task 23: `@typespec/versioning` support**~~ | ~~Low~~ | ~~High~~ | ~~API versioning in AsyncAPI docs~~ |
 | ~~**11**~~ done — `src/shared/` exports cross-emitter schema types and helpers, documented in `AGENTS.md` | ~~**Task 25: OpenAPI cross-emitter**~~ | ~~Low~~ | ~~High~~ | ~~Share types between AsyncAPI and OpenAPI~~ |
 | ~~**12**~~ done — `AGENTS.md` documents the current 30 decorators, 22 protocols, and module inventory | ~~**Update AGENTS.md** with new decorator count, protocol count, file list~~ | ~~Low~~ | ~~Low~~ | ~~Documentation accuracy~~ |
-| 13 | **Add `@messageId` to `@publish`/`@subscribe` path** — Currently only works with `@channel` operations      | Low    | Low    | Completeness                                   |
+| 13 **→ ROADMAP §1 Spec Compliance Depth (honor @messageId with @publish messageType row)** | **Add `@messageId` to `@publish`/`@subscribe` path** — Currently only works with `@channel` operations | Low | Low | Completeness |
 | ~~14~~ **Won't implement — Redis still has no upstream binding definitions; `src/constants/protocols.ts` accepts Redis as a server protocol while binding emission waits on specs.** | ~~**Add Redis binding support** when AsyncAPI specs publish definitions~~ | ~~Low~~ | ~~Low~~ | ~~Future-proofing~~ |
 | ~~15~~ done — `test/integration/operation-message-id.test.ts` and `test/compliance/doc-propagation.test.ts` cover `@operationId` on channel-only and bare operation paths | ~~**Test `@operationId` with bare operations** (no decorators)~~ | ~~Low~~ | ~~Low~~ | ~~Edge case coverage~~ |
 | ~~16~~ **Won't implement — generated placement rules in `src/constants/binding-versions.ts` plus `test/unit/binding-placement.test.ts` cover all protocol placements; a multi-protocol namespace compliance fixture would duplicate that matrix.** | ~~**Add compliance test for Namespace `@bindings` with multiple protocols**~~ | ~~Low~~ | ~~Low~~ | ~~Edge case coverage~~ |
@@ -140,7 +140,7 @@ These should be refactored by extracting functions/modules.
 | ~~19~~ done — `test/integration/new-protocol-bindings.test.ts` AJV-validates namespace server bindings | ~~**Test server bindings validated against AsyncAPI 3.1 schema**~~ | ~~Low~~ | ~~Low~~ | ~~Compliance~~ |
 | ~~20~~ **Won't implement — circular entities intentionally remain empty objects, locked by `test/unit/shared-schema-types.test.ts`; asset-emitter declarations carry the actual cycle handling.** | ~~**Add `circular` kind handling in `extractValue()`** — currently returns `{}`~~ | ~~Low~~ | ~~Low~~ | ~~Edge case~~ |
 | ~~21~~ done — the `DiscoveredOp` interface in `src/builders/types.ts` documents message and schema-name arrays together | ~~**Document the `messageSchemaNames` field** in DiscoveredOp interface~~ | ~~Low~~ | ~~Low~~ | ~~Code documentation~~ |
-| 22 | **Add negative tests for `@operationId`/`@messageId`** — empty string, special chars                        | Low    | Low    | Error handling                                 |
+| 22 **→ TODO_LIST §Test-Suite Integrity (@operationId/@messageId negative tests row)** | **Add negative tests for `@operationId`/`@messageId`** — empty string, special chars | Low | Low | Error handling |
 | ~~23~~ done — `test/unit/emitter-core.test.ts` and `test/integration/simple-emitter.test.ts` verify YAML output and the default YAML format | ~~**Verify YAML output** — all tests use JSON; YAML emitter path untested~~ | ~~Low~~ | ~~Low~~ | ~~Output format coverage~~ |
 | ~~24~~ done — `test/integration/decorator-functionality.test.ts` exercises all decorators together in a complex scenario | ~~**Add integration test for all decorators combined** in one spec~~ | ~~Low~~ | ~~Low~~ | ~~Integration confidence~~ |
 | ~~25~~ done — `src/builders/message-builder.ts` resolves automatic message decorators through the shared `resolveMessageKey` state lookup | ~~**Audit `message-builder.ts` for `messageId` consistency** — `applyAutoMessageDecorators` uses state lookup~~ | ~~Low~~ | ~~Low~~ | ~~Type safety~~ |

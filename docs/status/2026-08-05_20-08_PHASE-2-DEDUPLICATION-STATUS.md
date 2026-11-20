@@ -163,7 +163,7 @@ The `config && typeof config === "object" && "kind" in config && config.kind ===
 
 ### Type safety
 
-20. `ParsedAsyncAPIDocument.asyncapi` should be `"3.1.0" | "3.0.0" | "2.6.0"` — currently `string` is too wide.
+20. `ParsedAsyncAPIDocument.asyncapi` should be `"3.1.0" | "3.0.0" | "2.6.0"` — currently `string` is too wide. **→ ROADMAP §3 Architecture (asyncapi literal narrowing row)**
 ~~21. `MessageObject` `headers` should be `Record<string, JsonSchema>` not `{ properties, type }` — schema inconsistency.~~ done — `MessageObject.headers` is typed as `JsonSchema` or `Ref` in `src/domain/models/asyncapi-document.ts`
 ~~22. `SecurityScheme` has no `description` field — AsyncAPI 3.1 spec allows it.~~ done — `SecurityScheme` includes the optional spec-permitted `description` field in `src/domain/models/asyncapi-document.ts`
 ~~23. `OperationObject.action` is required by spec — make it required in the type.~~ done — `OperationObject.action` is a required `OperationAction` in `src/domain/models/asyncapi-document.ts`

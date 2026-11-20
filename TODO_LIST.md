@@ -219,6 +219,11 @@ What remains is the gated release chain and the tail:
 - [ ] Retire `tsx` remnants: swap the typecheck runner to plain `tsc`
       (docs/status/2026-10-23_09-46:125).
 - [ ] Trash `scripts/ns-test/` (113-byte scratch, not referenced; owner call).
+- [ ] Refresh CONTRIBUTING.md commands/testing guidance from Bun/bun:test
+      to pnpm + Vitest (Bun stays for coverage)
+      (docs/status/2026-07-22_03-46:267).
+- [ ] Add an unknown-payload runnable example documenting the
+      unconstrained-schema semantics (docs/status/2026-08-22_00-17:99).
 - [ ] Refresh ROADMAP to the current era — Current State exists but no
       1.2.0-era mentions yet; upstream-watch section references #12105
       (docs/status/2026-10-03_16-48:53,128).
@@ -287,6 +292,16 @@ What remains is the gated release chain and the tail:
       sorted-by-design) (docs/status/2026-11-19_21-17:184).
 - [ ] Watch the coverage-average trend (96.9% and drifting)
       (docs/status/2026-11-19_21-17:189).
+- [ ] Intrinsic-output hardening tests: golden lock for unknown/nullable
+      unions, e2e never/void mapping tests, AJV negative `type: null` tests
+      (docs/status/2026-08-22_00-17:85-93).
+- [ ] Negative tests for `@operationId`/`@messageId` empty strings and
+      invalid special characters (docs/status/2026-07-22_20-09:140).
+- [ ] Consolidate duplicated compileAndGetDoc-style helpers into one
+      shared test utility (docs/status/2026-07-22_17-57:93).
+- [ ] Audit all `extractValue`/`refOrFallback` consumers for in-place
+      mutation of framework-interned schemas
+      (docs/status/2026-08-22_00-17:73).
 - [ ] Root-cause the transient `bun test` / vitest exit-with-zero-failures
       (suspected worker/coverage race; last observed 2026-09-13 once in
       `vitest run test/golden/` — immediate re-run passed). The defensive

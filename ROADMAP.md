@@ -46,6 +46,7 @@ Raw ideas:
 - Reactive streaming patterns — server-sent events (SSE), WebSocket subprotocol negotiation, Kafka consumer group rebalance semantics
 - Message correlation beyond simple `$ref` location — support `@correlationId` on operations (not just models) for reply correlation
 - Top-level `defaultContentType` validation — ensure the `@defaultContentType` value is a valid MIME type
+- Honor `@messageId` when `@publish` supplies `messageType` — publish/subscribe operations reuse the shared message-key resolution
 - Dedicated `@externalDocs` decorator — `Tag.externalDocs` exists via `@tags` objects, but no standalone decorator
 
 ### 2. Developer Experience
@@ -67,6 +68,9 @@ Keep the codebase honest as it grows.
 Raw ideas:
 
 - Type safety: tighten `OperationObject.action` to required, add `SecurityScheme.description`
+- Type safety: replace the `ProtocolBindings` record with protocol-specific discriminated unions so binding-key/protocol mismatches fail at compile time
+- Type safety: replace the diagnostic `messageId` as-default cast with conditional types or overloads preserving per-code message IDs
+- Type safety: narrow `ParsedAsyncAPIDocument.asyncapi` from `string` to the supported AsyncAPI 3.1 literal
 - Move generic utilities (`applyOverrides`, `collectNamesInto`) to a shared `src/util/` module
 - ~~Property-based testing infrastructure~~ — DONE: fast-check suite (`test/property/emitter-properties.test.ts`, 6 invariants, `FC_SEED` reproduction)
 - ~~TypeSpec 1.14.0 upgrade~~ — DONE: repo now pins `@typespec/compiler` ^1.15.0

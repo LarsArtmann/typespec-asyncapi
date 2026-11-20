@@ -183,7 +183,7 @@ T5 revealed that `@service({})` silently kills output. This is a significant UX 
 
 ~~1. **Coverage toolchain needs a single clear path.** Currently: vitest for tests, bun for coverage, three dead coverage packages. Pick ONE: either make vitest coverage work (by somehow getting the emitter code instrumented) or commit to bun for coverage and document it clearly.~~ done — `AGENTS.md` and `package.json` document one deliberate strategy: Vitest for tests and Bun only for coverage
 ~~2. **`@service({})` should produce a helpful diagnostic**, not silent failure. Either register it as a no-op decorator with a deprecation warning, or emit a diagnostic saying "this emitter does not use @service — use @server on your namespace instead."~~ done at `28bed42d`
-3. **Diagnostic `messageId` typing is hacked.** `reportDiagnostic()` casts `messageId as "default"` to satisfy TypeScript. The TypeSpec API types `messageId` very strictly per-code. A proper solution would use conditional types or function overloads.
+3. **Diagnostic `messageId` typing is hacked.** `reportDiagnostic()` casts `messageId as "default"` to satisfy TypeScript. The TypeSpec API types `messageId` very strictly per-code. A proper solution would use conditional types or function overloads. **→ ROADMAP §3 Architecture (messageId cast conditional-types row)**
 ~~4. **`import.meta.dirname` is Node.js 20.11+ only.** If the project needs to support older Node versions, this will break. (microsoft/typespec requires Node 24, so this is likely fine, but should be documented.)~~ done — `package.json` requires Node 20.11 or newer, matching `import.meta.dirname`
 
 ### Process
@@ -264,7 +264,7 @@ T5 revealed that `@service({})` silently kills output. This is a significant UX 
 #### Docs
 
 ~~42. **Update README** with vitest commands (currently references `bun test`)~~ done — `README.md` now names Vitest and pnpm while retaining Bun only for coverage
-43. **Update CONTRIBUTING.md** with vitest and pnpm workflow
+43. **Update CONTRIBUTING.md** with vitest and pnpm workflow **→ TODO_LIST §Hygiene (CONTRIBUTING pnpm/Vitest refresh row)**
 ~~44. **Update FEATURES.md** test count (406 → 426) and file count~~ done — `FEATURES.md` records refreshed suite totals and the Vitest runner
 ~~45. **Add ADR for vitest migration** (architecture decision record)~~ **Superseded — CHANGELOG.md §Test runner migrated and AGENTS.md §Toolchain — the migration decision is documented there rather than in a standalone ADR.**
 ~~46. **Add ADR for diagnostic system design** (why `$lib.reportDiagnostic` over raw API)~~ **Superseded — AGENTS.md §Diagnostic system and src/lib.ts — the compile-time registry design is documented and enforced there.**
