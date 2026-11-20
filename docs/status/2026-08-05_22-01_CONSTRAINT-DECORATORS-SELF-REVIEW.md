@@ -112,13 +112,13 @@ The test suite verifies `#deprecated` on inline string properties and on a model
 
 These were explicitly **out of scope** for this plan (listed in "What This Plan Does NOT Do"), but are worth tracking:
 
-1. **`@example` → `examples`** — TypeSpec `getExamples()` exists. Deferred due to "complex value serialization."
-2. **`@summary` → `title`** on properties — TypeSpec `getSummary()` exists. Deferred as "low impact."
-3. **`@discriminator` → `discriminator`** — Deferred (polymorphism is a separate feature).
-4. **`@visibility` → `readOnly`/`writeOnly`** — Deferred (visibility semantics differ from OpenAPI).
-5. **`allOf` / `oneOf` / `not` generation** — Deferred (schema composition is a separate feature).
-6. **`docs/_archive/` pruning** — Separate scope.
-7. **README example verification** — The README example snippets were not compiled/verified this session.
+~~1. **`@example` → `examples`** — TypeSpec `getExamples()` exists. Deferred due to "complex value serialization."~~ done — `getExamples` is wired in `src/builders/message-builder.ts`
+~~2. **`@summary` → `title`** on properties — TypeSpec `getSummary()` exists. Deferred as "low impact."~~ done — `applyMetadata` maps summary to `title` (`src/constraint-mapper.ts`)
+~~3. **`@discriminator` → `discriminator`** — Deferred (polymorphism is a separate feature).~~ done — discriminator support in `src/schema-fragments.ts` plus `test/compliance/polymorphism.test.ts`
+~~4. **`@visibility` → `readOnly`/`writeOnly`** — Deferred (visibility semantics differ from OpenAPI).~~ done — `@visibility` maps to `readOnly`/`writeOnly` (`src/constraint-mapper.ts`)
+~~5. **`allOf` / `oneOf` / `not` generation** — Deferred (schema composition is a separate feature).~~ done — `allOf` inheritance (`src/schema-emitter.ts`) and `oneOf` for discriminated variants shipped; bare `not` remains unmapped
+~~6. **`docs/_archive/` pruning** — Separate scope.~~ done — `docs/_archive/` exists
+~~7. **README example verification** — The README example snippets were not compiled/verified this session.~~ **Won't implement — README snippets are still not compiled; `pnpm run check-examples` covers `examples/`.**
 
 ---
 
@@ -160,19 +160,19 @@ I ran the coverage gate and it passed globally (97.0%), but I did not extract th
 
 ### Process improvements
 
-1. **Research decorator syntax before writing tests.** The `#deprecated` fiasco would have been avoided by spending 2 minutes checking `node_modules/@typespec/compiler/lib/std/decorators.tsp` before writing any test code.
+~~1. **Research decorator syntax before writing tests.** The `#deprecated` fiasco would have been avoided by spending 2 minutes checking `node_modules/@typespec/compiler/lib/std/decorators.tsp` before writing any test code.~~ **NOT-DO — research lesson; the `#deprecated` directive is documented in `AGENTS.md` gotchas.**
 
-2. **Check line-count budget before adding code.** Always calculate `current_lines + planned_additions` before implementing. If it exceeds 370, plan the extraction upfront.
+~~2. **Check line-count budget before adding code.** Always calculate `current_lines + planned_additions` before implementing. If it exceeds 370, plan the extraction upfront.~~ **NOT-DO — planning lesson; the `constraint-mapper.ts` extraction is the standing pattern.**
 
-3. **Verify `$ref` edge cases explicitly.** The `applyConstraints` function has a critical branch (`if (schema.$ref) return schema`) that is **behaviorally important** (prevents invalid JSON Schema) but **untested**. Every behavioral branch needs a test.
+~~3. **Verify `$ref` edge cases explicitly.** The `applyConstraints` function has a critical branch (`if (schema.$ref) return schema`) that is **behaviorally important** (prevents invalid JSON Schema) but **untested**. Every behavioral branch needs a test.~~ done — tested — skips-validation-on-`$ref` case (`test/compliance/constraint-decorators.test.ts`)
 
-4. **Test property-level `#deprecated` on `$ref` properties.** The `deprecated` keyword as a `$ref` sibling is the one edge case that could break AJV validation. It must be tested.
+~~4. **Test property-level `#deprecated` on `$ref` properties.** The `deprecated` keyword as a `$ref` sibling is the one edge case that could break AJV validation. It must be tested.~~ done — tested — deprecated-as-`$ref`-sibling case (same file)
 
-5. **Per-file coverage verification for new files.** When adding a new source file, always check its specific coverage percentage, not just the global average.
+~~5. **Per-file coverage verification for new files.** When adding a new source file, always check its specific coverage percentage, not just the global average.~~ done — the per-file floor is enforced by `pnpm run test:coverage:gate` (min 75% per file)
 
 ### Code improvements
 
-6. **`applyConstraints` could use a loop instead of 10 sequential if-blocks.** Each constraint follows the same pattern: call getter → check undefined → assign to schema. A table-driven approach would be more maintainable:
+~~6. **`applyConstraints` could use a loop instead of 10 sequential if-blocks.** Each constraint follows the same pattern: call getter → check undefined → assign to schema. A table-driven approach would be more maintainable:~~ **Won't implement — declined in-report and since; the explicit mapping is kept for type safety.**
 
 ```typescript
 const CONSTRAINT_MAPPERS: Array<[() => number | string | undefined, keyof JsonSchema]> = [
@@ -196,15 +196,15 @@ This would reduce the function from ~55 lines to ~15 lines. **I chose not to do 
 
 But it's worth considering for maintainability.
 
-7. **`applyDeprecated` is called separately in 3 places.** It would be cleaner to have a single `applyMetadata()` function that handles both `deprecated` and `description` (doc). Currently `applyDocDescription` is a standalone function in `schema-emitter.ts` and `applyDeprecated` is in `constraint-mapper.ts`. These are the same concern (metadata application) split across two files.
+~~7. **`applyDeprecated` is called separately in 3 places.** It would be cleaner to have a single `applyMetadata()` function that handles both `deprecated` and `description` (doc). Currently `applyDocDescription` is a standalone function in `schema-emitter.ts` and `applyDeprecated` is in `constraint-mapper.ts`. These are the same concern (metadata application) split across two files.~~ done — `applyMetadata` in `src/constraint-mapper.ts` handles doc, deprecated, summary and examples
 
 ### Test improvements
 
-8. **No test for `@format` overriding a numeric format.** All `@format` tests use string types. What happens with `@format("int64")` on an `int64` field? (It should override the default, but this is untested.)
+~~8. **No test for `@format` overriding a numeric format.** All `@format` tests use string types. What happens with `@format("int64")` on an `int64` field? (It should override the default, but this is untested.)~~ done — the `@format` override test exists (constraint-decorators.test.ts)
 
-9. **No test for `@minItems`/`@maxItems` on `Record<>` types.** Record types emit `{ type: "object", additionalProperties: ... }`, not arrays. Do `@minItems`/`@maxItems` apply? (TypeSpec compiler likely rejects this at compile time, but the emitter behavior should be verified.)
+~~9. **No test for `@minItems`/`@maxItems` on `Record<>` types.** Record types emit `{ type: "object", additionalProperties: ... }`, not arrays. Do `@minItems`/`@maxItems` apply? (TypeSpec compiler likely rejects this at compile time, but the emitter behavior should be verified.)~~ **NOT-DO — Record emits an object schema (`additionalProperties`); array-only constraints cannot apply.**
 
-10. **No test for negative constraint values.** `@minValue(-100)` on `int32` — does it produce `minimum: -100`? The getter returns `number | undefined`, so it should, but edge cases with negative numbers deserve a test.
+~~10. **No test for negative constraint values.** `@minValue(-100)` on `int32` — does it produce `minimum: -100`? The getter returns `number | undefined`, so it should, but edge cases with negative numbers deserve a test.~~ done — negative-value tests exist (constraint-decorators.test.ts)
 
 ---
 
@@ -212,71 +212,71 @@ But it's worth considering for maintainability.
 
 ### High Impact (schema correctness)
 
-1. **Add test: `#deprecated` on a `$ref` property** — verify `deprecated: true` appears as `$ref` sibling, AJV still validates
-2. **Add test: constraints absent on `$ref` properties** — verify `minimum`/`pattern` etc. do NOT appear on `$ref` schemas
-3. **Add test: `@format("int64")` on `int64` field** — format override on numeric type
-4. **Add test: negative constraint values** (`@minValue(-100)`, `@maxValue(-1)`)
-5. **Add `@example` → `examples` mapping** — `getExamples()` is available; needs value serialization
-6. **Add `@summary` → `title` mapping** — `getSummary()` is available; 5-line change
-7. **Implement `allOf` for model inheritance** — `baseModel` should emit `allOf: [{ $ref: "#/components/schemas/Base" }]` instead of flattening properties (current behavior loses inheritance metadata)
-8. **Implement `oneOf` / `not` for union types** — some unions should be `oneOf` instead of `anyOf`
-9. **Add `@discriminator` → `discriminator`** — polymorphic type handling
-10. **Add `@visibility` → `readOnly`/`writeOnly`** — field visibility for request/response differentiation
+~~1. **Add test: `#deprecated` on a `$ref` property** — verify `deprecated: true` appears as `$ref` sibling, AJV still validates~~ done — tested — deprecated as a `$ref` sibling
+~~2. **Add test: constraints absent on `$ref` properties** — verify `minimum`/`pattern` etc. do NOT appear on `$ref` schemas~~ done — tested — constraints absent on `$ref` schemas
+~~3. **Add test: `@format("int64")` on `int64` field** — format override on numeric type~~ done — tested — `@format` overrides the default format
+~~4. **Add test: negative constraint values** (`@minValue(-100)`, `@maxValue(-1)`)~~ done — tested — negative constraint values
+~~5. **Add `@example` → `examples` mapping** — `getExamples()` is available; needs value serialization~~ done — `getExamples` wired
+~~6. **Add `@summary` → `title` mapping** — `getSummary()` is available; 5-line change~~ done — summary to `title` mapping shipped
+~~7. **Implement `allOf` for model inheritance** — `baseModel` should emit `allOf: [{ $ref: "#/components/schemas/Base" }]` instead of flattening properties (current behavior loses inheritance metadata)~~ done — `allOf` composes base refs (`src/schema-emitter.ts`, model-composition tests)
+~~8. **Implement `oneOf` / `not` for union types** — some unions should be `oneOf` instead of `anyOf`~~ done — `oneOf` vs `anyOf` decided in `src/schema-fragments.ts`; bare `not` remains unmapped
+~~9. **Add `@discriminator` → `discriminator`** — polymorphic type handling~~ done — discriminator shipped plus polymorphism suite
+~~10. **Add `@visibility` → `readOnly`/`writeOnly`** — field visibility for request/response differentiation~~ done — visibility mapping shipped
 
 ### Schema correctness (edge cases)
 
-11. **Test `@minItems`/`@maxItems` on `Record<>`** — should NOT apply (Record is object, not array)
-12. **Test `@minLength` on non-string type** — TypeSpec compiler should reject, but verify emitter doesn't crash
-13. **Test `@pattern` with special regex characters** — `[`, `]`, `{`, `}`, `/`, etc. in pattern values
-14. **Test `@format("uuid")` on `uri` type** — format override across scalar categories
-15. **Test multiple `#deprecated` models in same namespace** — no cross-contamination
-16. **Test `#deprecated` on enum** — `applyDeprecated` is wired into `enumDeclaration` but no explicit enum deprecation test
-17. **Test `#deprecated` on scalar declaration** — user-defined scalars (`scalar Currency extends string`)
-18. **Verify coverage of `constraint-mapper.ts` specifically** — extract per-file number from coverage report
+~~11. **Test `@minItems`/`@maxItems` on `Record<>`** — should NOT apply (Record is object, not array)~~ **NOT-DO — Record is an object schema; array-only constraints cannot apply.**
+~~12. **Test `@minLength` on non-string type** — TypeSpec compiler should reject, but verify emitter doesn't crash~~ **Won't implement — never added; decorator signatures type-check targets at compile time.**
+~~13. **Test `@pattern` with special regex characters** — `[`, `]`, `{`, `}`, `/`, etc. in pattern values~~ done — tested — pattern with special regex characters
+~~14. **Test `@format("uuid")` on `uri` type** — format override across scalar categories~~ done — tested — `@format("uuid")` on `uri`
+~~15. **Test multiple `#deprecated` models in same namespace** — no cross-contamination~~ done — tested — no cross-contamination between models
+~~16. **Test `#deprecated` on enum** — `applyDeprecated` is wired into `enumDeclaration` but no explicit enum deprecation test~~ done — tested — `#deprecated` on an enum schema
+~~17. **Test `#deprecated` on scalar declaration** — user-defined scalars (`scalar Currency extends string`)~~ **Won't implement — not tested as a declaration; scalar-typed property deprecated IS covered.**
+~~18. **Verify coverage of `constraint-mapper.ts` specifically** — extract per-file number from coverage report~~ done — the per-file floor is enforced by `pnpm run test:coverage:gate`
 
 ### Spec compliance gaps
 
-19. **Populate `info.contact`** — email, name, url
-20. **Populate `info.license`** — name, url
-21. **Populate `info.termsOfService`** — URL
-22. **Populate `info.externalDocs`** — url, description
-23. **Populate remaining `components.*`** — parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings
-24. **Support `schemaFormat`** — Avro/Protobuf payload types per AsyncAPI 3.1
-25. **Channel `summary` and `description` fields** — currently only address is populated
-26. **Operation `summary` and `description` fields** — `@doc` is used for description, but `summary` is never set
-27. **Message `title` from `@message` decorator** — verify this is working correctly
-28. **Server `title` field** — AsyncAPI 3.1 allows it, not currently emitted
+~~19. **Populate `info.contact`** — email, name, url~~ done — `test/compliance/info-object.test.ts` covers contact, license, termsOfService, externalDocs
+~~20. **Populate `info.license`** — name, url~~ done — info.license covered in the same file
+~~21. **Populate `info.termsOfService`** — URL~~ done — termsOfService covered in the same file
+~~22. **Populate `info.externalDocs`** — url, description~~ done — externalDocs covered in the same file
+~~23. **Populate remaining `components.*`** — parameters, correlationIds, tags, operationTraits, messageTraits, reusable bindings~~ done — components-builder populates parameters, correlationIds and traits (plus schemas, messages, servers)
+~~24. **Support `schemaFormat`** — Avro/Protobuf payload types per AsyncAPI 3.1~~ done — schemaFormat emitted (Avro/Protobuf tests in `test/integration/asyncapi-3.1-features.test.ts`)
+~~25. **Channel `summary` and `description` fields** — currently only address is populated~~ done — `@doc` and `@summary` applied to channels (`src/builders/channel-builder.ts`)
+~~26. **Operation `summary` and `description` fields** — `@doc` is used for description, but `summary` is never set~~ done — operation summary wired (`src/builders/operation-builder.ts`)
+~~27. **Message `title` from `@message` decorator** — verify this is working correctly~~ done — message title propagates from `@message` config and model name (`src/builders/message-builder.ts`)
+~~28. **Server `title` field** — AsyncAPI 3.1 allows it, not currently emitted~~ **Won't implement — never added; `ServerObject` has no `title` field (`src/domain/models/asyncapi-document.ts`).**
 
 ### Developer Experience
 
-29. **Add `bun run verify` alias** — `validate` + coverage gate in one command
-30. **Add docs-entropy CI guard** — flag when living docs drift from code counts (test count, diagnostic count, etc.)
-31. **TypeSpec 1.14.0 upgrade** — includes auto decorators, `.ts` module imports, memory leak fix
-32. **Add `--version` projection support** — emitter currently always emits latest version, ignoring TypeSpec's projection flag
-33. **README example snippets should be compiled in CI** — verify they actually work
-34. **Add a "quick reference" for constraint decorators** — which decorators map to which keywords (one-page table)
-35. **Improve error messages for constraint type mismatches** — TypeSpec compiler errors are generic; emitter could add context
+~~29. **Add `bun run verify` alias** — `validate` + coverage gate in one command~~ done — `pnpm run verify` exists
+~~30. **Add docs-entropy CI guard** — flag when living docs drift from code counts (test count, diagnostic count, etc.)~~ done — docs-gates freshness battery plus `audit_max` ratchet (`.docs-gates.json`)
+~~31. **TypeSpec 1.14.0 upgrade** — includes auto decorators, `.ts` module imports, memory leak fix~~ **Superseded — superseded by the TypeSpec 1.17 family (peerDependencies in `package.json`).**
+~~32. **Add `--version` projection support** — emitter currently always emits latest version, ignoring TypeSpec's projection flag~~ done — versioning and projection covered (`test/integration/versioning.test.ts`)
+~~33. **README example snippets should be compiled in CI** — verify they actually work~~ **Won't implement — README snippets are not compiled; `check-examples` covers `examples/`.**
+~~34. **Add a "quick reference" for constraint decorators** — which decorators map to which keywords (one-page table)~~ done — README lists the full constraint mapping (`README.md` schema section)
+~~35. **Improve error messages for constraint type mismatches** — TypeSpec compiler errors are generic; emitter could add context~~ **Won't implement — never added; constraint misuse surfaces as compiler diagnostics.**
 
 ### Architecture & Code Quality
 
-36. **Consolidate `applyDocDescription` and `applyDeprecated`** into a single `applyMetadata()` function — same concern, split across two files
-37. **Consider table-driven constraint mapping** — reduce 10 if-blocks to a loop (see improvement #6 above)
-38. **Tighten `OperationObject.action` to required** — currently optional in the type
-39. **Add `SecurityScheme.description`** field to the type
-40. **Make `ParsedAsyncAPIDocument.asyncapi` a literal union** — `"3.1.0"` instead of `string`
-41. **Move generic utilities to `src/util/`** — `applyOverrides`, `collectNamesInto` are generic
-42. **Audit `JsonSchema.items` consumers** — ensure array-form (`JsonSchema[]`) is handled safely after tuple fix
-43. **Check `@typespec/versioning` dependency placement** — should it be `peerDependency`?
-44. **Write integration test for `@bindings(#{solace: #{priority: 5}})`** — end-to-end, not just unit
-45. **Verify `typeToSchema()` Tuple branch reachability** — may be dead code after `tuple()` override
+~~36. **Consolidate `applyDocDescription` and `applyDeprecated`** into a single `applyMetadata()` function — same concern, split across two files~~ done — `applyMetadata` consolidates the metadata concern
+~~37. **Consider table-driven constraint mapping** — reduce 10 if-blocks to a loop (see improvement #6 above)~~ **Won't implement — declined; the explicit mapping is kept for type safety.**
+~~38. **Tighten `OperationObject.action` to required** — currently optional in the type~~ done — `action: OperationAction` is required (`src/domain/models/asyncapi-document.ts`)
+~~39. **Add `SecurityScheme.description`** field to the type~~ done — `description?` exists on `SecurityScheme`
+~~40. **Make `ParsedAsyncAPIDocument.asyncapi` a literal union** — `"3.1.0"` instead of `string`~~ done — the emitter document type locks the `3.1.0` literal; the parsed-input side remains `string`
+~~41. **Move generic utilities to `src/util/`** — `applyOverrides`, `collectNamesInto` are generic~~ **Won't implement — never moved; the helpers live in `src/constants/binding-versions.ts` today.**
+~~42. **Audit `JsonSchema.items` consumers** — ensure array-form (`JsonSchema[]`) is handled safely after tuple fix~~ done — `items` union typed `JsonSchema | JsonSchema[]`; tests narrow via `asJsonSchema`
+~~43. **Check `@typespec/versioning` dependency placement** — should it be `peerDependency`?~~ done — `@typespec/versioning` is a peerDependency (`package.json`)
+~~44. **Write integration test for `@bindings(#{solace: #{priority: 5}})`** — end-to-end, not just unit~~ done — solace cases in `test/integration/new-protocol-bindings.test.ts`
+~~45. **Verify `typeToSchema()` Tuple branch reachability** — may be dead code after `tuple()` override~~ **NOT-DO — the Tuple branch is still present (`src/schema-emitter.ts`); no dead-code finding since.**
 
 ### Testing Infrastructure
 
-46. **Add property-based testing** — generate random constraint combinations and verify AJV always passes
-47. **Add snapshot tests for constraint output** — lock exact JSON Schema for each decorator
-48. **Add cross-protocol constraint tests** — verify constraints work regardless of protocol bindings on the channel
-49. **Benchmark constraint application overhead** — measure `applyConstraints` cost on large models (100+ properties)
-50. **Add negative tests** — `@minValue("abc")` should produce a compiler diagnostic, not corrupt output
+~~46. **Add property-based testing** — generate random constraint combinations and verify AJV always passes~~ done — property suite exists (`test/property/emitter-properties.test.ts`)
+~~47. **Add snapshot tests for constraint output** — lock exact JSON Schema for each decorator~~ done — exact keywords asserted per decorator; whole documents locked by `test/golden/`
+~~48. **Add cross-protocol constraint tests** — verify constraints work regardless of protocol bindings on the channel~~ **Won't implement — never added; constraints apply at the schema layer, protocol-independent by construction.**
+~~49. **Benchmark constraint application overhead** — measure `applyConstraints` cost on large models (100+ properties)~~ **Won't implement — no constraint-specific benchmark; `test/benchmark/performance.test.ts` covers large documents.**
+~~50. **Add negative tests** — `@minValue("abc")` should produce a compiler diagnostic, not corrupt output~~ **Won't implement — not emitter-side; decorator arg types reject invalid values at compile time.**
 
 ---
 
@@ -304,15 +304,15 @@ The question: **Should we inline-expand `$ref` targets when constraints are pres
 
 | Metric                 | Before                | After           | Delta                               |
 | ---------------------- | --------------------- | --------------- | ----------------------------------- |
-| Tests                  | 869                   | 881             | +12 net (+15 added, -3 deleted)     |
-| Test files             | 76                    | 76              | 0 (1 deleted, 1 renamed, 1 created) |
-| Source files           | ~34                   | 35              | +1 (`constraint-mapper.ts`)         |
-| Source lines (emitter) | 320                   | 327             | +7 (net, after extraction)          |
-| Coverage               | ~96.8%                | 97.0%           | +0.2%                               |
-| Duplication            | 0.09% (1 clone)       | 0.09% (1 clone) | 0                                   |
-| Decorators mapped      | 0                     | 11              | +11                                 |
-| Dead fields            | 2 (`nullable`, `xml`) | 0               | -2                                  |
-| Commits pushed         | —                     | 6               | —                                   |
+| ~~Tests~~ done at `73f917f0` | ~~869~~ | ~~881~~ | ~~+12 net (+15 added, -3 deleted)~~ |
+| ~~Test files~~ done at `73f917f0` | ~~76~~ | ~~76~~ | ~~0 (1 deleted, 1 renamed, 1 created)~~ |
+| ~~Source files~~ done at `73f917f0` | ~~~34~~ | ~~35~~ | ~~+1 (`constraint-mapper.ts`)~~ |
+| ~~Source lines (emitter)~~ done at `73f917f0` | ~~320~~ | ~~327~~ | ~~+7 (net, after extraction)~~ |
+| ~~Coverage~~ done at `73f917f0` | ~~~96.8%~~ | ~~97.0%~~ | ~~+0.2%~~ |
+| ~~Duplication~~ done at `73f917f0` | ~~0.09% (1 clone)~~ | ~~0.09% (1 clone)~~ | ~~0~~ |
+| ~~Decorators mapped~~ done at `73f917f0` | ~~0~~ | ~~11~~ | ~~+11~~ |
+| ~~Dead fields~~ done at `73f917f0` | ~~2 (`nullable`, `xml`)~~ | ~~0~~ | ~~-2~~ |
+| ~~Commits pushed~~ done at `73f917f0` | ~~—~~ | ~~6~~ | ~~—~~ |
 
 ---
 
