@@ -29,6 +29,8 @@ lint, typecheck, and the coverage gate on the first pass.
 
 ## Verified This Session (hard evidence)
 
+<!-- ledger: gate-run results snapshot — completed measurements, no actionable rows -->
+<!-- check-rows:ledger -->
 | Check           | Command                                     | Result                               | Duration    |
 | --------------- | ------------------------------------------- | ------------------------------------ | ----------- |
 | Build (codegen) | `bun run scripts/generate-binding-specs.ts` | OK — 19 protocols                    | —           |
