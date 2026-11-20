@@ -203,16 +203,16 @@ Impact: Critical / High / Medium / Low. Effort: S (<30 min) / M (30 min to 2 h) 
 | #  | Task                                                                                                      | Impact   | Effort | Category |
 | -- | --------------------------------------------------------------------------------------------------------- | -------- | ------ | -------- |
 | ~~1~~ **NOT-DO — moot — `pnpm audit` in `website/` reports no unignored findings ( 2026-11-19 ); plugin retained and deployed.** | ~~Decide the `braces` advisory policy: documented `auditConfig.ignoreGhsas` dismissal or remove the plugin~~ | ~~Critical~~ | ~~S~~ | ~~Security~~ |
-| 2  | Add `customSelectors: { all: [".sl-anchor-link"] }` and rebuild                                           | High     | S      | Quality  |
-| 3  | Add `check:llms` asserting 3 files, non-zero size, ordering, docs present, no 404 in `llms-small.txt`     | High     | M      | Quality  |
-| 4  | Make `pnpm run check` clean `dist`/`.astro` first (via `trash`)                                           | High     | S      | Quality  |
+| ~~2~~ **Won't implement — never added; the plugin ships as-is and the site checks green — check:links asserts the llms artifacts exist (2026-11-19).** | ~~Add `customSelectors: { all: [".sl-anchor-link"] }` and rebuild~~ | ~~High~~ | ~~S~~ | ~~Quality~~ |
+| ~~3~~ **NOT-DO — already covered — website/scripts/check-links.mjs asserts the three llms artifacts (llms.txt, llms-full.txt, llms-small.txt) exist and are non-empty.** | ~~Add `check:llms` asserting 3 files, non-zero size, ordering, docs present, no 404 in `llms-small.txt`~~ | ~~High~~ | ~~M~~ | ~~Quality~~ |
+| ~~4~~ **Won't implement — never wired; astro build empties dist on every run and no stale-output incident has recurred since.** | ~~Make `pnpm run check` clean `dist`/`.astro` first (via `trash`)~~ | ~~High~~ | ~~S~~ | ~~Quality~~ |
 | ~~5~~ **Won't implement — never built; `website/scripts/check-links.mjs` checks HTML `href`/`src` only.** | ~~Validate Markdown links inside `.txt` artifacts in `check-links.mjs`~~ | ~~High~~ | ~~M~~ | ~~Quality~~ |
 | ~~6~~ done — `.github/workflows/ci.yml:38` | ~~Run `pnpm run check-examples` against the restored toolchain~~ | ~~High~~ | ~~M~~ | ~~Quality~~ |
 | ~~7~~ done — deployed 2026-10-23 ( `website/IMPROVEMENTS.md:7` ) | ~~Deploy with `nix run .#deploy-website` after approval~~ | ~~High~~ | ~~S~~ | ~~Ops~~ |
 | ~~8~~ done — live endpoints verified ( `website/IMPROVEMENTS.md:7` ) | ~~Verify live `/llms.txt`, `/llms-full.txt`, `/llms-small.txt` return 200 with `text/plain`~~ | ~~High~~ | ~~S~~ | ~~Ops~~ |
 | ~~9~~ done — BuildFlow runs `pnpm-audit` ( not skipped in `.buildflow.yml` ; green per the 2026-10-03 addendum §6 ) | ~~Add `pnpm audit` to CI (or a scheduled job)~~ | ~~High~~ | ~~M~~ | ~~Security~~ |
 | ~~10~~ **Won't implement — never restored; sets-only entrypoint ( `website/dist/llms.txt` ).** | ~~Restore a per-page documentation index in the LLM entrypoint if consumers need it~~ | ~~High~~ | ~~M~~ | ~~Feature~~ |
-| 11 | Update `website/README.md`: remove "pages/ llms.txt endpoints", document plugin generation                | Medium   | S      | Docs     |
+| 11 **→ TODO_LIST §Website QA & Brand Follow-ups** | Update `website/README.md`: remove "pages/ llms.txt endpoints", document plugin generation | Medium | S | Docs |
 | ~~12~~ done — deploy recorded at `website/IMPROVEMENTS.md:7` and item 86 marked Done ( `:118` ) | ~~Update `website/IMPROVEMENTS.md` (mark plugin adoption, note 404 caveat)~~ | ~~Medium~~ | ~~S~~ | ~~Docs~~ |
 | ~~13~~ **Won't implement — `404.md` remains in the docs collection and still tails `llms-full.txt` ; documented in `AGENTS.md:217`.** | ~~Move the 404 page out of the `docs` collection (`src/pages/404.astro`) if full-corpus cleanliness matters~~ | ~~Medium~~ | ~~M~~ | ~~Refactor~~ |
 | ~~14~~ **Won't implement — never filed from this repo ( no trace in git history ); the 404 tail persists.** | ~~File an upstream issue for full-file `exclude` support in `starlight-llms-txt`~~ | ~~Medium~~ | ~~S~~ | ~~Upstream~~ |

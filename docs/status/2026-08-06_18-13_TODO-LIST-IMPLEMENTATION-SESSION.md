@@ -108,12 +108,12 @@ I updated 4 living docs (TODO_LIST, CHANGELOG, FEATURES, ROADMAP) but did NOT up
 | ~~namespace-decorators.ts "201 lines"~~ done — per-file line-count claims were dropped from AGENTS.md entirely | ~~**205 lines**~~ | ~~added validation + constants~~ |
 | ~~use-decorators.ts "61 lines"~~ done — per-file line-count claims were dropped from AGENTS.md entirely | ~~**66 lines**~~ | ~~added `$useChannelBinding`~~ |
 | ~~minimal-decorators.ts "288 lines"~~ done — per-file line-count claims were dropped from AGENTS.md entirely | ~~**357 lines**~~ | ~~rewrote `$tags` + added `normalizeTagItem`~~ |
-| ~~"storeTags accepts string[]"~~ done — `storeTags` now accepts `(string | Tag)[]` and normalizes internally ( `src/state-writers.ts:173` ) | ~~**accepts Tag[]**~~ | ~~breaking signature change~~ |
+| ~~"storeTags accepts string[]"~~ done — `storeTags` now accepts string-or-Tag arrays and normalizes internally ( `src/state-writers.ts:173` ) | ~~**accepts Tag[]**~~ | ~~breaking signature change~~ |
 | ~~No mention of `@useChannelBinding`~~ done — `@useChannelBinding` documented in `AGENTS.md:63` and `CHANGELOG.md:282` | ~~New decorator~~ | ~~`lib/main.tsp:166`~~ |
 | ~~No mention of `channelBindings` context~~ done — `channelBindings` context mentioned in `AGENTS.md:63` | ~~New field~~ | ~~`src/builders/types.ts:47`~~ |
 | ~~No mention of trait richer fields~~ done — trait richer fields documented in `FEATURES.md:108` and `:109` | ~~security/tags/bindings/headers/correlationId~~ | ~~`src/namespace-decorators.ts`~~ |
 | ~~No mention of `@parameter` location validation~~ done — `invalid-parameter-location` declared in `src/lib.ts:181` | ~~`invalid-parameter-location` diagnostic~~ | ~~`src/lib.ts`~~ |
-| ~~No mention of `@tags` rich objects~~ done — rich `@tags` documented in `FEATURES.md:89` and `lib/main.tsp:89` | ~~Accepts `(string~~ | ~~Record<unknown>)[]`~~ | ~~`lib/main.tsp:56`~~ |
+| ~~No mention of `@tags` rich objects~~ done — rich `@tags` documented in `FEATURES.md:89` and `lib/main.tsp:89` | ~~Accepts (string / Record union)[]~~ | ~~`lib/main.tsp:56`~~ |
 
 ### `pnpm run verify` not run as a single command
 

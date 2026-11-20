@@ -242,6 +242,9 @@ What remains is the gated release chain and the tail:
       (docs/status/2026-11-04_17-42:122).
 - [ ] Review favicon manifest `id`/`scope` for PWA installability score
       (Lighthouse pass) (docs/status/2026-11-04_17-42:153).
+- [ ] Update `website/README.md` pages/ listing: drop the manual llms.txt
+      endpoints line, document `starlight-llms-txt` plugin generation
+      (docs/status/2026-10-23_14-13:215).
 
 ## Test-Suite Integrity (residual)
 
