@@ -32,6 +32,9 @@ removal.
 - [ ] Verify the npm package page renders the README `<picture>` logo
       after the next publish; add a raster fallback if npm strips it
       (docs/status/2026-11-02_01-20:231).
+- [ ] Provenance verification instructions in the README — how consumers
+      verify sigstore/provenance on the package
+      (docs/status/2026-10-03_13-58:332).
 - [ ] Register npm trusted publisher — **remaining Lars action, narrowed
         2026-11-19 evening**: Lars dispatched the real publish (run 44603780129) and the publish job FAILED with **E404 on PUT** — OIDC
         exchange and provenance signing work (sigstore logIndex 4005319347),
@@ -291,6 +294,10 @@ What remains is the gated release chain and the tail:
 - [ ] Reduce llms.txt anchor noise — "Section titled" spam in the llms
       output; try starlight-llms-txt `customSelectors`
       (docs/status/2026-10-23_14-13:206).
+- [ ] Visual QA of `guides/mixing-with-openapi` in a real browser; fix
+      rendering/analytics gaps (docs/status/2026-10-03_13-58:261).
+- [ ] og:image / social card refresh for the new guide (fleet review
+      follow-up) (docs/status/2026-10-03_13-58:268).
 - [ ] Update `website/README.md` pages/ listing: drop the manual llms.txt
       endpoints line, document `starlight-llms-txt` plugin generation
       (docs/status/2026-10-23_14-13:215).
@@ -311,6 +318,13 @@ What remains is the gated release chain and the tail:
 - [ ] Intrinsic-output hardening tests: golden lock for unknown/nullable
       unions, e2e never/void mapping tests, AJV negative `type: null` tests
       (docs/status/2026-08-22_00-17:85-93).
+- [ ] Lock the diagnostic-code count with a unit test — `src/lib.ts`
+      diagnostics registry otherwise grows silently
+      (docs/status/2026-10-03_13-58:243).
+- [ ] Extend the mixed-ownership property suite to cover the http-route
+      fallback path (docs/status/2026-10-03_13-58:281).
+- [ ] Integration test running BOTH emitters' outputs through AJV in one
+      program (docs/status/2026-10-03_13-58:284).
 - [ ] Negative tests for `@operationId`/`@messageId` empty strings and
       invalid special characters (docs/status/2026-07-22_20-09:140).
 - [ ] Consolidate duplicated compileAndGetDoc-style helpers into one
