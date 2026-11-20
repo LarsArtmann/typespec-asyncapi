@@ -19,7 +19,7 @@ against the official AsyncAPI 3.1 JSON Schema.
 | ~~`components.messageTraits`~~ done — messageTraits shipped and documented ( `FEATURES.md:109` ) | ~~`@messageTrait(name, config)` on Namespace~~ | ~~`@useMessageTrait(name)` on Model~~ | ~~2~~ |
 | ~~`components.parameters`~~ done — parameters shipped and documented ( `FEATURES.md:112` ) | ~~`@parameter(name, config)` on Namespace~~ | ~~(auto-ref from `{name}` in channel address)~~ | ~~3~~ |
 | ~~`components.correlationIds`~~ done — correlationIds shipped and documented ( `FEATURES.md:113` ) | ~~`@reusableCorrelationId(name, location)` on Namespace~~ | ~~`@useCorrelationId(name)` on Model~~ | ~~3~~ |
-| ~~`components.operationBindings` / `components.messageBindings`~~ done — reusable bindings shipped and documented ( `FEATURES.md:115` ) | ~~`@reusableBinding(name, config)` on Namespace~~ | ~~`@useBinding(name)` on Operation\|Model~~ | ~~3~~ |
+| ~~`components.operationBindings` / `components.messageBindings`~~ done — reusable bindings shipped and documented ( `FEATURES.md:115` ) | ~~`@reusableBinding(name, config)` on Namespace~~ | ~~`@useBinding(name)` on Operation/Model~~ | ~~3~~ |
 
 **Inline approaches still work** — `@correlationId(location)` on a model
 continues to emit inline `correlationId: { location }` without populating
@@ -30,7 +30,7 @@ without changing existing behavior.
 
 | File                                          | Change                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| ~~`src/domain/models/asyncapi-document.ts`~~ done — `src/domain/models/asyncapi-document.ts` carries the trait and component types today | ~~Added `OperationTraitObject`, `MessageTraitObject` (via `Pick<CommonMetadata>` + `Pick<MessageObject>`), expanded `ComponentsObject` with 6 new fields, added `refOperationTrait/refMessageTrait/refParameter/refCorrelationId` helpers, changed `CommonMetadata.bindings` to `ProtocolBindings \| Ref`~~ |
+| ~~`src/domain/models/asyncapi-document.ts`~~ done — `src/domain/models/asyncapi-document.ts` carries the trait and component types today | ~~Added `OperationTraitObject`, `MessageTraitObject` (via `Pick<CommonMetadata>` + `Pick<MessageObject>`), expanded `ComponentsObject` with 6 new fields, added `refOperationTrait/refMessageTrait/refParameter/refCorrelationId` helpers, changed `CommonMetadata.bindings` to `ProtocolBindings-or-Ref`~~ |
 | ~~`src/state.ts`~~ done — `src/state.ts` carries the consolidated state today | ~~Added 5 data interfaces + 8 new maps in `AsyncAPIConsolidatedState` + consolidation entries~~ |
 | ~~`src/lib.ts`~~ done — `src/lib.ts` declares the diagnostic codes today ( `invalid-parameter-location` at `:181` ) | ~~Added 9 state symbols + 2 new diagnostic codes (`invalid-trait-config`, `invalid-parameter-config`)~~ |
 | ~~`src/state-writers.ts`~~ done — `src/state-writers.ts` carries the store functions today | ~~Added `storeMulti` generic helper + exported ref store factory + 9 store functions~~ |
