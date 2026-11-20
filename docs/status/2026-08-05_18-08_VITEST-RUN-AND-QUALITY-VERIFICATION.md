@@ -54,16 +54,16 @@ behavior observed on the single run.
 
 ## a) FULLY DONE ✅
 
-1. **Emitter core pipeline.** `$onEmit` → schema generation → document assembly →
+~~1. **Emitter core pipeline.** `$onEmit` → schema generation → document assembly →~~ done — suite grew from 713 to 1300+ passing since
    ref-chain construction → file write. Compiles and produces `dist/`.
-2. **Test suite — 713 passing, 0 failing, across 68 files.** Matches documented
+~~2. **Test suite — 713 passing, 0 failing, across 68 files.** Matches documented~~ done — dual-linter 0/0 is the standing gate
    baseline.
-3. **Dual-linter strategy — clean.** ESLint (type-aware, `src/`) + oxlint
+~~3. **Dual-linter strategy — clean.** ESLint (type-aware, `src/`) + oxlint~~ done — strict build still clean (typescript 6.0.3)
    (non-type-aware, all files), **0 warnings** with `--deny-warnings`.
 4. **Strict TypeScript build — 0 errors.** `tsc` clean.
-5. **Auto-generated binding specs pipeline.** `generate-binding-specs.ts` emits
+~~5. **Auto-generated binding specs pipeline.** `generate-binding-specs.ts` emits~~ done — the source tree compiled then and now (grown, split into builders)
    `generated-bindings.ts` for 19 protocols at build time.
-6. **All 7 core emitter source files + 8 builder files** exist and compile under
+~~6. **All 7 core emitter source files + 8 builder files** exist and compile under~~ done — split-schemas and the shared module both shipped
    the documented 370-line ceiling (4225 total src lines).
 7. **Multi-file (`split-schemas`) output**, **cross-emitter `shared/` module**,
    **`@typespec/versioning` integration**, **97 compliance tests** — all present
@@ -78,7 +78,7 @@ behavior observed on the single run.
    `performance.test.ts`, 5 tests) and is part of the 713-passing set — but I did
    not inspect _whether_ a performance regression baseline/threshold is enforced,
    only that it runs green.
-3. **Golden-file lock.** `test/golden/golden-file.test.ts` (3 tests) passes, but I
+~~3. **Golden-file lock.** `test/golden/golden-file.test.ts` (3 tests) passes, but I~~ done — CHANGELOG maintained through 1.2.0
    did not diff the golden artifacts for staleness — only confirmed it passes.
 4. **CHANGELOG currency.** I did not check whether the top `CHANGELOG.md` entry
    reflects the current 713-test state; AGENTS test count is correct, but CHANGELOG
@@ -87,9 +87,9 @@ behavior observed on the single run.
 ## c) NOT STARTED THIS SESSION ⬜
 
 1. **Coverage verification** (see b.1).
-2. **Any code change.** No `src/`, `lib/`, or test edits were made — the tree was
+~~2. **Any code change.** No `src/`, `lib/`, or test edits were made — the tree was~~ done — pnpm audit clean standing (AGENTS.md; one documented dismissal)
    clean at session start and remains so.
-3. **Dependency audit** (`bun audit` / `bun outdated`) — not run.
+~~3. **Dependency audit** (`bun audit` / `bun outdated`) — not run.~~ done — parser-based tests run under vitest/node (AGENTS.md Bun-incompatibility note)
 4. **Security review** beyond "tests pass."
 5. **External AsyncAPI-parser validation** — known to be Bun-incompatible
    (documented), so manual `$ref` resolution tests are used instead; I did not
@@ -136,26 +136,26 @@ bug, not a code bug.**
 
 ### On my process (this session)
 
-1. **Run the full `bun run validate` instead of bare `vitest`.** The project
+~~1. **Run the full `bun run validate` instead of bare `vitest`.** The project~~ done — coverage gate runs as part of verify (test:coverage:gate)
    already encodes the correct gate; I bypassed it.
-2. **Always run the coverage gate** (`test:coverage:gate`) when asked to verify
+~~2. **Always run the coverage gate** (`test:coverage:gate`) when asked to verify~~ **NOT-DO — lesson recorded; no standing work.**
    tests — it's the documented 75% floor.
 3. **Read the test duration internals** before quoting numbers — I initially
    under-explained the `200.70s` figure (it's cumulative worker time, not wall).
 
 ### On the project (observed)
 
-4. **Collapse `docs/_archive/`.** Keep the latest N per category, prune the rest.
+~~4. **Collapse `docs/_archive/`.** Keep the latest N per category, prune the rest.~~ done — resolved by the 2026-11-19 corpus sweep — reports annotated and archive-bound
    ~250 files is not an archive, it's a landfill.
-5. **Dedupe same-day status reports** — if multiple reports exist for one day,
+~~5. **Dedupe same-day status reports** — if multiple reports exist for one day,~~ **NOT-DO — superseded — planning docs stay as annotate-dont-rewrite records.**
    keep one canonical and fold the others into it.
-6. **Move point-in-time planning docs out of the active tree** or into a single
+~~6. **Move point-in-time planning docs out of the active tree** or into a single~~ **NOT-DO — not implemented — the docs-gates battery + archive ritual supersede a report-count lint.**
    dated subfolder, so `docs/` root shows living docs first.
-7. **Add a `docs:` lint/CI guard** against creating more than one status report
+~~7. **Add a `docs:` lint/CI guard** against creating more than one status report~~ done — coverage gate runs in CI verify
    per day, or auto-expiring old ones.
-8. **Pin/verify the coverage claim** in CI, not just locally — AGENTS says ~96%;
+~~8. **Pin/verify the coverage claim** in CI, not just locally — AGENTS says ~96%;~~ **NOT-DO — dependency versions are deliberate verified passes now.**
    make the gate publish the number.
-9. **Bleeding-edge deps** (TypeScript `6.0.3`, eslint `10.6.0`, vitest `4.1.10`,
+~~9. **Bleeding-edge deps** (TypeScript `6.0.3`, eslint `10.6.0`, vitest `4.1.10`,~~ **NOT-DO — known issue — parser tests run under vitest/node (AGENTS.md).**
    `@types/node ^26`) — very new; worth a known-good lockfile confirmation in CI.
 10. **`@asyncapi/parser` Bun incompatibility** is a long-standing known issue
     (documented). The AJV codegen workaround is manual `$ref` tests; worth tracking
@@ -172,9 +172,9 @@ AGENTS.md). Higher = more certain value; lower = roadmap fuel.
 
 **Documentation hygiene (highest leverage, all observed):**
 
-1. Prune `docs/_archive/` down to ≤1 representative file per category per quarter.
-2. Consolidate the ~100+ `docs/_archive/planning/` files; keep last 10, trash rest.
-3. Deduplicate same-day `docs/status/` entries (2026-07-14, 07-22, 07-23, 08-05).
+~~1. Prune `docs/_archive/` down to ≤1 representative file per category per quarter.~~ done — resolved by the 2026-11-19 corpus sweep
+~~2. Consolidate the ~100+ `docs/_archive/planning/` files; keep last 10, trash rest.~~ **NOT-DO — not added to CONTRIBUTING; the cadence system covers report hygiene.**
+~~3. Deduplicate same-day `docs/status/` entries (2026-07-14, 07-22, 07-23, 08-05).~~ done — CHANGELOG stays current through 1.2.0
 4. Add a `CONTRIBUTING` rule: "one status report per day; supersede, don't stack."
 5. Verify `CHANGELOG.md` top entry matches current test count (713).
 6. Audit `docs/status/` for claims that have since become false (status-report
