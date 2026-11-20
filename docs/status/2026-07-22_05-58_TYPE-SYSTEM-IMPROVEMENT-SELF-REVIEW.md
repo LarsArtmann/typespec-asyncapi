@@ -298,4 +298,4 @@ The type was changed to `availableScopes` but the emitter does NOT rename `scope
 
 | # | Item                                   | Status                                        |
 | - | -------------------------------------- | --------------------------------------------- |
-| 5 | `getValidVersionsString()` duplication | DONE — imports from `binding-versions.ts` now |
+| ~~5~~ done — `src/validation/binding-validator.ts:24` imports it from `src/constants/binding-versions.ts:120` | ~~`getValidVersionsString()` duplication~~ | ~~DONE — imports from `binding-versions.ts` now~~ |
