@@ -11,6 +11,8 @@
 
 ### Verified Working
 
+<!-- ledger: gate-verification table — standing-gate records -->
+<!-- check-rows:ledger -->
 | Item                               | Evidence                                           |
 | ---------------------------------- | -------------------------------------------------- |
 | Build passes (0 errors)            | `bun run build` — tsc strict mode                  |
@@ -30,6 +32,10 @@
 
 ## B) PARTIALLY DONE
 
+<!-- ledger: doc-sync table — completed work records -->
+<!-- check-rows:ledger -->
+<!-- ledger: gap snapshot — recorded at audit time, fates below -->
+<!-- check-rows:ledger -->
 | Item                        | State                                                  | Gap                                                                                                                                                                                                                                                                                                                                                                       |
 | --------------------------- | ------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **CHANGELOG.md**            | `[Unreleased]` section is **EMPTY**                    | All work since `0.2.0-beta` (19 protocols, field-level validation, multi-file output, `@operationId`, `@messageId`, `@apiVersion`, server bindings, `split-schemas`, `ParsedAsyncAPIDocument`, BDD stubs, builders refactor, 98→679 tests) is undocumented in the changelog. The `[0.2.0-beta]` section also has stale claims ("5 protocols", "78 tests across 6 files"). |

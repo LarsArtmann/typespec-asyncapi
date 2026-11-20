@@ -221,6 +221,8 @@ What remains is the gated release chain and the tail:
       (docs/status/2026-10-23_09-46:104).
 - [ ] Retire `tsx` remnants: swap the typecheck runner to plain `tsc`
       (docs/status/2026-10-23_09-46:125).
+- [ ] Remove the dead `messageSchemas` state symbol — declared at `src/lib.ts:245,293`,
+      referenced nowhere else (docs/status/2026-07-22_05-58:180).
 - [ ] Trash `scripts/ns-test/` (113-byte scratch, not referenced; owner call).
 - [ ] Dependabot automerge policy decision — enable green-CI + gates
       automerge for minor/patch + security groups, majors stay manual
@@ -298,6 +300,11 @@ What remains is the gated release chain and the tail:
       rendering/analytics gaps (docs/status/2026-10-03_13-58:261).
 - [ ] og:image / social card refresh for the new guide (fleet review
       follow-up) (docs/status/2026-10-03_13-58:268).
+- [ ] CI deploy workflow for the website (Phase 7 build+deploy,
+      FIREBASE_SERVICE_ACCOUNT secret) — needs a Lars decision
+      (docs/status/2026-10-04_03-00:96).
+- [ ] /guides index still 404s — add an overview page or redirect
+      (design call open) (docs/status/2026-10-04_03-00:67).
 - [ ] Update `website/README.md` pages/ listing: drop the manual llms.txt
       endpoints line, document `starlight-llms-txt` plugin generation
       (docs/status/2026-10-23_14-13:215).

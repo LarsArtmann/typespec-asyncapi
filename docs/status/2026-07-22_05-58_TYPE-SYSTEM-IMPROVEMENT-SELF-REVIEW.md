@@ -177,7 +177,7 @@ I changed the type to match the spec but didn't add the runtime transformation. 
 ~~12. Remove `OperationTypeData.tags` (never read; tags come from separate state map)~~ done at `07f8b107`
 ~~13. Remove `OperationTypeData.description` (never emitted)~~ done at `07f8b107`
 ~~14. Consolidate `TagData` = `Tag[]` (duplicate definitions)~~ done at `07f8b107`
-~~15. Check if `messageSchemas` state symbol is used (declared in lib.ts but may be dead)~~ **NOT-DO — superseded during state consolidation.**
+~~15. Check if `messageSchemas` state symbol is used (declared in lib.ts but may be dead)~~ **→ TODO_LIST Hygiene (dead messageSchemas symbol removal row)**
 
 ### Type Safety Improvements
 
