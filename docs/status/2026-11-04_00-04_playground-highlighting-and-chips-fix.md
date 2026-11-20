@@ -114,7 +114,7 @@ Nothing is currently red — the working tree is green and gated. But three thin
 8. Commit-or-verify `website/IMPROVEMENTS.md` uncommitted change lands (daemon) (S).
 9. Migrate `header.js`, `copy-code.js`, `animations.js`, `theme-init.js` into processed (typechecked, hashed) scripts like playground's (M).
 10. Add structural contract locks for those four scripts' data attributes (M).
-11. Verify the overlay in Safari/Firefox (scrollbar-width support, scroll sync) (S).
+11. Verify the overlay in Safari/Firefox (scrollbar-width support, scroll sync) (S). **→ TODO_LIST §Website QA & Brand Follow-ups**
 12. Decide scrollbar tradeoff explicitly (hidden vs synced-visible) — see g2 (S).
 13. Run `pnpm run verify` once end-to-end for a single-pass green stamp including coverage:gate (S).
 14. Consider `scrollbar-gutter: stable`/overlay alternatives if scrollbar hiding is rejected (S).

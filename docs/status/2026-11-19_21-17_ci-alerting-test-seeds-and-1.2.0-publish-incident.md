@@ -180,13 +180,13 @@ Fleet triage (from tonight's sweep, each needs its own look):
     separate signal from real failures).
 
 Tests/quality:
-35. Negative-proof pass for e2e + P7/P8 (mutate one expectation, see red).
-36. Order-asserting variant for P8 or document sorted-by-design.
+35. Negative-proof pass for e2e + P7/P8 (mutate one expectation, see red). **→ TODO_LIST §Test-Suite Integrity (residual)**
+36. Order-asserting variant for P8 or document sorted-by-design. **→ TODO_LIST §Test-Suite Integrity (residual)**
 37. Document the FC_SEED generator-space change in AGENTS.
 38. Extend generators further (unions, inheritance, generics, channel
     parameters — existing TODO row).
 39. Root-cause the transient vitest exit-with-zero (existing TODO).
-40. Watch the coverage-average trend (96.9% and drifting).
+40. Watch the coverage-average trend (96.9% and drifting). **→ TODO_LIST §Test-Suite Integrity (residual)**
 
 Docs/process:
 41. BuildFlow upstream filing (verify-before-filing + github-voice first).

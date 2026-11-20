@@ -115,10 +115,10 @@ Two deploys were needed because of that: the first shipped the new content with 
 | #  | Task                                                                                                                               |
 | -- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | 7  | Add a Playwright smoke test: load `/`, assert play button/lazy state, click Compile, wait for `asyncapi: 3.1.0` in the output pane |
-| 8  | Screenshot `/` at 1440 / 768 / 390 and store as review artefacts                                                                   |
+| 8 **→ TODO_LIST §Website QA & Brand Follow-ups** | Screenshot `/` at 1440 / 768 / 390 and store as review artefacts |
 | 9  | Screenshot the playground error state (unsupported protocol)                                                                       |
 | 10 | Assert the hero output pane scrolls and Copy yields valid YAML in a real browser                                                   |
-| 11 | Run axe-core over `/` and fix violations                                                                                           |
+| 11 **→ TODO_LIST §Website QA & Brand Follow-ups** | Run axe-core over `/` and fix violations |
 | 12 | Measure LCP/CLS with the 41-line code block above the fold; consider `content-visibility` or a shorter fixture if LCP regresses    |
 
 ### Playground
@@ -126,7 +126,7 @@ Two deploys were needed because of that: the first shipped the new content with 
 | #  | Task                                                                                                             |
 | -- | ---------------------------------------------------------------------------------------------------------------- |
 | 13 | Add DOM-level tests for `public/js/playground.js` (jsdom): debounce, stale-sequence guard, diagnostics rendering |
-| 14 | Test the copy button path with a mocked clipboard                                                                |
+| 14 **→ TODO_LIST §Website QA & Brand Follow-ups** | Test the copy button path with a mocked clipboard |
 | 15 | Show a visible "loading engine" progress state with byte size, not just text                                     |
 | 16 | Add a share/permalink (hash-encoded source) so a user can link a spec                                            |
 | 17 | Detect unsupported-but-valid TypeSpec (e.g. `@typespec/http` imports) and explain the limitation inline          |
@@ -166,7 +166,7 @@ Two deploys were needed because of that: the first shipped the new content with 
 | 36 | Update `FEATURES.md` / `ROADMAP.md` verified-test line to 1312 (or replace with a derived stat)        |
 | 37 | Fold the previous session's 50-item list into `TODO_LIST.md` so it is not lost in `docs/status`        |
 | 38 | Add the hero-fixture rule to `website/README` (contribute-a-sample workflow)                           |
-| 39 | Document the `faq.mdx` MDX exception where the docs conventions live                                   |
+| 39 **→ TODO_LIST §Website QA & Brand Follow-ups** | Document the `faq.mdx` MDX exception where the docs conventions live |
 | 40 | Record the clean-URL header trap in `AGENTS.md` (done) and cross-link it from `firebase.json` guidance |
 | 41 | Delete or annotate stale status claims in `website/IMPROVEMENTS.md`                                    |
 

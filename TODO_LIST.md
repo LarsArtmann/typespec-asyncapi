@@ -26,7 +26,10 @@ removal.
   - [x] CHANGELOG 1.0.0 entry (fold `[Unreleased]`) + package.json bump
   - [x] README de-beta-ification + stability statement
   - [x] Tag `v1.0.0` → provenance workflow; fresh-install smoke test
-  - [ ] Register npm trusted publisher — **remaining Lars action, narrowed
+  - [ ] ADR npm-surface decision (`docs/adr/0002`): trademark posture + npm
+      package surface — the last open row there; unblocks README and
+      release-checklist work (docs/status/2026-11-04_17-42:134).
+- [ ] Register npm trusted publisher — **remaining Lars action, narrowed
         2026-11-19 evening**: Lars dispatched the real publish (run 44603780129) and the publish job FAILED with **E404 on PUT** — OIDC
         exchange and provenance signing work (sigstore logIndex 4005319347),
         the registry rejected the package write. GitHub side is verifiably
@@ -221,6 +224,25 @@ What remains is the gated release chain and the tail:
       via `git ls-remote` 2026-11-19). Release md-go-validator, then
       `nix flake update md-go-validator` here + `nix flake check` both sides.
 
+## Website QA & Brand Follow-ups (harvested 2026-11-19 from kept status reports)
+
+- [ ] Screenshot `/` at 1440 / 768 / 390 and store as review artefacts
+      (docs/status/2026-11-02_12-09:118).
+- [ ] Run axe-core over `/` and fix violations
+      (docs/status/2026-11-02_12-09:121).
+- [ ] Test the copy-button path with a mocked clipboard
+      (docs/status/2026-11-02_12-09:129).
+- [ ] Verify the playground overlay editor in Safari/Firefox
+      (scrollbar-width support, scroll sync)
+      (docs/status/2026-11-04_00-04:117).
+- [ ] Document the `faq.mdx` MDX exception where the docs conventions live
+      (docs/status/2026-11-02_12-09:169).
+- [ ] Generate a multi-size `.ico` fallback (16/32/48) next to
+      `brand-mark.png` — Safari/legacy-tool coverage
+      (docs/status/2026-11-04_17-42:122).
+- [ ] Review favicon manifest `id`/`scope` for PWA installability score
+      (Lighthouse pass) (docs/status/2026-11-04_17-42:153).
+
 ## Test-Suite Integrity (residual)
 
 - [ ] Property-suite generator breadth — generators now cover model→model
@@ -228,6 +250,12 @@ What remains is the gated release chain and the tail:
       unions of models, inheritance, generics, and channel parameters are
       still only covered by the compliance suite. Consider extending
       `specArbitrary` in `test/property/emitter-properties.test.ts`.
+- [ ] Negative-proof pass for e2e + P7/P8: mutate one expectation, see red
+      (docs/status/2026-11-19_21-17:183).
+- [ ] Order-asserting variant for P8 (or document the suite is
+      sorted-by-design) (docs/status/2026-11-19_21-17:184).
+- [ ] Watch the coverage-average trend (96.9% and drifting)
+      (docs/status/2026-11-19_21-17:189).
 - [ ] Root-cause the transient `bun test` / vitest exit-with-zero-failures
       (suspected worker/coverage race; last observed 2026-09-13 once in
       `vitest run test/golden/` — immediate re-run passed). The defensive
@@ -240,6 +268,8 @@ What remains is the gated release chain and the tail:
       after restart in some sessions; `test/tsconfig.json` (added 2026-09-13)
       scopes tsserver correctly for workspace editors — trust
       `tsc -p tsconfig.test.json` meanwhile (see AGENTS.md).
+- [ ] CI: add the nix/treefmt format check — the 2026-11-18 session's
+      format debt was invisible to CI (docs/status/2026-11-19_20-38:240).
 
 ## Release Hardening (harvested 2026-09-30 from post-1.0 status report)
 

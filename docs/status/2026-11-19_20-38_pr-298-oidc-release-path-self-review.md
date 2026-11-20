@@ -237,7 +237,7 @@ Nothing catastrophic this session. The honest ledger:
     the workflow).
 12. Self-host Space Grotesk woff2 — kills the `fonts.gstatic.com` CI flake
     (run 44532617534 class).
-13. CI: add the nix/treefmt format check (this session's debt was
+13. CI: add the nix/treefmt format check (this session's debt was **→ TODO_LIST §Tooling / Environment**
     invisible to CI).
 14. Daemon-push CI alerting (nextd/issue auto-file on red master).
 15. Periodic fleet CI sweep (carried TODO row).
