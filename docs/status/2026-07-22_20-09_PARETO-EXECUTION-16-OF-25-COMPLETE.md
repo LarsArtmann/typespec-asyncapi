@@ -115,21 +115,22 @@ These should be refactored by extracting functions/modules.
 ## f) Top 25 Things to Get Done Next
 
 <!-- ledger: rows 13 and 22 remain unstruck as reported harvest candidates; the coordinator routes them after TODO_LIST rows land -->
+<!-- check-rows:ledger -->
 
 | #  | Task                                                                                                        | Impact | Effort | Rationale                                      |
 | -- | ----------------------------------------------------------------------------------------------------------- | ------ | ------ | ---------------------------------------------- |
 | ~~1~~ done — src modules were extracted so `src/schema-generator.ts` and `src/schema-fragments.ts` keep the emitter within the current 400-line lint limit | ~~**Refactor `schema-emitter.ts`** under 370 lines~~ | ~~High~~ | ~~Low~~ | ~~File size violation, maintainability~~ |
 | ~~2~~ done — src modules were extracted so `src/schema-generator.ts` and `src/schema-fragments.ts` keep the emitter within the current 400-line lint limit | ~~**Refactor `minimal-decorators.ts`** under 370 lines~~ | ~~High~~ | ~~Low~~ | ~~File size violation, maintainability~~ |
-| ~~3~~ done — src modules were extracted so `src/schema-generator.ts` and `src/schema-fragments.ts` keep the emitter within the current 400-line lint limit | ~~**Task 17: Consolidate ESLint/oxlint**~~ | ~~Medium~~ | ~~Medium~~ | ~~Resolve contradictions, document strategy~~ |
-| **4** | **Task 21: Multi-file TypeSpec input**                                                                      | Medium | Medium | Users need to split specs across files         |
-| **5** | **Task 18: Coverage tooling fix**                                                                           | Medium | Medium | Can't measure actual coverage accurately       |
-| **6** | **Task 22: AsyncAPI generator compatibility**                                                               | Medium | Medium | Verify output works with `@asyncapi/generator` |
-| **7** | **Task 24: Multi-file output**                                                                              | Medium | Medium | Large specs need file splitting                |
-| **8** | **Task 26: Performance profiling**                                                                          | Medium | Medium | Verify no O(n²) at scale                       |
-| **9** | **Task 19: Binding validation from specs**                                                                  | Medium | High   | Eliminate hand-maintained rules                |
-| **10** | **Task 23: `@typespec/versioning` support**                                                                 | Low    | High   | API versioning in AsyncAPI docs                |
-| **11** | **Task 25: OpenAPI cross-emitter**                                                                          | Low    | High   | Share types between AsyncAPI and OpenAPI       |
-| **12** | **Update AGENTS.md** with new decorator count, protocol count, file list                                    | Low    | Low    | Documentation accuracy                         |
+| ~~**3**~~ done — `AGENTS.md` documents the deliberate ESLint and oxlint split with zero rule conflicts | ~~**Task 17: Consolidate ESLint/oxlint**~~ | ~~Medium~~ | ~~Medium~~ | ~~Resolve contradictions, document strategy~~ |
+| ~~**4**~~ done — `test/integration/multi-file-imports.test.ts` covers splitting TypeSpec input across files | ~~**Task 21: Multi-file TypeSpec input**~~ | ~~Medium~~ | ~~Medium~~ | ~~Users need to split specs across files~~ |
+| ~~**5**~~ done — `AGENTS.md` and `scripts/coverage-gate.ts` document and implement the working coverage strategy | ~~**Task 18: Coverage tooling fix**~~ | ~~Medium~~ | ~~Medium~~ | ~~Can't measure actual coverage accurately~~ |
+| ~~**6**~~ done — `test/integration/generator-compatibility.test.ts` covers AsyncAPI generator ecosystem compatibility | ~~**Task 22: AsyncAPI generator compatibility**~~ | ~~Medium~~ | ~~Medium~~ | ~~Verify output works with `@asyncapi/generator`~~ |
+| ~~**7**~~ done — `src/schema-splitter.ts` and `test/integration/multi-file-output.test.ts` provide and lock file splitting | ~~**Task 24: Multi-file output**~~ | ~~Medium~~ | ~~Medium~~ | ~~Large specs need file splitting~~ |
+| ~~**8**~~ done — `test/benchmark/performance.test.ts` covers large-scale performance verification | ~~**Task 26: Performance profiling**~~ | ~~Medium~~ | ~~Medium~~ | ~~Verify no O(n²) at scale~~ |
+| ~~**9**~~ done — `src/constants/generated-bindings.ts` is generated from `@asyncapi/specs` by `scripts/generate-binding-specs.ts` | ~~**Task 19: Binding validation from specs**~~ | ~~Medium~~ | ~~High~~ | ~~Eliminate hand-maintained rules~~ |
+| ~~**10**~~ done — `src/document-builder.ts` integrates `@typespec/versioning` | ~~**Task 23: `@typespec/versioning` support**~~ | ~~Low~~ | ~~High~~ | ~~API versioning in AsyncAPI docs~~ |
+| ~~**11**~~ done — `src/shared/` exports cross-emitter schema types and helpers, documented in `AGENTS.md` | ~~**Task 25: OpenAPI cross-emitter**~~ | ~~Low~~ | ~~High~~ | ~~Share types between AsyncAPI and OpenAPI~~ |
+| ~~**12**~~ done — `AGENTS.md` documents the current 30 decorators, 22 protocols, and module inventory | ~~**Update AGENTS.md** with new decorator count, protocol count, file list~~ | ~~Low~~ | ~~Low~~ | ~~Documentation accuracy~~ |
 | 13 | **Add `@messageId` to `@publish`/`@subscribe` path** — Currently only works with `@channel` operations      | Low    | Low    | Completeness                                   |
 | ~~14~~ **Won't implement — Redis still has no upstream binding definitions; `src/constants/protocols.ts` accepts Redis as a server protocol while binding emission waits on specs.** | ~~**Add Redis binding support** when AsyncAPI specs publish definitions~~ | ~~Low~~ | ~~Low~~ | ~~Future-proofing~~ |
 | ~~15~~ done — `test/integration/operation-message-id.test.ts` and `test/compliance/doc-propagation.test.ts` cover `@operationId` on channel-only and bare operation paths | ~~**Test `@operationId` with bare operations** (no decorators)~~ | ~~Low~~ | ~~Low~~ | ~~Edge case coverage~~ |
