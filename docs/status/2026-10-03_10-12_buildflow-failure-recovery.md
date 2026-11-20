@@ -45,9 +45,7 @@ break it down and fix everything.
    `flake.nix` treefmt config: `prettier.excludes = [ "docs/**/*.html" ]` —
    generated point-in-time artifacts are never formatted (matches the policy
    BuildFlow's own feedback docs established for report artifacts).
-~~5. **nix-fmt VERIFIED GREEN** — `buildflow -s nix-fmt --fix` → `✔ nix-fmt~~ done — nix-fmt green and kept green by the `flake.nix` prettier excludes
-26.3s`, "1 success, 0 failed" (635 files traversed, 2 changed). The
-   4-run failure loop is broken.
+~~5. **nix-fmt VERIFIED GREEN** — `buildflow -s nix-fmt --fix` → `✔ nix-fmt 26.3s`, "1 success, 0 failed" (635 files traversed, 2 changed). The 4-run failure loop is broken.~~ done — nix-fmt green and kept green by the `flake.nix` prettier excludes
 ~~6. **Scratch junk removed** — committed repro outputs `rest/openapi.yaml` + `websocket/asyncapi.yaml` (phantom-GET repro artifacts from the issue-252 session, committed by the daemon at 05:40) trashed~~ done — neither `rest/` nor `websocket/` exists in the tree today; verified nothing references them (the mixed example's README references its own `tsp-output/` paths, not these).
 ~~7. **jscpd scope policy encoded and verified** — root cause of a scare: the~~ done — scope policy stands: `.jscpd.json` ignores + `AGENTS.md:210` ( single scope source for gate and BuildFlow )
    project gate (`pnpm run duplicate`) scans **`src scripts` only**, while
