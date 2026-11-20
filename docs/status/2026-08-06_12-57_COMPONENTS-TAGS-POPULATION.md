@@ -14,6 +14,9 @@ The `ComponentsObject.tags?: Record<string, Tag | Ref>` field was declared in
 the domain model but never populated. This session implemented the full pipeline
 following the established `securitySchemes` pattern:
 
+<!-- ledger: 2026-08-06 session file-change snapshot; the artifacts exist today (commit f6490f8) -->
+<!-- check-rows:ledger -->
+
 | File                                      | Change                                                                                                                                                                     | Lines |
 | ----------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
 | `src/builders/types.ts`                   | Added `tags: Record<string, Tag>` to `DocumentBuildContext`, imported `Tag` type                                                                                           | +2    |
@@ -166,74 +169,74 @@ components.tags population flow.
 
 #### High Priority — Correctness & Spec Compliance
 
-1. Fix `generate-binding-specs.ts` Bun module resolution so `pnpm run build` works
-2. Investigate why `tsx` invokes Bun for this script (check shebang, imports)
-3. Make `pnpm run verify` pass end-to-end (currently blocked by build step)
-4. Add `externalDocs` to `Tag` interface to match AsyncAPI 3.1 spec
-5. Add top-level `tags?: Tag[]` population in `assembleDocument()` for `DocumentBody`
-6. Populate `info.tags` from emitter options or namespace-level `@tags`
-7. Apply `state.tags` to channels in `channel-builder.ts`
-8. Apply `state.tags` to servers in `server-builder.ts`
-9. Consider `$ref` mode for operation/message tags pointing to `components.tags`
+~~1. Fix `generate-binding-specs.ts` Bun module resolution so `pnpm run build` works~~ done — build is green today; three releases shipped through the full `verify` gate
+~~2. Investigate why `tsx` invokes Bun for this script (check shebang, imports)~~ **NOT-DO — era-specific tsx-plus-Bun failure; superseded by the pnpm plus nix toolchain, never root-caused.**
+~~3. Make `pnpm run verify` pass end-to-end (currently blocked by build step)~~ done — `pnpm run verify` is green and shipped the 1.0.0 through 1.2.0 releases
+~~4. Add `externalDocs` to `Tag` interface to match AsyncAPI 3.1 spec~~ done — `externalDocs` exists on `Tag` at `src/domain/models/asyncapi-document.ts:288`
+~~5. Add top-level `tags?: Tag[]` population in `assembleDocument()` for `DocumentBody`~~ **NOT-DO — moot: `DocumentBody` no longer declares a root `tags` field; tags live in `info.tags` at `src/document-builder.ts:227`.**
+~~6. Populate `info.tags` from emitter options or namespace-level `@tags`~~ done at `6f4cb773`
+~~7. Apply `state.tags` to channels in `channel-builder.ts`~~ done at `6f4cb773`
+~~8. Apply `state.tags` to servers in `server-builder.ts`~~ done at `6f4cb773`
+~~9. Consider `$ref` mode for operation/message tags pointing to `components.tags`~~ **Won't implement — inline tags stand; no `$ref` mode exists.**
 
 #### Medium Priority — Richness & UX
 
-10. Add `@tags` overload accepting tag objects `#{name, description, externalDocs}`
-11. Update `storeTags()` to accept and preserve descriptions
-12. Add `@tag` (singular) decorator matching TypeSpec stdlib `@tag` but with description support
-13. Support `@doc` on tags as description fallback
-14. Add `x-` extension properties support on Tag objects
-15. Add externalDocs support via a dedicated `@externalDocs` decorator
+~~10. Add `@tags` overload accepting tag objects `#{name, description, externalDocs}`~~ done — overload shipped: `lib/main.tsp:93` accepts mixed strings and tag objects
+~~11. Update `storeTags()` to accept and preserve descriptions~~ done — descriptions preserved via `normalizeTagItem` at `src/decorator-helpers.ts:256`
+~~12. Add `@tag` (singular) decorator matching TypeSpec stdlib `@tag` but with description support~~ **Won't implement — no singular `@tag` decorator exists; `lib/main.tsp` declares `@tags` only.**
+~~13. Support `@doc` on tags as description fallback~~ **Won't implement — no `@doc`-on-tags fallback exists.**
+~~14. Add `x-` extension properties support on Tag objects~~ **Won't implement — no x- extension support on Tag objects.**
+~~15. Add externalDocs support via a dedicated `@externalDocs` decorator~~ **Won't implement — no dedicated decorator; `externalDocs` rides on tag objects (`lib/main.tsp:91`).**
 
 #### Testing & Coverage
 
-16. Add unit tests for `tag-builder.ts` (extract pure function first)
-17. Add golden file test fixture that includes tags
-18. Add test for namespace + operation + model tag dedup with descriptions
-19. Add test that `components.tags` validates against AsyncAPI 3.1 schema with `externalDocs`
-20. Add negative test: empty tags array from `@tags(#[])` — should it warn?
-21. Run coverage gate (`bun test --coverage`) to verify tag-builder coverage
-22. Add benchmark: large tag sets (100+ unique tags across many operations)
-23. Test tag names with special characters (spaces, unicode, dots)
-24. Test tag dedup case sensitivity (should `"Tag"` and `"tag"` be the same?)
+~~16. Add unit tests for `tag-builder.ts` (extract pure function first)~~ done — unit tests exist at `test/unit/normalize-tag-item.test.ts`
+~~17. Add golden file test fixture that includes tags~~ done — golden `test/golden/tag-rich.test.ts` includes tags
+~~18. Add test for namespace + operation + model tag dedup with descriptions~~ **Won't implement — no descriptions-dedup case; dedup is by name only.**
+~~19. Add test that `components.tags` validates against AsyncAPI 3.1 schema with `externalDocs`~~ **Won't implement — no externalDocs AJV case in the tags suite.**
+~~20. Add negative test: empty tags array from `@tags(#[])` — should it warn?~~ done — empty names normalize to null (`test/unit/normalize-tag-item.test.ts:20`)
+~~21. Run coverage gate (`bun test --coverage`) to verify tag-builder coverage~~ done — coverage gate green at 98.1 percent average
+~~22. Add benchmark: large tag sets (100+ unique tags across many operations)~~ **Won't implement — no large-tag-set benchmark exists.**
+~~23. Test tag names with special characters (spaces, unicode, dots)~~ **Won't implement — no special-character tag-name case in `test/unit/normalize-tag-item.test.ts`.**
+~~24. Test tag dedup case sensitivity (should `"Tag"` and `"tag"` be the same?)~~ **Won't implement — dedup is exact-name and case-sensitive (`src/builders/tag-builder.ts:22`).**
 
 #### Documentation
 
-25. Update `AGENTS.md` Architecture section to include `tag-builder.ts`
-26. Update `AGENTS.md` to document the `components.tags` population flow
-27. Update `FEATURES.md` to list `components.tags` as DONE
-28. Add tag usage examples to README.md
-29. Document the `@tags` decorator in any user-facing API docs
-30. Add a decision record (ADR) for why tags are inline vs `$ref`
+~~25. Update `AGENTS.md` Architecture section to include `tag-builder.ts`~~ done — AGENTS.md line 57 lists `tag-builder.ts`
+~~26. Update `AGENTS.md` to document the `components.tags` population flow~~ done — AGENTS.md line 57 documents the components.tags collection flow
+~~27. Update `FEATURES.md` to list `components.tags` as DONE~~ done — FEATURES.md line 89 documents rich tags and `components.tags`
+~~28. Add tag usage examples to README.md~~ done — README line 201 documents `@tags`
+~~29. Document the `@tags` decorator in any user-facing API docs~~ done — the website decorators guide documents `@tags` (guides/decorators.md line 87)
+~~30. Add a decision record (ADR) for why tags are inline vs `$ref`~~ **Won't implement — no ADR; `docs/adr/` holds 0001 and 0002 only.**
 
 #### Code Quality
 
-31. Extract pure `collectTags(state): Record<string, Tag>` function for testability
-32. Consider ordering: should `components.tags` be sorted alphabetically?
-33. Consider whether `buildTags` should run before or after other builders (ordering)
-34. Check if `ctx.tags` should be a `Map` instead of `Record` for consistency
-35. Ensure `tag-builder.ts` stays under 370-line limit (trivially true at 17 lines)
-36. Add JSDoc to `buildTags` linking to AsyncAPI 3.1 spec section for tags
-37. Consider adding `Tag.name` validation (spec requires `^[\\w\\d\\.\\-_]+$` pattern)
+~~31. Extract pure `collectTags(state): Record<string, Tag>` function for testability~~ done — extracted differently: pure `normalizeTagItem` is unit-tested; `buildTags` stays a thin loop
+~~32. Consider ordering: should `components.tags` be sorted alphabetically?~~ **Won't implement — insertion order preserved; no alphabetical sort.**
+~~33. Consider whether `buildTags` should run before or after other builders (ordering)~~ **NOT-DO — ordering settled; `buildTags` runs in the pipeline without issue.**
+~~34. Check if `ctx.tags` should be a `Map` instead of `Record` for consistency~~ **Won't implement — `ctx.tags` stays a Record.**
+~~35. Ensure `tag-builder.ts` stays under 370-line limit (trivially true at 17 lines)~~ done — trivially true: `tag-builder.ts` is 26 lines
+~~36. Add JSDoc to `buildTags` linking to AsyncAPI 3.1 spec section for tags~~ done — JSDoc on `buildTags` at `src/builders/tag-builder.ts:16`
+~~37. Consider adding `Tag.name` validation (spec requires `^[\\w\\d\\.\\-_]+$` pattern)~~ **Won't implement — no name-pattern validation exists.**
 
 #### Emitter Options & Configuration
 
-38. Add emitter option to control inline-tags vs `$ref`-to-components-tags
-39. Add emitter option to sort tags alphabetically in output
-40. Add emitter option to include/exclude tags from components
-41. Consider `--tag-prefix` option for namespacing tags
+~~38. Add emitter option to control inline-tags vs `$ref`-to-components-tags~~ **Won't implement — no inline-vs-ref emitter option exists.**
+~~39. Add emitter option to sort tags alphabetically in output~~ **Won't implement — no sort option exists.**
+~~40. Add emitter option to include/exclude tags from components~~ **Won't implement — no include-exclude option exists.**
+~~41. Consider `--tag-prefix` option for namespacing tags~~ **Won't implement — no tag-prefix option exists.**
 
 #### Cross-cutting
 
-42. Audit all `ComponentsObject` fields for similar "declared but not populated" gaps
-43. Check if `components.parameters` is populated (it's declared but I didn't verify)
-44. Check if `components.correlationIds` is populated (declared, not verified)
-45. Check if `components.servers`, `components.channels`, `components.operations` are populated
-46. Audit `CommonMetadata` fields across Server/Channel/Operation/Message for completeness
-47. Consider a "completeness matrix" test that checks every declared field is populated somewhere
-48. Review whether the `@tags` decorator should target `Namespace` differently than `Operation`
-49. Consider how tags interact with `@service` namespacing
-50. Evaluate if the dedup-by-name strategy is correct when same name has different descriptions
+~~42. Audit all `ComponentsObject` fields for similar "declared but not populated" gaps~~ done — remaining gaps closed at `bac222c4` (parameters, correlationIds, traits, bindings)
+~~43. Check if `components.parameters` is populated (it's declared but I didn't verify)~~ done at `bac222c4`
+~~44. Check if `components.correlationIds` is populated (declared, not verified)~~ done at `bac222c4`
+~~45. Check if `components.servers`, `components.channels`, `components.operations` are populated~~ **Won't implement — fields exist (`asyncapi-document.ts:351-353`) but reusable servers, channels and operations stay unpopulated.**
+~~46. Audit `CommonMetadata` fields across Server/Channel/Operation/Message for completeness~~ done — CommonMetadata drives channel and server metadata (`src/domain/models/asyncapi-document.ts:166`)
+~~47. Consider a "completeness matrix" test that checks every declared field is populated somewhere~~ **Won't implement — no completeness-matrix test; `test/compliance/type-mapping-completeness.test.ts` covers type mapping only.**
+~~48. Review whether the `@tags` decorator should target `Namespace` differently than `Operation`~~ done — namespace tags flow to `info.tags` and servers (`6f4cb773`); covered by `test/compliance/components-tags.test.ts`
+~~49. Consider how tags interact with `@service` namespacing~~ **Won't implement — no `@service`-interaction case exists.**
+~~50. Evaluate if the dedup-by-name strategy is correct when same name has different descriptions~~ done — last-wins documented in the module JSDoc (`src/builders/tag-builder.ts:7`)
 
 ---
 

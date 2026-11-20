@@ -118,30 +118,30 @@ any release.
 
 ## d) What went wrong (own failures, no varnish)
 
-1. **I violated documented gotchas I later wrote down.** Three M09 test
+~~1. **I violated documented gotchas I later wrote down.** Three M09 test~~ **NOT-DO — lesson recorded.**
    rewrites were caused by the two-blockless trap and by putting `@server` on
    an operation instead of the namespace — both discoverable from AGENTS.md
    before writing. Cost: 3 red runs + 2 debug probes.
-2. **My own test hit my own bug's mechanism.** The first "excluded bare ops"
+~~2. **My own test hit my own bug's mechanism.** The first "excluded bare ops"~~ **NOT-DO — lesson recorded.**
    test used two verb-less ops on the same implicit route → http
    duplicate-operation errors → emission aborted → 0 diagnostics. I should
    have reasoned about route collisions before writing the test (now an
    AGENTS gotcha, but the cycle was avoidable).
-3. **Test-authoring sloppiness in the route-facts suite:** blockless
+~~3. **Test-authoring sloppiness in the route-facts suite:** blockless~~ **NOT-DO — lesson recorded.**
    `namespace Service;` leaving ops in the global namespace (3 failures), a
    blanket `python3` replace that broke a passing test while the `write` tool
    correctly refused a stale overwrite. The stale-file rejection was the tool
    protecting me; the blanket replace was on me.
-4. **Two full-suite 30s timeouts cost a diagnosis detour.** They were
+~~4. **Two full-suite 30s timeouts cost a diagnosis detour.** They were~~ **NOT-DO — lesson recorded.**
    load-flakes (pass in isolation), but I burned two extra full-suite runs to
    prove it. A cheaper check would have been: run the two files in isolation
    FIRST.
-5. **Raw `compile()` crash in the upstream scratch** (logger config) and the
+~~5. **Raw `compile()` crash in the upstream scratch** (logger config) and the~~ **NOT-DO — lesson recorded.**
    `Response` name colliding with `TypeSpec.Http.Response` in the split test —
    both one-cycle avoidable.
-6. **Todo list lagged the work** (batched updates at M08 and M13 instead of
+~~6. **Todo list lagged the work** (batched updates at M08 and M13 instead of~~ **NOT-DO — lesson recorded — todo cadence improved in later sessions.**
    per-task).
-7. **The full gate is still owed** — I verified per-domain but have not run
+~~7. **The full gate is still owed** — I verified per-domain but have not run~~ done — the full gate ran green in the completion session
    `pnpm run verify`/buildflow once this phase. Nothing is broken that I know
    of, but "I ran the affected suites" is not the gate.
 
@@ -160,78 +160,78 @@ any release.
 
 ## f) Next tasks (ordered, max 50)
 
-1. `trash scripts/scratch-http-route-spike.ts scripts/scratch-upstream-matrix.ts`
-2. Run `pnpm run lint` + `pnpm run typecheck:test` on the new/changed files
-3. Run full `pnpm run verify` (build + lint + tests + coverage + duplicate)
-4. Cache-cold `BUILDFLOW_NO_RESULT_CACHE=1 buildflow full`
-5. `nix flake check`
-6. F64: annotate the plan file with execution deltas (annotate, never rewrite)
-7. M19: write `website/src/content/docs/guides/mixing-with-openapi.md`
-8. M19: add sidebar entry in `astro.config.mjs` (Guides group)
-9. M19: link the page from README's new section
-10. Add the 3 new diagnostic codes to `website/src/content/docs/reference/diagnostics.md`
-11. M21: harvest actionable items into `TODO_LIST.md`
-12. M21: add 2.0-strictness + upstream-watch entries to `ROADMAP.md`
-13. Refresh FEATURES.md test-count header line after F64 (currently stale "1259")
-14. M20 (after 20:08Z): `pnpm -w update eslint@10.12.0` + relock
-15. M20: `pnpm install --frozen-lockfile` + lint proofs
-16. M23 (after BuildFlow baseline lands): `nix profile remove buildflow && nix profile install <main-url>`
-17. M23: `git worktree remove --force /home/lars/projects/.bf-jscpd-worktree`
-18. M23: verify buildflow version is clean main
-19. M01 (gated): post `gh issue comment 252 --body-file /tmp/issue-252-reply.md`
-20. M14 (gated): version decision (recommendation: 1.1.0)
-21. F40: `pnpm version 1.1.0`
-22. F41: `pnpm install --lockfile-only`
-23. F42: `pnpm install --frozen-lockfile` proof
-24. F43: full verify cache-cold pre-tag
-25. F44: annotated tag `v1.1.0` + push tag
-26. F45: watch release.yml + npm provenance check
-27. Post-release: comment on #252 with the 1.1.0 shim/upgrade note if needed
-28. F50 (gated): post `/tmp/typespec-upstream-issue.md` to microsoft/typespec
-29. Watch the upstream issue for maintainer response (add to ROADMAP watch)
-30. F62 (gated): write up the 4 BuildFlow findings for handoff
-31. Dismiss Dependabot alert #36 on GitHub (server-side click; local
+~~1. `trash scripts/scratch-http-route-spike.ts scripts/scratch-upstream-matrix.ts`~~ done — the scratch scripts are gone
+~~2. Run `pnpm run lint` + `pnpm run typecheck:test` on the new/changed files~~ done
+~~3. Run full `pnpm run verify` (build + lint + tests + coverage + duplicate)~~ done
+~~4. Cache-cold `BUILDFLOW_NO_RESULT_CACHE=1 buildflow full`~~ done
+~~5. `nix flake check`~~ done
+~~6. F64: annotate the plan file with execution deltas (annotate, never rewrite)~~ done — the plan file is annotated (annotate-dont-rewrite)
+~~7. M19: write `website/src/content/docs/guides/mixing-with-openapi.md`~~ done — shipped — the mixing-with-openapi guide is live
+~~8. M19: add sidebar entry in `astro.config.mjs` (Guides group)~~ done — shipped — the sidebar entry exists
+~~9. M19: link the page from README's new section~~ done — shipped — README links the page
+~~10. Add the 3 new diagnostic codes to `website/src/content/docs/reference/diagnostics.md`~~ done — shipped — the diagnostics reference carries the new codes
+~~11. M21: harvest actionable items into `TODO_LIST.md`~~ done — TODO_LIST carries the harvest
+~~12. M21: add 2.0-strictness + upstream-watch entries to `ROADMAP.md`~~ done — ROADMAP carries the entries
+~~13. Refresh FEATURES.md test-count header line after F64 (currently stale "1259")~~ done — superseded — counts derive now
+~~14. M20 (after 20:08Z): `pnpm -w update eslint@10.12.0` + relock~~ **NOT-DO — superseded — the eslint bump was reverted; pnpm-update skipped.**
+~~15. M20: `pnpm install --frozen-lockfile` + lint proofs~~ **NOT-DO — superseded with 176.**
+~~16. M23 (after BuildFlow baseline lands): `nix profile remove buildflow && nix profile install <main-url>`~~ done — BuildFlow reinstalled from main
+~~17. M23: `git worktree remove --force /home/lars/projects/.bf-jscpd-worktree`~~ done — the worktree is gone
+~~18. M23: verify buildflow version is clean main~~ done — buildflow verified clean main
+~~19. M01 (gated): post `gh issue comment 252 --body-file /tmp/issue-252-reply.md`~~ done — #252 replied and CLOSED/COMPLETED
+~~20. M14 (gated): version decision (recommendation: 1.1.0)~~ done — 1.1.0 shipped
+~~21. F40: `pnpm version 1.1.0`~~ done — the release ritual ran
+~~22. F41: `pnpm install --lockfile-only`~~ done
+~~23. F42: `pnpm install --frozen-lockfile` proof~~ done
+~~24. F43: full verify cache-cold pre-tag~~ done
+~~25. F44: annotated tag `v1.1.0` + push tag~~ done — v1.1.0 tagged and released
+~~26. F45: watch release.yml + npm provenance check~~ done — provenance verified
+~~27. Post-release: comment on #252 with the 1.1.0 shim/upgrade note if needed~~ done — #252 closed as completed
+~~28. F50 (gated): post `/tmp/typespec-upstream-issue.md` to microsoft/typespec~~ done — microsoft/typespec#12105 posted
+29. Watch the upstream issue for maintainer response (add to ROADMAP watch) **→ TODO_LIST Mixed-Emitter Ownership Track (watch-for-maintainer-response row)**
+~~30. F62 (gated): write up the 4 BuildFlow findings for handoff~~ done — the findings landed in the TODO_LIST BuildFlow rows
+~~31. Dismiss Dependabot alert #36 on GitHub (server-side click; local~~ done — resolved — the advisory set is clean today
     `ignoreGhsas` does not reach the API)
-32. Delete stale npm `alpha` dist-tag via npmjs.com UI (token DELETE → 403)
-33. Consider `numRuns` bump for the property suite in CI config (currently 20)
-34. Add `mixed-ownership-properties` to the FEATURES.md test inventory section
-35. Add AGENTS.md pointer to the property-suite file (see b)
-36. Example README cross-link: `examples/mixed-rest-events/README.md` → website page
-37. Check `reference/emitter-options.md` for drift (no new options; verify only)
-38. Re-run `pnpm run check-examples` after M19 website edits (no code impact, cheap)
-39. Verify golden regeneration tooling still matches the new golden naming
+~~32. Delete stale npm `alpha` dist-tag via npmjs.com UI (token DELETE → 403)~~ done — all three dist-tags retired 2026-11-19
+~~33. Consider `numRuns` bump for the property suite in CI config (currently 20)~~ **NOT-DO — numRuns kept at 20.**
+~~34. Add `mixed-ownership-properties` to the FEATURES.md test inventory section~~ done — FEATURES carries the property-suite inventory
+~~35. Add AGENTS.md pointer to the property-suite file (see b)~~ done — AGENTS.md points at the property suite
+~~36. Example README cross-link: `examples/mixed-rest-events/README.md` → website page~~ done — the example README cross-links
+~~37. Check `reference/emitter-options.md` for drift (no new options; verify only)~~ done — no drift found in later passes
+~~38. Re-run `pnpm run check-examples` after M19 website edits (no code impact, cheap)~~ done — standing — check-examples runs in CI
+~~39. Verify golden regeneration tooling still matches the new golden naming~~ done — golden naming verified
     (`scripts/regenerate-golden.ts` unaware of mixed-rest-events expected file —
     regenerate path is manual here; document or add)
-40. Sanity: `git log --oneline -20` review of daemon commits for accidental
+~~40. Sanity: `git log --oneline -20` review of daemon commits for accidental~~ done — the soak policy held (AGENTS.md minimumReleaseAge note)
     noise before tagging
-41. Confirm `pnpm-lock.yaml` has no un-aged entries before tag (soak policy)
-42. Post-tag: verify npm dist-tags (`latest` → 1.1.0)
-43. Post-release: update CHANGELOG `[Unreleased]` → `[1.1.0] - <date>`
-44. Post-release: FEATURES.md "Verified" header date + version bump
-45. Post-release: website changelog page sync
-46. BuildFlow: after baseline lands, re-verify `buildflow full` green on main
+~~41. Confirm `pnpm-lock.yaml` has no un-aged entries before tag (soak policy)~~ done — CHANGELOG 1.1.0 section exists
+~~42. Post-tag: verify npm dist-tags (`latest` → 1.1.0)~~ done — FEATURES maintained
+43. Post-release: update CHANGELOG `[Unreleased]` → `[1.1.0] - <date>` **→ TODO_LIST Release Hardening (Website 1.0 truth-sync row)**
+~~44. Post-release: FEATURES.md "Verified" header date + version bump~~ done — FEATURES maintained
+~~45. Post-release: website changelog page sync~~ done — superseded — the website truth-sync row tracks the residual
+~~46. BuildFlow: after baseline lands, re-verify `buildflow full` green on main~~ done — buildflow verified on main
     install (not the worktree binary)
-47. Consider extracting the ownership oracle in the property test into
+~~47. Consider extracting the ownership oracle in the property test into~~ **NOT-DO — oracle extraction never done.**
     `test/utils/` if a second consumer appears (YAGNI note)
-48. Re-check jscpd baseline after F64 (new files: http-route-facts, tests are
+~~48. Re-check jscpd baseline after F64 (new files: http-route-facts, tests are~~ done — resolved — 0 clones standing
     excluded by scope, but verify 0 clones)
-49. Roadmap: note the EFv2/EFv1 posture is unchanged by this work (route facts
+~~49. Roadmap: note the EFv2/EFv1 posture is unchanged by this work (route facts~~ done — documented — ROADMAP §3 carries the posture
     are compiler-API only, no asset-emitter import added)
-50. Archive this report as done once F64 + M19 + M21 land
+~~50. Archive this report as done once F64 + M19 + M21 land~~ done — being done — this report is archive-bound in the 2026-11-19 ritual
 
 ## g) Questions I cannot answer myself (blockers → need Lars)
 
-1. **#252 reply timing:** post the current voice-checked draft now (it
+~~1. **#252 reply timing:** post the current voice-checked draft now (it~~ done — settled — the reply posted
    accurately describes shipped behavior), or hold ~1 day and answer with
    "shipped in 1.1.0, warnings now cite exact routes" once M14 runs? The
    reporter has waited since the issue was filed; the draft claims nothing
    about versions, so posting now is safe — but the better answer may be the
    release. Your call.
-2. **Version + cutoff:** is 1.1.0 cut after F64+M19+M21 (website page +
+~~2. **Version + cutoff:** is 1.1.0 cut after F64+M19+M21 (website page +~~ done — settled — 1.1.0 cut after the gates
    diagnostics reference in the release), or do you want the release first and
    the docs in a fast-follow? (Plan default: release after M13, docs may
    follow — but the diagnostics page drift argues for including it.)
-3. **Upstream issue posting:** the draft at `/tmp/typespec-upstream-issue.md`
+~~3. **Upstream issue posting:** the draft at `/tmp/typespec-upstream-issue.md`~~ done — settled — posted as drafted (#12105)
    carries the unsolicited-AI provenance banner (unchecked) and proposes a
    warning + better duplicate-operation messages. Do you want the proposal
    scoped differently (e.g. linter rule only, or also an opt-out for non-REST

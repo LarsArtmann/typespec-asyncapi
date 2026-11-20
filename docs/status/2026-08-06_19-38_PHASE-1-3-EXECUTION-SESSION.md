@@ -250,15 +250,15 @@ The plan identified this as a design decision needing user input. Tags in `info.
 ~~42. Test `@useMessageTrait` with conflicting fields (which wins?)~~ done — shipped — studio-compatibility test
 ~~43. Test `split-schemas` option with 100+ schemas~~ **NOT-DO — semver automation not adopted — the release ritual is documented.**
 ~~44. Test error recovery: invalid decorator → does output still emit?~~ **NOT-DO — 1000-channel stress never run (200-channel verified sub-linear).**
-45. Test YAML vs JSON output format differences
+~~45. Test YAML vs JSON output format differences~~ done — covered — yaml and json formats tested
 
 ### Ecosystem & Polish (Lower Impact)
 
-46. `@asyncapi/generator` CLI integration testing
-47. OpenAPI cross-emitter proof of concept
-48. AsyncAPI Studio live preview testing
-49. Semantic versioning automation (bump on feature/fix)
-50. Performance benchmark with 1000 channels (stress test)
+46. `@asyncapi/generator` CLI integration testing **→ ROADMAP §Ecosystem Integration (@asyncapi/generator row)**
+47. OpenAPI cross-emitter proof of concept **→ ROADMAP §Ecosystem Integration (shared/OpenAPI cross-emitter rows)**
+~~48. AsyncAPI Studio live preview testing~~ done — shipped — studio-compatibility test
+~~49. Semantic versioning automation (bump on feature/fix)~~ **NOT-DO — automation not adopted — the release ritual is documented.**
+~~50. Performance benchmark with 1000 channels (stress test)~~ **NOT-DO — 1000-channel stress never run (200-channel verified sub-linear).**
 
 ---
 
