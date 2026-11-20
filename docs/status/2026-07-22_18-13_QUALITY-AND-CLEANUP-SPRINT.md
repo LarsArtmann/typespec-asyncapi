@@ -11,13 +11,13 @@
 
 | #  | Task                                                 | What Changed                                                                                                                                | Verification                      |
 | -- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- |
-| T1 | Fix vitest timeout (14 failures → 0)                 | `vitest.config.ts`: added `testTimeout: 30_000`, `maxConcurrency: 4`                                                                        | Full suite passes: 555/555        |
-| T2 | Replace `console.error` → `reportDiagnostic`         | `src/schema-emitter.ts`: catch block uses `$lib.reportDiagnostic()`. `src/lib.ts`: added `schema-generation-failed` diagnostic code         | Build clean, tests pass           |
-| T3 | Replace `_options?: any` + dead variable             | `test/utils/test-helpers.ts`: 4 `any` → `AsyncAPIEmitterOptions`, removed `const actualContent = content`                                   | Build clean, tests pass           |
-| T4 | Propagate `@doc` to operations + messages            | `src/document-builder.ts`: collects `@doc` from ops/messages, applies as `description`/`summary`. 2 new tests in `decorator-output.test.ts` | 12/12 decorator-output tests pass |
-| T5 | Update test count 551→555                            | `FEATURES.md` (2 refs), `README.md` (3 refs), `AGENTS.md` (1 ref)                                                                           | grep confirms all updated         |
-| T6 | Remove empty `src/utils/` + clean 95 stale temp dirs | `rmdir src/utils/`, `rm -rf test/temp-output/*`                                                                                             | Verified removed                  |
-| T7 | Rewrite auto-commit messages                         | 5 commits rewritten via `git rebase -i origin/master`                                                                                       | `git log` shows clearer messages  |
+| ~~T1~~ done at `9352a23d` | ~~Fix vitest timeout (14 failures → 0)~~ | ~~`vitest.config.ts`: added `testTimeout: 30_000`, `maxConcurrency: 4`~~ | ~~Full suite passes: 555/555~~ |
+| ~~T2~~ done at `9352a23d` | ~~Replace `console.error` → `reportDiagnostic`~~ | ~~`src/schema-emitter.ts`: catch block uses `$lib.reportDiagnostic()`. `src/lib.ts`: added `schema-generation-failed` diagnostic code~~ | ~~Build clean, tests pass~~ |
+| ~~T3~~ done at `9352a23d` | ~~Replace `_options?: any` + dead variable~~ | ~~`test/utils/test-helpers.ts`: 4 `any` → `AsyncAPIEmitterOptions`, removed `const actualContent = content`~~ | ~~Build clean, tests pass~~ |
+| ~~T4~~ done at `5833db7f`, `9352a23d` | ~~Propagate `@doc` to operations + messages~~ | ~~`src/document-builder.ts`: collects `@doc` from ops/messages, applies as `description`/`summary`. 2 new tests in `decorator-output.test.ts`~~ | ~~12/12 decorator-output tests pass~~ |
+| ~~T5~~ done at `145a3a9a` | ~~Update test count 551→555~~ | ~~`FEATURES.md` (2 refs), `README.md` (3 refs), `AGENTS.md` (1 ref)~~ | ~~grep confirms all updated~~ |
+| ~~T6~~ done at `9352a23d` | ~~Remove empty `src/utils/` + clean 95 stale temp dirs~~ | ~~`rmdir src/utils/`, `rm -rf test/temp-output/*`~~ | ~~Verified removed~~ |
+| ~~T7~~ done at `145a3a9a` | ~~Rewrite auto-commit messages~~ | ~~5 commits rewritten via `git rebase -i origin/master`~~ | ~~`git log` shows clearer messages~~ |
 
 ## b) PARTIALLY DONE
 
@@ -27,12 +27,12 @@ Nothing partially done. All tasks completed end-to-end.
 
 | # | Task                                                            | Why Deferred                                                       | Impact                                      |
 | - | --------------------------------------------------------------- | ------------------------------------------------------------------ | ------------------------------------------- |
-| 1 | Refactor `buildAsyncAPIDocument()` (371 lines, complexity 84)   | Large scope, needs dedicated session                               | HIGH - single biggest maintenance liability |
-| 2 | Migrate `basic-functionality.test.ts` from CLI/FS anti-patterns | Needs architectural decision on test approach                      | MEDIUM                                      |
-| 3 | Split `asyncapi-generation.test.ts` (749 lines)                 | Medium scope, needs careful test restructuring                     | MEDIUM                                      |
-| 4 | Introduce `ParsedAsyncAPIDocument` type for tests               | Eliminates 17 `as any` casts across 6 test files                   | MEDIUM                                      |
-| 5 | Implement BDD `world.ts` stubs (6 methods)                      | BDD infra incomplete, needs cucumber setup decisions               | LOW                                         |
-| 6 | Migrate tests to `unified-test-infrastructure.ts`               | Large scope, per TODO in `core/unified-test-infrastructure.ts:104` | LOW                                         |
+| ~~1~~ done — modularized into src/builders/ modules; src/document-builder.ts is 236 lines now | ~~Refactor `buildAsyncAPIDocument()` (371 lines, complexity 84)~~ | ~~Large scope, needs dedicated session~~ | ~~HIGH - single biggest maintenance liability~~ |
+| ~~2~~ done — now test/integration/basic-functionality.test.ts; compiles programmatically via test/utils/test-helpers.ts | ~~Migrate `basic-functionality.test.ts` from CLI/FS anti-patterns~~ | ~~Needs architectural decision on test approach~~ | ~~MEDIUM~~ |
+| ~~3~~ **Won't implement — never split — the file moved to test/integration/ and grew to 776 lines; directory reorg replaced splitting.** | ~~Split `asyncapi-generation.test.ts` (749 lines)~~ | ~~Medium scope, needs careful test restructuring~~ | ~~MEDIUM~~ |
+| ~~4~~ done — ParsedAsyncAPIDocument exported from src/domain/models/asyncapi-document.ts and used in tests | ~~Introduce `ParsedAsyncAPIDocument` type for tests~~ | ~~Eliminates 17 `as any` casts across 6 test files~~ | ~~MEDIUM~~ |
+| ~~5~~ done at `48d506ea` | ~~Implement BDD `world.ts` stubs (6 methods)~~ | ~~BDD infra incomplete, needs cucumber setup decisions~~ | ~~LOW~~ |
+| ~~6~~ done at `7833f596` | ~~Migrate tests to `unified-test-infrastructure.ts`~~ | ~~Large scope, per TODO in `core/unified-test-infrastructure.ts:104`~~ | ~~LOW~~ |
 
 ## d) TOTALLY FUCKED UP
 
@@ -44,30 +44,32 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 
 ### Immediate (next session)
 
-1. **`buildAsyncAPIDocument()` refactoring** — 371 lines, 161 statements (limits: 350/150). Extract channel discovery, operation building, message registration, and doc propagation into separate functions. This is the #1 maintenance liability per ROADMAP.
+~~1. **`buildAsyncAPIDocument()` refactoring** — 371 lines, 161 statements (limits: 350/150). Extract channel discovery, operation building, message registration, and doc propagation into separate functions. This is the #1 maintenance liability per ROADMAP.~~ done — extracted into src/builders/ (channel, operation, message, server builders); src/document-builder.ts is 236 lines
 
-2. **oxlint warnings on `document-builder.ts`** — 3 warnings (max-lines-per-function, max-statements, max-lines). Direct consequence of the @doc propagation additions. Fix by extracting into helper functions.
+~~2. **oxlint warnings on `document-builder.ts`** — 3 warnings (max-lines-per-function, max-statements, max-lines). Direct consequence of the @doc propagation additions. Fix by extracting into helper functions.~~ done — lint gate runs oxlint with --deny-warnings via the package.json lint script, enforced in .github/workflows/ci.yml
 
-3. **Verify golden file test output** — The @doc propagation changes to `document-builder.ts` could affect golden file test output. Currently all 3 golden tests pass, but verify the golden file itself doesn't need updating.
+~~3. **Verify golden file test output** — The @doc propagation changes to `document-builder.ts` could affect golden file test output. Currently all 3 golden tests pass, but verify the golden file itself doesn't need updating.~~ done — golden suite at test/golden/golden-file.test.ts plus test/realworld/golden/; regenerable via scripts/regenerate-golden.ts
 
 ### Medium-term
 
-4. **`ParsedAsyncAPIDocument` type** — Eliminates 17 `as any` casts in tests. Define proper interface for parsed AsyncAPI output.
+~~4. **`ParsedAsyncAPIDocument` type** — Eliminates 17 `as any` casts in tests. Define proper interface for parsed AsyncAPI output.~~ done — ParsedAsyncAPIDocument lives in src/domain/models/asyncapi-document.ts
 
-5. **Test file splitting** — `asyncapi-generation.test.ts` (749 lines), `external-specs.test.ts` (572 lines), `server.test.ts` (461 lines) all flagged for splitting.
+~~5. **Test file splitting** — `asyncapi-generation.test.ts` (749 lines), `external-specs.test.ts` (572 lines), `server.test.ts` (461 lines) all flagged for splitting.~~ **Won't implement — never split — the three files were reorganized under test/integration/, test/external/, test/decorators/ and grew; no splitting followed.**
 
-6. **`basic-functionality.test.ts` migration** — Self-described as "anti-pattern hell" with raw fs/spawn/child_process. Should use programmatic API like all other tests.
+~~6. **`basic-functionality.test.ts` migration** — Self-described as "anti-pattern hell" with raw fs/spawn/child_process. Should use programmatic API like all other tests.~~ done — test/integration/basic-functionality.test.ts header documents programmatic compilation via test-helpers
 
 ### Architecture
 
-7. **BDD world.ts stubs** — 6 methods unimplemented. Either implement or remove the BDD infrastructure entirely.
+~~7. **BDD world.ts stubs** — 6 methods unimplemented. Either implement or remove the BDD infrastructure entirely.~~ done at `48d506ea`
 
-8. **`unified-test-infrastructure.ts` migration** — Legacy compatibility exports still exist (`createAsyncAPITestHost`, `TestHostOptions`, `TypeSpecCompileResult`). Should migrate all tests and remove.
+~~8. **`unified-test-infrastructure.ts` migration** — Legacy compatibility exports still exist (`createAsyncAPITestHost`, `TestHostOptions`, `TypeSpecCompileResult`). Should migrate all tests and remove.~~ done — test/core/unified-test-infrastructure.ts deleted outright; helpers live in test/utils/test-helpers.ts
 
 ## f) Up to 50 Things to Get Done Next
 
 ### Source Code Quality (P0)
 
+<!-- ledger: forward-looking backlog ledger (items 1-50); rows reviewed — shipped, moot, or resolved differently; nothing to harvest -->
+<!-- check-rows:ledger -->
 | # | Task                                                                             | Effort | Impact |
 | - | -------------------------------------------------------------------------------- | ------ | ------ |
 | 1 | Refactor `buildAsyncAPIDocument()` into smaller functions                        | HIGH   | HIGH   |
@@ -77,6 +79,8 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 
 ### Test Infrastructure (P1)
 
+<!-- ledger: forward-looking backlog ledger; rows reviewed — shipped, moot, or resolved differently; nothing to harvest -->
+<!-- check-rows:ledger -->
 | #  | Task                                                                               | Effort | Impact |
 | -- | ---------------------------------------------------------------------------------- | ------ | ------ |
 | 5  | Introduce `ParsedAsyncAPIDocument` type (eliminates 17 `as any`)                   | MEDIUM | HIGH   |
@@ -91,6 +95,8 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 
 ### Documentation (P2)
 
+<!-- ledger: forward-looking backlog ledger; rows reviewed — shipped, moot, or superseded; nothing to harvest -->
+<!-- check-rows:ledger -->
 | #  | Task                                                | Effort | Impact |
 | -- | --------------------------------------------------- | ------ | ------ |
 | 14 | Update CHANGELOG.md with T1-T7 changes              | LOW    | MEDIUM |
@@ -103,6 +109,8 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 
 ### Feature Gaps (P3)
 
+<!-- ledger: forward-looking backlog ledger; rows reviewed — all shipped; nothing to harvest -->
+<!-- check-rows:ledger -->
 | #  | Task                                     | Effort | Impact |
 | -- | ---------------------------------------- | ------ | ------ |
 | 21 | `@operationId` / `@messageId` decorators | HIGH   | HIGH   |
@@ -115,6 +123,8 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 
 ### Code Quality (P4)
 
+<!-- ledger: forward-looking backlog ledger; rows reviewed — shipped, moot, or resolved differently; nothing to harvest -->
+<!-- check-rows:ledger -->
 | #  | Task                                                                           | Effort  | Impact |
 | -- | ------------------------------------------------------------------------------ | ------- | ------ |
 | 28 | Remove empty `src/utils/` from `.gitignore` if present                         | TRIVIAL | LOW    |
@@ -127,6 +137,8 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 
 ### Infrastructure (P5)
 
+<!-- ledger: forward-looking backlog ledger; rows reviewed — shipped or moot; nothing to harvest -->
+<!-- check-rows:ledger -->
 | #  | Task                                                        | Effort  | Impact |
 | -- | ----------------------------------------------------------- | ------- | ------ |
 | 35 | Add vitest `--retry` flag for flaky test resilience         | TRIVIAL | LOW    |
@@ -138,6 +150,8 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 
 ### Research / Investigation (P6)
 
+<!-- ledger: forward-looking backlog ledger; rows reviewed — all moot or resolved; nothing to harvest -->
+<!-- check-rows:ledger -->
 | #  | Task                                                                  | Effort | Impact |
 | -- | --------------------------------------------------------------------- | ------ | ------ |
 | 41 | Investigate why `@asyncapi/parser` fails under Bun (AJV issue)        | MEDIUM | MEDIUM |
@@ -147,6 +161,8 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 
 ### Security / Compliance (P7)
 
+<!-- ledger: forward-looking backlog ledger; rows reviewed — moot or covered by CI validation; nothing to harvest -->
+<!-- check-rows:ledger -->
 | #  | Task                                                    | Effort | Impact |
 | -- | ------------------------------------------------------- | ------ | ------ |
 | 45 | Run `bun audit` and address any findings                | LOW    | HIGH   |
@@ -155,6 +171,8 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 
 ### Process (P8)
 
+<!-- ledger: forward-looking backlog ledger; rows reviewed — shipped or moot; nothing to harvest -->
+<!-- check-rows:ledger -->
 | #  | Task                                                                  | Effort | Impact |
 | -- | --------------------------------------------------------------------- | ------ | ------ |
 | 48 | Establish release process (semantic versioning, changelog automation) | MEDIUM | HIGH   |
@@ -163,16 +181,18 @@ Minor note: The rebase created 5 commits instead of the expected 3-4 because a 5
 
 ## g) Questions I Cannot Answer
 
-1. **Should the BDD infrastructure be kept or removed?** The `test/bdd/` directory has 6 unimplemented stub methods and a `world.ts` that's mostly placeholders. The `user-behaviors.test.ts` file works but uses lightweight unit-style tests, not actual BDD compilation. Is BDD a priority or should we cut it?
+~~1. **Should the BDD infrastructure be kept or removed?** The `test/bdd/` directory has 6 unimplemented stub methods and a `world.ts` that's mostly placeholders. The `user-behaviors.test.ts` file works but uses lightweight unit-style tests, not actual BDD compilation. Is BDD a priority or should we cut it?~~ done — answered — dead BDD infra removed; only test/bdd/user-behaviors.test.ts survives as unit-style tests
 
-2. **What's the target test count for the next release?** We're at 555 tests. The ROADMAP mentions compliance, security, and protocol binding coverage. Should we aim for 600+ before v0.3.0, or focus on feature completeness instead?
+~~2. **What's the target test count for the next release?** We're at 555 tests. The ROADMAP mentions compliance, security, and protocol binding coverage. Should we aim for 600+ before v0.3.0, or focus on feature completeness instead?~~ done — answered — feature completeness won; the suite hit 1333 tests by the v1.2.0 gate (AGENTS.md release-flow note)
 
-3. **Should `buildAsyncAPIDocument()` refactoring be the top priority next session?** It's flagged as the "single biggest maintenance liability" in ROADMAP.md with cyclomatic complexity 84. But it's also the most delicate code to refactor. Should we pair it with a dedicated review session, or tackle lower-risk items first?
+~~3. **Should `buildAsyncAPIDocument()` refactoring be the top priority next session?** It's flagged as the "single biggest maintenance liability" in ROADMAP.md with cyclomatic complexity 84. But it's also the most delicate code to refactor. Should we pair it with a dedicated review session, or tackle lower-risk items first?~~ done — answered — the modular builder split (src/builders/) landed the same evening and resolved the liability
 
 ---
 
 ## Session Metrics
 
+<!-- ledger: session-metrics snapshot — historical values, not actionable items -->
+<!-- check-rows:ledger -->
 | Metric                    | Value                                    |
 | ------------------------- | ---------------------------------------- |
 | Tasks completed           | 7/7 (100%)                               |
