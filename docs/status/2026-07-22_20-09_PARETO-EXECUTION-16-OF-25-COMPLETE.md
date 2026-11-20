@@ -56,7 +56,7 @@
 
 ### Task 20: DROPPED
 
-User explicitly said "we are NOT building this!" — plugin/hook system removed from plan.
+~~User explicitly said "we are NOT building this!" — plugin/hook system removed from plan.~~ **NOT-DO — plugin and hook systems remain an explicit non-goal in `ROADMAP.md` §Non-Goals.**
 
 ---
 
