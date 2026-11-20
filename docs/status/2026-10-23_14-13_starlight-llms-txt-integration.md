@@ -16,7 +16,7 @@
 | ~~Local website gate~~ done — now a standing CI gate: `.github/workflows/ci.yml:41` runs the website check on every push | ~~PASS (22 pages, 778 internal refs, CSP 22/22)~~ |
 | ~~Local root `verify`~~ done — suite has since grown to 1275 tests / 105 files per the 2026-10-03 audit ( `FEATURES.md:4` ) | ~~PASS (1275 tests, 105 files, 97.9% avg coverage, 0 clones)~~ |
 | ~~Frozen-lockfile install~~ done — CI installs with `--frozen-lockfile` ( `.github/workflows/ci.yml:32` ) | ~~PASS~~ |
-| ~~Security audit~~ done — advisory no longer fires: `pnpm audit` in `website/` reports no unignored findings ( re-verified 2026-11-20 ) | ~~**FAIL: 1 high advisory introduced, no patch available**~~ |
+| ~~Security audit~~ done — advisory no longer fires: `pnpm audit` in `website/` reports no unignored findings ( re-verified 2026-11-19 ) | ~~**FAIL: 1 high advisory introduced, no patch available**~~ |
 | ~~Deployed~~ done — deployed 2026-10-23 and verified live ( `website/IMPROVEMENTS.md:7` ) | ~~NO~~ |
 | ~~Pushed / CI~~ done — long since pushed; `v1.2.0` tagged 2026-11-19 | ~~NO~~ |
 
@@ -36,7 +36,7 @@ Documentation pages in the collection: 20 (19 real docs + `404.md`).
 
 ### 1.1 What did I forget?
 
-~~1. **I forgot to run `pnpm audit` while adding the dependency.** I only ran it at report time and discovered a new high-severity advisory (`braces` <= 3.0.3, GHSA-vfj7-8cjw-p6xm, no patched version) pulled in through `starlight-llms-txt > micromatch > braces`.~~ **NOT-DO — moot — the `braces` advisory no longer fires; `pnpm audit` in `website/` is clean ( 2026-11-20 ).**
+~~1. **I forgot to run `pnpm audit` while adding the dependency.** I only ran it at report time and discovered a new high-severity advisory (`braces` <= 3.0.3, GHSA-vfj7-8cjw-p6xm, no patched version) pulled in through `starlight-llms-txt > micromatch > braces`.~~ **NOT-DO — moot — the `braces` advisory no longer fires; `pnpm audit` in `website/` is clean ( 2026-11-19 ).**
 ~~2. **I forgot the old `/llms.txt` contract.** The hand-rolled endpoint listed every documentation page with title, URL, and description. The plugin's `/llms.txt` only links the doc sets. That is a functional regression I did not anticipate or call out when recommending the switch.~~ **Won't implement — per-page index never restored; the plugin's sets-only entrypoint stands ( `website/dist/llms.txt` ).**
 ~~3. **I forgot that `astro build` is not idempotent here.** Running the website gate against an existing `dist/` failed with `ERR_MODULE_NOT_FOUND ... dist/.prerender/chunks/rss_*.mjs`. I worked around it by trashing `dist` and `.astro`, but did not fix the script.~~ **NOT-DO — duplicate of §7 item 4 below ( gate cleaning — harvested ).**
 ~~4. **I forgot UI chrome leaks into the generated corpus.** `llms-full.txt` contains 106 `[Section titled ...]` anchor lines, and `llms-small.txt` contains 43. These come from Starlight's `<a class="sl-anchor-link">` elements and are pure noise for an LLM.~~ **NOT-DO — duplicate of §7 item 2 below ( anchor noise — harvested ).**
@@ -64,7 +64,7 @@ Documentation pages in the collection: 20 (19 real docs + `404.md`).
 ~~3. **Make the gate idempotent** by cleaning `dist`/`.astro` in `check` (using `trash`, not `rm`).~~ **NOT-DO — duplicate of §7 item 4 below ( harvested ).**
 ~~4. **Add `check:llms`** that asserts presence, non-trivial size, ordering, absence of `404` from `llms-small.txt`, and resolvable doc links.~~ **NOT-DO — duplicate of §7 item 3 below ( harvested ).**
 ~~5. **Extend `check-links.mjs`** to validate Markdown links inside the `.txt` artifacts, not just HTML `href`/`src`.~~ **Won't implement — never built; `check-links.mjs` validates HTML `href`/`src` only.**
-~~6. **Decide the security posture** for the unpatchable `braces` advisory (documented dismissal with `auditConfig.ignoreGhsas`, or remove/block the plugin).~~ **NOT-DO — moot — website audit is clean today ( 2026-11-20 ).**
+~~6. **Decide the security posture** for the unpatchable `braces` advisory (documented dismissal with `auditConfig.ignoreGhsas`, or remove/block the plugin).~~ **NOT-DO — moot — website audit is clean today ( 2026-11-19 ).**
 ~~7. **Update README and IMPROVEMENTS**, and add the plugin to the website architecture notes.~~ **NOT-DO — duplicate of §7 item 11 below ( harvested ).**
 ~~8. **Deploy and verify live** after approval.~~ done — deployed and verified live 2026-10-23 ( `website/IMPROVEMENTS.md:7` )
 ~~9. **Run `check-examples` and CI** with the final dependency graph.~~ done — in CI ( `.github/workflows/ci.yml:38` )
@@ -102,7 +102,7 @@ Note on commits: the auto-commit daemon produced these commits, so file grouping
 | ~~2~~ **Won't implement — per-page index never restored; the sets-only entrypoint stands.** | ~~`/llms.txt` entrypoint quality~~ | ~~Links small/full sets, description, optional links~~ | ~~Lost the previous per-page index (title + URL + description for all 19 docs)~~ | ~~M~~ |
 | ~~3~~ **Won't implement — 404 still tails `llms-full.txt` by design; documented in `AGENTS.md:217`.** | ~~404 exclusion~~ | ~~Absent from `llms-small.txt`; demoted to the tail of `llms-full.txt`~~ | ~~Plugin has no full-file exclusion; 404 page still pollutes the full corpus~~ | ~~M~~ |
 | ~~4~~ **NOT-DO — duplicate of §7 item 4 below ( harvested ).** | ~~Build reproducibility~~ | ~~`trash dist .astro` then build works~~ | ~~`pnpm run check` fails if `dist/` already exists; no clean step in scripts~~ | ~~S~~ |
-| ~~5~~ done — advisory moot; website audit clean ( 2026-11-20 ) | ~~Dependency security~~ | ~~Advisory identified and scoped (build-time only)~~ | ~~No dismissal, no mitigation, no CI gate; audit not in verify~~ | ~~S~~ |
+| ~~5~~ done — advisory moot; website audit clean ( 2026-11-19 ) | ~~Dependency security~~ | ~~Advisory identified and scoped (build-time only)~~ | ~~No dismissal, no mitigation, no CI gate; audit not in verify~~ | ~~S~~ |
 | ~~6~~ done — both now in CI ( `.github/workflows/ci.yml:38` and `:41` ) | ~~Verification breadth~~ | ~~Website check + root verify green~~ | ~~`check-examples` not run; CI not run~~ | ~~M~~ |
 | ~~7~~ **NOT-DO — `AGENTS.md:216` and `website/IMPROVEMENTS.md:7` done; the README row is carried at §7 item 11.** | ~~Documentation~~ | ~~`AGENTS.md` updated~~ | ~~`website/README.md` and `website/IMPROVEMENTS.md` still describe the old setup~~ | ~~S~~ |
 | ~~8~~ **NOT-DO — duplicate of §7 item 2 below ( harvested ).** | ~~Corpus quality~~ | ~~Content is MDX-aware and page descriptions are included~~ | ~~106 (full) / 43 (small) `Section titled` anchor lines leak as noise~~ | ~~S~~ |
@@ -120,7 +120,7 @@ Note on commits: the auto-commit daemon produced these commits, so file grouping
 | ~~4~~ **NOT-DO — duplicate of §7 item 3 below ( harvested ).** | ~~`check:llms` content test~~ | ~~Not planned during implementation~~ | ~~Yes~~ |
 | ~~5~~ **Won't implement — never built; HTML-ref checking only ( `website/scripts/check-links.mjs` ).** | ~~Markdown link validation inside `.txt` artifacts~~ | ~~Not planned~~ | ~~Yes~~ |
 | ~~6~~ **NOT-DO — duplicate of §7 item 4 below ( harvested ).** | ~~Clean-before-build in the `check` script~~ | ~~Discovered too late~~ | ~~Yes~~ |
-| ~~7~~ done — moot: the advisory no longer fires ( website audit clean 2026-11-20 ) | ~~Audit dismissal record or plugin removal decision~~ | ~~Needs a risk decision~~ | ~~Yes~~ |
+| ~~7~~ done — moot: the advisory no longer fires ( website audit clean 2026-11-19 ) | ~~Audit dismissal record or plugin removal decision~~ | ~~Needs a risk decision~~ | ~~Yes~~ |
 | ~~8~~ **Won't implement — never requested; no `customSets` in `website/astro.config.mjs`.** | ~~`customSets` (for example a Getting Started subset)~~ | ~~Not requested~~ | ~~Optional~~ |
 | ~~9~~ **Won't implement — never restored; no consumer demand surfaced.** | ~~Per-page index endpoint~~ | ~~Discovered as a regression at report time~~ | ~~Yes, if consumers want it~~ |
 | ~~10~~ **NOT-DO — duplicate of §7 item 11 below ( harvested ).** | ~~README / IMPROVEMENTS updates~~ | ~~Deprioritized~~ | ~~Yes~~ |
@@ -202,7 +202,7 @@ Impact: Critical / High / Medium / Low. Effort: S (<30 min) / M (30 min to 2 h) 
 
 | #  | Task                                                                                                      | Impact   | Effort | Category |
 | -- | --------------------------------------------------------------------------------------------------------- | -------- | ------ | -------- |
-| ~~1~~ **NOT-DO — moot — `pnpm audit` in `website/` reports no unignored findings ( 2026-11-20 ); plugin retained and deployed.** | ~~Decide the `braces` advisory policy: documented `auditConfig.ignoreGhsas` dismissal or remove the plugin~~ | ~~Critical~~ | ~~S~~ | ~~Security~~ |
+| ~~1~~ **NOT-DO — moot — `pnpm audit` in `website/` reports no unignored findings ( 2026-11-19 ); plugin retained and deployed.** | ~~Decide the `braces` advisory policy: documented `auditConfig.ignoreGhsas` dismissal or remove the plugin~~ | ~~Critical~~ | ~~S~~ | ~~Security~~ |
 | 2  | Add `customSelectors: { all: [".sl-anchor-link"] }` and rebuild                                           | High     | S      | Quality  |
 | 3  | Add `check:llms` asserting 3 files, non-zero size, ordering, docs present, no 404 in `llms-small.txt`     | High     | M      | Quality  |
 | 4  | Make `pnpm run check` clean `dist`/`.astro` first (via `trash`)                                           | High     | S      | Quality  |
@@ -250,14 +250,14 @@ Impact: Critical / High / Medium / Low. Effort: S (<30 min) / M (30 min to 2 h) 
 | ~~46~~ **NOT-DO — duplicate of item 11 ( README row — harvested ).** | ~~Add an `llms` section to the website README script table~~ | ~~Medium~~ | ~~S~~ | ~~Docs~~ |
 | ~~47~~ **NOT-DO — subsumed by item 2 ( anchor noise ).** | ~~Evaluate whether `customSelectors` should also strip Expressive Code UI elements~~ | ~~Low~~ | ~~S~~ | ~~Quality~~ |
 | ~~48~~ **Won't implement — never added; the only documented dismissal is minimatch ( `pnpm-workspace.yaml:17` ).** | ~~Add an audit ignore-list policy section to SECURITY.md~~ | ~~Medium~~ | ~~S~~ | ~~Security~~ |
-| ~~49~~ **NOT-DO — moot — the `braces` advisory no longer fires ( website audit clean 2026-11-20 ).** | ~~Track upstream `micromatch`/`braces` remediation and remove any dismissal once fixed~~ | ~~Medium~~ | ~~S~~ | ~~Security~~ |
+| ~~49~~ **NOT-DO — moot — the `braces` advisory no longer fires ( website audit clean 2026-11-19 ).** | ~~Track upstream `micromatch`/`braces` remediation and remove any dismissal once fixed~~ | ~~Medium~~ | ~~S~~ | ~~Security~~ |
 | ~~50~~ done — deployed, verified, recorded ( `website/IMPROVEMENTS.md:7` ) | ~~Deploy, verify, then record the live state in IMPROVEMENTS~~ | ~~High~~ | ~~S~~ | ~~Ops~~ |
 
 ---
 
 ## 8. g) Questions I cannot answer myself
 
-~~1. **Advisory policy:** should the unpatchable `braces` advisory be accepted with a documented `auditConfig.ignoreGhsas` dismissal (build-time only, trusted globs), or should we drop `starlight-llms-txt` until upstream resolves it? I can implement either, but the risk acceptance is yours.~~ **NOT-DO — moot — website audit clean; the advisory no longer fires ( 2026-11-20 ).**
+~~1. **Advisory policy:** should the unpatchable `braces` advisory be accepted with a documented `auditConfig.ignoreGhsas` dismissal (build-time only, trusted globs), or should we drop `starlight-llms-txt` until upstream resolves it? I can implement either, but the risk acceptance is yours.~~ **NOT-DO — moot — website audit clean; the advisory no longer fires ( 2026-11-19 ).**
 ~~2. **Entrypoint contract:** do you want `/llms.txt` to keep the previous per-page index (titles, URLs, descriptions), or is the plugin's doc-sets-only entrypoint acceptable? The old behavior was richer; the new one follows the plugin's opinion.~~ **Won't implement — the plugin's sets-only entrypoint stands ( `website/dist/llms.txt` ).**
 ~~3. **Deploy authorization:** should I deploy and push now (`nix run .#deploy-website`), or leave everything local for your review first?~~ done — deployed the same evening 2026-10-23 ( `website/IMPROVEMENTS.md:7` )
 
