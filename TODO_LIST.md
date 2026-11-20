@@ -207,6 +207,17 @@ What remains is the gated release chain and the tail:
       toolchain-restore + 2026-08-21 phase-1 reports; lychee already
       excludes archives from link checks, the storage-growth call does not
       exist yet).
+- [ ] Dependabot: allow-list the `typescript-eslint-eslint` group so its
+      PRs can actually build (other groups create unbuildable PRs)
+      (docs/status/2026-10-23_09-46:58).
+- [ ] Add a `website/video` CI install job — CI never runs `npm ci` there,
+      which let the master lockfile rot for 9 days unnoticed
+      (docs/status/2026-10-23_09-46:103).
+- [ ] Pin pnpm via a file the daemon cannot rewrite — `packageManager`
+      drift was missed by three sessions
+      (docs/status/2026-10-23_09-46:104).
+- [ ] Retire `tsx` remnants: swap the typecheck runner to plain `tsc`
+      (docs/status/2026-10-23_09-46:125).
 - [ ] Trash `scripts/ns-test/` (113-byte scratch, not referenced; owner call).
 - [ ] Refresh ROADMAP to the current era — Current State exists but no
       1.2.0-era mentions yet; upstream-watch section references #12105

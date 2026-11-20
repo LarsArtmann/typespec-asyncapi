@@ -45,8 +45,8 @@ Raw ideas:
 - Reusable server definitions (`components.servers`) — `@reusableServer` + `@useServer` pattern matching the reusable binding/trait model
 - Reactive streaming patterns — server-sent events (SSE), WebSocket subprotocol negotiation, Kafka consumer group rebalance semantics
 - Message correlation beyond simple `$ref` location — support `@correlationId` on operations (not just models) for reply correlation
-- AsyncAPI 3.1 `channel.servers` field — bind channels to specific servers from the server list
 - Top-level `defaultContentType` validation — ensure the `@defaultContentType` value is a valid MIME type
+- Dedicated `@externalDocs` decorator — `Tag.externalDocs` exists via `@tags` objects, but no standalone decorator
 
 ### 2. Developer Experience
 

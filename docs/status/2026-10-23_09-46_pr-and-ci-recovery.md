@@ -55,7 +55,7 @@ The repo had been **red on master since 2026-10-04** (10 consecutive failed push
 ## (c) NOT STARTED
 
 ~~1. **No CI gate for `website/`** (typecheck/build/html-validate) and **none at all** for `website/video` (npm). I fixed a broken website gate but nothing enforces it — it can silently rot again.~~ done — website gated in `ci.yml` (typecheck, build, html, links, csp); `website/video` npm remains ungated
-2. **No Dependabot grouping rule for the TypeSpec family.** The exact failure I repaired (rest/versioning bumped without compiler/http) will recur on the next minor release.
+2. **No Dependabot grouping rule for the TypeSpec family.** The exact failure I repaired (rest/versioning bumped without compiler/http) will recur on the next minor release. **→ TODO_LIST §Hygiene (Dependabot typescript-eslint-eslint group allow-list row)**
 ~~3. **No test proving the peer-range tightening is intentional** (see the release-semver item below).~~ **NOT-DO — moot — `v1.2.0` shipped the tightened peers; no dedicated test was added.**
 ~~4. **No fresh-clone verification** of the merged master (`git clone` + `pnpm install --frozen-lockfile`) — I verified the working tree, which had pre-existing `node_modules`.~~ done — CI runs checkout plus `pnpm install --frozen-lockfile` on clean runners every push
 ~~5. **No CHANGELOG entry** for the dependency family bump / peer range change.~~ **Won't implement — shipped without it; CHANGELOG `[1.2.0]` records the lockfile-drift fix only.**
@@ -100,8 +100,8 @@ Nothing catastrophic — no data loss, no force-push, no reverted foreign work, 
 
 ~~5. Add a `website` job to `ci.yml` (`pnpm --filter typespec-asyncapi-website run typecheck && run build && check:html`).~~ done — `ci.yml` website step (typecheck, build, html, links, csp)
 ~~6. Add `pnpm --filter typespec-asyncapi-website run check:links` on a schedule (network-dependent, keep it off the hot path).~~ done — `check:links` runs inside the CI website check (`website/package.json`)
-7. Add a `website/video` job: `npm ci --dry-run` (or `npm ci`) so npm lockfile PRs stop needing manual verification.
-8. Pin pnpm in both workflows instead of `version: latest`.
+7. Add a `website/video` job: `npm ci --dry-run` (or `npm ci`) so npm lockfile PRs stop needing manual verification. **→ TODO_LIST §Hygiene (website/video npm ci CI job row)**
+8. Pin pnpm in both workflows instead of `version: latest`. **→ TODO_LIST §Hygiene (daemon-proof pnpm pin row)**
 ~~9. Add `pnpm audit --audit-level=high` to CI (it is currently only a script).~~ **Won't implement — audit remains a script (`pnpm run audit`), not a CI step; dismissals documented in `AGENTS.md`.**
 ~~10. Add a fail-fast job that runs only `pnpm install --frozen-lockfile` on the PR's manifest+lockfile, so drift fails in 10 s rather than after setup-bun.~~ **Won't implement — no separate job; the `--frozen-lockfile` install in `ci.yml` fails on drift (after setup).**
 ~~11. Cache the `nix develop` shell if the devShell is reintroduced into CI.~~ **Won't implement — no nix shell in CI; the workflows contain no nix steps.**
@@ -122,7 +122,7 @@ Nothing catastrophic — no data loss, no force-push, no reverted foreign work, 
 ~~20. Log why `postcss-selector-parser` must sit on 7.1.6 (already in AGENTS.md) inside `.jscpd`-style comment near the override — it is currently discoverable only via memory file.~~ **Won't implement — no comment at the override (`pnpm-workspace.yaml`); the rationale lives in `AGENTS.md`.**
 ~~21. Check whether `postcss-nested@7` exists and whether expressive-code will adopt it (retires the cross-major override).~~ **Won't implement — never rechecked; the override is still documented as cross-major in `AGENTS.md`.**
 ~~22. Re-check the website TS pin when `@astrojs/check` supports TS 7; the `ts-content-mapper` path is the upstream-proposed future.~~ **Won't implement — still pinned `typescript 6.0.3`; `@astrojs/check` TS-7 support unchanged.**
-23. Remove `tsx` if nothing uses it (it is a devDependency the toolchain notes say is discouraged).
+23. Remove `tsx` if nothing uses it (it is a devDependency the toolchain notes say is discouraged). **→ TODO_LIST §Hygiene (tsx retirement row)**
 ~~24. Re-evaluate `overrides` in the root `package.json` (`@asyncapi/specs`, `form-data`, `tough-cookie`) — pnpm ignores them, so they are inert npm compat only.~~ done — `AGENTS.md` records the overrides as inert npm-compat applying only to `website/video`
 ~~25. Audit `examples/*` dependency freshness (they are workspace members and never get Dependabot PRs).~~ **Won't implement — examples are workspace members riding root bumps; no separate freshness audit exists.**
 ~~26. Confirm `@types/node` ^26 is intentional for a package advertising `engines: node >=20.11`.~~ **Won't implement — left at `^26` dev-only types while `engines` stays `>=20.11`.**
