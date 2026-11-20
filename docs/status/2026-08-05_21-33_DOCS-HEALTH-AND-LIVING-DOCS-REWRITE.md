@@ -140,8 +140,8 @@ Scoped to this session's area (documentation health + gaps discovered).
 5. **Prune `docs/_archive/`** — keep latest N per category per quarter, trash the rest. ~250 files → ~20.
 6. **Build a doc-sync script** — enumerate decorators from `main.tsp`, diagnostics from `lib.ts`, protocols from `protocols.ts`, test count from vitest output, and diff against all living docs. **→ ROADMAP §Developer Experience**
 ~~7. **Annotate July historical reports** — check `docs/status/2026-07-*` for stale claims that mislead readers.~~ done — 2026-11-20 corpus sweep annotates docs/status (TODO_LIST §Docs corpus sweep)
-~~8. **Audit `docs/DOMAIN_LANGUAGE.md`** — verify terms match current codebase.~~ **Won't implement — no such rule in CONTRIBUTING.md; cadence ritual owned by docs-gates + TODO_LIST §Docs corpus sweep.**
-9. **Add a `CONTRIBUTING.md` rule** — "one status report per day; supersede, don't stack" (flagged in 18:08 report).
+~~8. **Audit `docs/DOMAIN_LANGUAGE.md`** — verify terms match current codebase.~~ **Won't implement — no dedicated audit pass recorded; file still maintained (last doc sync 2026-11-19).**
+~~9. **Add a `CONTRIBUTING.md` rule** — "one status report per day; supersede, don't stack" (flagged in 18:08 report).~~ **Won't implement — no such rule in CONTRIBUTING.md; the cadence ritual is owned by docs-gates + TODO_LIST §Docs corpus sweep.**
 
 ### Medium Priority (code gaps discovered via gap analysis)
 

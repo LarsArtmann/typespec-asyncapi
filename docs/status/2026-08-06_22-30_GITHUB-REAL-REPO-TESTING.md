@@ -14,6 +14,7 @@ Searched all of GitHub for `.tsp` files using AsyncAPI decorators. **Result: zer
 
 Found 5 real repos with `.tsp` files worth testing:
 
+<!-- check-rows:ledger --> <!-- reference survey table: completed repo inventory, no actionable rows -->
 | Repo                            | File                          | Lines | Stars | Type                                        |
 | ------------------------------- | ----------------------------- | ----- | ----- | ------------------------------------------- |
 | `bterlson/typespec-todo`        | `main.tsp`                    | 277   | 10    | HTTP/REST API (TypeSpec creator's sample)   |
@@ -50,6 +51,7 @@ The only repo that compiles without errors. Pure data models (no external decora
 
 #### bterlson/typespec-todo — 29 error diagnostics
 
+<!-- check-rows:ledger --> <!-- reference survey table: completed diagnostic inventory, no actionable rows -->
 | Category                | Diagnostic Codes         | Count                                                                                                                                                   |
 | ----------------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Missing packages        | `import-not-found`       | 5 (`@typespec/http`, `/rest`, `/openapi`, `/openapi3`, `/json-schema`)                                                                                  |
@@ -72,6 +74,7 @@ Cannot resolve `@typespec/versioning`, `@azure-tools/typespec-azure-core` import
 
 With ONLY the import path changed (`"typespec-asyncapi"` → `"@lars-artmann/typespec-asyncapi"`), 4 decorator API differences surface:
 
+<!-- check-rows:ledger --> <!-- reference comparison table: documented API differences, no actionable rows -->
 | Decorator        | milehimikey API                                            | This emitter API                                                   | Diagnostic                                   |
 | ---------------- | ---------------------------------------------------------- | ------------------------------------------------------------------ | -------------------------------------------- |
 | `@server`        | `@server("name", "host", "protocol", "desc")` (positional) | `@server("name", #{ url, protocol, description })` (value literal) | `invalid-argument`, `invalid-argument-count` |

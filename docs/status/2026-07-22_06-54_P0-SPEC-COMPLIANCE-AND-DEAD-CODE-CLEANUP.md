@@ -122,8 +122,8 @@ This is basic. I removed 3 devDependencies from `package.json` and never ran `bu
 
 I added 2 unit tests that check the output shape, but I didn't add a compliance test that:
 
-1. Compiles a TypeSpec file with `scopes:` in the `@security` decorator
-2. Validates the resulting AsyncAPI document against the official AsyncAPI 3.1 JSON Schema
+~~1. Compiles a TypeSpec file with `scopes:` in the `@security` decorator~~ done — the compliance test exists — test/domain/security-schemes.test.ts compiles legacy scopes input via compileAndValidateOrThrow
+~~2. Validates the resulting AsyncAPI document against the official AsyncAPI 3.1 JSON Schema~~ done — output is AJV-validated against the official AsyncAPI 3.1 schema in the same test
 
 This would have been the definitive proof that the fix works end-to-end. The existing compliance test (`servers-security.test.ts`) only tests `availableScopes:` (the already-correct key).
 
@@ -145,9 +145,9 @@ I verified zero imports from `src/` but didn't explicitly grep `test/` for impor
 
 ~~3. **Grep `test/` before deleting source files.** Tests can import source types for type assertions. The `src/` check is necessary but not sufficient — always extend the search to `test/` before deletion.~~ done — verify gate includes test:coverage:gate (package.json verify; ci.yml)
 
-4. **Consider normalizing non-standard OAuth2 flow keys.** The current `OAUTH2_FLOW_KEYS` const only covers 4 standard keys. Non-standard keys (`deviceCode`, `tokenExchange`, etc.) are used in the test suite but wouldn't be normalized. Either normalize all keys with `scopes`, or document that only standard flows are handled.
+~~4. **Consider normalizing non-standard OAuth2 flow keys.** The current `OAUTH2_FLOW_KEYS` const only covers 4 standard keys. Non-standard keys (`deviceCode`, `tokenExchange`, etc.) are used in the test suite but wouldn't be normalized. Either normalize all keys with `scopes`, or document that only standard flows are handled.~~ **Won't implement — normalizeOAuth2Scopes still handles only the 4 standard flow keys (src/builders/shared-utils.ts OAUTH2_FLOW_KEYS); non-standard flows stay outside AsyncAPI 3.1.**
 
-5. **Run the coverage gate as part of the quality gate.** The coverage gate is a separate script (`test:coverage:gate`). I ran `build && lint && test` but not the coverage gate. The coverage gate failure is pre-existing, but I should have at least acknowledged it.
+~~5. **Run the coverage gate as part of the quality gate.** The coverage gate is a separate script (`test:coverage:gate`). I ran `build && lint && test` but not the coverage gate. The coverage gate failure is pre-existing, but I should have at least acknowledged it.~~ done — verify gate includes test:coverage:gate (package.json verify; ci.yml)
 
 ### Code improvements
 
