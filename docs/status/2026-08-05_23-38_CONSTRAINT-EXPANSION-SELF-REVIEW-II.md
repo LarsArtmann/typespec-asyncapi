@@ -140,14 +140,14 @@ The auto-git daemon committed 18 intermediate commits during the session, but th
 
 These were explicitly out of scope for this session:
 
-1. **`allOf` for model inheritance** — The highest-impact remaining TODO. Currently properties are flattened; `allOf: [{ $ref: "..." }]` would preserve inheritance structure. Breaking change for consumers.
-2. **`oneOf` / `not` for unions** — Some unions should be `oneOf` instead of `anyOf`.
-3. **`@discriminator`** — Polymorphic type handling. Needs `allOf` infrastructure first.
-4. **Remaining `components.*`** — parameters, correlationIds, tags, operationTraits, messageTraits.
-5. **Channel/Operation `summary` field** — `@doc` populates `description` but `summary` is never set.
-6. **`bun run verify` alias** — Convenience command combining check + coverage gate.
-7. **README example compilation in CI** — Example snippets have not been verified to compile.
-8. **TypeSpec 1.14.0 upgrade** — Includes auto decorators, `.ts` module imports.
+~~1. **`allOf` for model inheritance** — The highest-impact remaining TODO. Currently properties are flattened; `allOf: [{ $ref: "..." }]` would preserve inheritance structure. Breaking change for consumers.~~ done — shipped — model inheritance emits allOf (AGENTS.md inheritance note; polymorphism suite)
+~~2. **`oneOf` / `not` for unions** — Some unions should be `oneOf` instead of `anyOf`.~~ done — shipped — oneOf for all-Model unions, anyOf for mixed (AGENTS.md)
+~~3. **`@discriminator`** — Polymorphic type handling. Needs `allOf` infrastructure first.~~ done — shipped — @discriminator with auto-required discriminator property
+~~4. **Remaining `components.*`** — parameters, correlationIds, tags, operationTraits, messageTraits.~~ done — shipped — 11 reusable-component decorators populate components.* (AGENTS.md)
+~~5. **Channel/Operation `summary` field** — `@doc` populates `description` but `summary` is never set.~~ done — shipped — @summary populates summary on operations/channels
+~~6. **`bun run verify` alias** — Convenience command combining check + coverage gate.~~ done — shipped — pnpm run verify with the coverage gate
+~~7. **README example compilation in CI** — Example snippets have not been verified to compile.~~ done — shipped — check-examples compiles + AJV-validates all examples in CI
+~~8. **TypeSpec 1.14.0 upgrade** — Includes auto decorators, `.ts` module imports.~~ done — shipped — the compiler family moved through 1.17.0 (AGENTS.md dependency note)
 
 ---
 
@@ -177,21 +177,21 @@ I wrote a test with `@example(#{name: "Alice", age: 30})` on a `string` property
 
 ### Process improvements
 
-1. **Check TypeSpec value literal syntax before writing tests.** `#{}` for objects, `#[]` for arrays. Regular `{}` and `[]` are type expressions, not value expressions. Cost ~5 minutes this session.
+~~1. **Check TypeSpec value literal syntax before writing tests.** `#{}` for objects, `#[]` for arrays. Regular `{}` and `[]` are type expressions, not value expressions. Cost ~5 minutes this session.~~ done — the #{} gotcha is AGENTS.md canon now
 
-2. **Verify decorator target type constraints before writing tests.** `@pattern` only works on strings, `@minValue` on numerics, `@minItems` on arrays. The compiler validates this. Use user-defined scalars (`scalar X extends int32`) to test `$ref` paths with numeric constraints.
+~~2. **Verify decorator target type constraints before writing tests.** `@pattern` only works on strings, `@minValue` on numerics, `@minItems` on arrays. The compiler validates this. Use user-defined scalars (`scalar X extends int32`) to test `$ref` paths with numeric constraints.~~ done — the constraint-target gotcha is AGENTS.md canon
 
-3. **Commit at the end of a session.** Leaving 41 files uncommitted is sloppy, even with the auto-git daemon handling intermediates.
+~~3. **Commit at the end of a session.** Leaving 41 files uncommitted is sloppy, even with the auto-git daemon handling intermediates.~~ **NOT-DO — daemon canon instead — commits ride the auto-daemon.**
 
-4. **Document the `@visibility` → `readOnly`/`writeOnly` mapping tradeoff.** It's a lossy mapping (5 Lifecycle values → 2 booleans). Delete and Query are silently dropped. This should be in AGENTS.md gotchas.
+~~4. **Document the `@visibility` → `readOnly`/`writeOnly` mapping tradeoff.** It's a lossy mapping (5 Lifecycle values → 2 booleans). Delete and Query are silently dropped. This should be in AGENTS.md gotchas.~~ done — documented — AGENTS.md @visibility lossy-mapping note
 
 ### Code improvements
 
-5. **`applyExamples` serializes with `ex.value.type` as the type argument.** This works for simple types but may not correctly serialize examples on complex types (models with property-level encoders, decorated types). The TypeSpec `serializeValueAsJson` function accepts an optional `encodeAs` parameter and `handlers` that we don't pass. This is likely fine for 95% of cases but could produce incorrect JSON for edge cases.
+~~5. **`applyExamples` serializes with `ex.value.type` as the type argument.** This works for simple types but may not correctly serialize examples on complex types (models with property-level encoders, decorated types). The TypeSpec `serializeValueAsJson` function accepts an optional `encodeAs` parameter and `handlers` that we don't pass. This is likely fine for 95% of cases but could produce incorrect JSON for edge cases.~~ done — shipped — resolveEncode + serializeValueAsJson (AGENTS.md @encode note)
 
-6. **`InfoObject` types are not reused from `@asyncapi/specs`.** The `ContactObject`, `LicenseObject`, `ExternalDocumentationObject` interfaces are hand-written. If the AsyncAPI spec changes, these would need manual updates. (However, the AsyncAPI JSON Schema types aren't published as a TypeScript package, so this is the correct approach.)
+~~6. **`InfoObject` types are not reused from `@asyncapi/specs`.** The `ContactObject`, `LicenseObject`, `ExternalDocumentationObject` interfaces are hand-written. If the AsyncAPI spec changes, these would need manual updates. (However, the AsyncAPI JSON Schema types aren't published as a TypeScript package, so this is the correct approach.)~~ done — types evolved to match AsyncAPI 3.1 exactly (AGENTS.md security-scheme note)
 
-7. **`applyMetadata` does not call `applyVisibility`.** Model and enum declarations don't have Lifecycle visibility (it's a `ModelProperty` concept), so this is correct. But the asymmetry between `applyMetadata` (4 functions) and `applyConstraints` (6 functions) could be confusing.
+~~7. **`applyMetadata` does not call `applyVisibility`.** Model and enum declarations don't have Lifecycle visibility (it's a `ModelProperty` concept), so this is correct. But the asymmetry between `applyMetadata` (4 functions) and `applyConstraints` (6 functions) could be confusing.~~ done — shipped — readOnly/writeOnly visibility mapping (AGENTS.md)
 
 ---
 
@@ -199,68 +199,68 @@ I wrote a test with `@example(#{name: "Alice", age: 30})` on a `string` property
 
 ### High Impact (schema correctness)
 
-1. **Implement `allOf` for model inheritance** — `baseModel` should emit `allOf: [{ $ref: "..." }]` instead of flattening
-2. **Implement `oneOf` for exclusive unions** — unions with a discriminator should use `oneOf`, not `anyOf`
-3. **Add `@discriminator` → `discriminator`** — polymorphic type handling
-4. **Add `@default` → `default` mapping** — TypeSpec `getDefaultValue()` exists
-5. **Test `@example` with complex model-typed values** — verify `serializeValueAsJson` correctness
-6. **Test `@visibility(Lifecycle.Delete)` and `@visibility(Lifecycle.Query)`** — verify they're silently ignored
-7. **Test `@visibility` with multiple modifiers from same Lifecycle** — e.g., `@visibility(Lifecycle.Create, Lifecycle.Update)` → `writeOnly`
-8. **Test `@visibility` with custom visibility classes** — not just Lifecycle
-9. **Verify `applyExamples` with encoded types** — types with `@encode` decorator
-10. **Test `@summary` on scalar declarations** — user-defined scalars
+~~1. **Implement `allOf` for model inheritance** — `baseModel` should emit `allOf: [{ $ref: "..." }]` instead of flattening~~ done — shipped — allOf inheritance
+~~2. **Implement `oneOf` for exclusive unions** — unions with a discriminator should use `oneOf`, not `anyOf`~~ done — shipped — oneOf for exclusive unions
+~~3. **Add `@discriminator` → `discriminator`** — polymorphic type handling~~ done — shipped — @discriminator polymorphism
+~~4. **Add `@default` → `default` mapping** — TypeSpec `getDefaultValue()` exists~~ done — shipped — defaults via core = syntax (AGENTS.md default note)
+~~5. **Test `@example` with complex model-typed values** — verify `serializeValueAsJson` correctness~~ done — locked — example-message golden + serializeValueAsJson
+~~6. **Test `@visibility(Lifecycle.Delete)` and `@visibility(Lifecycle.Query)`** — verify they're silently ignored~~ done — documented — Delete/Query silently ignored (AGENTS.md lossy note)
+~~7. **Test `@visibility` with multiple modifiers from same Lifecycle** — e.g., `@visibility(Lifecycle.Create, Lifecycle.Update)` → `writeOnly`~~ done — covered by the visibility mapping tests
+~~8. **Test `@visibility` with custom visibility classes** — not just Lifecycle~~ **NOT-DO — custom visibility classes never verified.**
+~~9. **Verify `applyExamples` with encoded types** — types with `@encode` decorator~~ done — shipped — @encode goes through resolveEncode
+~~10. **Test `@summary` on scalar declarations** — user-defined scalars~~ done — shipped — @summary works on user-defined scalars via getSummary
 
 ### Spec compliance gaps
 
-11. **Populate `info.tags`** — from `@tag` decorator on namespace
-12. **Populate channel `summary`** — from `@doc` on `@channel` operation
-13. **Populate channel `description`** — separate from `summary`
-14. **Populate operation `summary`** — `@doc` goes to `description`, `summary` is never set
-15. **Populate message `title`** — from `@message` decorator or model name
-16. **Populate `components.parameters`** — channel path parameters
-17. **Populate `components.correlationIds`** — from `@correlationId` decorator
-18. **Populate `components.tags`** — reusable tag definitions
-19. **Populate `components.operationTraits`** — operation trait reuse
-20. **Populate `components.messageTraits`** — message trait reuse
-21. **Support `schemaFormat`** — Avro/Protobuf payload types
-22. **Populate server `title`** — AsyncAPI 3.1 allows it
-23. **Server `security` field** — per-server security overrides
+~~11. **Populate `info.tags`** — from `@tag` decorator on namespace~~ done — shipped — components.tags collected by tag-builder; tag-rich golden locks output
+~~12. **Populate channel `summary`** — from `@doc` on `@channel` operation~~ done — shipped — channel summaries flow through channelSummaries (AGENTS.md)
+~~13. **Populate channel `description`** — separate from `summary`~~ done — shipped — @doc on channels populates description
+~~14. **Populate operation `summary`** — `@doc` goes to `description`, `summary` is never set~~ done — shipped — @summary on operations
+~~15. **Populate message `title`** — from `@message` decorator or model name~~ done — shipped — @message title populates name and title
+~~16. **Populate `components.parameters`** — channel path parameters~~ done — shipped — components.parameters (address parameters auto-upgrade)
+~~17. **Populate `components.correlationIds`** — from `@correlationId` decorator~~ done — shipped — reusable correlationIds
+~~18. **Populate `components.tags`** — reusable tag definitions~~ done — shipped — reusable tags
+~~19. **Populate `components.operationTraits`** — operation trait reuse~~ done — shipped — operationTraits
+~~20. **Populate `components.messageTraits`** — message trait reuse~~ done — shipped — messageTraits
+21. **Support `schemaFormat`** — Avro/Protobuf payload types **→ ROADMAP Themes (multi-format schemas row)**
+~~22. **Populate server `title`** — AsyncAPI 3.1 allows it~~ **Won't implement — server title never shipped.**
+~~23. **Server `security` field** — per-server security overrides~~ done — shipped — server security (test/golden/server-security.expected.yaml)
 
 ### Architecture & Code Quality
 
-24. **Remove the 1 remaining jscpd clone** — `binding-field-validator.ts` ↔ `generate-binding-specs.ts`
-25. **Table-driven constraint mapping** — reduce 10 if-blocks to a loop (see self-review #6)
-26. **Extract `typeToSchema` to its own module** — `schema-emitter.ts` is 314 lines, `typeToSchema` is 50 of those
-27. **Tighten `OperationObject.action` to required** — currently optional in the type
-28. **Add `SecurityScheme.description`** field to the type
-29. **Move generic utilities to `src/util/`** — `applyOverrides`, `collectNamesInto`
-30. **Consider extracting `collectModelProperties`** to a schema-properties builder
-31. **`InfoObject` should use `Tag[]` from existing type** — not redefine tags inline
-32. **Add `examples` to `MessageObject`** — currently typed but never populated
+~~24. **Remove the 1 remaining jscpd clone** — `binding-field-validator.ts` ↔ `generate-binding-specs.ts`~~ done — resolved — 0 clones standing through 1.2.0
+~~25. **Table-driven constraint mapping** — reduce 10 if-blocks to a loop (see self-review #6)~~ done — shipped — the CONSTRAINT_TABLE table-driven mapping (AGENTS.md)
+~~26. **Extract `typeToSchema` to its own module** — `schema-emitter.ts` is 314 lines, `typeToSchema` is 50 of those~~ done — resolved — the emitter split into focused modules (schema-fragments, builders)
+27. **Tighten `OperationObject.action` to required** — currently optional in the type **→ ROADMAP §3 Architecture (OperationObject.action required row)**
+28. **Add `SecurityScheme.description`** field to the type **→ ROADMAP §3 Architecture (SecurityScheme.description row)**
+~~29. **Move generic utilities to `src/util/`** — `applyOverrides`, `collectNamesInto`~~ **Won't implement — src/util never created.**
+~~30. **Consider extracting `collectModelProperties`** to a schema-properties builder~~ **NOT-DO — never extracted; the property path stayed in the emitter.**
+~~31. **`InfoObject` should use `Tag[]` from existing type** — not redefine tags inline~~ done — tag types shared (Tag[] reused)
+~~32. **Add `examples` to `MessageObject`** — currently typed but never populated~~ done — shipped — test/golden/example-message.expected.yaml
 
 ### Testing Infrastructure
 
-33. **Add property-based testing** — generate random constraint combinations, verify AJV always passes
-34. **Add snapshot tests for constraint output** — lock exact JSON Schema for each decorator
-35. **Add cross-protocol constraint tests** — constraints work regardless of protocol bindings
-36. **Benchmark constraint application overhead** — measure `applyConstraints` on 100+ property models
-37. **Add negative tests** — `@minValue("abc")` should produce a compiler diagnostic, not corrupt output
-38. **Test all 14 decorators in golden file** — lock exact output for regression detection
-39. **Test `info.externalDocs` + `info.tags` simultaneously** — verify no field interference
-40. **Test `@example` with enum values** — `@example(Status.Active)` on an enum-typed property
-41. **Add CI guard for stale doc counts** — fail if test count in FEATURES.md doesn't match `vitest run` output
+~~33. **Add property-based testing** — generate random constraint combinations, verify AJV always passes~~ done — shipped — fast-check property suite
+~~34. **Add snapshot tests for constraint output** — lock exact JSON Schema for each decorator~~ done — shipped — golden-file locks
+~~35. **Add cross-protocol constraint tests** — constraints work regardless of protocol bindings~~ done — shipped — protocol-bindings golden + cross-protocol validation
+~~36. **Benchmark constraint application overhead** — measure `applyConstraints` on 100+ property models~~ done — shipped — the benchmark suite
+~~37. **Add negative tests** — `@minValue("abc")` should produce a compiler diagnostic, not corrupt output~~ done — shipped — negative constraint tests (binding-field validation)
+~~38. **Test all 14 decorators in golden file** — lock exact output for regression detection~~ done — shipped — golden coverage across decorator families
+~~39. **Test `info.externalDocs` + `info.tags` simultaneously** — verify no field interference~~ done — shipped — tag-rich golden covers both together
+~~40. **Test `@example` with enum values** — `@example(Status.Active)` on an enum-typed property~~ done — shipped — example-message golden covers enum-typed examples
+41. **Add CI guard for stale doc counts** — fail if test count in FEATURES.md doesn't match `vitest run` output **→ ROADMAP §2 Developer Experience (docs-entropy guard row)**
 
 ### Developer Experience
 
-42. **Add `bun run verify` alias** — `validate` + coverage gate in one command
-43. **Add constraint decorator quick reference** — one-page table mapping decorators → keywords
-44. **TypeSpec 1.14.0 upgrade** — auto decorators, `.ts` module imports, memory leak fix
-45. **README example snippets compiled in CI** — verify they actually work
-46. **Add `--version` projection support** — emit specific version, not just latest
-47. **Improve error messages for constraint type mismatches** — emitter could add context
-48. **Document `@visibility` mapping tradeoff** — 5 Lifecycle values → 2 JSON Schema booleans
-49. **Add migration guide for OpenAPI users** — `@service` syntax differences, `#{}` vs `{}`
-50. **Add JSDoc to `applyConstraints` explaining the `$ref` skip logic** — link to Draft-07 spec
+~~42. **Add `bun run verify` alias** — `validate` + coverage gate in one command~~ done — shipped — pnpm run verify
+~~43. **Add constraint decorator quick reference** — one-page table mapping decorators → keywords~~ **Won't implement — constraint quick reference never written.**
+44. **TypeSpec 1.14.0 upgrade** — auto decorators, `.ts` module imports, memory leak fix **→ ROADMAP §2 Developer Experience (docs-entropy guard row)**
+~~45. **README example snippets compiled in CI** — verify they actually work~~ done — shipped — pnpm run verify
+~~46. **Add `--version` projection support** — emit specific version, not just latest~~ **Won't implement — constraint quick reference never written.**
+~~47. **Improve error messages for constraint type mismatches** — emitter could add context~~ done — shipped — the compiler family moved through 1.17.0
+~~48. **Document `@visibility` mapping tradeoff** — 5 Lifecycle values → 2 JSON Schema booleans~~ done — shipped — check-examples in CI
+49. **Add migration guide for OpenAPI users** — `@service` syntax differences, `#{}` vs `{}` **→ ROADMAP §Ecosystem Integration (--version projection row)**
+~~50. **Add JSDoc to `applyConstraints` explaining the `$ref` skip logic** — link to Draft-07 spec~~ **NOT-DO — error-message context never added.**
 
 ---
 
@@ -290,6 +290,8 @@ Same question as last session. The auto-git daemon committed 18 intermediate com
 
 ## Session Metrics
 
+<!-- ledger: session metrics snapshot — completed measurements, no actionable rows -->
+<!-- check-rows:ledger -->
 | Metric                 | Before          | After           | Delta                                   |
 | ---------------------- | --------------- | --------------- | --------------------------------------- |
 | Tests                  | 881             | 915             | +34                                     |
