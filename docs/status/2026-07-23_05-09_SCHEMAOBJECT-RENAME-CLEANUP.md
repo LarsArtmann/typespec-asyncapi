@@ -119,7 +119,7 @@ All changes compiled, linted, and passed 679 tests on the first try after each s
 
 ~~2. **`AsyncAPISchemaEmitter` is exported from shared/index.ts.** A class with "AsyncAPI" in its name has no business in a "cross-emitter" module. If the shared module survives, this export should move to the main barrel.~~ **Won't implement — kept deliberately — the JSDoc was rewritten into an honest two-tier split (CHANGELOG 0.2.1-beta) and the export froze at 1.0.0.**
 
-~~3. **The barrel export chain is convoluted.** `src/index.ts` exports `JsonSchema` from `./shared/json-schema.js`, which imports from `../domain/models/asyncapi-document.js`. Three hops for one type. The main index should export directly from the domain model.~~ **Won't implement — chain unchanged by decision — `src/index.ts` re-exports `JsonSchema` via `./shared/json-schema.js`; contract frozen (CHANGELOG 1.0.0).**
+~~3. **The barrel export chain is convoluted.** `src/index.ts` exports `JsonSchema` from `./shared/json-schema.js`, which imports from `../domain/models/asyncapi-document.js`. Three hops for one type. The main index should export directly from the domain model.~~ **Won't implement — chain unchanged by decision — `src/index.ts` still re-exports JsonSchema through the shared subpath (package.json export); contract frozen (CHANGELOG 1.0.0).**
 
 ### Testing
 
