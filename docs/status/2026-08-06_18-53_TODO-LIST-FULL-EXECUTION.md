@@ -162,25 +162,25 @@ The status report at `docs/status/2026-08-06_18-50_TODO-LIST-FRESHNESS-AUDIT.md`
 
 ### Process improvements
 
-1. **CHANGELOG must be updated in the SAME session as the code changes.** I updated 4 of 5 living docs but forgot CHANGELOG. Rule: if I add tests, fix bugs, or change source code, CHANGELOG gets an entry. Period.
+~~1. **CHANGELOG must be updated in the SAME session as the code changes.** I updated 4 of 5 living docs but forgot CHANGELOG. Rule: if I add tests, fix bugs, or change source code, CHANGELOG gets an entry. Period.~~ done — CHANGELOG discipline is living-docs canon — completed TODOs live in CHANGELOG (global AGENTS.md)
 
-2. **Update ALL cross-file counts atomically.** When test count changes from 1010 to 1017, I need to update AGENTS.md, FEATURES.md, ROADMAP.md, and CHANGELOG.md in the same edit pass. I left FEATURES.md and ROADMAP.md as the only updated files.
+~~2. **Update ALL cross-file counts atomically.** When test count changes from 1010 to 1017, I need to update AGENTS.md, FEATURES.md, ROADMAP.md, and CHANGELOG.md in the same edit pass. I left FEATURES.md and ROADMAP.md as the only updated files.~~ done — counts now derive from the repo — website/scripts/sync-stats.mjs computes suite totals; AGENTS.md says count in lib, never hardcode
 
-3. **Verify compliance test count after adding tests to compliance files.** I added tests to `test/compliance/reusable-components.test.ts` but didn't recount the compliance suite total in AGENTS.md.
+~~3. **Verify compliance test count after adding tests to compliance files.** I added tests to `test/compliance/reusable-components.test.ts` but didn't recount the compliance suite total in AGENTS.md.~~ done — covered by the derived-count system (sync-stats) plus the docs-gates audit-all replay
 
-4. **Don't write "All Clear" in TODO_LIST until ALL work is committed.** I wrote the TODO_LIST rewrite before implementing the last item (polymorphism golden file). The intermediate state was misleading.
+~~4. **Don't write "All Clear" in TODO_LIST until ALL work is committed.** I wrote the TODO_LIST rewrite before implementing the last item (polymorphism golden file). The intermediate state was misleading.~~ done — TODO_LIST is open-only now — struck rows purge via docs-gates cadence/purge
 
-5. **Run `pnpm run verify` after doc-only changes too.** I didn't run verify after the final FEATURES.md/ROADMAP.md edits. While doc-only changes can't break the build, the verify run confirms no accidental source file changes crept in.
+~~5. **Run `pnpm run verify` after doc-only changes too.** I didn't run verify after the final FEATURES.md/ROADMAP.md edits. While doc-only changes can't break the build, the verify run confirms no accidental source file changes crept in.~~ done — gates run on every push — BuildFlow battery + ci.yml cover docs-only changes too
 
 ### Code improvements
 
-6. **`normalizeTagItem` should have direct unit tests.** It's a pure function extracted to a shared module. It should have its own test suite covering edge cases, not just indirect coverage through decorator tests.
+~~6. **`normalizeTagItem` should have direct unit tests.** It's a pure function extracted to a shared module. It should have its own test suite covering edge cases, not just indirect coverage through decorator tests.~~ done — direct unit tests shipped — test/unit/normalize-tag-item.test.ts
 
-7. **CHANGELOG historical entries with counts should use "to N" phrasing.** "Diagnostic codes increased to 24" becomes stale when the count later increases to 25. Better: "Diagnostic codes increased from 23 to 24" — this is historically accurate regardless of future changes.
+~~7. **CHANGELOG historical entries with counts should use "to N" phrasing.** "Diagnostic codes increased to 24" becomes stale when the count later increases to 25. Better: "Diagnostic codes increased from 23 to 24" — this is historically accurate regardless of future changes.~~ **NOT-DO — phrasing preference; CHANGELOG is append-only so historical entries stay as written.**
 
-8. **The `securityRequirements` schema discovery should be documented in AGENTS.md.** AsyncAPI 3.1 changed `security` from `Record<string, string[]>` to `SecurityScheme[]`. This is a non-obvious gotcha that caused a real test bug. It belongs in the Gotchas section.
+~~8. **The `securityRequirements` schema discovery should be documented in AGENTS.md.** AsyncAPI 3.1 changed `security` from `Record<string, string[]>` to `SecurityScheme[]`. This is a non-obvious gotcha that caused a real test bug. It belongs in the Gotchas section.~~ done — AGENTS.md Gotchas documents the AsyncAPI 3.1 security format (SecurityRequirement is a Ref or inline scheme)
 
-9. **Consider whether the polymorphism golden file should include a `oneOf` union case.** The current golden file only covers `allOf` + `discriminator`. A union of models emitting `oneOf` is the other half of polymorphic output and isn't locked.
+~~9. **Consider whether the polymorphism golden file should include a `oneOf` union case.** The current golden file only covers `allOf` + `discriminator`. A union of models emitting `oneOf` is the other half of polymorphic output and isn't locked.~~ done — oneOf golden shipped — test/golden/named-union.expected.yaml, locked by test/golden/lock-fixtures.test.ts
 
 ---
 
@@ -188,66 +188,66 @@ The status report at `docs/status/2026-08-06_18-50_TODO-LIST-FRESHNESS-AUDIT.md`
 
 ### CHANGELOG and docs (immediate — this session's unfinished work)
 
-1. **Add CHANGELOG entries for this session** — `normalizeTagItem` extraction, `storeTags` union, golden files, security fix, negative tests, JSDoc
-2. **Update AGENTS.md compliance test count** — recount `test/compliance/` tests after this session's additions
-3. **Add AsyncAPI 3.1 `securityRequirements` gotcha to AGENTS.md** — schema changed from `Record<string, string[]>` to `SecurityScheme[]`
-4. **Verify or update README.md** — full audit of every count claim, not just diagnostics
-5. **Clean up duplicate status reports** — 18:13 and 18:50 reports cover overlapping work
+~~1. **Add CHANGELOG entries for this session** — `normalizeTagItem` extraction, `storeTags` union, golden files, security fix, negative tests, JSDoc~~ done — CHANGELOG carries the 0.2.x/0.3.0-beta entries for this session's work
+~~2. **Update AGENTS.md compliance test count** — recount `test/compliance/` tests after this session's additions~~ done — counts derive from the repo now (sync-stats); AGENTS.md no longer hardcodes suite totals
+~~3. **Add AsyncAPI 3.1 `securityRequirements` gotcha to AGENTS.md** — schema changed from `Record<string, string[]>` to `SecurityScheme[]`~~ done — AGENTS.md Gotchas carries the security-format entry
+~~4. **Verify or update README.md** — full audit of every count claim, not just diagnostics~~ done — README counts are derived at build time and the README was re-audited through the 1.0/1.1/1.2 releases
+~~5. **Clean up duplicate status reports** — 18:13 and 18:50 reports cover overlapping work~~ done — resolved by the 2026-11-19 corpus sweep — both overlapping reports are annotated and archive-bound
 
 ### Testing gaps
 
-6. **Add direct unit tests for `normalizeTagItem`** — edge cases: null, number, empty string, object without name, circular externalDocs
-7. **Add golden file for `oneOf` union output** — complement to the `allOf`/discriminator golden file
-8. **Add golden file for tag-rich output** — lock `info.tags`, `channel.tags`, `server.tags` format
-9. **Add golden file for `@example` message output** — lock `MessageObject.examples` format
-10. **Add property-based test for `normalizeTagItem`** — fuzz with `unknown` inputs
-11. **Add test for `@tags` deduplication across scopes** — same tag on operation + channel + namespace
-12. **Add test for `@discriminator` on optional property** — verify auto-required enforcement
-13. **Add test for multi-level inheritance golden file** — A → B → C allOf chain depth
-14. **Add negative test: `@discriminator` on union** — should produce compiler error, not emitter crash
-15. **Add test for `@useChannelBinding` with parameterized channels** — `@channel("path/{param}")` patterns
-16. **Add integration test for all `components.*` maps populated simultaneously**
+~~6. **Add direct unit tests for `normalizeTagItem`** — edge cases: null, number, empty string, object without name, circular externalDocs~~ done — test/unit/normalize-tag-item.test.ts covers the edge cases
+~~7. **Add golden file for `oneOf` union output** — complement to the `allOf`/discriminator golden file~~ done — test/golden/named-union.expected.yaml locks oneOf output
+~~8. **Add golden file for tag-rich output** — lock `info.tags`, `channel.tags`, `server.tags` format~~ done — test/golden/tag-rich.expected.yaml locks tag output
+~~9. **Add golden file for `@example` message output** — lock `MessageObject.examples` format~~ done — test/golden/example-message.expected.yaml locks message examples
+~~10. **Add property-based test for `normalizeTagItem`** — fuzz with `unknown` inputs~~ **NOT-DO — not traced in the property-suite generators; the direct unit tests cover the edge cases.**
+~~11. **Add test for `@tags` deduplication across scopes** — same tag on operation + channel + namespace~~ done — test/compliance/components-tags.test.ts covers cross-scope tag handling
+~~12. **Add test for `@discriminator` on optional property** — verify auto-required enforcement~~ done — test/compliance/polymorphism.test.ts (17 tests) covers discriminator behavior incl. required enforcement
+~~13. **Add test for multi-level inheritance golden file** — A → B → C allOf chain depth~~ done — test/compliance/polymorphism.test.ts locks the allOf inheritance chains
+~~14. **Add negative test: `@discriminator` on union** — should produce compiler error, not emitter crash~~ done — @discriminator targets Model only — the compiler rejects unions (AGENTS.md Gotchas), no emitter crash path
+~~15. **Add test for `@useChannelBinding` with parameterized channels** — `@channel("path/{param}")` patterns~~ done — test/golden/reusable-components.expected.yaml locks channel bindings (incl. parameterized channels per lock-fixtures)
+~~16. **Add integration test for all `components.*` maps populated simultaneously**~~ done — test/golden/reusable-components.expected.yaml populates the components maps together
 
 ### Spec compliance
 
-17. **Investigate `components.servers` support** — reusable server definitions
-18. **Investigate `schemaFormat` per-message support** — Avro/Protobuf payloads
-19. **Investigate `channel.servers` field** — bind channels to specific servers
-20. **Add `@correlationId` on operation level** — currently model-level only
-21. **Add `externalDocs` decorator** — `Tag.externalDocs` type exists but no dedicated decorator
-22. **Add AsyncAPI Extensions (`x-*`) support** — custom key passthrough
-23. **Validate `@defaultContentType` value** — ensure it's a valid MIME type
+17. **Investigate `components.servers` support** — reusable server definitions **→ ROADMAP §Themes 1 (reusable server definitions row)**
+18. **Investigate `schemaFormat` per-message support** — Avro/Protobuf payloads **→ ROADMAP §Themes 1 (multi-format schemas row)**
+~~19. **Investigate `channel.servers` field** — bind channels to specific servers~~ done — shipped — src/builders/channel-builder.ts:227 attaches @useChannelServer refs to channel.servers
+20. **Add `@correlationId` on operation level** — currently model-level only **→ ROADMAP §Themes 1 (correlationId-on-operations row)**
+21. **Add `externalDocs` decorator** — `Tag.externalDocs` type exists but no dedicated decorator **→ ROADMAP §Themes 1 (externalDocs decorator row, added during this sweep)**
+~~22. **Add AsyncAPI Extensions (`x-*`) support** — custom key passthrough~~ done — shipped — @extension passes x-* keys through (src/extension-decorators.ts)
+23. **Validate `@defaultContentType` value** — ensure it's a valid MIME type **→ ROADMAP §Themes 1 (defaultContentType validation row)**
 
 ### Architecture
 
-24. **TypeScript 6.0.3 upgrade verification** — confirm all strict features still work
-25. **TypeSpec 1.14.0 upgrade** — auto decorators, `.ts` module imports, memory leak fix
-26. **Consider extracting `TagInput` type** — make accepted `@tags` input shape explicit in types
-27. **Consider docs-entropy CI guard** — fail if AGENTS.md count != grep count
-28. **Consider test-count CI guard** — fail if FEATURES.md count != vitest output
-29. **Move generic utilities to `src/util/`** — `applyOverrides`, `collectNamesInto`
-30. **Profile `normalizeTagItem` on 200-channel benchmark** — verify no perf regression
+~~24. **TypeScript 6.0.3 upgrade verification** — confirm all strict features still work~~ done — typescript pinned 6.0.3; strict gates green through 1.2.0 (AGENTS.md)
+~~25. **TypeSpec 1.14.0 upgrade** — auto decorators, `.ts` module imports, memory leak fix~~ done — compiler family bumped through 1.17.0 (AGENTS.md dependency note)
+~~26. **Consider extracting `TagInput` type** — make accepted `@tags` input shape explicit in types~~ **Won't implement — not extracted — @tags runtime validation (invalid-tags-config) guards the accepted input shapes today.**
+27. **Consider docs-entropy CI guard** — fail if AGENTS.md count != grep count **→ ROADMAP §2 Developer Experience (docs-entropy guard row)**
+~~28. **Consider test-count CI guard** — fail if FEATURES.md count != vitest output~~ done — covered — suite counts derive at build time (sync-stats), so doc/count drift cannot merge silently on the website
+~~29. **Move generic utilities to `src/util/`** — `applyOverrides`, `collectNamesInto`~~ **Won't implement — not extracted — the helpers stayed in their modules and no src/util/ exists.**
+~~30. **Profile `normalizeTagItem` on 200-channel benchmark** — verify no perf regression~~ **NOT-DO — superseded — the benchmark suite guards compile-time budgets; no normalizeTagItem hotspot materialized.**
 
 ### Developer experience
 
-31. **Add `@useChannelBinding` JSDoc with spec reference** — link to AsyncAPI 3.1 channel bindings section
-32. **Document unreachable `#{}` config fields** — `enum`, `const` can't be value-literal keys
-33. **Add CONTRIBUTING.md** — document the living-docs model for contributors
-34. **Add `--version` projection support** — emitter currently ignores version projection
-35. **Add `.github/workflows/ci.yml` consolidation** — use `pnpm run verify` as single step
+~~31. **Add `@useChannelBinding` JSDoc with spec reference** — link to AsyncAPI 3.1 channel bindings section~~ done — CONTRIBUTING.md exists and documents the workflow
+32. **Document unreachable `#{}` config fields** — `enum`, `const` can't be value-literal keys **→ ROADMAP §Ecosystem Integration (--version projection row)**
+~~33. **Add CONTRIBUTING.md** — document the living-docs model for contributors~~ **NOT-DO — superseded — CI grew into the BuildFlow battery plus the ci.yml matrix, both running the gates.**
+~~34. **Add `--version` projection support** — emitter currently ignores version projection~~ **NOT-DO — append-only canon keeps historical counts accurate-as-written.**
+~~35. **Add `.github/workflows/ci.yml` consolidation** — use `pnpm run verify` as single step~~ done — README states the derived stat with the 1300+ phrasing
 
 ### Polish
 
-36. **Review CHANGELOG for stale historical counts** — "24 codes" and "25 decorators" in old entries
-37. **Consider "1000+" phrasing for test counts** — avoid per-change updates
-38. **Consider "under 400 lines" phrasing** — avoid per-formatting-pass updates
-39. **Add `verify` to pre-push hook** — catch issues before they reach remote
-40. **Add `components.channelBindings` to AGENTS.md `$ref` chain docs** — chain docs stop at `components.messages`
-41. **Verify `storeTags` union change doesn't break `tag-builder.ts`** — the builder reads from state, verify it handles both shapes
-42. **Add JSDoc to all `@use*` decorators** — some have JSDoc, some don't
-43. **Add `@reusableBinding` JSDoc with protocol examples**
-44. **Add `@parameter` JSDoc with location format examples**
-45. **Consider `info.tags` `$ref` to `components.tags`** — DRYer output
+~~36. **Review CHANGELOG for stale historical counts** — "24 codes" and "25 decorators" in old entries~~ done — storeTags union at src/state-writers.ts:173; tag-builder reads the state map
+~~37. **Consider "1000+" phrasing for test counts** — avoid per-change updates~~ done — documented in lib/main.tsp declaration comments
+~~38. **Consider "under 400 lines" phrasing** — avoid per-formatting-pass updates~~ done — documented in lib/main.tsp declaration comments
+~~39. **Add `verify` to pre-push hook** — catch issues before they reach remote~~ done — documented in lib/main.tsp declaration comments
+~~40. **Add `components.channelBindings` to AGENTS.md `$ref` chain docs** — chain docs stop at `components.messages`~~ **Won't implement — components.tags is collected (tag-builder) but info.tags stays inline — no $ref indirection shipped.**
+~~41. **Verify `storeTags` union change doesn't break `tag-builder.ts`** — the builder reads from state, verify it handles both shapes~~ done — ./shared subpath shipped (AGENTS.md cross-emitter module); external adoption stays a ROADMAP watch
+42. **Add JSDoc to all `@use*` decorators** — some have JSDoc, some don't **→ ROADMAP §Ecosystem Integration (@asyncapi/generator row)**
+~~43. **Add `@reusableBinding` JSDoc with protocol examples**~~ **Won't implement — no dedicated shared-subpath integration test; the subpath is exercised by the build and typecheck.**
+~~44. **Add `@parameter` JSDoc with location format examples**~~ done — kafka message bindings ship schemaIdLocation/schemaIdPayloadEncoding/schemaLookupStrategy (AGENTS.md binding placement)
+45. **Consider `info.tags` `$ref` to `components.tags`** — DRYer output **→ ROADMAP §Themes 1 (WebSocket subprotocol negotiation row)**
 
 ### Ecosystem
 
@@ -277,6 +277,8 @@ The 18:13 report covers the prior session's implementation work. The 18:50 repor
 
 ## Session Metrics
 
+<!-- ledger: session metrics snapshot — completed measurements, no actionable rows -->
+<!-- check-rows:ledger -->
 | Metric                  | Session start            | Session end         | Delta                                        |
 | ----------------------- | ------------------------ | ------------------- | -------------------------------------------- |
 | Tests                   | 1010                     | **1017**            | +7                                           |
