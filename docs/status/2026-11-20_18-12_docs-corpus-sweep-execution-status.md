@@ -6,7 +6,7 @@
 
 1. **Diagnosis + skill load.** The battery verdict matrix named three red gates: `annotate` (2 rule-F findings), `audit-all` (279 unharvested > pinned 267), `cadence` (ARCHIVE-OVERDUE: 103 unarchived, oldest 128d vs 15/21d thresholds). Loaded the docs-health skill; read the docs-gates source (claims.go/spacing.go/items.go/audit.go) and the annotate.go writer source to pin the exact verdict grammar, judge checks (B/hash via `git cat-file`, C/path disk-existence, E/ref tags+path-gone, F spacing, G per-cell strike parity), ledger-marker semantics, and `repair` TSV mechanics BEFORE writing markers.
 
-2. **`annotate` gate fixed → CLEAN (stays clean through the whole sweep).** AGENTS.md:204 `` `ignore`d `` → "on the `ignore` list"; 20-31 report:32 `` `$ref`s `` shape example → "the `$ref` plural-s shape". Pre-flight for AGENTS.md was skipped per the tool's own guidance (AGENTS.md is outside the living-docs corpus).
+2. **`annotate` gate fixed → CLEAN (stays clean through the whole sweep).** AGENTS.md:204 ignore-with-d-suffix → "on the `ignore` list"; 20-31 report:32 raw ref-plural-shape example → "the `$ref` plural-s shape". Pre-flight for AGENTS.md was skipped per the tool's own guidance (AGENTS.md is outside the living-docs corpus).
 
 3. **Kept-15 drain → audit-all already passes at the pin.** The 12 unharvested items in the 15 newest reports were drained honestly: 12 TODO_LIST rows (Website QA & Brand Follow-ups section created; Test-Suite Integrity/Tooling/Release rows added) + 12 routed markers via `annotate.go repair` (dry-run first). Standalone `freshness --audit-all --audit-max=267` → rc=0 RATCHET.
 
