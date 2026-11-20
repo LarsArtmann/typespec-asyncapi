@@ -15,11 +15,11 @@ against the official AsyncAPI 3.1 JSON Schema.
 
 | Component Section                                             | Definition Decorator                                  | Reference Decorator                         | Tests |
 | ------------------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------- | ----- |
-| `components.operationTraits`                                  | `@operationTrait(name, config)` on Namespace          | `@useOperationTrait(name)` on Operation     | 3     |
-| `components.messageTraits`                                    | `@messageTrait(name, config)` on Namespace            | `@useMessageTrait(name)` on Model           | 2     |
-| `components.parameters`                                       | `@parameter(name, config)` on Namespace               | (auto-ref from `{name}` in channel address) | 3     |
-| `components.correlationIds`                                   | `@reusableCorrelationId(name, location)` on Namespace | `@useCorrelationId(name)` on Model          | 3     |
-| `components.operationBindings` / `components.messageBindings` | `@reusableBinding(name, config)` on Namespace         | `@useBinding(name)` on Operation\|Model     | 3     |
+| ~~`components.operationTraits`~~ done — operationTraits shipped and documented ( `FEATURES.md:108`, `test/compliance/reusable-components.test.ts` ) | ~~`@operationTrait(name, config)` on Namespace~~ | ~~`@useOperationTrait(name)` on Operation~~ | ~~3~~ |
+| ~~`components.messageTraits`~~ done — messageTraits shipped and documented ( `FEATURES.md:109` ) | ~~`@messageTrait(name, config)` on Namespace~~ | ~~`@useMessageTrait(name)` on Model~~ | ~~2~~ |
+| ~~`components.parameters`~~ done — parameters shipped and documented ( `FEATURES.md:112` ) | ~~`@parameter(name, config)` on Namespace~~ | ~~(auto-ref from `{name}` in channel address)~~ | ~~3~~ |
+| ~~`components.correlationIds`~~ done — correlationIds shipped and documented ( `FEATURES.md:113` ) | ~~`@reusableCorrelationId(name, location)` on Namespace~~ | ~~`@useCorrelationId(name)` on Model~~ | ~~3~~ |
+| ~~`components.operationBindings` / `components.messageBindings`~~ done — reusable bindings shipped and documented ( `FEATURES.md:115` ) | ~~`@reusableBinding(name, config)` on Namespace~~ | ~~`@useBinding(name)` on Operation\|Model~~ | ~~3~~ |
 
 **Inline approaches still work** — `@correlationId(location)` on a model
 continues to emit inline `correlationId: { location }` without populating
@@ -30,20 +30,20 @@ without changing existing behavior.
 
 | File                                          | Change                                                                                                                                                                                                                                                                                                  |
 | --------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `src/domain/models/asyncapi-document.ts`      | Added `OperationTraitObject`, `MessageTraitObject` (via `Pick<CommonMetadata>` + `Pick<MessageObject>`), expanded `ComponentsObject` with 6 new fields, added `refOperationTrait/refMessageTrait/refParameter/refCorrelationId` helpers, changed `CommonMetadata.bindings` to `ProtocolBindings \| Ref` |
-| `src/state.ts`                                | Added 5 data interfaces + 8 new maps in `AsyncAPIConsolidatedState` + consolidation entries                                                                                                                                                                                                             |
-| `src/lib.ts`                                  | Added 9 state symbols + 2 new diagnostic codes (`invalid-trait-config`, `invalid-parameter-config`)                                                                                                                                                                                                     |
-| `src/state-writers.ts`                        | Added `storeMulti` generic helper + exported ref store factory + 9 store functions                                                                                                                                                                                                                      |
-| `src/namespace-decorators.ts`                 | Implemented 5 namespace-level definition decorators via `namedConfigDecorator` factory                                                                                                                                                                                                                  |
-| `src/use-decorators.ts`                       | **New file** — 4 reference decorators via `makeUseDecorator` factory                                                                                                                                                                                                                                    |
-| `src/decorator-helpers.ts`                    | Added `validateNameAndRun` shared helper                                                                                                                                                                                                                                                                |
-| `src/decorators.ts`                           | Registered all 10 new decorators in `$decorators` registry                                                                                                                                                                                                                                              |
-| `src/builders/components-builder.ts`          | **New file** — `buildReusableComponents` + `applyReusableRefs` builders                                                                                                                                                                                                                                 |
-| `src/builders/types.ts`                       | Added 6 new accumulator maps to `DocumentBuildContext`                                                                                                                                                                                                                                                  |
-| `src/document-builder.ts`                     | Wired `buildReusableComponents` + `applyReusableRefs` into pipeline, populated 6 new `components.*` fields in `assembleDocument`                                                                                                                                                                        |
-| `src/minimal-decorators.ts`                   | Extracted shared `targetKindFormat` callback to eliminate pre-existing duplication                                                                                                                                                                                                                      |
-| `lib/main.tsp`                                | Declared all 10 new decorators with JSDoc                                                                                                                                                                                                                                                               |
-| `test/compliance/reusable-components.test.ts` | **New file** — 14 compliance tests, all validated against AsyncAPI 3.1 JSON Schema                                                                                                                                                                                                                      |
+| ~~`src/domain/models/asyncapi-document.ts`~~ done — `src/domain/models/asyncapi-document.ts` carries the trait and component types today | ~~Added `OperationTraitObject`, `MessageTraitObject` (via `Pick<CommonMetadata>` + `Pick<MessageObject>`), expanded `ComponentsObject` with 6 new fields, added `refOperationTrait/refMessageTrait/refParameter/refCorrelationId` helpers, changed `CommonMetadata.bindings` to `ProtocolBindings \| Ref`~~ |
+| ~~`src/state.ts`~~ done — `src/state.ts` carries the consolidated state today | ~~Added 5 data interfaces + 8 new maps in `AsyncAPIConsolidatedState` + consolidation entries~~ |
+| ~~`src/lib.ts`~~ done — `src/lib.ts` declares the diagnostic codes today ( `invalid-parameter-location` at `:181` ) | ~~Added 9 state symbols + 2 new diagnostic codes (`invalid-trait-config`, `invalid-parameter-config`)~~ |
+| ~~`src/state-writers.ts`~~ done — `src/state-writers.ts` carries the store functions today | ~~Added `storeMulti` generic helper + exported ref store factory + 9 store functions~~ |
+| ~~`src/namespace-decorators.ts`~~ done — `src/namespace-decorators.ts` carries the definition decorators today | ~~Implemented 5 namespace-level definition decorators via `namedConfigDecorator` factory~~ |
+| ~~`src/use-decorators.ts`~~ done — `src/use-decorators.ts` exists today ( the session's new file ) | ~~**New file** — 4 reference decorators via `makeUseDecorator` factory~~ |
+| ~~`src/decorator-helpers.ts`~~ done — `src/decorator-helpers.ts` carries the shared validation helper today | ~~Added `validateNameAndRun` shared helper~~ |
+| ~~`src/decorators.ts`~~ done — `src/decorators.ts` registers all reusable decorators today | ~~Registered all 10 new decorators in `$decorators` registry~~ |
+| ~~`src/builders/components-builder.ts`~~ done — `src/builders/components-builder.ts` exists today ( the session's new file ) | ~~**New file** — `buildReusableComponents` + `applyReusableRefs` builders~~ |
+| ~~`src/builders/types.ts`~~ done — `src/builders/types.ts` carries the accumulator maps today | ~~Added 6 new accumulator maps to `DocumentBuildContext`~~ |
+| ~~`src/document-builder.ts`~~ done — `src/document-builder.ts` wires the component builders today | ~~Wired `buildReusableComponents` + `applyReusableRefs` into pipeline, populated 6 new `components.*` fields in `assembleDocument`~~ |
+| ~~`src/minimal-decorators.ts`~~ done — `src/minimal-decorators.ts` carries the shared callback today | ~~Extracted shared `targetKindFormat` callback to eliminate pre-existing duplication~~ |
+| ~~`lib/main.tsp`~~ done — `lib/main.tsp` declares all ten decorators with JSDoc today | ~~Declared all 10 new decorators with JSDoc~~ |
+| ~~`test/compliance/reusable-components.test.ts`~~ done — `test/compliance/reusable-components.test.ts` carries 43 tests today | ~~**New file** — 14 compliance tests, all validated against AsyncAPI 3.1 JSON Schema~~ |
 
 **Total:** 14 files changed, 2 new files
 
@@ -66,12 +66,12 @@ Every clone was eliminated at `minTokens: 15` (the project's strict baseline):
 
 | Gate                                      | Result                                        |
 | ----------------------------------------- | --------------------------------------------- |
-| TypeScript build (`tsc -p tsconfig.json`) | 0 errors                                      |
-| ESLint + oxlint (`pnpm run lint`)         | 0 errors, 0 warnings                          |
-| Tests (`pnpm run test`)                   | **969 pass / 0 fail** (955 existing + 14 new) |
-| jscpd duplication (`pnpm run duplicate`)  | **0 clones / 0% / 0% tokens**                 |
-| AsyncAPI 3.1 JSON Schema validation       | All 14 new tests pass AJV validation          |
-| `pnpm run verify` (full gate)             | **PASS**                                      |
+| ~~TypeScript build (`tsc -p tsconfig.json`)~~ done — build is a standing verify stage ( `AGENTS.md:26` ) | ~~0 errors~~ |
+| ~~ESLint + oxlint (`pnpm run lint`)~~ done — dual-linter gate standing and green ( `AGENTS.md:32` ) | ~~0 errors, 0 warnings~~ |
+| ~~Tests (`pnpm run test`)~~ done — suite has since grown to 1275 tests / 105 files ( `FEATURES.md:4` ) | ~~**969 pass / 0 fail** (955 existing + 14 new)~~ |
+| ~~jscpd duplication (`pnpm run duplicate`)~~ done — jscpd 0-clone gate standing ( `FEATURES.md:9` ) | ~~**0 clones / 0% / 0% tokens**~~ |
+| ~~AsyncAPI 3.1 JSON Schema validation~~ done — AJV validation is standing policy across the compliance suite ( `AGENTS.md:115` ) | ~~All 14 new tests pass AJV validation~~ |
+| ~~`pnpm run verify` (full gate)~~ done — the full verify gate is standing policy ( `AGENTS.md:26` ) | ~~**PASS**~~ |
 
 ---
 
@@ -105,7 +105,7 @@ be added to `test/integration/negative-tests.test.ts`.
 
 ## c) NEXT STEPS
 
-1. **Add negative tests** for all 10 new decorators (invalid name, empty config, undefined trait ref)
-2. **Populate `components.serverBindings` and `components.channelBindings`** by extending `@useBinding` to Namespace targets
-3. **Extract parameter schema/enum/default** from `@parameter` config models
-4. **Update AGENTS.md** with new decorator count (27 total: 17 existing + 10 new), diagnostic code count (24: 22 existing + 2 new), and components.\* population summary
+~~1. **Add negative tests** for all 10 new decorators (invalid name, empty config, undefined trait ref)~~ done — `test/integration/reusable-components-negative.test.ts` exists with the error-path tests
+~~2. **Populate `components.serverBindings` and `components.channelBindings`** by extending `@useBinding` to Namespace targets~~ done — serverBindings via Namespace `@bindings` ( `AGENTS.md:62` ) and channelBindings via `@useChannelBinding` ( `FEATURES.md:117` )
+~~3. **Extract parameter schema/enum/default** from `@parameter` config models~~ done — `enum`/`default`/`examples` extract today ( `FEATURES.md:112` ); the `schema` field was later removed deliberately ( commit `a61f52d7` )
+~~4. **Update AGENTS.md** with new decorator count (27 total: 17 existing + 10 new), diagnostic code count (24: 22 existing + 2 new), and components.\* population summary~~ done — counts current in `AGENTS.md:61` ( 30 decorators ) and `:73` ( 38 codes )
