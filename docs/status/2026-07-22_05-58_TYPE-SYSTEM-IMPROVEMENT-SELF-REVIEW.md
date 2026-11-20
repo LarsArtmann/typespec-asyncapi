@@ -132,27 +132,27 @@ I changed the type to match the spec but didn't add the runtime transformation. 
 
 ### Critical
 
-1. **Add runtime `scopes` -> `availableScopes` transformation** in the security decorator or document builder. The type says `availableScopes` but the runtime emits `scopes`.
-2. **Fix `SecurityScheme.in`** — remove `"user" | "password"` from the union; AsyncAPI 3.1 API key `in` field only accepts `"query" | "header" | "cookie"`.
-3. **Connect or delete `bindings.ts`** — 177 lines of typed interfaces that nothing imports. Either wire them into the validation pipeline or delete them.
+~~1. **Add runtime `scopes` -> `availableScopes` transformation** in the security decorator or document builder. The type says `availableScopes` but the runtime emits `scopes`.~~ done at `ddd0b079`
+~~2. **Fix `SecurityScheme.in`** — remove `"user" | "password"` from the union; AsyncAPI 3.1 API key `in` field only accepts `"query" | "header" | "cookie"`.~~ done at `ddd0b079`
+~~3. **Connect or delete `bindings.ts`** — 177 lines of typed interfaces that nothing imports. Either wire them into the validation pipeline or delete them.~~ done at `ddd0b079`
 
 ### High Priority
 
-4. **Delete `supportsBindingPlacement()` and `BINDING_PLACEMENT`** if not going to be used, or wire them into the binding validation pipeline (they should reject bindings placed on wrong targets).
-5. **Narrow `ProtocolConfigData` discriminated union in `document-builder.ts`** — the whole point of a discriminated union is type-safe access. Currently it's accessed as a bag of optional fields.
-6. **Replace `type as { name: string }` casts** with proper TypeSpec type narrowing (`if (type.kind === "Operation")` etc.).
-7. **Fix `intrinsicToSchema` format inconsistency** — `uint*` and `safeint` should have `format` like `int*` does, or document why they're intentionally omitted.
-8. **Map `OperationTypeData.type` to `OperationAction`** via a named function instead of inline ternary.
-9. **Remove dead fields** from state types: `CorrelationIdData.property`, `OperationTypeData.tags`, `OperationTypeData.description`.
-10. **Align `TagData` with `Tag[]`** — same shape, two definitions.
+~~4. **Delete `supportsBindingPlacement()` and `BINDING_PLACEMENT`** if not going to be used, or wire them into the binding validation pipeline (they should reject bindings placed on wrong targets).~~ done at `5e78a764`
+~~5. **Narrow `ProtocolConfigData` discriminated union in `document-builder.ts`** — the whole point of a discriminated union is type-safe access. Currently it's accessed as a bag of optional fields.~~ done at `07f8b107`
+~~6. **Replace `type as { name: string }` casts** with proper TypeSpec type narrowing (`if (type.kind === "Operation")` etc.).~~ done at `07f8b107`
+~~7. **Fix `intrinsicToSchema` format inconsistency** — `uint*` and `safeint` should have `format` like `int*` does, or document why they're intentionally omitted.~~ done at `07f8b107`
+~~8. **Map `OperationTypeData.type` to `OperationAction`** via a named function instead of inline ternary.~~ done at `07f8b107`
+~~9. **Remove dead fields** from state types: `CorrelationIdData.property`, `OperationTypeData.tags`, `OperationTypeData.description`.~~ done at `07f8b107`
+~~10. **Align `TagData` with `Tag[]`** — same shape, two definitions.~~ done at `07f8b107`
 
 ### Medium Priority
 
-11. **Add unit tests for the new `ref()` / `refSchema()` / `refMessage()` / `refChannel()` helpers** — especially RFC 6901 escaping behavior.
-12. **Add unit tests for `getValidVersionsString()`** — newly extracted function with no direct test coverage.
-13. **Consider branded types** for protocol-unsafe strings (channel keys, message names, schema names).
-14. **Consolidate `ServerConfigData` / `ServerConfigEntry`** — two types for the same concept.
-15. **Add AsyncAPI JSON Schema validation test for OAuth2 documents** to catch the `scopes` vs `availableScopes` gap.
+~~11. **Add unit tests for the new `ref()` / `refSchema()` / `refMessage()` / `refChannel()` helpers** — especially RFC 6901 escaping behavior.~~ done — `test/unit/shared-utils.test.ts` covers `escapeRefToken` and the ref builders; RFC 6901 escaping is locked by property P7 in `test/property/emitter-properties.test.ts`
+~~12. **Add unit tests for `getValidVersionsString()`** — newly extracted function with no direct test coverage.~~ **Won't implement — no dedicated unit test; version strings are exercised via the invalid-binding-version cases in `test/validation/binding-field-validation.test.ts`.**
+~~13. **Consider branded types** for protocol-unsafe strings (channel keys, message names, schema names).~~ **Won't implement — never adopted; section c row 9 already recorded branded types as a deliberate design choice.**
+~~14. **Consolidate `ServerConfigData` / `ServerConfigEntry`** — two types for the same concept.~~ done — `src/state.ts:61` defines the single `ServerConfigData` and `src/state-writers.ts:118` writes entries as that type
+~~15. **Add AsyncAPI JSON Schema validation test for OAuth2 documents** to catch the `scopes` vs `availableScopes` gap.~~ done — `test/validation/all-examples-validation.test.ts` AJV-validates every examples/ document including OAuth2 security against the official AsyncAPI 3.1.0 schema
 
 ---
 
@@ -160,74 +160,74 @@ I changed the type to match the spec but didn't add the runtime transformation. 
 
 ### Spec Compliance (CRITICAL)
 
-1. Add runtime transformation `scopes` -> `availableScopes` in security scheme processing
-2. Fix `SecurityScheme.in` type: remove `"user" | "password"`, keep only `"query" | "header" | "cookie"`
-3. Add `SecurityScheme.ils` field if needed by spec (OpenID Connect)
-4. Verify `ServerObject` has all AsyncAPI 3.1 fields (e.g., `security` is now correct, but check `bindings` schema)
-5. Add `defaultContentType` to document root (type exists but never populated from decorator state)
-6. Verify `MessageObject` has all spec fields (e.g., `schemaFormat` is missing)
-7. Add `externalDocs` support to operations, messages, and tags
-8. Verify `ChannelObject.parameters` type matches spec (should have `location` field)
+~~1. Add runtime transformation `scopes` -> `availableScopes` in security scheme processing~~ done at `ddd0b079`
+~~2. Fix `SecurityScheme.in` type: remove `"user" | "password"`, keep only `"query" | "header" | "cookie"`~~ done at `ddd0b079`
+~~3. Add `SecurityScheme.ils` field if needed by spec (OpenID Connect)~~ done — `openIdConnectUrl` on `SecurityScheme` in `src/domain/models/asyncapi-document.ts:346` covers the OpenID Connect case
+~~4. Verify `ServerObject` has all AsyncAPI 3.1 fields (e.g., `security` is now correct, but check `bindings` schema)~~ done — `test/integration/asyncapi-3.1-features.test.ts` locks protocolVersion, pathname, variables and security on servers, emitted by `src/builders/server-builder.ts`
+~~5. Add `defaultContentType` to document root (type exists but never populated from decorator state)~~ done — `@defaultContentType` is validated in `src/lib.ts` and written in `src/state-writers.ts:260`; tested at `test/integration/asyncapi-3.1-features.test.ts:232`
+~~6. Verify `MessageObject` has all spec fields (e.g., `schemaFormat` is missing)~~ done — `schemaFormat` flows through `src/state.ts:49` and `src/decorator-helpers.ts:304`; tested at `test/integration/asyncapi-3.1-features.test.ts:118`
+~~7. Add `externalDocs` support to operations, messages, and tags~~ done — `externalDocs` is supported in the domain model at `src/domain/models/asyncapi-document.ts:125`, in `src/decorator-helpers.ts:267` and in `src/document-builder.ts:226`
+~~8. Verify `ChannelObject.parameters` type matches spec (should have `location` field)~~ done — `ParameterObject.location` exists in `src/domain/models/asyncapi-document.ts:273`
 
 ### Dead Code Elimination
 
-9. Delete or wire `src/domain/models/bindings.ts` (177 lines, 0 imports)
-10. Delete or wire `supportsBindingPlacement()` and `BINDING_PLACEMENT`
-11. Remove `CorrelationIdData.property` (never read)
-12. Remove `OperationTypeData.tags` (never read; tags come from separate state map)
-13. Remove `OperationTypeData.description` (never emitted)
-14. Consolidate `TagData` = `Tag[]` (duplicate definitions)
+~~9. Delete or wire `src/domain/models/bindings.ts` (177 lines, 0 imports)~~ done at `ddd0b079`
+~~10. Delete or wire `supportsBindingPlacement()` and `BINDING_PLACEMENT`~~ done at `5e78a764`
+~~11. Remove `CorrelationIdData.property` (never read)~~ done at `07f8b107`
+~~12. Remove `OperationTypeData.tags` (never read; tags come from separate state map)~~ done at `07f8b107`
+~~13. Remove `OperationTypeData.description` (never emitted)~~ done at `07f8b107`
+~~14. Consolidate `TagData` = `Tag[]` (duplicate definitions)~~ done at `07f8b107`
 15. Check if `messageSchemas` state symbol is used (declared in lib.ts but may be dead)
 
 ### Type Safety Improvements
 
-16. Replace all `type as { name: string }` casts with proper TypeSpec narrowing
-17. Narrow `ProtocolConfigData` union in document-builder via switch on `data.protocol`
-18. Map `OperationTypeData.type` to `OperationAction` via named function (eliminate inline ternary)
-19. Remove `[key: string]: unknown` from `ProtocolBindings` and use the typed binding maps from `bindings.ts`
-20. Add branded types for `ChannelKey`, `MessageName`, `SchemaName`
-21. Type `intrinsicToSchema()` to return specific schema shapes, not generic `SchemaObject`
-22. Fix `intrinsicToSchema` format inconsistency for unsigned integers
-23. Make `ServerConfigData` and the ad-hoc `ServerConfigEntry` in state-writers.ts the same type
-24. Type the decorator config parameters properly instead of `unknown` (use model expression types from TypeSpec)
-25. Add `satisfies` checks to runtime objects to catch type drift early
+~~16. Replace all `type as { name: string }` casts with proper TypeSpec narrowing~~ done at `07f8b107`
+~~17. Narrow `ProtocolConfigData` union in document-builder via switch on `data.protocol`~~ done at `07f8b107`
+~~18. Map `OperationTypeData.type` to `OperationAction` via named function (eliminate inline ternary)~~ done at `07f8b107`
+~~19. Remove `[key: string]: unknown` from `ProtocolBindings` and use the typed binding maps from `bindings.ts`~~ **NOT-DO — `bindings.ts` was deleted at `ddd0b079`; `ProtocolBindings` keeps the `Record` shape by decision.**
+~~20. Add branded types for `ChannelKey`, `MessageName`, `SchemaName`~~ **Won't implement — never adopted; section c row 9 already recorded branded types as a deliberate design choice.**
+~~21. Type `intrinsicToSchema()` to return specific schema shapes, not generic `SchemaObject`~~ **Won't implement — returns the single `JsonSchema` type at `src/intrinsic-mapping.ts:7`; branch-specific shapes were never added.**
+~~22. Fix `intrinsicToSchema` format inconsistency for unsigned integers~~ done at `07f8b107`
+~~23. Make `ServerConfigData` and the ad-hoc `ServerConfigEntry` in state-writers.ts the same type~~ done — `src/state.ts:61` defines the single `ServerConfigData` and `src/state-writers.ts:118` writes entries as that type
+~~24. Type the decorator config parameters properly instead of `unknown` (use model expression types from TypeSpec)~~ **Won't implement — config records still enter as `unknown` via `extractConfigRecord` at `src/decorator-helpers.ts:231`; typed downstream by `src/extract-nested-config.ts`.**
+~~25. Add `satisfies` checks to runtime objects to catch type drift early~~ done — `satisfies` checks live in `src/constants/protocols.ts` and `src/builders/shared-utils.ts`
 
 ### Validation Hardening
 
-26. Wire `BINDING_PLACEMENT` into binding validation to reject misplaced bindings
-27. Add AsyncAPI JSON Schema validation test for OAuth2 flows specifically
-28. Add test that `scopes` input from `@security` produces `availableScopes` in output
-29. Validate `SecurityScheme` fields per scheme type (e.g., `apiKey` requires `name` + `in`)
-30. Add test that binding versions emitted match the constants in `binding-versions.ts`
-31. Validate operation messages reference existing channels
+~~26. Wire `BINDING_PLACEMENT` into binding validation to reject misplaced bindings~~ done at `5e78a764`
+~~27. Add AsyncAPI JSON Schema validation test for OAuth2 flows specifically~~ done — `test/validation/all-examples-validation.test.ts` AJV-validates every examples/ document including OAuth2 security against the official AsyncAPI 3.1.0 schema
+~~28. Add test that `scopes` input from `@security` produces `availableScopes` in output~~ done — `normalizeOAuth2Scopes` cases in `test/unit/shared-utils.test.ts:102` assert `scopes` input becomes `availableScopes` output
+~~29. Validate `SecurityScheme` fields per scheme type (e.g., `apiKey` requires `name` + `in`)~~ **Won't implement — never built; security validation remains scheme-type-only via `invalid-security-scheme-type` in `src/lib.ts:47`.**
+~~30. Add test that binding versions emitted match the constants in `binding-versions.ts`~~ done — `test/validation/binding-field-validation.test.ts` imports `LATEST_BINDING_VERSIONS` and asserts invalid-binding-version against the constants
+~~31. Validate operation messages reference existing channels~~ **Won't implement — never built as a diagnostic; `test/validation/semantic-ref-resolution.test.ts` locks ref resolution instead.**
 
 ### Architecture / Module Boundaries
 
-32. Export domain model types from `index.ts` (currently not exported for consumers)
-33. Consider whether `binding-versions.ts` and `protocols.ts` should be merged into one `constants/` module
-34. Move `extractConfigRecord` and `modelToRecord` closer to where they're used (decorator-helpers is a grab bag)
-35. Consider a `ref-builder.ts` module instead of putting `ref()` functions in the domain model
-36. Split `state.ts` into `state-types.ts` (types) and `state-consolidation.ts` (functions)
-37. Move `inferActionFromName` and `getReturnModelName` to a `naming.ts` utility module
+~~32. Export domain model types from `index.ts` (currently not exported for consumers)~~ done — `src/state.ts:22` re-exports the domain model types and `src/index.ts:12` re-exports state
+~~33. Consider whether `binding-versions.ts` and `protocols.ts` should be merged into one `constants/` module~~ **Won't implement — both modules remain separate in `src/constants/` as `binding-versions.ts` and `protocols.ts`; merging was never done.**
+~~34. Move `extractConfigRecord` and `modelToRecord` closer to where they're used (decorator-helpers is a grab bag)~~ **Won't implement — still defined in `src/decorator-helpers.ts:222` and `src/decorator-helpers.ts:231`; the emitter modularization kept them there.**
+~~35. Consider a `ref-builder.ts` module instead of putting `ref()` functions in the domain model~~ **Won't implement — `ref` constructors stayed in the domain model at `src/domain/models/asyncapi-document.ts:17`, documented in AGENTS.md.**
+~~36. Split `state.ts` into `state-types.ts` (types) and `state-consolidation.ts` (functions)~~ **Won't implement — `src/state.ts` remains the single types-plus-consolidation module; the functions already live in `src/state-writers.ts`.**
+~~37. Move `inferActionFromName` and `getReturnModelName` to a `naming.ts` utility module~~ done — moved to module scope instead: `inferActionFromName` in `src/builders/shared-utils.ts:122`; no separate naming module
 
 ### Testing
 
-38. Add unit tests for `ref()`, `refSchema()`, `refMessage()`, `refChannel()`, `escapeRefToken()`
-39. Add unit tests for `getValidVersionsString()`
-40. Add unit tests for `normalizeBindingKey()`
-41. Add property-based test for RFC 6901 escaping (all `/` and `~` combinations)
-42. Add test for `SecurityRequirement` shape in emitted output
-43. Add test for `OperationAction` type correctness in emitted output
-44. Add snapshot test for the `console.error` in `generateSchemas` catch block (should not fire on valid input)
+~~38. Add unit tests for `ref()`, `refSchema()`, `refMessage()`, `refChannel()`, `escapeRefToken()`~~ done — `test/unit/shared-utils.test.ts` covers `escapeRefToken` and the ref builders; RFC 6901 escaping is locked by property P7 in `test/property/emitter-properties.test.ts`
+~~39. Add unit tests for `getValidVersionsString()`~~ **Won't implement — no dedicated unit test; version strings are exercised via the invalid-binding-version cases in `test/validation/binding-field-validation.test.ts`.**
+~~40. Add unit tests for `normalizeBindingKey()`~~ **Won't implement — no dedicated unit test; key canonicalization is exercised via `test/validation/binding-field-validation.test.ts`.**
+~~41. Add property-based test for RFC 6901 escaping (all `/` and `~` combinations)~~ done — property P7 in `test/property/emitter-properties.test.ts:12` generates RFC 6901 keys and asserts every ref agrees
+~~42. Add test for `SecurityRequirement` shape in emitted output~~ done — `test/integration/asyncapi-3.1-features.test.ts:206` asserts `SecurityRequirement` on `operation.security`
+~~43. Add test for `OperationAction` type correctness in emitted output~~ done — `operationAction` cases in `test/unit/shared-utils.test.ts:65`
+~~44. Add snapshot test for the `console.error` in `generateSchemas` catch block (should not fire on valid input)~~ **Won't implement — never added; no test asserts the `generateSchemas` catch-path console.error.**
 
 ### Documentation
 
-45. Update AGENTS.md with `SecurityRequirement` type info
-46. Update AGENTS.md with `OperationAction` type info
-47. Update AGENTS.md with `ref()` helper functions info
-48. Document that `bindings.ts` is either documentation-only or should be wired in
-49. Document the `scopes` -> `availableScopes` transformation gap
-50. Add ADR for the domain model type system strategy (when to add index signatures, when to use branded types)
+~~45. Update AGENTS.md with `SecurityRequirement` type info~~ done — AGENTS.md documents `SecurityRequirement` in the AsyncAPI 3.1 security-format note
+~~46. Update AGENTS.md with `OperationAction` type info~~ **Won't implement — never added to AGENTS.md; the type is documented in the domain model file itself.**
+~~47. Update AGENTS.md with `ref()` helper functions info~~ done — AGENTS.md documents the `ref` constructors in the Document Model note
+~~48. Document that `bindings.ts` is either documentation-only or should be wired in~~ **NOT-DO — moot: `bindings.ts` was deleted at `ddd0b079` and AGENTS.md no longer lists binding types.**
+~~49. Document the `scopes` -> `availableScopes` transformation gap~~ done — gap closed by runtime normalization; AGENTS.md documents the accept-both-keys behavior of `normalizeOAuth2Scopes()`
+~~50. Add ADR for the domain model type system strategy (when to add index signatures, when to use branded types)~~ **Won't implement — never written; `docs/adr/` holds only 0001 (asset-emitter) and 0002 (brand identity); the index-signature decision lives in AGENTS.md.**
 
 ---
 
@@ -272,6 +272,9 @@ I lean (A) but want confirmation this is the permanent decision.
 The type was changed to `availableScopes` but the emitter does NOT rename `scopes` → `availableScopes` at runtime. If a user writes `scopes:` in their `@security` decorator, the emitted document contains `scopes:`, which FAILS AsyncAPI 3.1 JSON Schema validation. This is the highest-priority open item — extracted to TODO_LIST.md P0.
 
 ### Section (c) — 15 type-system issues
+
+<!-- ledger: 2026-07-22 issue-ledger snapshot; each row's final fate is recorded by the section e and f verdicts above -->
+<!-- check-rows:ledger -->
 
 | #  | Issue                                                                                      | Status     | Notes                                                   |
 | -- | ------------------------------------------------------------------------------------------ | ---------- | ------------------------------------------------------- |
