@@ -240,6 +240,8 @@ See section F for the full list.
 
 <!-- ledger: session-metrics snapshot — historical values, not actionable items -->
 <!-- check-rows:ledger -->
+<!-- ledger: session metrics snapshot — completed measurements, no actionable rows -->
+<!-- check-rows:ledger -->
 | Metric              | Before | After | Delta |
 | ------------------- | ------ | ----- | ----- |
 | Test files          | 68     | 73    | +5    |
