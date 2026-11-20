@@ -7,15 +7,15 @@
 > **36 codes (20 error + 16 warning)** — the pre-session count had also
 > missed `protocol-model-fields-unplaced`. Still open: M01/M14/M16-post/M22
 > (✋ Lars), M20 (⏰ after 20:08 UTC), M23 (⏰ after BuildFlow baseline).
-> Full account: `docs/status/2026-10-03_13-27_mixed-emitter-ownership-execution.md`;
+> Full account: `docs/status/archived/2026-10-03_13-27_mixed-emitter-ownership-execution.md`;
 > harvested remaining work: `TODO_LIST.md` (Mixed-Emitter Ownership Track +
 > Hygiene) and `ROADMAP.md` (Current State refresh, 2.0 strictness,
 > upstream watch).
 
 **Date:** 2026-10-03 11:53 CEST
 **Source:** "How can we be smarter?" session (post-#252-fix), tiers defined in
-conversation 2026-10-03; carried TODOs from `docs/status/2026-10-03_06-31_issue-252-mixed-emitter-support.md` §f
-and `docs/status/2026-10-03_11-20_self-review-full-gate-recovery.md` §f.
+conversation 2026-10-03; carried TODOs from `docs/status/archived/2026-10-03_06-31_issue-252-mixed-emitter-support.md` §f
+and `docs/status/archived/2026-10-03_11-20_self-review-full-gate-recovery.md` §f.
 **Scope:** everything needed to make mixed `@typespec/http` + AsyncAPI
 ownership exact, well-signaled, locked, released, documented — plus the
 release/train tail. Format: `.md` + mermaid per Lars's explicit demand
