@@ -103,17 +103,17 @@ The `serializeValueAsJson()` call in `applyDefault()` doesn't pass the optional 
 
 These were explicitly out of scope for this session (continuation of Self-Review II's remaining items):
 
-1. **Table-driven constraint mapping** (item #25) — `applyConstraints()` still has 10 sequential `if` blocks for validation keywords. Could be a loop over a config table.
-2. **`@default` on enum members** — `applyDefault` only runs in `applyConstraints` (property-level). Enum member defaults aren't mapped.
-3. **Remaining `components.*`** (items #16-20) — parameters, correlationIds, tags, operationTraits, messageTraits.
-4. **Channel/Operation `summary` field** (items #12-14) — `@doc` populates `description` but `summary` is never set.
-5. **Property-based testing** (item #33) — generate random constraint combinations, verify AJV always passes.
-6. **Snapshot tests for constraint output** (item #34) — lock exact JSON Schema for each decorator.
-7. **`bun run verify` alias** (item #42) — convenience command combining check + coverage gate.
-8. **README example compilation in CI** (item #45) — example snippets not verified to compile.
-9. **TypeSpec 1.14.0 upgrade** (item #44) — auto decorators, `.ts` module imports.
-10. **`@example` with enum values** (item #40) — `@example(Status.Active)` on enum-typed property.
-11. **CI guard for stale doc counts** (item #41) — fail if test count in FEATURES.md doesn't match `vitest run` output.
+~~1. **Table-driven constraint mapping** (item #25) — `applyConstraints()` still has 10 sequential `if` blocks for validation keywords. Could be a loop over a config table.~~ done at `35a6cf53`
+~~2. **`@default` on enum members** — `applyDefault` only runs in `applyConstraints` (property-level). Enum member defaults aren't mapped.~~ **Won't implement — TypeSpec core has no enum-member default syntax; property-level enum defaults are tested at `test/compliance/constraint-decorators.test.ts:768`.**
+~~3. **Remaining `components.*`** (items #16-20) — parameters, correlationIds, tags, operationTraits, messageTraits.~~ done at `bac222c4`
+~~4. **Channel/Operation `summary` field** (items #12-14) — `@doc` populates `description` but `summary` is never set.~~ done at `aeb4f900`
+~~5. **Property-based testing** (item #33) — generate random constraint combinations, verify AJV always passes.~~ done — P2 in `test/property/emitter-properties.test.ts:105` generates constraint pairs and AJV-checks them
+~~6. **Snapshot tests for constraint output** (item #34) — lock exact JSON Schema for each decorator.~~ **Won't implement — golden suite locks whole documents (`test/golden/`), never per-decorator constraint output.**
+~~7. **`bun run verify` alias** (item #42) — convenience command combining check + coverage gate.~~ done — `verify` script in package.json runs build, lint, typecheck, brand, test, coverage gate and duplicate
+~~8. **README example compilation in CI** (item #45) — example snippets not verified to compile.~~ done — `test/validation/all-examples-validation.test.ts` compiles every examples/ file inside CI
+~~9. **TypeSpec 1.14.0 upgrade** (item #44) — auto decorators, `.ts` module imports.~~ done — `@typespec/compiler` is at `^1.17.0` in package.json, well past 1.14
+~~10. **`@example` with enum values** (item #40) — `@example(Status.Active)` on enum-typed property.~~ **Won't implement — no enum-value example case; encoded-type examples are covered at `test/compliance/constraint-decorators.test.ts:829`.**
+~~11. **CI guard for stale doc counts** (item #41) — fail if test count in FEATURES.md doesn't match `vitest run` output.~~ **Won't implement — never added; the docs-gates battery checks report freshness and unharvested counts, not FEATURES.md test-count parity.**
 
 ---
 
@@ -143,27 +143,27 @@ Both `constraint-mapper.ts` and `constraint-decorators.test.ts` have header JSDo
 
 ### Process improvements
 
-1. **Run ALL gates before claiming "done" in a prior session.** The duplication gate was red from Self-Review II's allOf/oneOf/discriminator work. `bun run duplicate` should be part of every verification cycle, not just `build + test + lint + coverage`.
+~~1. **Run ALL gates before claiming "done" in a prior session.** The duplication gate was red from Self-Review II's allOf/oneOf/discriminator work. `bun run duplicate` should be part of every verification cycle, not just `build + test + lint + coverage`.~~ done — AGENTS.md documents the commit convention: run the full `verify` gate before committing
 
-2. **Run jscpd AFTER every refactor, not just at the end.** I introduced a new clone while fixing others because I only ran jscpd once after the first batch of fixes. Running it after each file change would have caught the `scalarDeclaration` clone immediately.
+~~2. **Run jscpd AFTER every refactor, not just at the end.** I introduced a new clone while fixing others because I only ran jscpd once after the first batch of fixes. Running it after each file change would have caught the `scalarDeclaration` clone immediately.~~ done — AGENTS.md duplication-budget note mandates re-running `pnpm run duplicate` after generator edits
 
-3. **Run lint early and often.** I left a stale type assertion that ESLint caught. If I had run `bun run lint:eslint` after the `typeToSchema` refactor, I would have caught it immediately instead of at final verification.
+~~3. **Run lint early and often.** I left a stale type assertion that ESLint caught. If I had run `bun run lint:eslint` after the `typeToSchema` refactor, I would have caught it immediately instead of at final verification.~~ done — `pnpm run lint` and the full `verify` gate are the documented workflow in AGENTS.md
 
-4. **Update source file comments when changing decorator counts.** The header JSDoc in `constraint-mapper.ts` and `constraint-decorators.test.ts` are now stale. Comments should be updated in the same commit as the code change.
+~~4. **Update source file comments when changing decorator counts.** The header JSDoc in `constraint-mapper.ts` and `constraint-decorators.test.ts` are now stale. Comments should be updated in the same commit as the code change.~~ done — both headers are current: 16 mappings in `src/constraint-mapper.ts:3` and `test/compliance/constraint-decorators.test.ts:13`
 
-5. **Verify existing behavior before assuming gaps.** I assumed `scalarDeclaration` never had metadata support, but I didn't check git history to see if it was removed or never added. The fix was correct, but understanding whether this was a regression vs. a pre-existing gap matters for the changelog.
+~~5. **Verify existing behavior before assuming gaps.** I assumed `scalarDeclaration` never had metadata support, but I didn't check git history to see if it was removed or never added. The fix was correct, but understanding whether this was a regression vs. a pre-existing gap matters for the changelog.~~ **Won't implement — process note with no code artifact; the underlying scalarDeclaration fix is tested in `test/compliance/constraint-decorators.test.ts`.**
 
 ### Code improvements
 
-6. **`applyDefault` should pass `encodeAs` to `serializeValueAsJson`.** Currently drops the optional parameter. Types with `@encode` may serialize incorrectly. Same gap exists in `applyExamples` (noted in Self-Review II).
+~~6. **`applyDefault` should pass `encodeAs` to `serializeValueAsJson`.** Currently drops the optional parameter. Types with `@encode` may serialize incorrectly. Same gap exists in `applyExamples` (noted in Self-Review II).~~ done at `35a6cf53`
 
-7. **Table-driven constraint mapping.** `applyConstraints()` has 10 sequential `if` blocks that are structurally identical: `const val = getXxx(program, prop); if (val !== undefined) { schema.xxx = val; }`. A `{ getter, keyword }[]` table + loop would halve the line count and make adding new constraints trivial.
+~~7. **Table-driven constraint mapping.** `applyConstraints()` has 10 sequential `if` blocks that are structurally identical: `const val = getXxx(program, prop); if (val !== undefined) { schema.xxx = val; }`. A `{ getter, keyword }[]` table + loop would halve the line count and make adding new constraints trivial.~~ done at `35a6cf53`
 
-8. **`composeUnionVariants` could be a static method or module function.** It doesn't use `this` for the variant logic, only for `getDiscriminator`. Extracting it would make it testable in isolation.
+~~8. **`composeUnionVariants` could be a static method or module function.** It doesn't use `this` for the variant logic, only for `getDiscriminator`. Extracting it would make it testable in isolation.~~ done — extracted to `src/schema-fragments.ts:23` as a standalone exported function
 
-9. **`declareSchema` could be generalized to all declaration methods.** `modelDeclaration` also calls `applyMetadata` + `result.declaration`, but with different pre-processing. A shared helper with a pre-processing callback could reduce duplication further.
+~~9. **`declareSchema` could be generalized to all declaration methods.** `modelDeclaration` also calls `applyMetadata` + `result.declaration`, but with different pre-processing. A shared helper with a pre-processing callback could reduce duplication further.~~ done — all declaration methods route through `declareSchema` at `src/schema-emitter.ts:92`
 
-10. **Default value should be tested with object/array values.** Only scalar defaults (string, int, boolean) are tested. A model property with `Record<string, string>` default or array default is untested.
+~~10. **Default value should be tested with object/array values.** Only scalar defaults (string, int, boolean) are tested. A model property with `Record<string, string>` default or array default is untested.~~ done — object, array and enum defaults are tested at `test/compliance/constraint-decorators.test.ts:752`
 
 ---
 
@@ -171,68 +171,68 @@ Both `constraint-mapper.ts` and `constraint-decorators.test.ts` have header JSDo
 
 ### High Impact (schema correctness)
 
-1. **Table-driven constraint mapping** — reduce `applyConstraints()` 10 if-blocks to a loop over `{ getter, keyword }[]`
-2. **Test `@default` with object-typed properties** — `config: Config = #{key: "val"}` → `default: {key: "val"}`
-3. **Test `@default` with array-typed properties** — `tags: string[] = #["a", "b"]` → `default: ["a", "b"]`
-4. **Test `@default` with enum-typed properties** — `status: Status = Status.Active` → `default: "active"`
-5. **Pass `encodeAs` to `serializeValueAsJson` in `applyDefault`** — handle `@encode` decorated types
-6. **Pass `encodeAs` to `serializeValueAsJson` in `applyExamples`** — same gap, noted in Self-Review II
-7. **Test `@example` with enum values** — `@example(Status.Active)` on enum-typed property (item #40)
-8. **Verify `applyExamples` with encoded types** — types with `@encode` decorator (item #9)
-9. **Add `@default` to enum member declarations** — enum members with default values
-10. **Update `constraint-mapper.ts` header JSDoc** — currently says 11 decorators, actually 15
+~~1. **Table-driven constraint mapping** — reduce `applyConstraints()` 10 if-blocks to a loop over `{ getter, keyword }[]`~~ done at `35a6cf53`
+~~2. **Test `@default` with object-typed properties** — `config: Config = #{key: "val"}` → `default: {key: "val"}`~~ done — object default tested at `test/compliance/constraint-decorators.test.ts:784`
+~~3. **Test `@default` with array-typed properties** — `tags: string[] = #["a", "b"]` → `default: ["a", "b"]`~~ done — array default tested at `test/compliance/constraint-decorators.test.ts:756`
+~~4. **Test `@default` with enum-typed properties** — `status: Status = Status.Active` → `default: "active"`~~ done — enum default tested at `test/compliance/constraint-decorators.test.ts:768`
+~~5. **Pass `encodeAs` to `serializeValueAsJson` in `applyDefault`** — handle `@encode` decorated types~~ done at `35a6cf53`
+~~6. **Pass `encodeAs` to `serializeValueAsJson` in `applyExamples`** — same gap, noted in Self-Review II~~ done at `aeb4f900`
+~~7. **Test `@example` with enum values** — `@example(Status.Active)` on enum-typed property (item #40)~~ **Won't implement — no enum-value example case exists; scalar and encoded-type examples are covered at `test/compliance/constraint-decorators.test.ts:829`.**
+~~8. **Verify `applyExamples` with encoded types** — types with `@encode` decorator (item #9)~~ done at `aeb4f900`
+~~9. **Add `@default` to enum member declarations** — enum members with default values~~ **Won't implement — TypeSpec enum members carry no default value in the type system; nothing to map.**
+~~10. **Update `constraint-mapper.ts` header JSDoc** — currently says 11 decorators, actually 15~~ done — header documents the 16 mappings at `src/constraint-mapper.ts:3`
 
 ### Spec compliance gaps
 
-11. **Populate `info.tags`** — from `@tag` decorator on namespace (item #11)
-12. **Populate channel `summary`** — from `@doc` on `@channel` operation (item #12)
-13. **Populate channel `description`** — separate from `summary` (item #13)
-14. **Populate operation `summary`** — `@doc` goes to `description`, `summary` never set (item #14)
-15. **Populate message `title`** — from `@message` decorator or model name (item #15)
-16. **Populate `components.parameters`** — channel path parameters (item #16)
-17. **Populate `components.correlationIds`** — from `@correlationId` decorator (item #17)
-18. **Populate `components.tags`** — reusable tag definitions (item #18)
-19. **Populate `components.operationTraits`** — operation trait reuse (item #19)
-20. **Populate `components.messageTraits`** — message trait reuse (item #20)
-21. **Support `schemaFormat`** — Avro/Protobuf payload types (item #21)
-22. **Populate server `title`** — AsyncAPI 3.1 allows it (item #22)
-23. **Server `security` field** — per-server security overrides (item #23)
+~~11. **Populate `info.tags`** — from `@tag` decorator on namespace (item #11)~~ done at `6f4cb773`
+~~12. **Populate channel `summary`** — from `@doc` on `@channel` operation (item #12)~~ done — `src/builders/channel-builder.ts:88` applies `@doc` descriptions, `@summary` summaries and `@tags` to channels
+~~13. **Populate channel `description`** — separate from `summary` (item #13)~~ done — `src/builders/channel-builder.ts:92` populates channel description from `@doc`
+~~14. **Populate operation `summary`** — `@doc` goes to `description`, `summary` never set (item #14)~~ done at `aeb4f900`
+~~15. **Populate message `title`** — from `@message` decorator or model name (item #15)~~ done — `src/builders/message-builder.ts:32` sets message `title` from `@message` config
+~~16. **Populate `components.parameters`** — channel path parameters (item #16)~~ done at `bac222c4`
+~~17. **Populate `components.correlationIds`** — from `@correlationId` decorator (item #17)~~ done at `bac222c4`
+~~18. **Populate `components.tags`** — reusable tag definitions (item #18)~~ done — `test/compliance/components-tags.test.ts` locks reusable tags
+~~19. **Populate `components.operationTraits`** — operation trait reuse (item #19)~~ done at `bac222c4`
+~~20. **Populate `components.messageTraits`** — message trait reuse (item #20)~~ done at `bac222c4`
+~~21. **Support `schemaFormat`** — Avro/Protobuf payload types (item #21)~~ done — `schemaFormat` flows through `src/state.ts:49`; tested at `test/integration/asyncapi-3.1-features.test.ts:118`
+~~22. **Populate server `title`** — AsyncAPI 3.1 allows it (item #22)~~ **Won't implement — ServerObject gained no `title` field in `src/domain/models/asyncapi-document.ts`; never populated.**
+~~23. **Server `security` field** — per-server security overrides (item #23)~~ done — `test/integration/asyncapi-3.1-features.test.ts:80` locks server.security
 
 ### Architecture & Code Quality
 
-24. **Extract `typeToSchema` to its own module** — `schema-emitter.ts` is 320 lines, `typeToSchema` is ~50 of those (item #26)
-25. **Tighten `OperationObject.action` to required** — currently optional in the type (item #27)
-26. **Add `SecurityScheme.description`** field to the type (item #28)
-27. **Move generic utilities to `src/util/`** — `applyOverrides`, `collectNamesInto` (item #29)
-28. **Consider extracting `collectModelProperties`** to a schema-properties builder (item #30)
-29. **`InfoObject` should use `Tag[]` from existing type** — not redefine tags inline (item #31)
-30. **Add `examples` to `MessageObject`** — currently typed but never populated (item #32)
-31. **Generalize `declareSchema` to `modelDeclaration`** — reduce duplication across all declaration methods
-32. **Extract `composeUnionVariants` as a standalone function** — make it independently testable
-33. **Update test file header comments** — `constraint-decorators.test.ts` still lists old decorator count
-34. **Add `default` to the test header comment** — decorator list is incomplete
+~~24. **Extract `typeToSchema` to its own module** — `schema-emitter.ts` is 320 lines, `typeToSchema` is ~50 of those (item #26)~~ **Won't implement — `typeToSchema` remains a private method at `src/schema-emitter.ts:331`.**
+~~25. **Tighten `OperationObject.action` to required** — currently optional in the type (item #27)~~ done — `action` is required on `OperationObject` at `src/domain/models/asyncapi-document.ts:197`
+~~26. **Add `SecurityScheme.description`** field to the type (item #28)~~ done — `description?` exists on `SecurityScheme` at `src/domain/models/asyncapi-document.ts:340`
+~~27. **Move generic utilities to `src/util/`** — `applyOverrides`, `collectNamesInto` (item #29)~~ **Won't implement — `src/util/` never created; `applyOverrides` lives privately in `src/constants/binding-versions.ts:52` and `collectNamesInto` no longer exists.**
+~~28. **Consider extracting `collectModelProperties`** to a schema-properties builder (item #30)~~ **Won't implement — `collectModelProperties` remains a private method at `src/schema-emitter.ts:289` within the 400-line cap.**
+~~29. **`InfoObject` should use `Tag[]` from existing type** — not redefine tags inline (item #31)~~ done — `InfoObject.tags` is `Tag[]` at `src/domain/models/asyncapi-document.ts:131`
+~~30. **Add `examples` to `MessageObject`** — currently typed but never populated (item #32)~~ done — `test/integration/asyncapi-3.1-features.test.ts:160` locks message.examples
+~~31. **Generalize `declareSchema` to `modelDeclaration`** — reduce duplication across all declaration methods~~ done — modelDeclaration routes through `declareSchema` at `src/schema-emitter.ts:92`
+~~32. **Extract `composeUnionVariants` as a standalone function** — make it independently testable~~ done — standalone export at `src/schema-fragments.ts:23`
+~~33. **Update test file header comments** — `constraint-decorators.test.ts` still lists old decorator count~~ done — header lists 16 mappings incl. `@visibility` at `test/compliance/constraint-decorators.test.ts:13`
+~~34. **Add `default` to the test header comment** — decorator list is incomplete~~ done — header lists the `= syntax` default mapping at `test/compliance/constraint-decorators.test.ts:16`
 
 ### Testing Infrastructure
 
-35. **Add property-based testing** — generate random constraint combinations, verify AJV always passes (item #33)
-36. **Add snapshot tests for constraint output** — lock exact JSON Schema for each decorator (item #34)
-37. **Add cross-protocol constraint tests** — constraints work regardless of protocol bindings (item #35)
-38. **Benchmark constraint application overhead** — measure `applyConstraints` on 100+ property models (item #36)
-39. **Add negative tests** — `@minValue("abc")` should produce a compiler diagnostic, not corrupt output (item #37)
-40. **Test all 15 decorators in golden file** — lock exact output for regression detection (item #38)
-41. **Test `info.externalDocs` + `info.tags` simultaneously** — verify no field interference (item #39)
-42. **Add CI guard for stale doc counts** — fail if test count in FEATURES.md doesn't match `vitest run` output (item #41)
-43. **Test `@default` with `@encode` types** — verify serialization correctness
-44. **Test `@default` on optional vs required properties** — verify behavior difference
+~~35. **Add property-based testing** — generate random constraint combinations, verify AJV always passes (item #33)~~ done — property suite exists at `test/property/emitter-properties.test.ts` (15 property tests per README)
+~~36. **Add snapshot tests for constraint output** — lock exact JSON Schema for each decorator (item #34)~~ **Won't implement — golden files lock whole documents in `test/golden/`; no per-decorator constraint snapshots.**
+~~37. **Add cross-protocol constraint tests** — constraints work regardless of protocol bindings (item #35)~~ done — constraint pairs generated and AJV-checked by P2 in `test/property/emitter-properties.test.ts:105`
+~~38. **Benchmark constraint application overhead** — measure `applyConstraints` on 100+ property models (item #36)~~ done — `test/benchmark/performance.test.ts` with `fixture-generator.ts` measures emitter overhead
+~~39. **Add negative tests** — `@minValue("abc")` should produce a compiler diagnostic, not corrupt output (item #37)~~ **Won't implement — never added; invalid decorator arguments are caught by TypeSpec core type-checking before the emitter runs.**
+~~40. **Test all 15 decorators in golden file** — lock exact output for regression detection (item #38)~~ **Won't implement — no per-decorator golden exists; constraint behavior is AJV-locked in `test/compliance/constraint-decorators.test.ts`.**
+~~41. **Test `info.externalDocs` + `info.tags` simultaneously** — verify no field interference (item #39)~~ **Won't implement — `info.externalDocs` is covered at `test/compliance/info-object.test.ts:54`; no combined-with-tags case.**
+~~42. **Add CI guard for stale doc counts** — fail if test count in FEATURES.md doesn't match `vitest run` output (item #41)~~ **Won't implement — never added; docs-gates tracks report freshness, not FEATURES.md test-count parity.**
+~~43. **Test `@default` with `@encode` types** — verify serialization correctness~~ done at `aeb4f900`
+~~44. **Test `@default` on optional vs required properties** — verify behavior difference~~ **Won't implement — no optional-vs-required default case; the defaults describe covers scalar, object, array, enum and absent.**
 
 ### Developer Experience
 
-45. **Add `bun run verify` alias** — `validate` + coverage gate in one command (item #42)
-46. **Add constraint decorator quick reference** — one-page table mapping decorators → keywords (item #43)
-47. **TypeSpec 1.14.0 upgrade** — auto decorators, `.ts` module imports, memory leak fix (item #44)
-48. **README example snippets compiled in CI** — verify they actually work (item #45)
-49. **Improve error messages for constraint type mismatches** — emitter could add context (item #47)
-50. **Add migration guide for OpenAPI users** — `@service` syntax differences, `#{}` vs `{}` (item #49)
+~~45. **Add `bun run verify` alias** — `validate` + coverage gate in one command (item #42)~~ done — `verify` script in package.json chains build, lint, test, coverage gate and duplicate
+~~46. **Add constraint decorator quick reference** — one-page table mapping decorators → keywords (item #43)~~ done — FEATURES.md line 71 carries the decorator-to-keyword table
+~~47. **TypeSpec 1.14.0 upgrade** — auto decorators, `.ts` module imports, memory leak fix (item #44)~~ done — `@typespec/compiler` at `^1.17.0` in package.json
+~~48. **README example snippets compiled in CI** — verify they actually work (item #45)~~ done — `test/validation/all-examples-validation.test.ts` compiles every examples/ file in CI
+~~49. **Improve error messages for constraint type mismatches** — emitter could add context (item #47)~~ **Won't implement — never added; constraint mismatches surface as TypeSpec type errors before emission.**
+~~50. **Add migration guide for OpenAPI users** — `@service` syntax differences, `#{}` vs `{}` (item #49)~~ **Won't implement — never written; the closest artifact is `website/src/content/docs/guides/mixing-with-openapi.md`.**
 
 ---
 
@@ -253,6 +253,9 @@ The header JSDoc in `constraint-mapper.ts` has gone stale multiple times (said 1
 ---
 
 ## Session Metrics
+
+<!-- ledger: 2026-08-06 session-metrics snapshot (before/after counts at session end) -->
+<!-- check-rows:ledger -->
 
 | Metric                 | Before           | After         | Delta                                      |
 | ---------------------- | ---------------- | ------------- | ------------------------------------------ |

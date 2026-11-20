@@ -8,6 +8,8 @@
 
 ## Metrics Snapshot
 
+<!-- ledger: session metrics snapshot -->
+<!-- check-rows:ledger -->
 | Metric                 | Previous (Jul 22)                      | Now (Jul 23)         | Delta |
 | ---------------------- | -------------------------------------- | -------------------- | ----- |
 | Tests                  | 617 passing                            | **679 passing**      | +62   |
@@ -27,6 +29,8 @@
 
 ### This Session's Work
 
+<!-- ledger: session work table — completed execution records -->
+<!-- check-rows:ledger -->
 | Task         | Description                                | Tests Added       | Key Decisions                                                                                                              |
 | ------------ | ------------------------------------------ | ----------------- | -------------------------------------------------------------------------------------------------------------------------- |
 | **24**       | Multi-file output (`split-schemas` option) | +9                | `structuredClone` for deep-copy, `$ref` rewriting in both main doc AND extracted schema files                              |
@@ -37,6 +41,8 @@
 
 ### All 26 Pareto Tasks Status
 
+<!-- ledger: task-status table — execution records -->
+<!-- check-rows:ledger -->
 | Tasks        | Status                |
 | ------------ | --------------------- |
 | 1-16         | Done (prior sessions) |
@@ -73,9 +79,9 @@ The shared module is architecturally aspirational but practically thin:
 
 Nothing from the Pareto plan. However, items discovered during this session that need attention:
 
-1. **No CLI integration test for `split-schemas`** — All tests use the programmatic TypeSpec compiler API. No test verifies the option works when passed via `tsp compile` CLI or `tspconfig.yaml`.
-2. **No test for the `"./shared"` package subpath export** — Never imported as an external package.
-3. **No persisted benchmark baselines** — Results are ephemeral console output.
+~~1. **No CLI integration test for `split-schemas`** — All tests use the programmatic TypeSpec compiler API. No test verifies the option works when passed via `tsp compile` CLI or `tspconfig.yaml`.~~ done — shipped later — test/e2e/channel-id-split-schemas.test.ts
+2. **No test for the `"./shared"` package subpath export** — Never imported as an external package. **→ TODO_LIST Test-Suite Integrity (dist/ shared-subpath e2e import row)**
+~~3. **No persisted benchmark baselines** — Results are ephemeral console output.~~ **NOT-DO — baselines stay ephemeral; the benchmark suite guards budgets.**
 
 ---
 
@@ -130,26 +136,26 @@ The original goal was "under 370 lines." I could have achieved that with fewer, 
 
 ### Critical (Self-Inflicted This Session)
 
-1. **Consolidate `JsonSchema` and `SchemaObject`** — Pick one. Eliminate the duplicate.
-2. **Rename `server-decorators.ts`** — Either move `$defaultContentType` back to `minimal-decorators.ts`, or rename to something accurate like `namespace-decorators.ts`.
-3. **Delete or use `generateFixtureMultiFile()`** — Dead code in `fixture-generator.ts`.
-4. **Test the `"./shared"` subpath export** — Write a test that actually imports from the package path.
+~~1. **Consolidate `JsonSchema` and `SchemaObject`** — Pick one. Eliminate the duplicate.~~ done — resolved — a single JsonSchema shared type (AGENTS.md shared module)
+~~2. **Rename `server-decorators.ts`** — Either move `$defaultContentType` back to `minimal-decorators.ts`, or rename to something accurate like `namespace-decorators.ts`.~~ done — resolved — namespace-decorators.ts exists
+~~3. **Delete or use `generateFixtureMultiFile()`** — Dead code in `fixture-generator.ts`.~~ **NOT-DO — superseded during fixture evolution.**
+4. **Test the `"./shared"` subpath export** — Write a test that actually imports from the package path. **→ TODO_LIST Test-Suite Integrity (dist/ shared-subpath e2e import row)**
 5. **Add direct unit tests** for `server-decorators.ts`, `schema-generator.ts`, `stdlib-helpers.ts`.
 
 ### Important (Pre-Existing)
 
-6. **`state-writers.ts` at 340 lines** — Approaching the 370-line limit. Next decorator addition will push it over.
-7. **`@asyncapi/parser` Bun incompatibility** — Still unresolved. Round-trip tests use manual `$ref` resolution.
-8. **Coverage tooling complexity** — Bun native coverage + lcov parsing + dist-to-src remapping is fragile. Any new source file that isn't loaded during tests silently gets 0%.
-9. **Redis protocol has no binding definitions** — Accepted as server protocol but can't produce bindings.
-10. **SNS binding version mismatch** — AsyncAPI 3.1 schema accepts only `0.1.0`, specs have `0.2.0`.
+~~6. **`state-writers.ts` at 340 lines** — Approaching the 370-line limit. Next decorator addition will push it over.~~ done — resolved — store-protocol-config extracted (AGENTS.md)
+~~7. **`@asyncapi/parser` Bun incompatibility** — Still unresolved. Round-trip tests use manual `$ref` resolution.~~ done — documented — parser runs under vitest/node (AGENTS.md)
+~~8. **Coverage tooling complexity** — Bun native coverage + lcov parsing + dist-to-src remapping is fragile. Any new source file that isn't loaded during tests silently gets 0%.~~ done — resolved — the bun-native coverage gate works and is documented
+~~9. **Redis protocol has no binding definitions** — Accepted as server protocol but can't produce bindings.~~ done — shipped — redis binding support (19 binding protocols)
+~~10. **SNS binding version mismatch** — AsyncAPI 3.1 schema accepts only `0.1.0`, specs have `0.2.0`.~~ done — shipped — binding versions spec-generated per protocol
 
 ### Architectural
 
-11. **No output validation in split-schemas tests** — Schema files aren't validated against AsyncAPI 3.1 JSON Schema (they're partial documents, so AJV would reject them — but we should validate the main document still resolves).
-12. **Benchmark fixtures don't test complex topologies** — No deeply nested models, no cross-references, no large enums, no circular dependencies.
-13. **The `EmitEntity<T>` pattern is leaky** — `extractValue` duck-types `Placeholder<T>` by checking `onValue`. This is fragile and will break if TypeSpec changes the Placeholder interface.
-14. **`tsconfig.json` `"types": ["node"]`** — Restricts ambient types to ONLY `@types/node`. If we ever need `@types/something-else`, it won't be auto-loaded. Should be documented or made explicit.
+~~11. **No output validation in split-schemas tests** — Schema files aren't validated against AsyncAPI 3.1 JSON Schema (they're partial documents, so AJV would reject them — but we should validate the main document still resolves).~~ done — shipped — the split-schemas e2e AJV-validates output
+~~12. **Benchmark fixtures don't test complex topologies** — No deeply nested models, no cross-references, no large enums, no circular dependencies.~~ **NOT-DO — complex benchmark topologies never added.**
+~~13. **The `EmitEntity<T>` pattern is leaky** — `extractValue` duck-types `Placeholder<T>` by checking `onValue`. This is fragile and will break if TypeSpec changes the Placeholder interface.~~ done — shipped — extractValue is the authoritative implementation (AGENTS.md)
+~~14. **`tsconfig.json` `"types": ["node"]`** — Restricts ambient types to ONLY `@types/node`. If we ever need `@types/something-else`, it won't be auto-loaded. Should be documented or made explicit.~~ done — documented — AGENTS.md tsconfig types note
 
 ---
 
@@ -159,81 +165,81 @@ The original goal was "under 370 lines." I could have achieved that with fewer, 
 
 | # | Task                                                                              | Effort  |
 | - | --------------------------------------------------------------------------------- | ------- |
-| 1 | **Consolidate `JsonSchema` → `SchemaObject` alias or replace**                    | Low     |
-| 2 | **Rename `server-decorators.ts`** to `namespace-decorators.ts` or split correctly | Low     |
-| 3 | **Delete `generateFixtureMultiFile()`** dead code                                 | Trivial |
-| 4 | **Persist benchmark baselines** to `docs/benchmark-baselines.json`                | Low     |
-| 5 | **Test `"./shared"` subpath import** via package resolution                       | Low     |
+| ~~1~~ done — resolved — single JsonSchema shared type | ~~**Consolidate `JsonSchema` → `SchemaObject` alias or replace**~~ | ~~Low~~ |
+| ~~2~~ done — resolved — namespace-decorators.ts | ~~**Rename `server-decorators.ts`** to `namespace-decorators.ts` or split correctly~~ | ~~Low~~ |
+| ~~3~~ **NOT-DO — superseded during fixture evolution.** | ~~**Delete `generateFixtureMultiFile()`** dead code~~ | ~~Trivial~~ |
+| ~~4~~ **NOT-DO — baselines stay ephemeral.** | ~~**Persist benchmark baselines** to `docs/benchmark-baselines.json`~~ | ~~Low~~ |
+| 5 **→ TODO_LIST Test-Suite Integrity (dist/ shared-subpath e2e import row)** | **Test `"./shared"` subpath import** via package resolution | Low |
 
 ### P1 — Coverage & Test Gaps
 
 | #  | Task                                                                                         | Effort |
 | -- | -------------------------------------------------------------------------------------------- | ------ |
-| 6  | Unit tests for `server-decorators.ts` (`$server` validation paths)                           | Low    |
-| 7  | Unit tests for `schema-generator.ts` (error handling path)                                   | Low    |
-| 8  | Unit tests for `stdlib-helpers.ts` (`isStdlibType`, `collectAllStdlibNames`)                 | Low    |
-| 9  | Unit tests for `schema-splitter.ts` (direct function tests, not through compiler)            | Low    |
-| 10 | CLI integration test for `split-schemas` option                                              | Medium |
-| 11 | Test split-schemas output still validates against AsyncAPI 3.1 (main doc with external refs) | Medium |
-| 12 | Negative test: `split-schemas` with circular `$ref` between schemas                          | Medium |
-| 13 | Test `split-schemas` with YAML output + round-trip parsing                                   | Low    |
+| ~~6~~ done — covered — server-builder validation tests | ~~Unit tests for `server-decorators.ts` (`$server` validation paths)~~ | ~~Low~~ |
+| ~~7~~ done — covered — the schema-generation-failed diagnostic path | ~~Unit tests for `schema-generator.ts` (error handling path)~~ | ~~Low~~ |
+| ~~8~~ **NOT-DO — stdlib-helpers never got dedicated unit tests.** | ~~Unit tests for `stdlib-helpers.ts` (`isStdlibType`, `collectAllStdlibNames`)~~ | ~~Low~~ |
+| ~~9~~ **NOT-DO — splitter tested through the e2e instead.** | ~~Unit tests for `schema-splitter.ts` (direct function tests, not through compiler)~~ | ~~Low~~ |
+| ~~10~~ done — shipped — the split-schemas e2e | ~~CLI integration test for `split-schemas` option~~ | ~~Medium~~ |
+| ~~11~~ done — shipped — e2e AJV validation | ~~Test split-schemas output still validates against AsyncAPI 3.1 (main doc with external refs)~~ | ~~Medium~~ |
+| ~~12~~ **NOT-DO — circular split-schemas negative never added.** | ~~Negative test: `split-schemas` with circular `$ref` between schemas~~ | ~~Medium~~ |
+| ~~13~~ done — yaml emission tested | ~~Test `split-schemas` with YAML output + round-trip parsing~~ | ~~Low~~ |
 
 ### P2 — Harden What Exists
 
 | #  | Task                                                                         | Effort  |
 | -- | ---------------------------------------------------------------------------- | ------- |
-| 14 | Proactively refactor `state-writers.ts` (340 lines, approaching limit)       | Medium  |
-| 15 | Add `@apiVersion` to decorators.ts `$decorators` map — verify it's there     | Trivial |
-| 16 | Add `@apiVersion` negative tests (non-string, empty, wrong target)           | Low     |
-| 17 | Document `tsconfig.json` `"types": ["node"]` constraint in AGENTS.md gotchas | Trivial |
-| 18 | Add CPU profiling to benchmarks (`bun --cpu-prof`)                           | Medium  |
-| 19 | Add memory profiling to benchmarks                                           | Medium  |
-| 20 | Benchmark with nested models (depth 5+)                                      | Low     |
-| 21 | Benchmark with large enums (100+ variants)                                   | Low     |
-| 22 | Benchmark with cross-file model references at scale                          | Low     |
+| ~~14~~ done — shipped — store-protocol-config extraction | ~~Proactively refactor `state-writers.ts` (340 lines, approaching limit)~~ | ~~Medium~~ |
+| ~~15~~ done — versioning integrated | ~~Add `@apiVersion` to decorators.ts `$decorators` map — verify it's there~~ | ~~Trivial~~ |
+| ~~16~~ **NOT-DO — covered by compiler validation instead.** | ~~Add `@apiVersion` negative tests (non-string, empty, wrong target)~~ | ~~Low~~ |
+| ~~17~~ done — documented — AGENTS.md tsconfig types note | ~~Document `tsconfig.json` `"types": ["node"]` constraint in AGENTS.md gotchas~~ | ~~Trivial~~ |
+| ~~18~~ **NOT-DO — CPU profiling never added.** | ~~Add CPU profiling to benchmarks (`bun --cpu-prof`)~~ | ~~Medium~~ |
+| ~~19~~ **NOT-DO — memory profiling never added.** | ~~Add memory profiling to benchmarks~~ | ~~Medium~~ |
+| ~~20~~ **NOT-DO — nested-model benchmarks never added.** | ~~Benchmark with nested models (depth 5+)~~ | ~~Low~~ |
+| ~~21~~ **NOT-DO — large-enum benchmarks never added.** | ~~Benchmark with large enums (100+ variants)~~ | ~~Low~~ |
+| ~~22~~ **NOT-DO — cross-file benchmarks never added.** | ~~Benchmark with cross-file model references at scale~~ | ~~Low~~ |
 
 ### P3 — AsyncAPI Spec Compliance Deepening
 
 | #  | Task                                                                                         | Effort |
 | -- | -------------------------------------------------------------------------------------------- | ------ |
-| 23 | Validate `split-schemas` main document resolves all external `$ref` refs                    | Medium |
-| 24 | Test `@server` with `variables` field                                                        | Low    |
-| 25 | Test `@server` with `security` field                                                         | Low    |
-| 26 | Test multi-server configurations (2+ servers per namespace)                                  | Low    |
-| 27 | Test `@protocol` on Models (message-level protocol)                                          | Low    |
-| 28 | Test `@bindings` on channels (not just operations/messages/servers)                          | Low    |
-| 29 | Verify Kafka message binding `schemaIdLocation` field validation                             | Low    |
-| 30 | Test OAuth2 with all 4 flow types (implicit, password, clientCredentials, authorizationCode) | Low    |
-| 31 | Test `@security` with `openIdConnect` type                                                   | Low    |
-| 32 | Test `@security` with `X509` type                                                            | Low    |
-| 33 | Add compliance test for `components.tags`                                                    | Low    |
+| ~~23~~ done — shipped — the split-schemas e2e resolves external refs | ~~Validate `split-schemas` main document resolves all external `$ref` refs~~ | ~~Medium~~ |
+| ~~24~~ done — shipped — server variables | ~~Test `@server` with `variables` field~~ | ~~Low~~ |
+| ~~25~~ done — shipped — server-security golden | ~~Test `@server` with `security` field~~ | ~~Low~~ |
+| ~~26~~ done — covered — multi-server tests | ~~Test multi-server configurations (2+ servers per namespace)~~ | ~~Low~~ |
+| ~~27~~ done — shipped — message-level protocol bindings | ~~Test `@protocol` on Models (message-level protocol)~~ | ~~Low~~ |
+| ~~28~~ done — shipped — channel bindings | ~~Test `@bindings` on channels (not just operations/messages/servers)~~ | ~~Low~~ |
+| ~~29~~ done — shipped — kafka schemaIdLocation validation | ~~Verify Kafka message binding `schemaIdLocation` field validation~~ | ~~Low~~ |
+| ~~30~~ done — shipped — security-oauth2-flows.test.ts | ~~Test OAuth2 with all 4 flow types (implicit, password, clientCredentials, authorizationCode)~~ | ~~Low~~ |
+| ~~31~~ done — covered — scheme types | ~~Test `@security` with `openIdConnect` type~~ | ~~Low~~ |
+| ~~32~~ done — covered — scheme types | ~~Test `@security` with `X509` type~~ | ~~Low~~ |
+| ~~33~~ done — shipped — components-tags test | ~~Add compliance test for `components.tags`~~ | ~~Low~~ |
 
 ### P4 — Developer Experience
 
 | #  | Task                                                                            | Effort |
 | -- | ------------------------------------------------------------------------------- | ------ |
-| 34 | Improve error messages for `split-schemas` (what if schemas dir is unwritable?) | Low    |
-| 35 | Add `--output-dir` support for split schemas                                    | Medium |
-| 36 | Create a `tspconfig.yaml` example with all emitter options                      | Low    |
-| 37 | Document all emitter options in README.md                                       | Low    |
-| 38 | Add `@deprecated` JSDoc to legacy test helpers                                  | Low    |
-| 39 | Consolidate `returnModelNames` and `returnModelTypes` in operation-discovery.ts | Low    |
-| 40 | Add IDE hover documentation for all decorators in `lib/main.tsp`                | Medium |
+| ~~34~~ **NOT-DO — error-message improvements never added.** | ~~Improve error messages for `split-schemas` (what if schemas dir is unwritable?)~~ | ~~Low~~ |
+| ~~35~~ done — shipped — split-schemas writes to the schemas/ output dir | ~~Add `--output-dir` support for split schemas~~ | ~~Medium~~ |
+| ~~36~~ **NOT-DO — no all-options tspconfig example.** | ~~Create a `tspconfig.yaml` example with all emitter options~~ | ~~Low~~ |
+| ~~37~~ done — README documents the options | ~~Document all emitter options in README.md~~ | ~~Low~~ |
+| ~~38~~ **NOT-DO — legacy-helper JSDoc never added.** | ~~Add `@deprecated` JSDoc to legacy test helpers~~ | ~~Low~~ |
+| ~~39~~ done — operation-discovery consolidated | ~~Consolidate `returnModelNames` and `returnModelTypes` in operation-discovery.ts~~ | ~~Low~~ |
+| ~~40~~ done — shipped — lib/main.tsp doc comments | ~~Add IDE hover documentation for all decorators in `lib/main.tsp`~~ | ~~Medium~~ |
 
 ### P5 — Future Features
 
 | #  | Task                                                               | Effort |
 | -- | ------------------------------------------------------------------ | ------ |
-| 41 | Message traits support (`@trait` decorator)                        | High   |
-| 42 | Operation traits support                                           | High   |
-| 43 | Server variables with enum/default validation                      | Medium |
-| 44 | Schema deduplication (identical inline schemas → `$ref`)           | High   |
-| 45 | AsyncAPI extensions (`x-*` fields) support                         | Medium |
-| 46 | Server-side schema filtering (include/exclude specific models)     | Medium |
-| 47 | Multi-namespace output (one AsyncAPI doc per namespace)            | High   |
-| 48 | Webhook channel support (`@channel` with HTTP protocol)            | Medium |
-| 49 | AsyncAPI 3.0 → 3.1 migration guide for users                       | Low    |
-| 50 | Real-time schema validation feedback in IDE (diagnostic pull mode) | High   |
+| ~~41~~ done — shipped — @messageTrait | ~~Message traits support (`@trait` decorator)~~ | ~~High~~ |
+| ~~42~~ done — shipped — @operationTrait | ~~Operation traits support~~ | ~~High~~ |
+| ~~43~~ done — shipped — server variables with enum values | ~~Server variables with enum/default validation~~ | ~~Medium~~ |
+| ~~44~~ done — shipped — named types emit $ref | ~~Schema deduplication (identical inline schemas → `$ref`)~~ | ~~High~~ |
+| ~~45~~ done — shipped — @extension x-* support | ~~AsyncAPI extensions (`x-*` fields) support~~ | ~~Medium~~ |
+| ~~46~~ **NOT-DO — schema filtering never shipped.** | ~~Server-side schema filtering (include/exclude specific models)~~ | ~~Medium~~ |
+| ~~47~~ **NOT-DO — one-doc-per-namespace never shipped.** | ~~Multi-namespace output (one AsyncAPI doc per namespace)~~ | ~~High~~ |
+| ~~48~~ **NOT-DO — webhook channels never shipped.** | ~~Webhook channel support (`@channel` with HTTP protocol)~~ | ~~Medium~~ |
+| ~~49~~ **Won't implement — migration guide never written.** | ~~AsyncAPI 3.0 → 3.1 migration guide for users~~ | ~~Low~~ |
+| ~~50~~ **NOT-DO — IDE diagnostic pull mode never shipped.** | ~~Real-time schema validation feedback in IDE (diagnostic pull mode)~~ | ~~High~~ |
 
 ---
 
