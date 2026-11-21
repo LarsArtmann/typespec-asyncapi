@@ -56,6 +56,18 @@ removal.
         and `... alpha` (registry shows all three at 1.1.0), or enable
         'manage dist-tags' on the trusted publisher (npm ≥ 11.21.0).
         Status comment on #297: issuecomment-7020669604.
+        EMPIRICAL CONFIRMATION (2026-11-21 ~02:45-02:55 UTC): rerun of
+        44853401675 AND a fresh 1.2.0 dispatch (44858019189) both died
+        with `E403 OIDC permission denied for this action` — the
+        registry resolves the workflow (no more 404) but the card still
+        only allows `npm stage publish`. `release/1.2.0` branch 33dd90d6
+        is staged (exact v1.2.0 tree + current OIDC workflow; local
+        gate green) because the v1.2.0 tag's own workflow still uses the
+        deleted NPM_TOKEN. Queued once the toggle flips: 1.2.0 FIRST
+        (`gh workflow run release.yml --ref release/1.2.0 -f
+        dry_run=false`; dispatch skips github-release — the v1.2.0
+        GitHub release already exists), THEN 1.3.0 (`gh run rerun
+        44853401675`, full) so `latest` ends on 1.3.0.
   - [ ] Post-publish verification (after the recovery): watch the publish
         job (two failed live exercises so far — 2026-11-19 dispatch,
         2026-11-21 v1.3.0 tag push — see the registration item above), then
