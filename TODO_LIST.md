@@ -35,38 +35,44 @@ removal.
 - [ ] Provenance verification instructions in the README — how consumers
       verify sigstore/provenance on the package
       (docs/status/2026-10-03_13-58:332).
-- [ ] Register npm trusted publisher — **remaining Lars action; SECOND
-        failed publish 2026-11-21**: v1.3.0 was tagged and pushed (commit
-        b27d8690, release run 44853401675 — verify GREEN, publish E404 on
-        PUT, provenance signed: sigstore logIndex 4030901917; tracked in
-        #301 with the full diagnosis). Same failure mode as the 2026-11-19
-        v1.2.0 dispatch (run 44603780129): OIDC exchange works, the registry
-        rejects the package write. GitHub side is verifiably correct (repo,
-        default branch, workflow filename `release.yml`, `id-token: write`,
-        NO `environment:` on the job), so the mismatch is in the npmjs.com
-        registration: check it reads EXACTLY repository
-        `LarsArtmann/typespec-asyncapi`, workflow filename `release.yml`,
-        environment EMPTY (a registered environment the job does not declare
-        is the classic E404-on-PUT cause). Recovery once registered (npm
-        requires the first authorized publish within 2 days of
-        registration): `gh workflow run Release --ref master -f dry_run=false`
-        — master is at 1.3.0, so the dispatch publishes 1.3.0. In the
-        same npmjs.com session: delete the `beta` and `alpha` dist-tags
-        (registry still shows all three at 1.1.0 on 2026-11-21).
+- [ ] Allow DIRECT npm publish on the registered trusted publisher —
+        **remaining Lars action, narrowed 2026-11-21 ~03:30**: the v1.3.0
+        publish E404 (release run 44853401675, 02:10 UTC) ran ~20 min
+        BEFORE the registration existed; Lars REGISTERED the trusted
+        publisher at ~02:30 UTC (fields verified: GitHub Actions,
+        `LarsArtmann/typespec-asyncapi`, workflow `release.yml`, NO
+        environment). But npm's post-2026-09-03 default saved it
+        STAGE-ONLY (`npm stage publish`, human approves each release with
+        2FA) — a direct `npm publish` is REJECTED under stage-only, so
+        EDIT the card on npmjs.com to ALSO allow direct publish (this is
+        exactly what release.yml's header comment documents). DEADLINE:
+        npm expires unvalidated configs 48h after creation — first
+        successful publish needed before 2026-11-23 02:30 UTC, else
+        delete + recreate the registration. Recovery after the edit:
+        FULL rerun `gh run rerun 44853401675` (see the corrected
+        post-publish item below). Dist-tags: npmjs.com has NO dist-tag
+        UI — removal is one `npm login` session (fresh browser-2FA
+        token) + `npm dist-tag rm @lars-artmann/typespec-asyncapi beta`
+        and `... alpha` (registry shows all three at 1.1.0), or enable
+        'manage dist-tags' on the trusted publisher (npm ≥ 11.21.0).
         Status comment on #297: issuecomment-7020669604.
-  - [ ] Post-publish verification (after the recovery dispatch): watch the
-        publish job (two failed live exercises so far — 2026-11-19 dispatch,
+  - [ ] Post-publish verification (after the recovery): watch the publish
+        job (two failed live exercises so far — 2026-11-19 dispatch,
         2026-11-21 v1.3.0 tag push — see the registration item above), then
         `npm view @lars-artmann/typespec-asyncapi version` → 1.3.0,
         provenance attestation on the npm page, fresh-install smoke test
         (new project, compile, AJV-validate), dist-tags reduced to
         `latest` only, confirm the prerelease `--tag latest` branch did
-        NOT fire (1.3.0 is stable), and MANUALLY create the v1.3.0 GitHub
-        Release (the `github-release` job is push-event-only and the tag's
-        run already consumed its chance): `gh release create v1.3.0` from
-        the CHANGELOG 1.3.0 section, attaching the verified tarball
-        (`gh run download 44853401675 -n npm-package` or re-pack). v1.2.0's
-        release stays as the GitHub-only record of what shipped there.
+        NOT fire (1.3.0 is stable). CORRECTION 2026-11-21 (the original
+        note here was wrong): the `github-release` job does NOT need a
+        manual fallback for the tag run — a FULL rerun (`gh run rerun
+        44853401675`, no `--failed`) preserves the original `push` event,
+        so after registration it re-runs verify + publish AND
+        github-release, creating the v1.3.0 release from the CHANGELOG
+        section with the tarball automatically. The `workflow_dispatch`
+        path (also fine) is what needs the manual release, since dispatch
+        is not a push event. v1.2.0's release stays as the GitHub-only
+        record of what shipped there.
         FINALLY deploy the website (`nix run .#deploy-website`): its
         hero/FAQ/stats already say v1.3.0 and were verified locally, but
         deploying before the npm publish would advertise a version
