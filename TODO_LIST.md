@@ -44,25 +44,26 @@ removal.
         in the npmjs.com registration: check it reads EXACTLY repository
         `LarsArtmann/typespec-asyncapi`, workflow filename `release.yml`,
         environment EMPTY (a registered environment the job does not declare
-        is the classic E404-on-PUT cause). Then re-dispatch
-        `gh workflow run Release --ref master -f dry_run=false`; npm requires
-        the first authorized publish within 2 days of registration. In the
+        is the classic E404-on-PUT cause). Recovery publish is the **v1.3.0
+        tag push** (2026-11-21, supersedes 1.2.0 on npm — see the post-publish
+        item below); if it E404s again, fix the registration and re-dispatch
+        `gh workflow run Release --ref master -f dry_run=false` (npm requires
+        the first authorized publish within 2 days of registration). In the
         same npmjs.com session: delete the `beta` and `alpha` dist-tags
         (registry still shows all three at 1.1.0 on 2026-11-19 evening).
         Status comment on #297: issuecomment-7020669604.
-  - [ ] Post-publish verification (after the `dry_run=false` dispatch):
-        watch the publish job closely (its FIRST live exercise FAILED
-        2026-11-19 — see the registration item above), then
-        `npm view @lars-artmann/typespec-asyncapi version` → 1.2.0,
+  - [ ] Post-publish verification (after the `v1.3.0` tag push):
+        watch the publish job closely (its first live exercise FAILED
+        2026-11-19 on the 1.2.0 dispatch — see the registration item above;
+        the v1.3.0 tag push is its second attempt), then
+        `npm view @lars-artmann/typespec-asyncapi version` → 1.3.0,
         provenance attestation on the npm page, fresh-install smoke test
         (new project, compile, AJV-validate), dist-tags reduced to
         `latest` only, confirm the prerelease `--tag latest` branch did
-        NOT fire (1.2.0 is stable). NOTE: the `github-release` job is
-        push-event-only, but the v1.2.0 GitHub Release ALREADY EXISTS
-        (created 2026-11-19 13:00Z, no assets) — after the publish succeeds,
-        optionally attach the tarball (`gh release upload v1.2.0
-    lars-artmann-typespec-asyncapi-1.2.0.tgz`) and verify the notes
-        match the CHANGELOG section; do NOT create a second release.
+        NOT fire (1.3.0 is stable), and the `github-release` job created
+        the v1.3.0 GitHub Release with the CHANGELOG section + tarball
+        (v1.3.0 has no pre-existing release; v1.2.0's stays as the GitHub-only
+        record of what shipped there).
   - [ ] ~~Remove the stale `alpha` dist-tag~~ SUPERSEDED 2026-11-19: all three
         dist-tags had been re-pointed at 1.1.0 as "intentional prerelease
         channels", but the owner retired `beta`/`alpha` outright — delete both

@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [1.3.0] - 2026-11-21
+
+> **npm note:** 1.2.0 was tagged and released on GitHub, but its npm publish
+> failed — the npm trusted-publisher registration was not yet in place — so
+> the registry never saw it. This is the first release on npm since 1.1.0 and
+> includes every 1.2.0 change.
 
 ### Added
 
@@ -23,6 +28,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- **Releases publish to npm via trusted publishing (GitHub OIDC, #298)** —
+  the release workflow exchanges a GitHub Actions OIDC token for npm
+  credentials and publishes with provenance, dropping the long-lived
+  `NPM_TOKEN` secret entirely. It runs as three least-privilege jobs (verify,
+  publish, GitHub release), and the tarball that passed the gate is the
+  tarball that publishes.
 - Dependabot ignores `minimatch` (the documented ESM-only advisory
   dismissal) so update runs stop failing daily on an unfixable bump.
 

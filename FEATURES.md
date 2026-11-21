@@ -1,7 +1,7 @@
 # Feature Inventory
 
 **Verified:** 2026-10-03 full audit (1275 pass, 0 fail, 105 test files); 2026-11-04 spot-refresh (toolchain re-pinned to TS 6.0.3 after manifest drift, `pnpm audit` clean, format/link gates repaired — see refresh log; full line-by-line re-audit not yet repeated)
-**Project:** `@lars-artmann/typespec-asyncapi` v1.1.0 (live on npm, `latest` dist-tag)
+**Project:** `@lars-artmann/typespec-asyncapi` v1.3.0 (live on npm, `latest` dist-tag)
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 36 codes (20 error + 16 warning), all compile-time validated via `$lib.reportDiagnostic()`
 **Decorators:** 30 declared in `lib/main.tsp` (19 core + 11 reusable-component); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
