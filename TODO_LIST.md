@@ -35,7 +35,7 @@ removal.
 - [ ] Provenance verification instructions in the README — how consumers
       verify sigstore/provenance on the package
       (docs/status/2026-10-03_13-58:332).
-- [ ] Ship 1.2.0 + 1.3.0 through npm STAGED publishing (supersedes
+- [x] Ship 1.2.0 + 1.3.0 through npm STAGED publishing — DONE 2026-11-21 ~06:30 UTC, both approved and live, latest = 1.3.0 (supersedes
         the "allow direct publish" plan, 2026-11-21 ~03:05; that toggle
         will NOT be flipped): npm's intended maximum-security model is
         stage-only — CI runs `npm stage publish` over OIDC
@@ -59,7 +59,7 @@ removal.
         beta/alpha removed via `npm login` + `npm dist-tag rm`;
         npmjs.com has NO dist-tag UI. Status comment on #297:
         issuecomment-7020669604.
-  - [ ] Post-publish verification (after the recovery): watch the publish
+  - [x] Post-publish verification — DONE 2026-11-21: both versions live, SLSA provenance present for each, fresh-install smoke test green (published 1.3.0 compiles + parser-clean), single dist-tag `latest`, v1.3.0 GitHub release Latest with the published tarball, website deployed (original checklist: watch the publish
         job (five failed direct-publish exercises 2026-11-19→21; now
         staged — see the staged-release item above), then
         `npm view @lars-artmann/typespec-asyncapi version` → 1.3.0,
