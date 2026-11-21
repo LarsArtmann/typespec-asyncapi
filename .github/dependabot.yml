@@ -20,11 +20,11 @@ updates:
           - minor
           - patch
     ignore:
-      # minimatch GHSA-g3hv-75wg-m249 is the documented auditConfig dismissal:
-      # the only patched releases are ESM-only while spectral-core (CJS) calls
-      # require("minimatch") directly. Dependabot has failed on this update
-      # daily since 2026-11-19. Revisit when minimatch ships a CJS-compatible
-      # fix or spectral-core drops the dependency.
+      # minimatch GHSA-g3hv-75wg-m249: the >= 7 chains are patched via the
+      # "minimatch@^10": "^11.0.9" override in pnpm-workspace.yaml (11.x is
+      # dual-mode CJS), but spectral-core still pins 3.x and Dependabot keeps
+      # proposing un-mergeable bumps for it; it fails daily since 2026-11-19.
+      # Revisit when spectral-core drops its minimatch dependency.
       - dependency-name: "minimatch"
   - package-ecosystem: npm
     directory: /website/video
