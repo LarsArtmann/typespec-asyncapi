@@ -35,35 +35,38 @@ removal.
 - [ ] Provenance verification instructions in the README — how consumers
       verify sigstore/provenance on the package
       (docs/status/2026-10-03_13-58:332).
-- [ ] Register npm trusted publisher — **remaining Lars action, narrowed
-        2026-11-19 evening**: Lars dispatched the real publish (run 44603780129) and the publish job FAILED with **E404 on PUT** — OIDC
-        exchange and provenance signing work (sigstore logIndex 4005319347),
-        the registry rejected the package write. GitHub side is verifiably
-        correct (repo, default branch, workflow filename `release.yml`,
-        `id-token: write`, NO `environment:` on the job), so the mismatch is
-        in the npmjs.com registration: check it reads EXACTLY repository
+- [ ] Register npm trusted publisher — **remaining Lars action; SECOND
+        failed publish 2026-11-21**: v1.3.0 was tagged and pushed (commit
+        b27d8690, release run 44853401675 — verify GREEN, publish E404 on
+        PUT, provenance signed: sigstore logIndex 4030901917; tracked in
+        #301 with the full diagnosis). Same failure mode as the 2026-11-19
+        v1.2.0 dispatch (run 44603780129): OIDC exchange works, the registry
+        rejects the package write. GitHub side is verifiably correct (repo,
+        default branch, workflow filename `release.yml`, `id-token: write`,
+        NO `environment:` on the job), so the mismatch is in the npmjs.com
+        registration: check it reads EXACTLY repository
         `LarsArtmann/typespec-asyncapi`, workflow filename `release.yml`,
         environment EMPTY (a registered environment the job does not declare
-        is the classic E404-on-PUT cause). Recovery publish is the **v1.3.0
-        tag push** (2026-11-21, supersedes 1.2.0 on npm — see the post-publish
-        item below); if it E404s again, fix the registration and re-dispatch
-        `gh workflow run Release --ref master -f dry_run=false` (npm requires
-        the first authorized publish within 2 days of registration). In the
+        is the classic E404-on-PUT cause). Recovery once registered (npm
+        requires the first authorized publish within 2 days of
+        registration): `gh workflow run Release --ref master -f dry_run=false`
+        — master is at 1.3.0, so the dispatch publishes 1.3.0. In the
         same npmjs.com session: delete the `beta` and `alpha` dist-tags
-        (registry still shows all three at 1.1.0 on 2026-11-19 evening).
+        (registry still shows all three at 1.1.0 on 2026-11-21).
         Status comment on #297: issuecomment-7020669604.
-  - [ ] Post-publish verification (after the `v1.3.0` tag push):
-        watch the publish job closely (its first live exercise FAILED
-        2026-11-19 on the 1.2.0 dispatch — see the registration item above;
-        the v1.3.0 tag push is its second attempt), then
+  - [ ] Post-publish verification (after the recovery dispatch): watch the
+        publish job (two failed live exercises so far — 2026-11-19 dispatch,
+        2026-11-21 v1.3.0 tag push — see the registration item above), then
         `npm view @lars-artmann/typespec-asyncapi version` → 1.3.0,
         provenance attestation on the npm page, fresh-install smoke test
         (new project, compile, AJV-validate), dist-tags reduced to
         `latest` only, confirm the prerelease `--tag latest` branch did
-        NOT fire (1.3.0 is stable), and the `github-release` job created
-        the v1.3.0 GitHub Release with the CHANGELOG section + tarball
-        (v1.3.0 has no pre-existing release; v1.2.0's stays as the GitHub-only
-        record of what shipped there).
+        NOT fire (1.3.0 is stable), and MANUALLY create the v1.3.0 GitHub
+        Release (the `github-release` job is push-event-only and the tag's
+        run already consumed its chance): `gh release create v1.3.0` from
+        the CHANGELOG 1.3.0 section, attaching the verified tarball
+        (`gh run download 44853401675 -n npm-package` or re-pack). v1.2.0's
+        release stays as the GitHub-only record of what shipped there.
   - [ ] ~~Remove the stale `alpha` dist-tag~~ SUPERSEDED 2026-11-19: all three
         dist-tags had been re-pointed at 1.1.0 as "intentional prerelease
         channels", but the owner retired `beta`/`alpha` outright — delete both

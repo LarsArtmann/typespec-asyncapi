@@ -47,7 +47,7 @@ jobs:
           COMMIT_MSG: ${{ github.event.workflow_run.head_commit.message }}
           ACTOR: ${{ github.event.workflow_run.actor.login }}
         run: |
-          gh label create ci-alert \
+          gh label create ci-alert -R "$REPO" \
             --color D73A4A \
             --description "Auto-filed tracking issue for red master CI or failed releases" \
             2>/dev/null || true
