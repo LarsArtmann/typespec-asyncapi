@@ -1,0 +1,50 @@
+# Adapted with original names and payload from the topology of
+# https://github.com/asyncapi/spec/blob/v3.1.0/examples/simple-asyncapi.yml
+asyncapi: 3.1.0
+info:
+  title: Account Notifications
+  version: 1.0.0
+defaultContentType: application/vnd.account+json
+servers:
+  events:
+    host: broker.example.test
+    protocol: kafka
+channels:
+  registrations:
+    address: accounts/registered
+    servers:
+      - $ref: "#/servers/events"
+    messages:
+      Registered:
+        $ref: "#/components/messages/Registered"
+operations:
+  sendRegistration:
+    action: send
+    channel:
+      $ref: "#/channels/registrations"
+  receiveRegistration:
+    action: receive
+    channel:
+      $ref: "#/channels/registrations"
+    messages:
+      - $ref: "#/channels/registrations/messages/Registered"
+components:
+  messages:
+    Registered:
+      title: Registration completed
+      payload:
+        $ref: "#/components/schemas/AccountRegistration"
+  schemas:
+    AccountRegistration:
+      type: object
+      required: [userId]
+      additionalProperties: false
+      properties:
+        userId:
+          type: string
+          minLength: 3
+        verified:
+          type: boolean
+          default: false
+        previous:
+          $ref: "#/components/schemas/AccountRegistration"

@@ -7,7 +7,9 @@
  */
 
 import type { AsyncAPIProtocol } from "../../constants/protocols.js";
+import { escapeRefToken } from "../json-pointer.js";
 export type { AsyncAPIEmitterOptions } from "../../infrastructure/configuration/asyncAPIEmitterOptions.js";
+export { escapeRefToken } from "../json-pointer.js";
 
 export interface Ref {
   $ref: string;
@@ -51,11 +53,6 @@ export function refCorrelationId(name: string): Ref {
 /** Construct a `$ref` into `#/channels/{name}` (RFC 6901-escaped). */
 export function refChannel(name: string): Ref {
   return { $ref: `#/channels/${escapeRefToken(name)}` };
-}
-
-/** Escape a JSON Pointer token for use in a URI fragment (RFC 6901, section 6). */
-export function escapeRefToken(token: string): string {
-  return encodeURIComponent(token.replaceAll("~", "~0").replaceAll("/", "~1"));
 }
 
 /** AsyncAPI 3.1 operation action — the direction of message flow. */

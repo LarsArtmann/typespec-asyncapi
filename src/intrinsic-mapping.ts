@@ -2,7 +2,17 @@
  * Scalar type name to JSON Schema type mapping.
  */
 
+import type { Scalar } from "@typespec/compiler";
 import type { JsonSchema } from "./domain/models/asyncapi-document.js";
+import { isStdlibType } from "./stdlib-helpers.js";
+
+export function scalarToSchema(scalar: Scalar): JsonSchema {
+  let base = scalar;
+  while (base.baseScalar && !isStdlibType(base)) {
+    base = base.baseScalar;
+  }
+  return intrinsicToSchema(base.name);
+}
 
 export function intrinsicToSchema(typeName: string): JsonSchema {
   switch (typeName) {
