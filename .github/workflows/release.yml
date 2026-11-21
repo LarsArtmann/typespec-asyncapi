@@ -1,14 +1,22 @@
-# Release workflow: tag-triggered npm publish, gated on the full verify suite.
+# Release workflow: tag-triggered STAGE publish, gated on the full verify suite.
 #
-# Setup: register release.yml as a trusted publisher in the npm package
-# settings and allow direct npm publish.
+# npm's intended maximum-security model for trusted publishing: CI stages
+# the package over GitHub OIDC (`npm stage publish`), a maintainer then
+# approves it with 2FA on npmjs.com, and only after that does the version
+# become public. Approval is deliberately impossible from CI (an OIDC
+# identity cannot perform a human second factor), so the GitHub release
+# is created afterwards by finalize-release.yml.
+# https://docs.npmjs.com/staged-publishing
 # https://docs.npmjs.com/trusted-publishers/#for-github-actions
 #
-# npm uses GitHub OIDC for trusted publishing and provenance.
+# The trusted-publisher card must grant `npm stage publish` (always on)
+# and does NOT need to grant direct `npm publish` or dist-tag management.
 #
 # Dry-run: trigger manually via workflow_dispatch with dry_run=true to
-# exercise the whole pipeline (install, verify, publish dry-run) without
-# uploading a package. A `v*` tag or a manual run with dry_run=false publishes.
+# exercise the whole pipeline (install, verify, staged publish dry-run)
+# without uploading. A `v*` tag or a manual run with dry_run=false stages
+# the package; then approve it on npmjs.com and dispatch
+# finalize-release.yml with the version.
 
 name: Release
 
@@ -19,7 +27,7 @@ on:
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Run publish as a dry-run (no registry write)"
+        description: "Run the staged publish as a dry-run (no registry write)"
         type: boolean
         default: true
 
@@ -65,9 +73,9 @@ jobs:
       - name: Pack verified npm package
         run: pnpm pack --out "$RUNNER_TEMP/package.tgz"
 
-      - name: Dry-run npm publish
+      - name: Dry-run staged npm publish
         if: github.event_name == 'workflow_dispatch' && inputs.dry_run
-        run: npm publish "$RUNNER_TEMP/package.tgz" --dry-run --ignore-scripts --access public --tag latest
+        run: npm stage publish "$RUNNER_TEMP/package.tgz" --dry-run --ignore-scripts --access public --tag latest
 
       - name: Upload verified npm package
         if: github.event_name == 'push' || !inputs.dry_run
@@ -78,12 +86,12 @@ jobs:
           path: ${{ runner.temp }}/package.tgz
           if-no-files-found: error
 
-  publish:
+  stage:
     needs: verify
     if: github.event_name == 'push' || !inputs.dry_run
     runs-on: ubuntu-latest
     permissions:
-      id-token: write # exchange the GitHub OIDC token for npm publish credentials
+      id-token: write # exchange the GitHub OIDC token for npm stage-publish credentials
 
     steps:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -97,7 +105,7 @@ jobs:
           artifact-ids: ${{ needs.verify.outputs.artifact-id }}
           path: ${{ runner.temp }}/npm-package
 
-      - name: Publish to npm
+      - name: Stage package on npm
         shell: bash
         run: |
           PACKAGE="$RUNNER_TEMP/npm-package/package.tgz"
@@ -107,49 +115,11 @@ jobs:
           if [[ "$VERSION" == *-* ]]; then
             TAG_ARGS=(--tag latest)
           fi
-          npm publish "$PACKAGE" --registry https://registry.npmjs.org/ --provenance --ignore-scripts --access public "${TAG_ARGS[@]}"
-
-  github-release:
-    needs: [verify, publish]
-    if: github.event_name == 'push'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # create the GitHub Release for the existing tag
-
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
-        with:
-          artifact-ids: ${{ needs.verify.outputs.artifact-id }}
-          path: ${{ runner.temp }}/npm-package
-
-      # Body comes from the tagged version's CHANGELOG.md section, so the
-      # changelog stays the single source of release notes. Idempotent: a
-      # re-run of the workflow for an existing release skips this step.
-      - name: Create GitHub release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          TAG="$GITHUB_REF_NAME"
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            echo "Release $TAG already exists; skipping creation"
-            exit 0
-          fi
-          VERSION="${TAG#v}"
-          NOTES=$(node -e '
-            const fs = require("fs");
-            const version = process.argv[1];
-            const section = fs.readFileSync("CHANGELOG.md", "utf8")
-              .split(/^## /m)
-              .find((s) => s.startsWith("[" + version + "]"));
-            if (section === undefined) {
-              throw new Error("No CHANGELOG.md section for " + version);
-            }
-            console.log(section.slice(section.indexOf("\n") + 1).trimEnd());
-          ' "$VERSION")
-          PACKAGE="$RUNNER_TEMP/npm-package/typespec-asyncapi.tgz"
-          mv "$RUNNER_TEMP/npm-package/package.tgz" "$PACKAGE"
-          gh release create "$TAG" "$PACKAGE" --verify-tag --title "$TAG" --notes "$NOTES" --latest
+          npm stage publish "$PACKAGE" --registry https://registry.npmjs.org/ --provenance --ignore-scripts --access public "${TAG_ARGS[@]}"
+          {
+            echo "### Staged @lars-artmann/typespec-asyncapi@$VERSION"
+            echo ""
+            echo "Approve it with 2FA on npmjs.com, then create the GitHub release:"
+            echo ""
+            echo "\`gh workflow run finalize-release.yml -f version=$VERSION\`"
+          } >> "$GITHUB_STEP_SUMMARY"
