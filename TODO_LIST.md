@@ -67,6 +67,10 @@ removal.
         the CHANGELOG 1.3.0 section, attaching the verified tarball
         (`gh run download 44853401675 -n npm-package` or re-pack). v1.2.0's
         release stays as the GitHub-only record of what shipped there.
+        FINALLY deploy the website (`nix run .#deploy-website`): its
+        hero/FAQ/stats already say v1.3.0 and were verified locally, but
+        deploying before the npm publish would advertise a version
+        `npm install` cannot give yet.
   - [ ] ~~Remove the stale `alpha` dist-tag~~ SUPERSEDED 2026-11-19: all three
         dist-tags had been re-pointed at 1.1.0 as "intentional prerelease
         channels", but the owner retired `beta`/`alpha` outright — delete both
