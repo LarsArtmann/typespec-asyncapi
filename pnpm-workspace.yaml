@@ -12,14 +12,20 @@ overrides:
   "postcss-selector-parser@<7.1.6": "7.1.6"
   # undici 7 and 8 coexist (via @scalar/json-magic old/new); only 7.x is vulnerable
   "undici@^7": "^7.30.1"
+  # minimatch glob-DoS (GHSA-g3hv-75wg-m249): the only in-range chain is
+  # @eslint/config-array's ^10 (dev-only); 11.x is dual-mode CJS so the bump
+  # is safe. spectral-core's pinned 3.1.5 sits below the advisory range
+  # (>= 7.0.0) and stays untouched — it cannot cross majors.
+  "minimatch@^10": "^11.0.9"
 
 auditConfig:
   ignoreGhsas:
     # minimatch <11.0.1 glob-DoS (dev-only consumers: spectral-core via
-    # @asyncapi/parser, eslint config chain). The patched version is ESM-only
-    # while spectral-core is CJS and calls require("minimatch")(...) directly,
-    # so a forced bump breaks the parser tests; patterns come from our own
-    # tool config, never attacker input. Re-evaluate when spectral upgrades.
+    # @asyncapi/parser). spectral-core is CJS and pins minimatch 3.x, which
+    # cannot cross majors without breaking the parser tests; 3.x sits below
+    # the current advisory range (>= 7.0.0), so this dismissal is dormant
+    # belt-and-braces if the range ever widens again. Patterns come from our
+    # own tool config, never attacker input.
     - GHSA-g3hv-75wg-m249
 
 allowBuilds:
