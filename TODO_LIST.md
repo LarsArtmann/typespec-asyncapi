@@ -35,66 +35,53 @@ removal.
 - [ ] Provenance verification instructions in the README — how consumers
       verify sigstore/provenance on the package
       (docs/status/2026-10-03_13-58:332).
-- [ ] Allow DIRECT npm publish on the registered trusted publisher —
-        **remaining Lars action, narrowed 2026-11-21 ~03:30**: the v1.3.0
-        publish E404 (release run 44853401675, 02:10 UTC) ran ~20 min
-        BEFORE the registration existed; Lars REGISTERED the trusted
-        publisher at ~02:30 UTC (fields verified: GitHub Actions,
-        `LarsArtmann/typespec-asyncapi`, workflow `release.yml`, NO
-        environment). But npm's post-2026-09-03 default saved it
-        STAGE-ONLY (`npm stage publish`, human approves each release with
-        2FA) — a direct `npm publish` is REJECTED under stage-only, so
-        EDIT the card on npmjs.com to ALSO allow direct publish (this is
-        exactly what release.yml's header comment documents). DEADLINE:
-        npm expires unvalidated configs 48h after creation — first
-        successful publish needed before 2026-11-23 02:30 UTC, else
-        delete + recreate the registration. Recovery after the edit:
-        FULL rerun `gh run rerun 44853401675` (see the corrected
-        post-publish item below). Dist-tags: npmjs.com has NO dist-tag
-        UI — removal is one `npm login` session (fresh browser-2FA
-        token) + `npm dist-tag rm @lars-artmann/typespec-asyncapi beta`
-        and `... alpha` (registry shows all three at 1.1.0), or enable
-        'manage dist-tags' on the trusted publisher (npm ≥ 11.21.0).
-        Status comment on #297: issuecomment-7020669604.
-        EMPIRICAL CONFIRMATION (2026-11-21 ~02:45-02:55 UTC): rerun of
-        44853401675 AND a fresh 1.2.0 dispatch (44858019189) both died
-        with `E403 OIDC permission denied for this action` — the
-        registry resolves the workflow (no more 404) but the card still
-        only allows `npm stage publish`. `release/1.2.0` branch 33dd90d6
-        is staged (exact v1.2.0 tree + current OIDC workflow; local
-        gate green) because the v1.2.0 tag's own workflow still uses the
-        deleted NPM_TOKEN. Queued once the toggle flips: 1.2.0 FIRST
-        (`gh workflow run release.yml --ref release/1.2.0 -f
-        dry_run=false`; dispatch skips github-release — the v1.2.0
-        GitHub release already exists), THEN 1.3.0 (`gh run rerun
-        44853401675`, full) so `latest` ends on 1.3.0.
+- [ ] Ship 1.2.0 + 1.3.0 through npm STAGED publishing (supersedes
+        the "allow direct publish" plan, 2026-11-21 ~03:05; that toggle
+        will NOT be flipped): npm's intended maximum-security model is
+        stage-only — CI runs `npm stage publish` over OIDC
+        (`.github/workflows/release.yml`, rebuilt 2026-11-21), a
+        maintainer approves each staged version with 2FA on npmjs.com,
+        and `.github/workflows/finalize-release.yml` then verifies the
+        version is live, downloads the exact published tarball and
+        creates the GitHub release (idempotent). Fuse: a successful
+        stage publish before 2026-11-23 02:30 UTC validates the
+        trusted-publisher card; otherwise delete + recreate it. Five
+        direct-publish attempts failed (404 before the card existed,
+        then 403 `OIDC permission denied for this action` at
+        02:44/02:52/02:56 UTC); local CLI `npm publish` cannot
+        substitute (EOTP per write, 2FA cannot be delegated). ORDER:
+        stage 1.2.0 from `release/1.2.0` (33dd90d6 = exact v1.2.0 tree +
+        stage workflow; the tag's own workflow still uses the deleted
+        NPM_TOKEN) → approve → stage 1.3.0 from master (`gh workflow run
+        release.yml -f dry_run=false`) → approve → `gh workflow run
+        finalize-release.yml -f version=1.3.0` (v1.2.0's GitHub release
+        already exists; don't finalize it). Dist-tags DONE 2026-11-21:
+        beta/alpha removed via `npm login` + `npm dist-tag rm`;
+        npmjs.com has NO dist-tag UI. Status comment on #297:
+        issuecomment-7020669604.
   - [ ] Post-publish verification (after the recovery): watch the publish
-        job (two failed live exercises so far — 2026-11-19 dispatch,
-        2026-11-21 v1.3.0 tag push — see the registration item above), then
+        job (five failed direct-publish exercises 2026-11-19→21; now
+        staged — see the staged-release item above), then
         `npm view @lars-artmann/typespec-asyncapi version` → 1.3.0,
         provenance attestation on the npm page, fresh-install smoke test
         (new project, compile, AJV-validate), dist-tags reduced to
         `latest` only, confirm the prerelease `--tag latest` branch did
-        NOT fire (1.3.0 is stable). CORRECTION 2026-11-21 (the original
-        note here was wrong): the `github-release` job does NOT need a
-        manual fallback for the tag run — a FULL rerun (`gh run rerun
-        44853401675`, no `--failed`) preserves the original `push` event,
-        so after registration it re-runs verify + publish AND
-        github-release, creating the v1.3.0 release from the CHANGELOG
-        section with the tarball automatically. The `workflow_dispatch`
-        path (also fine) is what needs the manual release, since dispatch
-        is not a push event. v1.2.0's release stays as the GitHub-only
+        NOT fire (1.3.0 is stable). The GitHub release is created by
+        `finalize-release.yml` AFTER approval (staged publishing,
+        2026-11-21) — the approved version is fetched with `npm pack`
+        from the registry so the release asset matches the published
+        tarball byte for byte. v1.2.0's release stays as the GitHub-only
         record of what shipped there.
         FINALLY deploy the website (`nix run .#deploy-website`): its
         hero/FAQ/stats already say v1.3.0 and were verified locally, but
         deploying before the npm publish would advertise a version
         `npm install` cannot give yet.
-  - [ ] ~~Remove the stale `alpha` dist-tag~~ SUPERSEDED 2026-11-19: all three
+  - [x] ~~Remove the stale `alpha` dist-tag~~ DONE 2026-11-21: all three
         dist-tags had been re-pointed at 1.1.0 as "intentional prerelease
-        channels", but the owner retired `beta`/`alpha` outright — delete both
-        in the npmjs.com UI (the local CLI token is expired; this shares the
-        one 2FA session with the trusted-publisher registration above),
-        leaving `latest` as the only dist-tag.
+        channels", but the owner retired `beta`/`alpha` outright — both
+        were removed with `npm login` (browser 2FA) + `npm dist-tag rm`;
+        an expired local token had made this look UI-only, but npmjs.com
+        has no dist-tag UI at all. `latest` is the only dist-tag.
   - Resolved en route 2026-09-30 (release blockers fixed before the tag):
     Dependabot bumped package.json without regenerating pnpm-lock.yaml
     (frozen-lockfile CI failure), `typescript` had drifted to ^7.0.2
