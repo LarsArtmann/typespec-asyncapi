@@ -1,17 +1,14 @@
 # Release workflow: tag-triggered npm publish, gated on the full verify suite.
 #
-# Setup (one-time, already done):
-#   Repository Settings > Secrets and variables > Actions > NPM_TOKEN
-#   must contain an npm access token with publish rights to the
-#   @lars-artmann scope (granular token recommended).
+# Setup: register release.yml as a trusted publisher in the npm package
+# settings and allow direct npm publish.
+# https://docs.npmjs.com/trusted-publishers/#for-github-actions
 #
-# Provenance: publishing with --provenance requires the `id-token: write`
-# permission below; npm generates a signed provenance attestation from
-# GitHub's OIDC provider, visible on the npm package page.
+# npm uses GitHub OIDC for trusted publishing and provenance.
 #
 # Dry-run: trigger manually via workflow_dispatch with dry_run=true to
 # exercise the whole pipeline (install, verify, publish dry-run) without
-# touching the registry. Real publishes happen only on `v*` tags.
+# uploading a package. A `v*` tag or a manual run with dry_run=false publishes.
 
 name: Release
 
@@ -26,16 +23,26 @@ on:
         type: boolean
         default: true
 
-permissions:
-  contents: write # creating GitHub Releases on tag push (checkout needs only read)
-  id-token: write
+permissions: {}
+
+# One release pipeline at a time per ref; never cancel mid-publish (a killed
+# publish step is how half-shipped releases happen).
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  verify-and-publish:
+  verify:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read # check out the source for verification
+    outputs:
+      artifact-id: ${{ steps.upload.outputs.artifact-id }}
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
         with:
@@ -55,39 +62,74 @@ jobs:
       - name: Verify (build + lint + test + coverage + duplication)
         run: pnpm run verify
 
+      - name: Pack verified npm package
+        run: pnpm pack --out "$RUNNER_TEMP/package.tgz"
+
+      - name: Dry-run npm publish
+        if: github.event_name == 'workflow_dispatch' && inputs.dry_run
+        run: npm publish "$RUNNER_TEMP/package.tgz" --dry-run --ignore-scripts --access public --tag latest
+
+      - name: Upload verified npm package
+        if: github.event_name == 'push' || !inputs.dry_run
+        id: upload
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: npm-package-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/package.tgz
+          if-no-files-found: error
+
+  publish:
+    needs: verify
+    if: github.event_name == 'push' || !inputs.dry_run
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write # exchange the GitHub OIDC token for npm publish credentials
+
+    steps:
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          package-manager-cache: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.verify.outputs.artifact-id }}
+          path: ${{ runner.temp }}/npm-package
+
       - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        shell: bash
         run: |
-          printf 'registry=https://registry.npmjs.org/\n//registry.npmjs.org/:_authToken=%s\n' "$NODE_AUTH_TOKEN" > "$HOME/.npmrc"
-          # npm >= 11 refuses to put a prerelease on the default `latest` tag;
-          # this project's convention is that `latest` tracks the newest beta
-          # (all published versions so far are prereleases), so opt in
-          # explicitly whenever the version has a prerelease suffix.
-          VERSION=$(node -p "require('./package.json').version")
+          PACKAGE="$RUNNER_TEMP/npm-package/package.tgz"
+          VERSION=$(tar -xOzf "$PACKAGE" package/package.json | node -pe 'JSON.parse(require("node:fs").readFileSync(0, "utf8")).version')
+          TAG_ARGS=()
+          # npm 11 requires explicitly opting in to publishing prereleases to latest.
           if [[ "$VERSION" == *-* ]]; then
             TAG_ARGS=(--tag latest)
-          else
-            TAG_ARGS=()
           fi
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            if [[ "${{ inputs.dry_run }}" == "true" ]]; then
-              echo "Dry-run requested: npm publish --dry-run (no registry write)"
-              npm publish --dry-run --ignore-scripts --access public "${TAG_ARGS[@]}"
-            else
-              echo "Manual dispatch with dry_run=false"
-              npm publish --provenance --ignore-scripts --access public "${TAG_ARGS[@]}"
-            fi
-          else
-            echo "Tag push: publishing with provenance"
-            npm publish --provenance --ignore-scripts --access public "${TAG_ARGS[@]}"
-          fi
+          npm publish "$PACKAGE" --registry https://registry.npmjs.org/ --provenance --ignore-scripts --access public "${TAG_ARGS[@]}"
+
+  github-release:
+    needs: [verify, publish]
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the GitHub Release for the existing tag
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          artifact-ids: ${{ needs.verify.outputs.artifact-id }}
+          path: ${{ runner.temp }}/npm-package
 
       # Body comes from the tagged version's CHANGELOG.md section, so the
       # changelog stays the single source of release notes. Idempotent: a
       # re-run of the workflow for an existing release skips this step.
       - name: Create GitHub release
-        if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -102,10 +144,12 @@ jobs:
             const version = process.argv[1];
             const section = fs.readFileSync("CHANGELOG.md", "utf8")
               .split(/^## /m)
-              .find((s) => s.startsWith(`[${version}]`));
+              .find((s) => s.startsWith("[" + version + "]"));
             if (section === undefined) {
-              throw new Error(`No CHANGELOG.md section for ${version}`);
+              throw new Error("No CHANGELOG.md section for " + version);
             }
             console.log(section.slice(section.indexOf("\n") + 1).trimEnd());
           ' "$VERSION")
-          gh release create "$TAG" --title "$TAG" --notes "$NOTES" --latest
+          PACKAGE="$RUNNER_TEMP/npm-package/typespec-asyncapi.tgz"
+          mv "$RUNNER_TEMP/npm-package/package.tgz" "$PACKAGE"
+          gh release create "$TAG" "$PACKAGE" --verify-tag --title "$TAG" --notes "$NOTES" --latest
