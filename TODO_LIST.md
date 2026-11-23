@@ -360,6 +360,14 @@ What remains is the gated release chain and the tail:
 - [ ] Update `website/README.md` pages/ listing: drop the manual llms.txt
       endpoints line, document `starlight-llms-txt` plugin generation
       (docs/status/2026-10-23_14-13:215).
+- [ ] Spectral runtime proof: run `spectral lint` (CLI >= 6.17.0, extends
+      `spectral:asyncapi`) against an emitted 3.1.0 document and date-stamp
+      the result in the AGENTS.md gotcha
+      (docs/status/2026-11-03_23-45:126).
+- [ ] Decide + reconcile the "Spectral, at best" comparison copy across the
+      landing row, ComparisonSection, and the demo-video captures (schema
+      validation parity concession vs workflow framing; one commit)
+      (docs/status/2026-11-03_23-45:127).
 - [ ] Deploy observability: `scripts/check-live-headers.mjs` asserting status +
       `Cache-Control` + one content marker per URL class (`/`, `/faq/`,
       `/_astro/*`, `/js/*.js`, `/playground/engine.js`), wired as the final
