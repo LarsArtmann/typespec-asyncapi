@@ -3,9 +3,9 @@
  * source so hand-written reference docs can never drift.
  *
  * Parsed sources:
- *   - lib/main.tsp                                        -> decorators
- *   - src/lib.ts                                          -> diagnostics
- *   - src/infrastructure/configuration/asyncAPIEmitterOptions.ts -> emitter options
+ *   - lib/main.tsp                                                -> decorators
+ *   - src/lib.ts                                                  -> diagnostics
+ *   - src/infrastructure/configuration/asyncAPIEmitterOptions.ts  -> emitter options
  *
  * Rendered pages (overwritten every run, deterministic order):
  *   - website/src/content/docs/reference/decorators.md
@@ -78,19 +78,18 @@ function docCommentText(rawComment: string): string {
   return collapseWhitespace(
     rawComment
       .split("\n")
-      .map((line) => line.replaceAll(/^[\s]*\*[ ]?/u, "").trim())
+      .map((line) => line.replace(/^[\s]*\*[ ]?/u, "").trim())
       .filter((line) => line.length > 0)
       .join(" "),
   );
 }
 
 function firstSentence(text: string): string {
-  const description = collapseWhitespace(text.split("@param")[0]);
-  const sentenceEnd = /\.\s/u.exec(description);
-  if (sentenceEnd === null || sentenceEnd.index === undefined) {
-    return description;
-  }
-  return description.slice(0, sentenceEnd.index + 1);
+  const cut = text.indexOf("@param");
+  const description = collapseWhitespace(cut === -1 ? text : text.slice(0, cut));
+  const match = /\.\s/u.exec(description);
+  const end = match?.index;
+  return end === undefined ? description : description.slice(0, end + 1);
 }
 
 function splitTopLevel(text: string, separator: string): readonly string[] {
@@ -118,29 +117,35 @@ function splitTopLevel(text: string, separator: string): readonly string[] {
 }
 
 const DECORATOR_PATTERN =
-  /\/\*\*([\s\S]*?)\*\/\s*extern\s+dec\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([\s\S]*?)\)\s*;/gu;
+  /\/\*\*(?<comment>[\s\S]*?)\*\/\s*extern\s+dec\s+(?<name>[A-Za-z_][A-Za-z0-9_]*)\s*\((?<params>[\s\S]*?)\)\s*;/gu;
+
+const PARAMETER_PATTERN =
+  /^(?<name>[A-Za-z_][A-Za-z0-9_]*)(?<optional>\?)?:\s*(?<type>[\s\S]+)$/u;
 
 function parseParameter(raw: string): DecoratorParameter {
-  const separator = raw.indexOf(":");
-  if (separator < 0) {
+  const match = PARAMETER_PATTERN.exec(raw.trim());
+  const name = match?.groups?.name;
+  const type = match?.groups?.type;
+  if (name === undefined || type === undefined) {
     throw new Error(`cannot parse decorator parameter: ${raw}`);
   }
-  const rawName = raw.slice(0, separator).trim();
-  const optional = rawName.endsWith("?");
-  const name = optional ? rawName.slice(0, -1) : rawName;
-  return { name, type: collapseWhitespace(raw.slice(separator + 1)), optional };
+  return {
+    name,
+    type: collapseWhitespace(type),
+    optional: match?.groups?.optional !== undefined,
+  };
 }
 
 export function parseDecorators(source: string): readonly DecoratorDoc[] {
   const decorators: DecoratorDoc[] = [];
   for (const match of source.matchAll(DECORATOR_PATTERN)) {
-    const comment = match[1];
-    const name = match[2];
-    const rawParams = match[3];
+    const comment = match.groups?.comment;
+    const name = match.groups?.name;
+    const rawParams = match.groups?.params;
     if (comment === undefined || name === undefined || rawParams === undefined) {
       throw new Error(`cannot parse decorator declaration near: ${match[0]}`);
     }
-    const params = splitTopLevel(rawParams, ",").map(parseParameter);
+    const params = splitTopLevel(rawParams, ",").map((raw) => parseParameter(raw));
     const targets = params
       .filter((param) => param.name === "target")
       .flatMap((param) => splitTopLevel(param.type, "|"))
@@ -156,22 +161,23 @@ export function parseDecorators(source: string): readonly DecoratorDoc[] {
 }
 
 const DIAGNOSTIC_PATTERN =
-  /"([A-Za-z][A-Za-z0-9-]*)":\s*\{\s*messages:\s*\{([\s\S]*?)\},\s*severity:\s*"(error|warning)"/gu;
+  /"(?<code>[A-Za-z][A-Za-z0-9-]*)":\s*\{\s*messages:\s*\{(?<block>[\s\S]*?)\},\s*severity:\s*"(?<severity>error|warning)"/gu;
+
 const DEFAULT_MESSAGE_PATTERN =
-  /default:\s*(?:paramMessage`([^`]*)`|"((?:[^"\\]|\\.)*)")/u;
+  /default:\s*(?:paramMessage`(?<template>[^`]*)`|"(?<plain>(?:[^"\\]|\\.)*)")/u;
 
 export function parseDiagnostics(source: string): readonly DiagnosticDoc[] {
   const diagnostics: DiagnosticDoc[] = [];
   for (const match of source.matchAll(DIAGNOSTIC_PATTERN)) {
-    const code = match[1];
-    const block = match[2];
-    const severity = match[3];
+    const code = match.groups?.code;
+    const block = match.groups?.block;
+    const severity = match.groups?.severity;
     if (code === undefined || block === undefined || severity === undefined) {
       throw new Error(`cannot parse diagnostic entry near: ${match[0]}`);
     }
     const message = DEFAULT_MESSAGE_PATTERN.exec(block);
-    const template = message?.[1];
-    const plain = message?.[2];
+    const template = message?.groups?.template;
+    const plain = message?.groups?.plain;
     if (template === undefined && plain === undefined) {
       throw new Error(`cannot parse default message for diagnostic: ${code}`);
     }
@@ -179,22 +185,21 @@ export function parseDiagnostics(source: string): readonly DiagnosticDoc[] {
     diagnostics.push({
       code,
       severity,
-      message: raw.replaceAll(/\$\{"([^"]+)"\}/gu, "{$1}"),
+      message: raw.replaceAll(/\$\{"(?<param>[^"]+)"\}/gu, "{$<param>}"),
     });
   }
   return diagnostics;
 }
 
 const OPTIONS_INTERFACE_PATTERN =
-  /export\s+interface\s+EmitterOptions\b[^{]*\{([\s\S]*?)\n\}/u;
-const OPTION_FIELD_PATTERN =
-  /(?:"([\w-]+)"|([A-Za-z_][A-Za-z0-9_]*))(\?)?:\s*([\s\S]*?);[ \t]*(?=\n|$)/gu;
-const DOC_COMMENT_PATTERN = /\*\*([\s\S]*?)\*\//gu;
+  /export\s+interface\s+EmitterOptions\b[^{]*\{(?<body>[\s\S]*?)\n\}/u;
 
-function descriptionBefore(
-  body: string,
-  fieldStart: number,
-): string {
+const OPTION_FIELD_PATTERN =
+  /(?:"(?<quoted>[\w-]+)"|(?<identifier>[A-Za-z_][A-Za-z0-9_]*))(?<optional>\?)?:\s*(?<type>[\s\S]*?);[ \t]*(?=\n|$)/gu;
+
+const DOC_COMMENT_PATTERN = /\*\*(?<text>[\s\S]*?)\*\//gu;
+
+function descriptionBefore(body: string, fieldStart: number): string {
   let description = "";
   for (const match of body.matchAll(DOC_COMMENT_PATTERN)) {
     const end = (match.index ?? 0) + match[0].length;
@@ -202,7 +207,7 @@ function descriptionBefore(
       break;
     }
     if (collapseWhitespace(body.slice(end, fieldStart)).length === 0) {
-      const text = match[1];
+      const text = match.groups?.text;
       if (text !== undefined) {
         description = docCommentText(text);
       }
@@ -213,27 +218,21 @@ function descriptionBefore(
 
 export function parseOptions(source: string): readonly OptionDoc[] {
   const interfaceMatch = OPTIONS_INTERFACE_PATTERN.exec(source);
-  const body = interfaceMatch?.[1];
-  if (interfaceMatch === null || body === undefined) {
+  const body = interfaceMatch?.groups?.body;
+  if (body === undefined) {
     throw new Error("cannot find the EmitterOptions interface");
   }
   const options: OptionDoc[] = [];
   for (const match of body.matchAll(OPTION_FIELD_PATTERN)) {
-    const quoted = match[1];
-    const identifier = match[2];
-    const optional = match[3];
-    const rawType = match[4];
-    if (
-      (quoted === undefined && identifier === undefined) ||
-      rawType === undefined
-    ) {
+    const quoted = match.groups?.quoted;
+    const identifier = match.groups?.identifier;
+    const rawType = match.groups?.type;
+    if ((quoted === undefined && identifier === undefined) || rawType === undefined) {
       throw new Error(`cannot parse emitter option near: ${match[0]}`);
     }
-    const name = quoted ?? identifier ?? "";
-    const type = collapseWhitespace(rawType) + (optional ?? "");
     options.push({
-      name,
-      type,
+      name: quoted ?? identifier ?? "",
+      type: collapseWhitespace(rawType) + (match.groups?.optional ?? ""),
       description: descriptionBefore(body, match.index ?? 0),
     });
   }
@@ -241,7 +240,7 @@ export function parseOptions(source: string): readonly OptionDoc[] {
 }
 
 function escapeCell(text: string): string {
-  return collapseWhitespace(text).replaceAll("|", "\\|");
+  return collapseWhitespace(text).replaceAll("|", String.raw`\|`);
 }
 
 function compareByName(
@@ -279,10 +278,9 @@ const GENERATED_BANNER =
 function renderPage(
   file: string,
   title: string,
-  heading: string,
   table: readonly string[],
-): string {
-  return [
+): GeneratedPage {
+  const content = [
     "---",
     `title: ${title}`,
     `description: ${GENERATED_DESCRIPTION}`,
@@ -290,18 +288,20 @@ function renderPage(
     "",
     GENERATED_BANNER,
     "",
-    `## ${heading}`,
+    `## ${title}`,
     "",
     ...table,
     "",
   ].join("\n");
+  return { file, title, content };
 }
 
-function renderDecoratorsPage(
-  decorators: readonly DecoratorDoc[],
-): GeneratedPage {
-  const rows = ["| Decorator | Targets | Parameters | Summary |", "| --- | --- | --- | --- |"];
-  for (const decorator of [...decorators].sort(compareByName)) {
+function renderDecoratorsPage(decorators: readonly DecoratorDoc[]): GeneratedPage {
+  const rows = [
+    "| Decorator | Targets | Parameters | Summary |",
+    "| --- | --- | --- | --- |",
+  ];
+  for (const decorator of decorators.toSorted(compareByName)) {
     const targets =
       decorator.targets.length > 0
         ? decorator.targets.map((target) => `\`${target}\``).join(", ")
@@ -319,47 +319,32 @@ function renderDecoratorsPage(
       `| \`@${decorator.name}\` | ${targets} | ${parameters} | ${escapeCell(decorator.summary)} |`,
     );
   }
-  return renderPage(
-    "decorators.md",
-    "Decorators",
-    "Decorators",
-    rows,
-  );
+  return renderPage("decorators.md", "Decorators", rows);
 }
 
-function renderDiagnosticsPage(
-  diagnostics: readonly DiagnosticDoc[],
-): GeneratedPage {
+function renderDiagnosticsPage(diagnostics: readonly DiagnosticDoc[]): GeneratedPage {
   const rows = ["| Code | Severity | Message |", "| --- | --- | --- |"];
-  for (const diagnostic of [...diagnostics].sort(compareByCode)) {
+  for (const diagnostic of diagnostics.toSorted(compareByCode)) {
     rows.push(
       `| \`${diagnostic.code}\` | ${diagnostic.severity} | ${escapeCell(diagnostic.message)} |`,
     );
   }
-  return renderPage(
-    "diagnostics.md",
-    "Diagnostics",
-    "Diagnostics",
-    rows,
-  );
+  return renderPage("diagnostics.md", "Diagnostics", rows);
 }
+
+const IDENTIFIER_NAME_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/u;
 
 function renderOptionsPage(options: readonly OptionDoc[]): GeneratedPage {
   const rows = ["| Option | Type | Description |", "| --- | --- | --- |"];
-  for (const option of [...options].sort(compareByName)) {
-    const name = option.name.match(/^[A-Za-z_][A-Za-z0-9_]*$/u)
+  for (const option of options.toSorted(compareByName)) {
+    const name = IDENTIFIER_NAME_PATTERN.test(option.name)
       ? option.name
       : `"${option.name}"`;
     rows.push(
       `| \`${name}\` | ${escapeCell(option.type)} | ${escapeCell(option.description)} |`,
     );
   }
-  return renderPage(
-    "emitter-options.md",
-    "Emitter options",
-    "Emitter options",
-    rows,
-  );
+  return renderPage("emitter-options.md", "Emitter options", rows);
 }
 
 function buildPages(
@@ -383,7 +368,8 @@ function main(): void {
   );
   const drifted: string[] = [];
   for (const page of pages) {
-    const absolutePath = path.join(repoRoot, "website", "src", "content", "docs", "reference", page.file);
+    const relativePath = path.join("website", "src", "content", "docs", "reference", page.file);
+    const absolutePath = path.join(repoRoot, relativePath);
     const current = existsSync(absolutePath)
       ? readFileSync(absolutePath, "utf8")
       : undefined;
@@ -392,13 +378,13 @@ function main(): void {
     }
     if (checkOnly) {
       drifted.push(
-        current === undefined ? `${page.file} (missing)` : `${page.file} (differs)`,
+        current === undefined ? `${relativePath} (missing)` : `${relativePath} (differs)`,
       );
       continue;
     }
     mkdirSync(path.dirname(absolutePath), { recursive: true });
     writeFileSync(absolutePath, page.content, "utf8");
-    console.log(`wrote website/src/content/docs/reference/${page.file}`);
+    console.log(`wrote ${relativePath}`);
   }
   if (checkOnly) {
     if (drifted.length > 0) {

@@ -39,7 +39,8 @@
     "clean": "rm -rf dist .astro node_modules/.cache",
     "astro": "astro",
     "playground": "node scripts/build-playground.mjs",
-    "audit:a11y": "node scripts/axe-audit.mjs"
+    "audit:a11y": "node scripts/axe-audit.mjs",
+    "test:e2e": "playwright test"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
@@ -53,11 +54,13 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.12",
+    "@playwright/test": "^1.65.1",
     "@typespec/compiler": "^1.17.0",
     "axe-core": "^4.14.1",
     "esbuild": "^0.28.2",
     "html-validate": "^11.17.0",
     "jsdom": "^31.0.1",
+    "playwright-core": "^1.65.1",
     "sharp": "0.35.5",
     "typescript": "6.0.3"
   },
