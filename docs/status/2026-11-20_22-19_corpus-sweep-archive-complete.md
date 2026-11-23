@@ -87,7 +87,7 @@ P2 — execute the harvested backlog (high-value first):
 22. Property-suite generator breadth (unions/inheritance/generics/params).
 23. Transient bun/vitest exit-zero flake root-cause (row exists; needs a captured failure).
 24. Mixed-ownership fallback-path property invariant.
-25. Dual-emitter AJV integration test.
+25. Dual-emitter AJV integration test. **→ routed to TODO_LIST §Test-Suite Integrity Integration test running BOTH emitters outputs through AJV in one program**
 26. CONTRIBUTING.md pnpm/Vitest refresh.
 27. Unknown-payload runnable example.
 28. Copy-as-Markdown button; package-manager tabs; feedback widget.
@@ -98,7 +98,7 @@ P3 — sweep tooling polish:
 
 31. Upstream apply.py's content-addressed matching upstream as a docs-health writer feature.
 32. Add a pre-move citation scan to the archive ritual recipe (skill + AGENTS.md).
-33. Add a writer-claims protocol to PROTOCOL.md (avoid double-annotation).
+33. Add a writer-claims protocol to PROTOCOL.md (avoid double-annotation). **→ routed to TODO_LIST §Hygiene add a writer-claims protocol to the sweep PROTOCOL template**
 34. Convert the remaining hand-rejoined dense-prose verdicts into annotate.go grammar support (dense-line item mode) so future sweeps never need hand-rejoins.
 35. Spot-read 10 random archived verdict/comment pairs as a human QA pass.
 36. Track whether BuildFlow's docs-gates battery run stays green on origin after push.
@@ -116,7 +116,7 @@ P4 — hygiene:
 45. Check whether `docs/_archive/` (the older archive, 479 files) pruning decision ever lands (Hygiene row).
 46. Re-verify the AGENTS.md docs-gates paragraph wording after the next fleet run (line counts drift).
 47. Keep the "one verdict or one row" rule for every new report from today forward — the pin enforces it mechanically.
-48. Review the three dense-prose hand-rejoins once annotate.go gains a dense-line mode.
+48. Review the three dense-prose hand-rejoins once annotate.go gains a dense-line mode. **→ routed to TODO_LIST §Hygiene review the three dense-prose hand-rejoins once annotate.go gains a dense-line mode**
 49. Confirm the ROADMAP Themes §6 numbering survives the next ROADMAP edit (§ pointers in routed markers depend on it).
 50. Close this report's own loop: next session, verify this file's §f (none — it has none) and archive it per ritual when it ages out.
 

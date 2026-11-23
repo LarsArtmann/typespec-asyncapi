@@ -303,6 +303,15 @@ What remains is the gated release chain and the tail:
       (docs/status/2026-11-02_12-09:166).
 - [ ] Refresh `website/video` storyboard `270+` copy and the
       `04-receipt.html` counter (docs/status/2026-11-02_12-09:160).
+- [ ] Clean the dead `~/.npmrc` auth token line on the local machine
+      (expired NPM_TOKEN remnant; the npmjs.com secret was deleted
+      2026-11-19) (docs/status/2026-11-19_20-38:266).
+- [ ] (repo: SKILLS) docs-health: add a writer-claims protocol to the
+      sweep PROTOCOL template so parallel annotators never double-annotate
+      (docs/status/2026-11-20_22-19:101).
+- [ ] (repo: SKILLS) docs-gates: when annotate.go gains a dense-line mode,
+      review the three dense-prose hand-rejoins in the archived corpus
+      (docs/status/2026-11-20_22-19:119).
 
 ## Website QA & Brand Follow-ups (harvested 2026-11-19 from kept status reports)
 

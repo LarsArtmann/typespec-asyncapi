@@ -263,7 +263,7 @@ Nothing catastrophic this session. The honest ledger:
     benign so far, worth understanding the trigger).
 26. Consider `--workflow` scope refresh so future workflow-file PRs merge
     properly (see question 3).
-27. Clean the dead `~/.npmrc` token line.
+27. Clean the dead `~/.npmrc` token line. **→ routed to TODO_LIST §Hygiene Clean the dead npmrc auth token line**
 28. Review whether `git credential`/SSH is the only remaining push path
     that bypasses OAuth scopes (security posture note).
 

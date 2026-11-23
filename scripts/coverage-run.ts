@@ -75,4 +75,6 @@ function main(): number {
   return 1;
 }
 
-process.exit(main());
+if (import.meta.main) {
+  process.exit(main());
+}
