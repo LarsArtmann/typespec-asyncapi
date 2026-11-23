@@ -116,7 +116,7 @@ describe("asyncAPI 3.1: channel.servers via @useChannelServer", () => {
 });
 
 describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
-  it("emits schemaFormat on message when set via @message", async () => {
+  it("wraps schemaFormat into the payload per the Multi Format Schema Object", async () => {
     const source = `
       namespace AvroEvents;
       @message(#{
@@ -131,12 +131,14 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
       op publish(): UserCreated;
     `;
     const result = await compileAsyncAPI(source);
-    expect(
-      inlineObject(
-        result.asyncApiDoc?.components?.messages?.UserCreated,
-        "message",
-      ).schemaFormat,
-    ).toBe("application/vnd.apache.avro+json;version=1.9.0");
+    const { payload } = inlineObject(
+      result.asyncApiDoc?.components?.messages?.UserCreated,
+      "message",
+    );
+    expect(inlineObject(payload, "payload")).toStrictEqual({
+      schemaFormat: "application/vnd.apache.avro+json;version=1.9.0",
+      schema: { $ref: "#/components/schemas/UserCreated" },
+    });
   });
 
   it("emits Protobuf schemaFormat", async () => {
@@ -148,12 +150,14 @@ describe("asyncAPI 3.1: message.schemaFormat (Avro/Protobuf)", () => {
       op publish(): OrderEvent;
     `;
     const result = await compileAsyncAPI(source);
-    expect(
-      inlineObject(
-        result.asyncApiDoc?.components?.messages?.OrderEvent,
-        "message",
-      ).schemaFormat,
-    ).toBe("application/vnd.google.protobuf");
+    const { payload } = inlineObject(
+      result.asyncApiDoc?.components?.messages?.OrderEvent,
+      "message",
+    );
+    expect(inlineObject(payload, "payload")).toStrictEqual({
+      schemaFormat: "application/vnd.google.protobuf",
+      schema: { $ref: "#/components/schemas/OrderEvent" },
+    });
   });
 });
 

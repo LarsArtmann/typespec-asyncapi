@@ -35,16 +35,16 @@ describe("multi-format message payloads", () => {
     `);
 
     const message = inlineObject(doc.components.messages.AvroOrder);
-    expect(message.schemaFormat).toBe(
-      "application/vnd.apache.avro+json;version=1.9.0",
-    );
-    expect(message.payload).toStrictEqual({
-      type: "record",
-      name: "Order",
-      fields: [
-        { name: "id", type: "string" },
-        { name: "qty", type: "int" },
-      ],
+    expect(inlineObject(message.payload, "payload")).toStrictEqual({
+      schemaFormat: "application/vnd.apache.avro+json;version=1.9.0",
+      schema: {
+        type: "record",
+        name: "Order",
+        fields: [
+          { name: "id", type: "string" },
+          { name: "qty", type: "int" },
+        ],
+      },
     });
   });
 

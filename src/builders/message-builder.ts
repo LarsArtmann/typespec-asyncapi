@@ -34,11 +34,14 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
       summary: data.description,
     });
 
-    if (data.schemaFormat !== undefined) {
-      msgObj.schemaFormat = data.schemaFormat;
-    }
     if (data.payload !== undefined) {
       msgObj.payload = data.payload;
+    }
+    if (data.schemaFormat !== undefined) {
+      msgObj.payload = {
+        schemaFormat: data.schemaFormat,
+        schema: msgObj.payload ?? {},
+      };
     }
     if (data.examples !== undefined && data.examples.length > 0) {
       msgObj.examples = data.examples;

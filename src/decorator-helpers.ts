@@ -12,6 +12,7 @@ import { $lib } from "./lib.js";
 import { PROTOCOL_LIST } from "./constants/protocols.js";
 import type { Tag } from "./domain/models/asyncapi-document.js";
 import type { MessageConfigData } from "./state.js";
+import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 
 // === DIAGNOSTIC HELPERS ===
 
@@ -296,6 +297,7 @@ export function extractMessageConfig(
   let contentType: string | undefined;
   let schemaFormat: string | undefined;
   let examples: MessageConfigData["examples"];
+  let payload: JsonSchema | undefined;
 
   if (isModelConfig(config)) {
     title = getModelPropertyStringValue(config, "title");
@@ -319,6 +321,13 @@ export function extractMessageConfig(
         : undefined;
     if (Array.isArray(configObj.examples)) {
       examples = configObj.examples as typeof examples;
+    }
+    if (
+      configObj.payload !== null &&
+      typeof configObj.payload === "object" &&
+      !Array.isArray(configObj.payload)
+    ) {
+      payload = configObj.payload as JsonSchema;
     }
   }
 
