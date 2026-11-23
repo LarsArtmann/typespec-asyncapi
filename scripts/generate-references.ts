@@ -279,6 +279,26 @@ const GENERATED_DESCRIPTION =
 const GENERATED_BANNER =
   "> **Generated file** — produced by `scripts/generate-references.ts` (`pnpm run references:generate`). Never hand-edit; the drift test fails if this file is stale.";
 
+function renderTable(
+  header: readonly string[],
+  bodyRows: readonly (readonly string[])[],
+): string[] {
+  const grid = [header, ...bodyRows];
+  const widths = header.map((_cell, column) =>
+    Math.max(...grid.map((row) => row[column]?.length ?? 0)),
+  );
+  const lines = [
+    `| ${header.map((cell, column) => cell.padEnd(widths[column] ?? 0)).join(" | ")} |`,
+    `| ${widths.map((width) => "-".repeat(width)).join(" | ")} |`,
+  ];
+  for (const row of bodyRows) {
+    lines.push(
+      `| ${row.map((cell, column) => cell.padEnd(widths[column] ?? 0)).join(" | ")} |`,
+    );
+  }
+  return lines;
+}
+
 function renderPage(
   file: string,
   title: string,
@@ -301,10 +321,7 @@ function renderPage(
 }
 
 function renderDecoratorsPage(decorators: readonly DecoratorDoc[]): GeneratedPage {
-  const rows = [
-    "| Decorator | Targets | Parameters | Summary |",
-    "| --- | --- | --- | --- |",
-  ];
+  const rows: string[][] = [];
   for (const decorator of decorators.toSorted(compareByName)) {
     const targets =
       decorator.targets.length > 0
@@ -319,36 +336,49 @@ function renderDecoratorsPage(decorators: readonly DecoratorDoc[]): GeneratedPag
             )
             .join(", ")
         : "—";
-    rows.push(
-      `| \`@${decorator.name}\` | ${targets} | ${parameters} | ${escapeCell(decorator.summary)} |`,
-    );
+    rows.push([
+      `\`@${decorator.name}\``,
+      targets,
+      parameters,
+      escapeCell(decorator.summary),
+    ]);
   }
-  return renderPage("decorators.md", "Decorators", rows);
+  return renderPage(
+    "decorators.md",
+    "Decorators",
+    renderTable(["Decorator", "Targets", "Parameters", "Summary"], rows),
+  );
 }
 
 function renderDiagnosticsPage(diagnostics: readonly DiagnosticDoc[]): GeneratedPage {
-  const rows = ["| Code | Severity | Message |", "| --- | --- | --- |"];
-  for (const diagnostic of diagnostics.toSorted(compareByCode)) {
-    rows.push(
-      `| \`${diagnostic.code}\` | ${diagnostic.severity} | ${escapeCell(diagnostic.message)} |`,
-    );
-  }
-  return renderPage("diagnostics.md", "Diagnostics", rows);
+  const rows = diagnostics
+    .toSorted(compareByCode)
+    .map((diagnostic) => [
+      `\`${diagnostic.code}\``,
+      diagnostic.severity,
+      escapeCell(diagnostic.message),
+    ]);
+  return renderPage(
+    "diagnostics.md",
+    "Diagnostics",
+    renderTable(["Code", "Severity", "Message"], rows),
+  );
 }
 
 const IDENTIFIER_NAME_PATTERN = /^[A-Za-z_][A-Za-z0-9_]*$/u;
 
 function renderOptionsPage(options: readonly OptionDoc[]): GeneratedPage {
-  const rows = ["| Option | Type | Description |", "| --- | --- | --- |"];
-  for (const option of options.toSorted(compareByName)) {
+  const rows = options.toSorted(compareByName).map((option) => {
     const name = IDENTIFIER_NAME_PATTERN.test(option.name)
       ? option.name
       : `"${option.name}"`;
-    rows.push(
-      `| \`${name}\` | ${escapeCell(option.type)} | ${escapeCell(option.description)} |`,
-    );
-  }
-  return renderPage("emitter-options.md", "Emitter options", rows);
+    return [`\`${name}\``, escapeCell(option.type), escapeCell(option.description)];
+  });
+  return renderPage(
+    "emitter-options.md",
+    "Emitter options",
+    renderTable(["Option", "Type", "Description"], rows),
+  );
 }
 
 function buildPages(

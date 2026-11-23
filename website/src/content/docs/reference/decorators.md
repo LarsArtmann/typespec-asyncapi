@@ -7,37 +7,37 @@ description: Generated from source on every run of scripts/generate-references.t
 
 ## Decorators
 
-| Decorator | Targets | Parameters | Summary |
-| --- | --- | --- | --- |
-| `@apiVersion` | `Namespace` | `version: valueof string` | Set the API version for the AsyncAPI document's info.version field |
-| `@bindings` | `Operation`, `Model`, `Namespace` | `value: {} \| valueof Record<unknown>` | Define protocol bindings (generic) |
-| `@channel` | `Operation` | `address: valueof string`, `id?: valueof string` | Specify the channel address/path for a message operation |
-| `@correlationId` | `Model`, `Operation` | `location: valueof string` | Specify correlation ID configuration |
-| `@defaultContentType` | `Namespace` | `contentType: valueof string` | Specify the default content type for all messages in the document |
-| `@extension` | `Namespace`, `Operation`, `Model` | `key: valueof string`, `value: valueof unknown` | Attach a specification extension to an AsyncAPI object. |
-| `@externalDocs` | `Model`, `Operation`, `Namespace` | `url: valueof string`, `description?: valueof string` | Reference external documentation for a message, operation, or the whole document (namespace target) |
-| `@header` | `Model`, `ModelProperty` | `name: valueof string`, `value: valueof string \| Model` | Define message header |
-| `@jsonSchemaExtension` | `Model`, `ModelProperty`, `Union`, `Enum`, `Scalar` | `key: valueof string`, `value: valueof unknown` | Attach an arbitrary JSON Schema keyword to a schema. |
-| `@message` | `Model` | `config: {} \| valueof Record<unknown>` | Apply message metadata to a model representing an AsyncAPI message |
-| `@messageId` | `Model` | `id: valueof string` | Override the auto-generated message name in the AsyncAPI document |
-| `@messageTrait` | `Namespace` | `name: valueof string`, `config: {} \| valueof Record<unknown>` | Define a reusable message trait |
-| `@operationId` | `Operation` | `id: valueof string` | Override the auto-generated operation name in the AsyncAPI document |
-| `@operationSecurity` | `Operation` | `config: {} \| valueof Record<unknown>` | Apply a Security Requirement (a reference to an existing `components.securitySchemes` entry) to an operation. |
-| `@operationTrait` | `Namespace` | `name: valueof string`, `config: {} \| valueof Record<unknown>` | Define a reusable operation trait |
-| `@parameter` | `Namespace` | `name: valueof string`, `config: {} \| valueof Record<unknown>` | Define a reusable channel parameter |
-| `@protocol` | `Operation`, `Model` | `config: {} \| valueof Record<unknown>` | Define protocol-specific binding configuration |
-| `@publish` | `Operation` | `config?: Model` | Mark an operation as a publish operation (sends messages to the channel) |
-| `@reply` | `Operation` | `replyModel: Model`, `address?: valueof string` | Define the reply for a request-reply operation |
-| `@reusableBinding` | `Namespace` | `name: valueof string`, `config: {} \| valueof Record<unknown>` | Define a reusable protocol binding |
-| `@reusableCorrelationId` | `Namespace` | `name: valueof string`, `location: valueof string` | Define a reusable correlation ID |
-| `@reusableServer` | `Namespace` | `name: valueof string`, `config: valueof Record<unknown>` | Define a reusable server in `components.servers` |
-| `@security` | `Operation`, `Namespace` | `config: {} \| valueof Record<unknown>` | Apply security scheme information. |
-| `@server` | `Namespace` | `name: valueof string`, `config: valueof Record<unknown>` | Define server configuration |
-| `@subscribe` | `Operation` | — | Mark an operation as a subscribe operation (receives messages from the channel) |
-| `@tags` | `Model`, `Operation`, `Namespace` | `value: valueof (string \| Record<unknown>)[]` | Apply tags metadata for categorization |
-| `@useBinding` | `Operation`, `Model`, `Namespace` | `name: valueof string` | Reference a reusable binding by name on an operation, model, or namespace (server bindings) |
-| `@useChannelBinding` | `Operation` | `name: valueof string` | Apply a reusable binding to an operation's channel (populates components.channelBindings) |
-| `@useChannelServer` | `Operation` | `name: valueof string` | Reference a server by name on an operation's channel. |
-| `@useCorrelationId` | `Model` | `name: valueof string` | Reference a reusable correlation ID by name on a model |
-| `@useMessageTrait` | `Model` | `name: valueof string` | Reference a message trait by name on a model |
-| `@useOperationTrait` | `Operation` | `name: valueof string` | Reference an operation trait by name on an operation |
+| Decorator                | Targets                                             | Parameters                                                      | Summary                                                                                                       |
+| ------------------------ | --------------------------------------------------- | --------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `@apiVersion`            | `Namespace`                                         | `version: valueof string`                                       | Set the API version for the AsyncAPI document's info.version field                                            |
+| `@bindings`              | `Operation`, `Model`, `Namespace`                   | `value: {} \| valueof Record<unknown>`                          | Define protocol bindings (generic)                                                                            |
+| `@channel`               | `Operation`                                         | `address: valueof string`, `id?: valueof string`                | Specify the channel address/path for a message operation                                                      |
+| `@correlationId`         | `Model`, `Operation`                                | `location: valueof string`                                      | Specify correlation ID configuration                                                                          |
+| `@defaultContentType`    | `Namespace`                                         | `contentType: valueof string`                                   | Specify the default content type for all messages in the document                                             |
+| `@extension`             | `Namespace`, `Operation`, `Model`                   | `key: valueof string`, `value: valueof unknown`                 | Attach a specification extension to an AsyncAPI object.                                                       |
+| `@externalDocs`          | `Model`, `Operation`, `Namespace`                   | `url: valueof string`, `description?: valueof string`           | Reference external documentation for a message, operation, or the whole document (namespace target)           |
+| `@header`                | `Model`, `ModelProperty`                            | `name: valueof string`, `value: valueof string \| Model`        | Define message header                                                                                         |
+| `@jsonSchemaExtension`   | `Model`, `ModelProperty`, `Union`, `Enum`, `Scalar` | `key: valueof string`, `value: valueof unknown`                 | Attach an arbitrary JSON Schema keyword to a schema.                                                          |
+| `@message`               | `Model`                                             | `config: {} \| valueof Record<unknown>`                         | Apply message metadata to a model representing an AsyncAPI message                                            |
+| `@messageId`             | `Model`                                             | `id: valueof string`                                            | Override the auto-generated message name in the AsyncAPI document                                             |
+| `@messageTrait`          | `Namespace`                                         | `name: valueof string`, `config: {} \| valueof Record<unknown>` | Define a reusable message trait                                                                               |
+| `@operationId`           | `Operation`                                         | `id: valueof string`                                            | Override the auto-generated operation name in the AsyncAPI document                                           |
+| `@operationSecurity`     | `Operation`                                         | `config: {} \| valueof Record<unknown>`                         | Apply a Security Requirement (a reference to an existing `components.securitySchemes` entry) to an operation. |
+| `@operationTrait`        | `Namespace`                                         | `name: valueof string`, `config: {} \| valueof Record<unknown>` | Define a reusable operation trait                                                                             |
+| `@parameter`             | `Namespace`                                         | `name: valueof string`, `config: {} \| valueof Record<unknown>` | Define a reusable channel parameter                                                                           |
+| `@protocol`              | `Operation`, `Model`                                | `config: {} \| valueof Record<unknown>`                         | Define protocol-specific binding configuration                                                                |
+| `@publish`               | `Operation`                                         | `config?: Model`                                                | Mark an operation as a publish operation (sends messages to the channel)                                      |
+| `@reply`                 | `Operation`                                         | `replyModel: Model`, `address?: valueof string`                 | Define the reply for a request-reply operation                                                                |
+| `@reusableBinding`       | `Namespace`                                         | `name: valueof string`, `config: {} \| valueof Record<unknown>` | Define a reusable protocol binding                                                                            |
+| `@reusableCorrelationId` | `Namespace`                                         | `name: valueof string`, `location: valueof string`              | Define a reusable correlation ID                                                                              |
+| `@reusableServer`        | `Namespace`                                         | `name: valueof string`, `config: valueof Record<unknown>`       | Define a reusable server in `components.servers`                                                              |
+| `@security`              | `Operation`, `Namespace`                            | `config: {} \| valueof Record<unknown>`                         | Apply security scheme information.                                                                            |
+| `@server`                | `Namespace`                                         | `name: valueof string`, `config: valueof Record<unknown>`       | Define server configuration                                                                                   |
+| `@subscribe`             | `Operation`                                         | —                                                               | Mark an operation as a subscribe operation (receives messages from the channel)                               |
+| `@tags`                  | `Model`, `Operation`, `Namespace`                   | `value: valueof (string \| Record<unknown>)[]`                  | Apply tags metadata for categorization                                                                        |
+| `@useBinding`            | `Operation`, `Model`, `Namespace`                   | `name: valueof string`                                          | Reference a reusable binding by name on an operation, model, or namespace (server bindings)                   |
+| `@useChannelBinding`     | `Operation`                                         | `name: valueof string`                                          | Apply a reusable binding to an operation's channel (populates components.channelBindings)                     |
+| `@useChannelServer`      | `Operation`                                         | `name: valueof string`                                          | Reference a server by name on an operation's channel.                                                         |
+| `@useCorrelationId`      | `Model`                                             | `name: valueof string`                                          | Reference a reusable correlation ID by name on a model                                                        |
+| `@useMessageTrait`       | `Model`                                             | `name: valueof string`                                          | Reference a message trait by name on a model                                                                  |
+| `@useOperationTrait`     | `Operation`                                         | `name: valueof string`                                          | Reference an operation trait by name on an operation                                                          |
