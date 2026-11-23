@@ -152,11 +152,7 @@ function putServerEntry(
 ): void {
   const entry = buildServerConfigEntry(target, config);
   if (append) {
-    appendToStateArray(
-      getStateMap<ServerConfigData[]>(program, symbol),
-      target,
-      entry,
-    );
+    appendToStateArray(getStateMap<ServerConfigData[]>(program, symbol), target, entry);
   } else {
     getStateMap<ServerConfigData>(program, symbol).set(target, entry);
   }
@@ -168,13 +164,10 @@ export function storeServerConfig(
   config: NamedServerConfig,
   reusable = false,
 ): void {
-  putServerEntry(
-    program,
-    target,
-    config,
-    reusable ? stateSymbols.reusableServers : stateSymbols.serverConfigs,
-    reusable,
-  );
+  const symbol = reusable
+    ? stateSymbols.reusableServers
+    : stateSymbols.serverConfigs;
+  putServerEntry(program, target, config, symbol, !reusable);
 }
 
 export const storeExternalDocs = (
