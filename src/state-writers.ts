@@ -158,7 +158,7 @@ export const storeExternalDocs = (
   program: Program,
   target: Model | Operation | Namespace,
   url: string,
-  description?: string,
+  description: string | undefined,
 ): void => {
   const map = getStateMap<ExternalDocsData>(program, stateSymbols.externalDocs);
   map.set(target, description ? { url, description } : { url });

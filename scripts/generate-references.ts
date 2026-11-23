@@ -1,0 +1,420 @@
+/**
+ * Generated-reference generator: derives the reference documentation from
+ * source so hand-written reference docs can never drift.
+ *
+ * Parsed sources:
+ *   - lib/main.tsp                                        -> decorators
+ *   - src/lib.ts                                          -> diagnostics
+ *   - src/infrastructure/configuration/asyncAPIEmitterOptions.ts -> emitter options
+ *
+ * Rendered pages (overwritten every run, deterministic order):
+ *   - website/src/content/docs/reference/decorators.md
+ *   - website/src/content/docs/reference/diagnostics.md
+ *   - website/src/content/docs/reference/emitter-options.md
+ *
+ *   pnpm run references:generate   rewrite the pages
+ *   pnpm run references:check      fail (exit 1) if any page on disk drifted
+ *
+ * Never hand-edit the generated pages; edit the sources (or this script) and
+ * regenerate. Run it with bun like the other scripts in this directory.
+ */
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
+
+const repoRoot = path.join(import.meta.dirname, "..");
+
+const MAIN_TSP = path.join(repoRoot, "lib", "main.tsp");
+const LIB_TS = path.join(repoRoot, "src", "lib.ts");
+const EMITTER_OPTIONS_TS = path.join(
+  repoRoot,
+  "src",
+  "infrastructure",
+  "configuration",
+  "asyncAPIEmitterOptions.ts",
+);
+
+export interface DecoratorParameter {
+  readonly name: string;
+  readonly type: string;
+  readonly optional: boolean;
+}
+
+export interface DecoratorDoc {
+  readonly name: string;
+  readonly targets: readonly string[];
+  readonly parameters: readonly DecoratorParameter[];
+  readonly summary: string;
+}
+
+export type DiagnosticSeverity = "error" | "warning";
+
+export interface DiagnosticDoc {
+  readonly code: string;
+  readonly severity: DiagnosticSeverity;
+  readonly message: string;
+}
+
+export interface OptionDoc {
+  readonly name: string;
+  readonly type: string;
+  readonly description: string;
+}
+
+interface GeneratedPage {
+  readonly file: string;
+  readonly title: string;
+  readonly content: string;
+}
+
+function readSource(file: string): string {
+  return readFileSync(file, "utf8");
+}
+
+function collapseWhitespace(text: string): string {
+  return text.replaceAll(/\s+/gu, " ").trim();
+}
+
+function docCommentText(rawComment: string): string {
+  return collapseWhitespace(
+    rawComment
+      .split("\n")
+      .map((line) => line.replaceAll(/^[\s]*\*[ ]?/u, "").trim())
+      .filter((line) => line.length > 0)
+      .join(" "),
+  );
+}
+
+function firstSentence(text: string): string {
+  const description = collapseWhitespace(text.split("@param")[0]);
+  const sentenceEnd = /\.\s/u.exec(description);
+  if (sentenceEnd === null || sentenceEnd.index === undefined) {
+    return description;
+  }
+  return description.slice(0, sentenceEnd.index + 1);
+}
+
+function splitTopLevel(text: string, separator: string): readonly string[] {
+  const parts: string[] = [];
+  let current = "";
+  let depth = 0;
+  for (const char of text) {
+    if ("([{<".includes(char)) {
+      depth += 1;
+    } else if (")]}>".includes(char)) {
+      depth -= 1;
+    }
+    if (char === separator && depth === 0) {
+      parts.push(current.trim());
+      current = "";
+    } else {
+      current += char;
+    }
+  }
+  const tail = current.trim();
+  if (tail.length > 0) {
+    parts.push(tail);
+  }
+  return parts.filter((part) => part.length > 0);
+}
+
+const DECORATOR_PATTERN =
+  /\/\*\*([\s\S]*?)\*\/\s*extern\s+dec\s+([A-Za-z_][A-Za-z0-9_]*)\s*\(([\s\S]*?)\)\s*;/gu;
+
+function parseParameter(raw: string): DecoratorParameter {
+  const separator = raw.indexOf(":");
+  if (separator < 0) {
+    throw new Error(`cannot parse decorator parameter: ${raw}`);
+  }
+  const rawName = raw.slice(0, separator).trim();
+  const optional = rawName.endsWith("?");
+  const name = optional ? rawName.slice(0, -1) : rawName;
+  return { name, type: collapseWhitespace(raw.slice(separator + 1)), optional };
+}
+
+export function parseDecorators(source: string): readonly DecoratorDoc[] {
+  const decorators: DecoratorDoc[] = [];
+  for (const match of source.matchAll(DECORATOR_PATTERN)) {
+    const comment = match[1];
+    const name = match[2];
+    const rawParams = match[3];
+    if (comment === undefined || name === undefined || rawParams === undefined) {
+      throw new Error(`cannot parse decorator declaration near: ${match[0]}`);
+    }
+    const params = splitTopLevel(rawParams, ",").map(parseParameter);
+    const targets = params
+      .filter((param) => param.name === "target")
+      .flatMap((param) => splitTopLevel(param.type, "|"))
+      .map((member) => collapseWhitespace(member));
+    decorators.push({
+      name,
+      targets,
+      parameters: params.filter((param) => param.name !== "target"),
+      summary: firstSentence(docCommentText(comment)),
+    });
+  }
+  return decorators;
+}
+
+const DIAGNOSTIC_PATTERN =
+  /"([A-Za-z][A-Za-z0-9-]*)":\s*\{\s*messages:\s*\{([\s\S]*?)\},\s*severity:\s*"(error|warning)"/gu;
+const DEFAULT_MESSAGE_PATTERN =
+  /default:\s*(?:paramMessage`([^`]*)`|"((?:[^"\\]|\\.)*)")/u;
+
+export function parseDiagnostics(source: string): readonly DiagnosticDoc[] {
+  const diagnostics: DiagnosticDoc[] = [];
+  for (const match of source.matchAll(DIAGNOSTIC_PATTERN)) {
+    const code = match[1];
+    const block = match[2];
+    const severity = match[3];
+    if (code === undefined || block === undefined || severity === undefined) {
+      throw new Error(`cannot parse diagnostic entry near: ${match[0]}`);
+    }
+    const message = DEFAULT_MESSAGE_PATTERN.exec(block);
+    const template = message?.[1];
+    const plain = message?.[2];
+    if (template === undefined && plain === undefined) {
+      throw new Error(`cannot parse default message for diagnostic: ${code}`);
+    }
+    const raw = template ?? plain ?? "";
+    diagnostics.push({
+      code,
+      severity,
+      message: raw.replaceAll(/\$\{"([^"]+)"\}/gu, "{$1}"),
+    });
+  }
+  return diagnostics;
+}
+
+const OPTIONS_INTERFACE_PATTERN =
+  /export\s+interface\s+EmitterOptions\b[^{]*\{([\s\S]*?)\n\}/u;
+const OPTION_FIELD_PATTERN =
+  /(?:"([\w-]+)"|([A-Za-z_][A-Za-z0-9_]*))(\?)?:\s*([\s\S]*?);[ \t]*(?=\n|$)/gu;
+const DOC_COMMENT_PATTERN = /\*\*([\s\S]*?)\*\//gu;
+
+function descriptionBefore(
+  body: string,
+  fieldStart: number,
+): string {
+  let description = "";
+  for (const match of body.matchAll(DOC_COMMENT_PATTERN)) {
+    const end = (match.index ?? 0) + match[0].length;
+    if (end > fieldStart) {
+      break;
+    }
+    if (collapseWhitespace(body.slice(end, fieldStart)).length === 0) {
+      const text = match[1];
+      if (text !== undefined) {
+        description = docCommentText(text);
+      }
+    }
+  }
+  return description;
+}
+
+export function parseOptions(source: string): readonly OptionDoc[] {
+  const interfaceMatch = OPTIONS_INTERFACE_PATTERN.exec(source);
+  const body = interfaceMatch?.[1];
+  if (interfaceMatch === null || body === undefined) {
+    throw new Error("cannot find the EmitterOptions interface");
+  }
+  const options: OptionDoc[] = [];
+  for (const match of body.matchAll(OPTION_FIELD_PATTERN)) {
+    const quoted = match[1];
+    const identifier = match[2];
+    const optional = match[3];
+    const rawType = match[4];
+    if (
+      (quoted === undefined && identifier === undefined) ||
+      rawType === undefined
+    ) {
+      throw new Error(`cannot parse emitter option near: ${match[0]}`);
+    }
+    const name = quoted ?? identifier ?? "";
+    const type = collapseWhitespace(rawType) + (optional ?? "");
+    options.push({
+      name,
+      type,
+      description: descriptionBefore(body, match.index ?? 0),
+    });
+  }
+  return options;
+}
+
+function escapeCell(text: string): string {
+  return collapseWhitespace(text).replaceAll("|", "\\|");
+}
+
+function compareByName(
+  a: { readonly name: string },
+  b: { readonly name: string },
+): number {
+  if (a.name < b.name) {
+    return -1;
+  }
+  if (a.name > b.name) {
+    return 1;
+  }
+  return 0;
+}
+
+function compareByCode(
+  a: { readonly code: string },
+  b: { readonly code: string },
+): number {
+  if (a.code < b.code) {
+    return -1;
+  }
+  if (a.code > b.code) {
+    return 1;
+  }
+  return 0;
+}
+
+const GENERATED_DESCRIPTION =
+  "Generated from source on every run of scripts/generate-references.ts — never hand-edit.";
+
+const GENERATED_BANNER =
+  "> **Generated file** — produced by `scripts/generate-references.ts` (`pnpm run references:generate`). Never hand-edit; the drift test fails if this file is stale.";
+
+function renderPage(
+  file: string,
+  title: string,
+  heading: string,
+  table: readonly string[],
+): string {
+  return [
+    "---",
+    `title: ${title}`,
+    `description: ${GENERATED_DESCRIPTION}`,
+    "---",
+    "",
+    GENERATED_BANNER,
+    "",
+    `## ${heading}`,
+    "",
+    ...table,
+    "",
+  ].join("\n");
+}
+
+function renderDecoratorsPage(
+  decorators: readonly DecoratorDoc[],
+): GeneratedPage {
+  const rows = ["| Decorator | Targets | Parameters | Summary |", "| --- | --- | --- | --- |"];
+  for (const decorator of [...decorators].sort(compareByName)) {
+    const targets =
+      decorator.targets.length > 0
+        ? decorator.targets.map((target) => `\`${target}\``).join(", ")
+        : "—";
+    const parameters =
+      decorator.parameters.length > 0
+        ? decorator.parameters
+            .map(
+              (param) =>
+                `\`${param.name}${param.optional ? "?" : ""}: ${param.type}\``,
+            )
+            .join(", ")
+        : "—";
+    rows.push(
+      `| \`@${decorator.name}\` | ${targets} | ${parameters} | ${escapeCell(decorator.summary)} |`,
+    );
+  }
+  return renderPage(
+    "decorators.md",
+    "Decorators",
+    "Decorators",
+    rows,
+  );
+}
+
+function renderDiagnosticsPage(
+  diagnostics: readonly DiagnosticDoc[],
+): GeneratedPage {
+  const rows = ["| Code | Severity | Message |", "| --- | --- | --- |"];
+  for (const diagnostic of [...diagnostics].sort(compareByCode)) {
+    rows.push(
+      `| \`${diagnostic.code}\` | ${diagnostic.severity} | ${escapeCell(diagnostic.message)} |`,
+    );
+  }
+  return renderPage(
+    "diagnostics.md",
+    "Diagnostics",
+    "Diagnostics",
+    rows,
+  );
+}
+
+function renderOptionsPage(options: readonly OptionDoc[]): GeneratedPage {
+  const rows = ["| Option | Type | Description |", "| --- | --- | --- |"];
+  for (const option of [...options].sort(compareByName)) {
+    const name = option.name.match(/^[A-Za-z_][A-Za-z0-9_]*$/u)
+      ? option.name
+      : `"${option.name}"`;
+    rows.push(
+      `| \`${name}\` | ${escapeCell(option.type)} | ${escapeCell(option.description)} |`,
+    );
+  }
+  return renderPage(
+    "emitter-options.md",
+    "Emitter options",
+    "Emitter options",
+    rows,
+  );
+}
+
+function buildPages(
+  decorators: readonly DecoratorDoc[],
+  diagnostics: readonly DiagnosticDoc[],
+  options: readonly OptionDoc[],
+): readonly GeneratedPage[] {
+  return [
+    renderDecoratorsPage(decorators),
+    renderDiagnosticsPage(diagnostics),
+    renderOptionsPage(options),
+  ];
+}
+
+function main(): void {
+  const checkOnly = process.argv.includes("--check");
+  const pages = buildPages(
+    parseDecorators(readSource(MAIN_TSP)),
+    parseDiagnostics(readSource(LIB_TS)),
+    parseOptions(readSource(EMITTER_OPTIONS_TS)),
+  );
+  const drifted: string[] = [];
+  for (const page of pages) {
+    const absolutePath = path.join(repoRoot, "website", "src", "content", "docs", "reference", page.file);
+    const current = existsSync(absolutePath)
+      ? readFileSync(absolutePath, "utf8")
+      : undefined;
+    if (current === page.content) {
+      continue;
+    }
+    if (checkOnly) {
+      drifted.push(
+        current === undefined ? `${page.file} (missing)` : `${page.file} (differs)`,
+      );
+      continue;
+    }
+    mkdirSync(path.dirname(absolutePath), { recursive: true });
+    writeFileSync(absolutePath, page.content, "utf8");
+    console.log(`wrote website/src/content/docs/reference/${page.file}`);
+  }
+  if (checkOnly) {
+    if (drifted.length > 0) {
+      console.error("Generated reference pages are out of date:");
+      for (const entry of drifted) {
+        console.error(`  - ${entry}`);
+      }
+      console.error("Run `pnpm run references:generate` and commit the result.");
+      process.exit(1);
+    }
+    console.log(`generated reference pages up to date (${pages.length} files)`);
+    return;
+  }
+  console.log(`generated ${pages.length} reference pages from source`);
+}
+
+if (import.meta.main) {
+  main();
+}

@@ -26,12 +26,14 @@ export function $externalDocs(
     });
     return;
   }
-  if (description !== undefined && typeof description !== "string") {
+  const descriptionText =
+    typeof description === "string" ? description : undefined;
+  if (description !== undefined && descriptionText === undefined) {
     reportDiagnostic(context, "invalid-external-docs-config", target, { url });
     return;
   }
 
-  storeExternalDocs(context.program, target, url, description);
+  storeExternalDocs(context.program, target, url, descriptionText);
 }
 
 /** True when the string parses as an absolute URL. */

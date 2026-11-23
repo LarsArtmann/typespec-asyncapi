@@ -2,12 +2,12 @@
 // Source of truth: package.json, lib/main.tsp, src/lib.ts, src/constants/, test/compliance/.
 export const stats = {
   "version": "1.3.0",
-  "decorators": 30,
+  "decorators": 32,
   "protocols": 22,
   "bindings": 19,
-  "diagnostics": 38,
+  "diagnostics": 40,
   "examples": 15,
-  "complianceTests": 308
+  "complianceTests": 318
 } as const;
 
 export type Stats = typeof stats;

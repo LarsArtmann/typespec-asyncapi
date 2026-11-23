@@ -8,6 +8,7 @@
  */
 
 import { compileAndValidateOrThrow } from "../utils/schema-validator.js";
+import { inlineObject } from "../utils/type-guards.js";
 
 describe("reusable servers", () => {
   it("emits components.servers and channels reference them", async () => {
@@ -31,8 +32,7 @@ describe("reusable servers", () => {
       op placeOrder(): OrderPlaced;
     `);
 
-    expect(doc.components?.servers?.prod).toBeDefined();
-    const prod = doc.components?.servers?.prod as Record<string, unknown>;
+    const prod = inlineObject(doc.components?.servers?.prod, "prod server");
     expect(prod.host).toBe("mqtt://broker.example.com:{port}");
     expect(prod.protocol).toBe("mqtt");
     expect(doc.channels["orders-channel"].servers).toStrictEqual([
