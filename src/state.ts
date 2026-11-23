@@ -234,6 +234,7 @@ export interface AsyncAPIConsolidatedState {
   channels: Map<Type, ChannelPathData>;
   messages: Map<Type, MessageConfigData>;
   servers: Map<Type, ServerConfigData[]>;
+  reusableServers: Map<Type, ServerConfigData>;
   operations: Map<Type, OperationTypeData>;
   tags: Map<Type, TagData>;
   protocolConfigs: Map<Type, ProtocolConfigData>;
@@ -316,6 +317,10 @@ export function consolidateAsyncAPIState(
     servers: getMultiState<ServerConfigData>(
       program,
       stateSymbols.serverConfigs,
+    ),
+    reusableServers: getStateMap<ServerConfigData>(
+      program,
+      stateSymbols.reusableServers,
     ),
     tags: getStateMap<TagData>(program, stateSymbols.tags),
     objectExtensions: getStateMap<Record<string, unknown>>(

@@ -110,11 +110,11 @@ function getMessageConfigsMap(
   return getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
 }
 
-export const storeServerConfig = (
-  program: Program,
+/** Normalize a raw `@server`/`@reusableServer` config into a ServerConfigData entry. */
+function buildServerConfigEntry(
   target: Namespace,
   config: Record<string, unknown> & { name: string },
-): void => {
+): ServerConfigData {
   const newEntry: ServerConfigData = {
     description:
       (config.description as string | undefined) ?? `Server for ${target.name}`,
@@ -138,11 +138,31 @@ export const storeServerConfig = (
       config.security,
     ) as SecurityRequirement[];
   }
+  return newEntry;
+}
+
+export const storeServerConfig = (
+  program: Program,
+  target: Namespace,
+  config: Record<string, unknown> & { name: string },
+): void => {
   const map = getStateMap<ServerConfigData[]>(
     program,
     stateSymbols.serverConfigs,
   );
-  appendToStateArray(map, target, newEntry);
+  appendToStateArray(map, target, buildServerConfigEntry(target, config));
+};
+
+export const storeReusableServer = (
+  program: Program,
+  target: Namespace,
+  config: Record<string, unknown> & { name: string },
+): void => {
+  const map = getStateMap<ServerConfigData>(
+    program,
+    stateSymbols.reusableServers,
+  );
+  map.set(target, buildServerConfigEntry(target, config));
 };
 
 export const storeSecurityConfig = (
