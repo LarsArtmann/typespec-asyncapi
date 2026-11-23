@@ -53,8 +53,8 @@ removal.
       stage 1.2.0 from `release/1.2.0` (33dd90d6 = exact v1.2.0 tree +
       stage workflow; the tag's own workflow still uses the deleted
       NPM_TOKEN) → approve → stage 1.3.0 from master (`gh workflow run
-      release.yml -f dry_run=false`) → approve → `gh workflow run
-      finalize-release.yml -f version=1.3.0` (v1.2.0's GitHub release
+release.yml -f dry_run=false`) → approve → `gh workflow run
+finalize-release.yml -f version=1.3.0` (v1.2.0's GitHub release
       already exists; don't finalize it). Dist-tags DONE 2026-11-21:
       beta/alpha removed via `npm login` + `npm dist-tag rm`;
       npmjs.com has NO dist-tag UI. Status comment on #297:
@@ -139,7 +139,7 @@ removal.
       Updates failed 3x from 12:51Z (new advisory fetch for the documented
       GHSA-g3hv-75wg-m249 dismissal — only patched minimatch releases are
       ESM-only, spectral-core is CJS). Added `ignore:
-  dependency-name: minimatch` to the root npm updater in
+dependency-name: minimatch` to the root npm updater in
       `.github/dependabot.yml` with the rationale as a comment.
 
 ## Dependency & Toolchain Refresh (2026-11-04, harvested from the BuildFlow triage session)
