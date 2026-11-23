@@ -69,5 +69,5 @@ There is no YAML importer. Migration is a modeling exercise: describe the same c
 ## Where to go next
 
 - [Examples](/examples/) — working specs for Kafka, MQTT, WebSocket, and reusable components
-- [Decorators](/guides/decorators/) — targets and configuration for all 30 decorators
+- [Decorators](/guides/decorators/) — targets and configuration for all 31 decorators
 - [Diagnostics](/reference/diagnostics/) — every code and how to resolve it

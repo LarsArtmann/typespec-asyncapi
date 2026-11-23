@@ -236,7 +236,9 @@ export const attachChannelServerRefs: BuilderFn = (state, ctx) => {
     }
     const refs: Ref[] = [];
     for (const serverName of data) {
-      if (serverName in ctx.servers) {
+      if (serverName in ctx.reusableServers) {
+        refs.push({ $ref: `#/components/servers/${serverName}` });
+      } else if (serverName in ctx.servers) {
         refs.push({ $ref: `#/servers/${serverName}` });
       }
     }

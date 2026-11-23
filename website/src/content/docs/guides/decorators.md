@@ -1,6 +1,6 @@
 ---
 title: Decorators
-description: All 30 decorators — channels, messages, servers, security, bindings, and reusable components.
+description: All 31 decorators — channels, messages, servers, security, bindings, and reusable components.
 head:
   - tag: meta
     attrs:

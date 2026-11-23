@@ -33,7 +33,7 @@ import {
 } from "./builders/channel-builder.js";
 import { buildOperations } from "./builders/operation-builder.js";
 import { mergeExplicitMessages } from "./builders/message-builder.js";
-import { buildServers } from "./builders/server-builder.js";
+import { buildReusableServers, buildServers } from "./builders/server-builder.js";
 import { buildSecuritySchemes } from "./builders/security-builder.js";
 import { buildTags } from "./builders/tag-builder.js";
 import {
@@ -70,6 +70,7 @@ export function buildAsyncAPIDocument(
     messageTraits: {},
     reusableParameters: {},
     reusableCorrelationIds: {},
+    reusableServers: {},
     operationBindings: {},
     messageBindings: {},
     serverBindings: {},
@@ -81,6 +82,7 @@ export function buildAsyncAPIDocument(
   applyChannelDocs(ctx);
   mergeExplicitMessages(state, ctx);
   buildServers(state, ctx);
+  buildReusableServers(state, ctx);
   attachChannelBindings(state, ctx);
   attachChannelServerRefs(state, ctx);
   buildSecuritySchemes(state, ctx);
@@ -191,6 +193,9 @@ function assembleDocument(
   }
   if (Object.keys(ctx.reusableCorrelationIds).length > 0) {
     components.correlationIds = ctx.reusableCorrelationIds;
+  }
+  if (Object.keys(ctx.reusableServers).length > 0) {
+    components.servers = ctx.reusableServers;
   }
   if (Object.keys(ctx.operationBindings).length > 0) {
     components.operationBindings = ctx.operationBindings;

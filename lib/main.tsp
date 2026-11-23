@@ -208,6 +208,13 @@ extern dec parameter(target: Namespace, name: valueof string, config: {} | value
 extern dec reusableCorrelationId(target: Namespace, name: valueof string, location: valueof string);
 
 /**
+ * Define a reusable server in `components.servers`
+ * @param name Server name (used as key in components.servers)
+ * @param config Server configuration object (`#{ url, protocol, ... }`) — same fields as `@server`
+ */
+extern dec reusableServer(target: Namespace, name: valueof string, config: valueof Record<unknown>);
+
+/**
  * Reference a reusable correlation ID by name on a model
  * @param name The correlation ID name defined via @reusableCorrelationId
  */

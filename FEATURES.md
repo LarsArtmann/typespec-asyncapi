@@ -4,7 +4,7 @@
 **Project:** `@lars-artmann/typespec-asyncapi` v1.3.0 (live on npm, `latest` dist-tag)
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 36 codes (20 error + 16 warning), all compile-time validated via `$lib.reportDiagnostic()`
-**Decorators:** 30 declared in `lib/main.tsp` (19 core + 11 reusable-component); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
+**Decorators:** 31 declared in `lib/main.tsp` (19 core + 12 reusable-component); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
 **Duplication:** 0% threshold enforced via jscpd (source files only), 0 clones
 **Coverage:** 97.9% average line coverage (45 source files, 75% per-file minimum gate)
 
@@ -74,7 +74,7 @@
 
 ## Decorator System
 
-30 decorators declared in `lib/main.tsp` (19 core + 11 reusable-component). Plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`.
+31 decorators declared in `lib/main.tsp` (19 core + 12 reusable-component). Plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`.
 
 | Decorator              | Status           | Evidence                                                                                                                                                                                                                                                                                                            |
 | ---------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
