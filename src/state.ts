@@ -47,6 +47,7 @@ export interface MessageConfigData {
   title?: string;
   contentType?: string;
   schemaFormat?: string;
+  payload?: JsonSchema;
   examples?: {
     name?: string;
     summary?: string;

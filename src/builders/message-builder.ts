@@ -37,6 +37,9 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
     if (data.schemaFormat !== undefined) {
       msgObj.schemaFormat = data.schemaFormat;
     }
+    if (data.payload !== undefined) {
+      msgObj.payload = data.payload;
+    }
     if (data.examples !== undefined && data.examples.length > 0) {
       msgObj.examples = data.examples;
     }
