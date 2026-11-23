@@ -209,7 +209,7 @@ export const storeTags = (
 
 export const storeCorrelationId = (
   program: Program,
-  target: Model,
+  target: Model | Operation,
   location: string,
 ): void => {
   const map = getStateMap(program, stateSymbols.correlationIds);

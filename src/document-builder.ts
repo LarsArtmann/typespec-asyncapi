@@ -32,7 +32,10 @@ import {
   attachChannelServerRefs,
 } from "./builders/channel-builder.js";
 import { buildOperations } from "./builders/operation-builder.js";
-import { mergeExplicitMessages } from "./builders/message-builder.js";
+import {
+  mergeExplicitMessages,
+  applyOperationCorrelationIds,
+} from "./builders/message-builder.js";
 import { buildReusableServers, buildServers } from "./builders/server-builder.js";
 import { buildSecuritySchemes } from "./builders/security-builder.js";
 import { buildTags } from "./builders/tag-builder.js";
@@ -81,6 +84,7 @@ export function buildAsyncAPIDocument(
   buildOperations(state, ctx);
   applyChannelDocs(ctx);
   mergeExplicitMessages(state, ctx);
+  applyOperationCorrelationIds(state, ctx);
   buildServers(state, ctx);
   buildReusableServers(state, ctx);
   attachChannelBindings(state, ctx);

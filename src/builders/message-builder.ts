@@ -85,17 +85,28 @@ export const applyOperationCorrelationIds: BuilderFn = (state, ctx) => {
   }
 };
 
-/** Resolve `#/channels/{ch}/messages/{key}` to a message object in the context. */
+/**
+ * Resolve `#/channels/{ch}/messages/{key}` through the `$ref` chain to the
+ * message object in `ctx.messages`.
+ */
 function resolveMessageRef(
   ctx: DocumentBuildContext,
   pointer: string,
 ): MessageObject | undefined {
-  const match = /^#\/channels\/([^/]+)\/messages\/(.+)$/.exec(pointer);
-  if (!match?.groups) {
+  const match =
+    /^#\/channels\/(?<channel>[^/]+)\/messages\/(?<key>.+)$/u.exec(pointer);
+  if (!match?.groups?.channel || !match.groups.key) {
     return undefined;
   }
-  const channel = ctx.channels[decodeURIComponent(match.groups[1])];
-  return channel?.messages?.[decodeURIComponent(match.groups[2])];
+  const channel = ctx.channels[decodeURIComponent(match.groups.channel)];
+  const messageRef = channel?.messages?.[decodeURIComponent(match.groups.key)];
+  if (!messageRef) {
+    return undefined;
+  }
+  const componentMatch =
+    /^#\/components\/messages\/(?<name>.+)$/u.exec(messageRef.$ref);
+  const name = componentMatch?.groups?.name;
+  return name ? ctx.messages[decodeURIComponent(name)] : undefined;
 }
 
 /** Merge `@extension("x-...", value)` state from Model targets into their message objects. */
