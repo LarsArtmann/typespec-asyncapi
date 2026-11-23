@@ -103,6 +103,14 @@ extern dec tags(target: Model | Operation | Namespace, value: valueof (string | 
 extern dec correlationId(target: Model | Operation, location: valueof string);
 
 /**
+ * Reference external documentation for a message, operation, or the whole
+ * document (namespace target)
+ * @param url Absolute URL of the external documentation
+ * @param description Optional description of the linked documentation
+ */
+extern dec externalDocs(target: Model | Operation | Namespace, url: valueof string, description?: valueof string);
+
+/**
  * Define protocol bindings (generic)
  * @param value Bindings configuration object
  */

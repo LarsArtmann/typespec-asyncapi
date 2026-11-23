@@ -5,6 +5,7 @@
 import type { Program, Type } from "@typespec/compiler";
 import type {
   ChannelObject,
+  ExternalDocumentationObject,
   CorrelationIdObject,
   MessageObject,
   OperationAction,
@@ -53,6 +54,7 @@ export interface DocumentBuildContext {
   channelDocs: Map<string, string>;
   channelSummaries: Map<string, string>;
   channelTags: Map<string, Tag[]>;
+  infoExternalDocs?: ExternalDocumentationObject;
   opDocs: Map<string, string>;
   program: Program;
   /** Resolved `@typespec/http` route table, when the program provides one. */

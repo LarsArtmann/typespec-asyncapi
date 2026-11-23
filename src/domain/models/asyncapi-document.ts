@@ -196,6 +196,7 @@ export interface ChannelObject extends CommonMetadata {
 export interface OperationObject extends CommonMetadata {
   action: OperationAction;
   channel: Ref;
+  externalDocs?: ExternalDocumentationObject;
   security?: SecurityRequirement[];
   traits?: Ref[];
   messages?: Ref[];
@@ -217,6 +218,7 @@ export interface MessageObject extends CommonMetadata {
   name?: string;
   traits?: Ref[];
   schemaFormat?: string;
+  externalDocs?: ExternalDocumentationObject;
   examples?: {
     headers?: unknown;
     payload?: unknown;
@@ -379,6 +381,7 @@ export interface AsyncAPIDocument extends DocumentBody {
 interface DocumentBody {
   info: InfoObject;
   id?: string;
+  externalDocs?: ExternalDocumentationObject;
   servers?: Record<string, ServerObject>;
   defaultContentType?: string;
   operations?: Record<string, OperationObject>;

@@ -21,6 +21,7 @@ import {
   storeBindings,
   storeChannelState,
   storeCorrelationId,
+  storeExternalDocs,
   storeHeader,
   storeMessageConfig,
   storeMessageId,

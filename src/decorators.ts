@@ -24,6 +24,7 @@ import {
   $security,
   $subscribe,
   $tags,
+  $externalDocs,
 } from "./minimal-decorators.js";
 import {
   $defaultContentType,
@@ -60,6 +61,7 @@ export const $decorators = {
     operationId: $operationId,
     operationSecurity: $operationSecurity,
     operationTrait: $operationTrait,
+    externalDocs: $externalDocs,
     extension: $extension,
     jsonSchemaExtension: $jsonSchemaExtension,
     parameter: $parameter,

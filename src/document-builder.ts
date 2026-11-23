@@ -37,6 +37,7 @@ import {
   applyOperationCorrelationIds,
 } from "./builders/message-builder.js";
 import { buildReusableServers, buildServers } from "./builders/server-builder.js";
+import { applyExternalDocs } from "./builders/external-docs-builder.js";
 import { buildSecuritySchemes } from "./builders/security-builder.js";
 import { buildTags } from "./builders/tag-builder.js";
 import {
@@ -85,6 +86,7 @@ export function buildAsyncAPIDocument(
   applyChannelDocs(ctx);
   mergeExplicitMessages(state, ctx);
   applyOperationCorrelationIds(state, ctx);
+  applyExternalDocs(state, ctx);
   buildServers(state, ctx);
   buildReusableServers(state, ctx);
   attachChannelBindings(state, ctx);
@@ -232,7 +234,9 @@ function assembleDocument(
       ...(options.termsOfService
         ? { termsOfService: options.termsOfService }
         : {}),
-      ...(options.externalDocs ? { externalDocs: options.externalDocs } : {}),
+      ...(options.externalDocs || ctx.infoExternalDocs
+        ? { externalDocs: ctx.infoExternalDocs ?? options.externalDocs }
+        : {}),
       ...(infoTags ? { tags: infoTags } : {}),
     },
     ...(defaultContentType ? { defaultContentType } : {}),
