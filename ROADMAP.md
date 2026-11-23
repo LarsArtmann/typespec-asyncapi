@@ -146,6 +146,7 @@ Raw ideas:
 - Glossary/domain-language page; printable one-page cheatsheet; docs IA landing; "Start here" persona paths
 - Versioned docs + version selector; TypeDoc API reference
 - Weekly external-link monitoring; cspell + markdownlint in CI
+- Playground/hero UX ideas: share-permalink (hash-encoded source), engine-load retry with backoff, loading progress with byte size, a fifth intentionally-failing example teaching diagnostics, inline explainer for unsupported-but-valid stdlib imports, decorator-to-line diff affordance
 
 
 ## Non-Goals

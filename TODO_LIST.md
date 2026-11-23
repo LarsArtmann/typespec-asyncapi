@@ -295,6 +295,14 @@ What remains is the gated release chain and the tail:
       `go-finding-src` follow; v1.15.0/v1.15.1 tags exist upstream, verified
       via `git ls-remote` 2026-11-19). Release md-go-validator, then
       `nix flake update md-go-validator` here + `nix flake check` both sides.
+- [ ] CI tripwire: fail when `minimumReleaseAgeExclude` gains entries; add
+      `tmp-*.test.ts` to `.gitignore` (scratch tests must not be committable)
+      (docs/status/2026-11-02_12-09:156).
+- [ ] Replace the typed test counts in `FEATURES.md`/`ROADMAP.md` (stale at
+      1275) with a derived stat like `stats.ts`
+      (docs/status/2026-11-02_12-09:166).
+- [ ] Refresh `website/video` storyboard `270+` copy and the
+      `04-receipt.html` counter (docs/status/2026-11-02_12-09:160).
 
 ## Website QA & Brand Follow-ups (harvested 2026-11-19 from kept status reports)
 
@@ -343,6 +351,17 @@ What remains is the gated release chain and the tail:
 - [ ] Update `website/README.md` pages/ listing: drop the manual llms.txt
       endpoints line, document `starlight-llms-txt` plugin generation
       (docs/status/2026-10-23_14-13:215).
+- [ ] Deploy observability: `scripts/check-live-headers.mjs` asserting status +
+      `Cache-Control` + one content marker per URL class (`/`, `/faq/`,
+      `/_astro/*`, `/js/*.js`, `/playground/engine.js`), wired as the final
+      deploy step (docs/status/2026-11-02_12-09:106).
+- [ ] Hero contract tests: adversarial highlighter fixtures (quoted keys,
+      `#` inside strings, block scalars) and a DOM test that
+      `data-copy-target` text equals `heroAsyncAPI`
+      (docs/status/2026-11-02_12-09:146).
+- [ ] Document the hero-fixture generate-and-lock rule in
+      `website/README.md` contribute-a-sample workflow
+      (docs/status/2026-11-02_12-09:168).
 
 ## Test-Suite Integrity (residual)
 
