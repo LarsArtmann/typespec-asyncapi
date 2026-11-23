@@ -44,6 +44,7 @@ Reserved words cannot be keys in `#{}` literals (`model`, `enum`, `default`, ...
 | ------------------------- | --------- | ------------------------------------------------------ |
 | `@server(name, config)`   | Namespace | Defines server (url, protocol, description, variables) |
 | `@useChannelServer(name)` | Operation | Binds a channel to a specific server                   |
+| `@reusableServer(name, config)` | Namespace | Declares `components.servers` entry; `@useChannelServer` resolves it first |
 
 ## Messages
 

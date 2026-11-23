@@ -14,12 +14,12 @@ const errors = codes.filter((code) => $lib.diagnostics[code]?.severity === "erro
 const warnings = codes.filter((code) => $lib.diagnostics[code]?.severity === "warning");
 
 describe("diagnostic registry lock", () => {
-  it("declares exactly the documented total (38)", () => {
-    expect(codes).toHaveLength(38);
+  it("declares exactly the documented total (39)", () => {
+    expect(codes).toHaveLength(39);
   });
 
-  it("keeps the documented severity split (22 error + 16 warning)", () => {
-    expect(errors).toHaveLength(22);
+  it("keeps the documented severity split (23 error + 16 warning)", () => {
+    expect(errors).toHaveLength(23);
     expect(warnings).toHaveLength(16);
   });
 

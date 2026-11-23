@@ -18,6 +18,7 @@ import {
   withMessage,
 } from "./_imports.js";
 import type { AsyncAPIConsolidatedState, BuilderFn } from "./_imports.js";
+import type { DocumentBuildContext } from "./types.js";
 import {
   buildMessageObject,
   iterNamedTypes,
@@ -59,6 +60,43 @@ export const mergeExplicitMessages: BuilderFn = (state, ctx) => {
   applyAutoMessageDecorators(state, ctx);
   applyMessageExtensions(state, ctx);
 };
+
+/**
+ * Apply operation-level `@correlationId` to every message the operation
+ * references (explicit model-level correlationIds win). Resolves message
+ * objects through the operation's `$ref` pointers.
+ */
+export const applyOperationCorrelationIds: BuilderFn = (state, ctx) => {
+  for (const [type, correlation] of state.correlationIds) {
+    if ((type as { kind?: string }).kind !== "Operation") {
+      continue;
+    }
+    const opName = nameOfType(type);
+    const op = opName ? ctx.operations[opName] : undefined;
+    if (!op?.messages) {
+      continue;
+    }
+    for (const ref of op.messages) {
+      const message = resolveMessageRef(ctx, ref.$ref);
+      if (message && message.correlationId === undefined) {
+        message.correlationId = { location: correlation.location };
+      }
+    }
+  }
+};
+
+/** Resolve `#/channels/{ch}/messages/{key}` to a message object in the context. */
+function resolveMessageRef(
+  ctx: DocumentBuildContext,
+  pointer: string,
+): MessageObject | undefined {
+  const match = /^#\/channels\/([^/]+)\/messages\/(.+)$/.exec(pointer);
+  if (!match?.groups) {
+    return undefined;
+  }
+  const channel = ctx.channels[decodeURIComponent(match.groups[1])];
+  return channel?.messages?.[decodeURIComponent(match.groups[2])];
+}
 
 /** Merge `@extension("x-...", value)` state from Model targets into their message objects. */
 export const applyMessageExtensions: BuilderFn = (state, ctx) => {

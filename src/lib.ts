@@ -20,6 +20,12 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "error",
     },
+    "invalid-operation-correlationId-config": {
+      messages: {
+        default: paramMessage`Correlation ID location missing for operation '${"operationName"}'. Use @correlationId with location path.`,
+      },
+      severity: "error",
+    },
     "invalid-header-config": {
       messages: {
         default: paramMessage`Header name missing for '${"targetKind"}'. Use @header with name and value.`,

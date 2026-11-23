@@ -225,18 +225,21 @@ export function $tags(
 
 export function $correlationId(
   context: DecoratorContext,
-  target: Model,
+  target: Model | Operation,
   location: unknown,
 ): void {
+  const isOperation = target.kind === "Operation";
   if (
     !validateNonEmptyString(
       location,
       context,
       target,
-      "invalid-correlationId-config",
-      {
-        modelName: target.name,
-      },
+      isOperation
+        ? "invalid-operation-correlationId-config"
+        : "invalid-correlationId-config",
+      isOperation
+        ? { operationName: target.name }
+        : { modelName: target.name },
     )
   ) {
     return;
