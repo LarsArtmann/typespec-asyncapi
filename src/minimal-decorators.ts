@@ -237,9 +237,7 @@ export function $correlationId(
       isOperation
         ? "invalid-operation-correlationId-config"
         : "invalid-correlationId-config",
-      isOperation
-        ? { operationName: target.name }
-        : { modelName: target.name },
+      isOperation ? { operationName: target.name } : { modelName: target.name },
     )
   ) {
     return;

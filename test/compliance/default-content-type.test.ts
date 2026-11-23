@@ -101,9 +101,7 @@ describe("spec Compliance: defaultContentType", () => {
     `);
 
     expect(
-      diagnostics.some((d) =>
-        d.code?.endsWith("invalid-default-content-type"),
-      ),
+      diagnostics.some((d) => d.code?.endsWith("invalid-default-content-type")),
     ).toBeTruthy();
     expect(asyncApiDoc?.defaultContentType).toBeUndefined();
   });

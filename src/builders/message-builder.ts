@@ -93,8 +93,9 @@ function resolveMessageRef(
   ctx: DocumentBuildContext,
   pointer: string,
 ): MessageObject | undefined {
-  const match =
-    /^#\/channels\/(?<channel>[^/]+)\/messages\/(?<key>.+)$/u.exec(pointer);
+  const match = /^#\/channels\/(?<channel>[^/]+)\/messages\/(?<key>.+)$/u.exec(
+    pointer,
+  );
   if (!match?.groups?.channel || !match.groups.key) {
     return undefined;
   }
@@ -103,8 +104,9 @@ function resolveMessageRef(
   if (!messageRef) {
     return undefined;
   }
-  const componentMatch =
-    /^#\/components\/messages\/(?<name>.+)$/u.exec(messageRef.$ref);
+  const componentMatch = /^#\/components\/messages\/(?<name>.+)$/u.exec(
+    messageRef.$ref,
+  );
   const name = componentMatch?.groups?.name;
   return name ? ctx.messages[decodeURIComponent(name)] : undefined;
 }

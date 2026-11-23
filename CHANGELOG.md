@@ -32,7 +32,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
-
 - The dev-only ESLint `minimatch` chain is overridden to 11.0.9 (dual-mode
   CJS), clearing Dependabot alert 126 (GHSA-g3hv-75wg-m249). spectral-core's
   pinned 3.x copy sits below the advisory range (`>= 7.0.0`) and stays put.

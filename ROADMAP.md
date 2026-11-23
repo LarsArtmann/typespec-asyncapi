@@ -148,7 +148,6 @@ Raw ideas:
 - Weekly external-link monitoring; cspell + markdownlint in CI
 - Playground/hero UX ideas: share-permalink (hash-encoded source), engine-load retry with backoff, loading progress with byte size, a fifth intentionally-failing example teaching diagnostics, inline explainer for unsupported-but-valid stdlib imports, decorator-to-line diff affordance
 
-
 ## Non-Goals
 
 - We do NOT aim to replace the AsyncAPI specification itself
@@ -157,4 +156,3 @@ Raw ideas:
 - We do NOT build a VS Code extension (the TypeSpec VS Code extension already provides IDE support)
 - We do NOT convert AsyncAPI 2.x specs to 3.x (use the official AsyncAPI converter)
 - We do NOT build a plugin architecture for community protocol bindings (protocol bindings are defined in code, not extensible at runtime)
-

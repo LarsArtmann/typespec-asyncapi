@@ -181,7 +181,11 @@ export const storeExternalDocs = (
   map.set(target, description ? { url, description } : { url });
 };
 
-export const storeReusableServer = (program: Program, target: Namespace, config: NamedServerConfig): void => {
+export const storeReusableServer = (
+  program: Program,
+  target: Namespace,
+  config: NamedServerConfig,
+): void => {
   putServerEntry(program, target, config, stateSymbols.reusableServers, false);
 };
 

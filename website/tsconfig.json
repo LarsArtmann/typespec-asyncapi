@@ -1,4 +1,11 @@
 {
   "extends": "astro/tsconfigs/strict",
-  "exclude": ["playground", "public", "scripts", "dist", "tests/e2e", "playwright.config.ts"]
+  "exclude": [
+    "playground",
+    "public",
+    "scripts",
+    "dist",
+    "tests/e2e",
+    "playwright.config.ts"
+  ]
 }

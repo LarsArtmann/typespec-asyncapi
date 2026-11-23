@@ -88,7 +88,9 @@ function docCommentText(rawComment: string): string {
 
 function firstSentence(text: string): string {
   const cut = text.indexOf("@param");
-  const description = collapseWhitespace(cut === -1 ? text : text.slice(0, cut));
+  const description = collapseWhitespace(
+    cut === -1 ? text : text.slice(0, cut),
+  );
   const match = /\.\s/u.exec(description);
   const end = match?.index;
   return end === undefined ? description : description.slice(0, end + 1);
@@ -144,10 +146,16 @@ export function parseDecorators(source: string): readonly DecoratorDoc[] {
     const comment = match.groups?.comment;
     const name = match.groups?.name;
     const rawParams = match.groups?.params;
-    if (comment === undefined || name === undefined || rawParams === undefined) {
+    if (
+      comment === undefined ||
+      name === undefined ||
+      rawParams === undefined
+    ) {
       throw new Error(`cannot parse decorator declaration near: ${match[0]}`);
     }
-    const params = splitTopLevel(rawParams, ",").map((raw) => parseParameter(raw));
+    const params = splitTopLevel(rawParams, ",").map((raw) =>
+      parseParameter(raw),
+    );
     const targets = params
       .filter((param) => param.name === "target")
       .flatMap((param) => splitTopLevel(param.type, "|"))
@@ -233,7 +241,10 @@ export function parseOptions(source: string): readonly OptionDoc[] {
     const quoted = match.groups?.quoted;
     const identifier = match.groups?.identifier;
     const rawType = match.groups?.type;
-    if ((quoted === undefined && identifier === undefined) || rawType === undefined) {
+    if (
+      (quoted === undefined && identifier === undefined) ||
+      rawType === undefined
+    ) {
       throw new Error(`cannot parse emitter option near: ${match[0]}`);
     }
     options.push({
@@ -322,7 +333,9 @@ function renderPage(
   return { file, title, content };
 }
 
-function renderDecoratorsPage(decorators: readonly DecoratorDoc[]): GeneratedPage {
+function renderDecoratorsPage(
+  decorators: readonly DecoratorDoc[],
+): GeneratedPage {
   const rows: string[][] = [];
   for (const decorator of decorators.toSorted(compareByName)) {
     const targets =
@@ -332,9 +345,10 @@ function renderDecoratorsPage(decorators: readonly DecoratorDoc[]): GeneratedPag
     const parameters =
       decorator.parameters.length > 0
         ? decorator.parameters
-            .map(
-              (param) =>
-                escapeCell(`\`${param.name}${param.optional ? "?" : ""}: ${param.type}\``),
+            .map((param) =>
+              escapeCell(
+                `\`${param.name}${param.optional ? "?" : ""}: ${param.type}\``,
+              ),
             )
             .join(", ")
         : "—";
@@ -352,7 +366,9 @@ function renderDecoratorsPage(decorators: readonly DecoratorDoc[]): GeneratedPag
   );
 }
 
-function renderDiagnosticsPage(diagnostics: readonly DiagnosticDoc[]): GeneratedPage {
+function renderDiagnosticsPage(
+  diagnostics: readonly DiagnosticDoc[],
+): GeneratedPage {
   const rows = diagnostics
     .toSorted(compareByCode)
     .map((diagnostic) => [
@@ -374,7 +390,11 @@ function renderOptionsPage(options: readonly OptionDoc[]): GeneratedPage {
     const name = IDENTIFIER_NAME_PATTERN.test(option.name)
       ? option.name
       : `"${option.name}"`;
-    return [`\`${name}\``, escapeCell(option.type), escapeCell(option.description)];
+    return [
+      `\`${name}\``,
+      escapeCell(option.type),
+      escapeCell(option.description),
+    ];
   });
   return renderPage(
     "emitter-options.md",
@@ -405,7 +425,14 @@ function main(): void {
   syncGeneratedFiles(
     repoRoot,
     pages.map((p) => ({
-      relativePath: path.join("website", "src", "content", "docs", "reference", p.file),
+      relativePath: path.join(
+        "website",
+        "src",
+        "content",
+        "docs",
+        "reference",
+        p.file,
+      ),
       content: p.content,
     })),
     {

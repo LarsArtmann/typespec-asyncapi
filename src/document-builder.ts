@@ -36,7 +36,10 @@ import {
   mergeExplicitMessages,
   applyOperationCorrelationIds,
 } from "./builders/message-builder.js";
-import { buildReusableServers, buildServers } from "./builders/server-builder.js";
+import {
+  buildReusableServers,
+  buildServers,
+} from "./builders/server-builder.js";
 import { applyExternalDocs } from "./builders/external-docs-builder.js";
 import { buildSecuritySchemes } from "./builders/security-builder.js";
 import { buildTags } from "./builders/tag-builder.js";

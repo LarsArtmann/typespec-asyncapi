@@ -56,7 +56,10 @@ function main(): number {
     const stdout = proc.stdout ?? "";
     const stderr = proc.stderr ?? "";
     const code = proc.status ?? -1;
-    writeFileSync(logPath, `exit=${code}\n--- stdout ---\n${stdout}\n--- stderr ---\n${stderr}`);
+    writeFileSync(
+      logPath,
+      `exit=${code}\n--- stdout ---\n${stdout}\n--- stderr ---\n${stderr}`,
+    );
     lastLog = logPath;
     lastCode = code;
     const summary = parseSummary(stdout + stderr);

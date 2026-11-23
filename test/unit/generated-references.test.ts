@@ -98,7 +98,8 @@ describe("generated reference pages", () => {
 
   it("renders exactly one emitter-options row per declared option", () => {
     expect(options.length).toBeGreaterThan(0);
-    const rows = (readPage("emitter-options.md").match(/^\| `/gmu) ?? []).length;
+    const rows = (readPage("emitter-options.md").match(/^\| `/gmu) ?? [])
+      .length;
     expect(rows).toBe(options.length);
   });
 

@@ -27,8 +27,8 @@ removal.
   - [x] README de-beta-ification + stability statement
   - [x] Tag `v1.0.0` → provenance workflow; fresh-install smoke test
   - [ ] ADR npm-surface decision (`docs/adr/0002`): trademark posture + npm
-      package surface — the last open row there; unblocks README and
-      release-checklist work (docs/status/2026-11-04_17-42:134).
+        package surface — the last open row there; unblocks README and
+        release-checklist work (docs/status/2026-11-04_17-42:134).
 - [ ] Verify the npm package page renders the README `<picture>` logo
       after the next publish; add a raster fallback if npm strips it
       (docs/status/2026-11-02_01-20:231).
@@ -36,29 +36,29 @@ removal.
       verify sigstore/provenance on the package
       (docs/status/2026-10-03_13-58:332).
 - [x] Ship 1.2.0 + 1.3.0 through npm STAGED publishing — DONE 2026-11-21 ~06:30 UTC, both approved and live, latest = 1.3.0 (supersedes
-        the "allow direct publish" plan, 2026-11-21 ~03:05; that toggle
-        will NOT be flipped): npm's intended maximum-security model is
-        stage-only — CI runs `npm stage publish` over OIDC
-        (`.github/workflows/release.yml`, rebuilt 2026-11-21), a
-        maintainer approves each staged version with 2FA on npmjs.com,
-        and `.github/workflows/finalize-release.yml` then verifies the
-        version is live, downloads the exact published tarball and
-        creates the GitHub release (idempotent). Fuse: a successful
-        stage publish before 2026-11-23 02:30 UTC validates the
-        trusted-publisher card; otherwise delete + recreate it. Five
-        direct-publish attempts failed (404 before the card existed,
-        then 403 `OIDC permission denied for this action` at
-        02:44/02:52/02:56 UTC); local CLI `npm publish` cannot
-        substitute (EOTP per write, 2FA cannot be delegated). ORDER:
-        stage 1.2.0 from `release/1.2.0` (33dd90d6 = exact v1.2.0 tree +
-        stage workflow; the tag's own workflow still uses the deleted
-        NPM_TOKEN) → approve → stage 1.3.0 from master (`gh workflow run
-        release.yml -f dry_run=false`) → approve → `gh workflow run
-        finalize-release.yml -f version=1.3.0` (v1.2.0's GitHub release
-        already exists; don't finalize it). Dist-tags DONE 2026-11-21:
-        beta/alpha removed via `npm login` + `npm dist-tag rm`;
-        npmjs.com has NO dist-tag UI. Status comment on #297:
-        issuecomment-7020669604.
+      the "allow direct publish" plan, 2026-11-21 ~03:05; that toggle
+      will NOT be flipped): npm's intended maximum-security model is
+      stage-only — CI runs `npm stage publish` over OIDC
+      (`.github/workflows/release.yml`, rebuilt 2026-11-21), a
+      maintainer approves each staged version with 2FA on npmjs.com,
+      and `.github/workflows/finalize-release.yml` then verifies the
+      version is live, downloads the exact published tarball and
+      creates the GitHub release (idempotent). Fuse: a successful
+      stage publish before 2026-11-23 02:30 UTC validates the
+      trusted-publisher card; otherwise delete + recreate it. Five
+      direct-publish attempts failed (404 before the card existed,
+      then 403 `OIDC permission denied for this action` at
+      02:44/02:52/02:56 UTC); local CLI `npm publish` cannot
+      substitute (EOTP per write, 2FA cannot be delegated). ORDER:
+      stage 1.2.0 from `release/1.2.0` (33dd90d6 = exact v1.2.0 tree +
+      stage workflow; the tag's own workflow still uses the deleted
+      NPM_TOKEN) → approve → stage 1.3.0 from master (`gh workflow run
+      release.yml -f dry_run=false`) → approve → `gh workflow run
+      finalize-release.yml -f version=1.3.0` (v1.2.0's GitHub release
+      already exists; don't finalize it). Dist-tags DONE 2026-11-21:
+      beta/alpha removed via `npm login` + `npm dist-tag rm`;
+      npmjs.com has NO dist-tag UI. Status comment on #297:
+      issuecomment-7020669604.
   - [x] Post-publish verification — DONE 2026-11-21: both versions live, SLSA provenance present for each, fresh-install smoke test green (published 1.3.0 compiles + parser-clean), single dist-tag `latest`, v1.3.0 GitHub release Latest with the published tarball, website deployed (original checklist: watch the publish
         job (five failed direct-publish exercises 2026-11-19→21; now
         staged — see the staged-release item above), then
@@ -139,7 +139,7 @@ removal.
       Updates failed 3x from 12:51Z (new advisory fetch for the documented
       GHSA-g3hv-75wg-m249 dismissal — only patched minimatch releases are
       ESM-only, spectral-core is CJS). Added `ignore:
-    dependency-name: minimatch` to the root npm updater in
+  dependency-name: minimatch` to the root npm updater in
       `.github/dependabot.yml` with the rationale as a comment.
 
 ## Dependency & Toolchain Refresh (2026-11-04, harvested from the BuildFlow triage session)
@@ -272,7 +272,7 @@ What remains is the gated release chain and the tail:
       (pnpm-update manifest drift); consider a daemon/preflight guard.
 - [ ] Consider checkbox templates for ⏰ items so reports aren't the reminder
       system.
-~~- [ ] Docs corpus sweep (2026-11-19): 272 unharvested open items across 99
+      ~~- [ ] Docs corpus sweep (2026-11-19): 272 unharvested open items across 99
       reports in `docs/status/` — harvest into TODO_LIST/ROADMAP or annotate
       resolved (docs-health ANNOTATE ritual), then archive per cadence
       thresholds (15 reports / 21 days, currently 99 / oldest 128d).
@@ -298,8 +298,7 @@ What remains is the gated release chain and the tail:
 - [ ] CI tripwire: fail when `minimumReleaseAgeExclude` gains entries; add
       `tmp-*.test.ts` to `.gitignore` (scratch tests must not be committable)
       (docs/status/2026-11-02_12-09:156).
-- [ ] Replace the typed test counts in `FEATURES.md`/`ROADMAP.md` (stale at
-      1275) with a derived stat like `stats.ts`
+- [ ] Replace the typed test counts in `FEATURES.md`/`ROADMAP.md` (stale at 1275) with a derived stat like `stats.ts`
       (docs/status/2026-11-02_12-09:166).
 - [ ] Refresh `website/video` storyboard `270+` copy and the
       `04-receipt.html` counter (docs/status/2026-11-02_12-09:160).

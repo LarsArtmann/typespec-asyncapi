@@ -10,8 +10,12 @@
 import { $lib } from "../../src/lib.js";
 
 const codes = Object.keys($lib.diagnostics);
-const errors = codes.filter((code) => $lib.diagnostics[code]?.severity === "error");
-const warnings = codes.filter((code) => $lib.diagnostics[code]?.severity === "warning");
+const errors = codes.filter(
+  (code) => $lib.diagnostics[code]?.severity === "error",
+);
+const warnings = codes.filter(
+  (code) => $lib.diagnostics[code]?.severity === "warning",
+);
 
 describe("diagnostic registry lock", () => {
   it("declares exactly the documented total (40)", () => {

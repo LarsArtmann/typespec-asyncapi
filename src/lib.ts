@@ -261,7 +261,10 @@ export const $lib = createTypeSpecLibrary({
     protocolConfigs: { description: "Protocol configurations" },
     securityConfigs: { description: "Security configurations" },
     securitySchemes: { description: "Security scheme configurations" },
-    reusableServers: { description: "Namespace to reusable server definitions (components.servers)" },
+    reusableServers: {
+      description:
+        "Namespace to reusable server definitions (components.servers)",
+    },
     externalDocs: { description: "Targets to external docs references" },
     serverConfigs: { description: "Server configurations" },
     tags: { description: "Targets to tag arrays" },
