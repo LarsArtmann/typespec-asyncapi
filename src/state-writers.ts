@@ -143,7 +143,6 @@ function buildServerConfigEntry(
 }
 
 type NamedServerConfig = Record<string, unknown> & { name: string };
-
 function putServerEntry(
   program: Program,
   target: Namespace,
