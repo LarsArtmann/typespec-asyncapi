@@ -142,16 +142,33 @@ function buildServerConfigEntry(
   return newEntry;
 }
 
+type NamedServerConfig = Record<string, unknown> & { name: string };
+
+function putServerEntry(
+  program: Program,
+  target: Namespace,
+  config: NamedServerConfig,
+  symbol: symbol,
+  append: boolean,
+): void {
+  const entry = buildServerConfigEntry(target, config);
+  if (append) {
+    appendToStateArray(
+      getStateMap<ServerConfigData[]>(program, symbol),
+      target,
+      entry,
+    );
+  } else {
+    getStateMap<ServerConfigData>(program, symbol).set(target, entry);
+  }
+}
+
 export const storeServerConfig = (
   program: Program,
   target: Namespace,
-  config: Record<string, unknown> & { name: string },
+  config: NamedServerConfig,
 ): void => {
-  const map = getStateMap<ServerConfigData[]>(
-    program,
-    stateSymbols.serverConfigs,
-  );
-  appendToStateArray(map, target, buildServerConfigEntry(target, config));
+  putServerEntry(program, target, config, stateSymbols.serverConfigs, true);
 };
 
 export const storeExternalDocs = (
@@ -164,15 +181,8 @@ export const storeExternalDocs = (
   map.set(target, description ? { url, description } : { url });
 };
 
-export const storeReusableServer = (
-  program: Program,
-  target: Namespace,
-  config: Record<string, unknown> & { name: string },
-): void => {
-  getStateMap<ServerConfigData>(program, stateSymbols.reusableServers).set(
-    target,
-    buildServerConfigEntry(target, config),
-  );
+export const storeReusableServer = (program: Program, target: Namespace, config: NamedServerConfig): void => {
+  putServerEntry(program, target, config, stateSymbols.reusableServers, false);
 };
 
 export const storeSecurityConfig = (

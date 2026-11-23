@@ -7,7 +7,7 @@
  */
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
-import { join } from "node:path";
+import path from "node:path";
 
 export interface GeneratedFile {
   relativePath: string;
@@ -21,7 +21,7 @@ export function syncGeneratedFiles(
 ): void {
   const drifted: string[] = [];
   for (const file of files) {
-    const absolutePath = join(repoRoot, file.relativePath);
+    const absolutePath = path.join(repoRoot, file.relativePath);
     const current = existsSync(absolutePath)
       ? readFileSync(absolutePath, "utf8")
       : undefined;
@@ -36,7 +36,7 @@ export function syncGeneratedFiles(
       );
       continue;
     }
-    mkdirSync(join(absolutePath, ".."), { recursive: true });
+    mkdirSync(path.dirname(absolutePath), { recursive: true });
     writeFileSync(absolutePath, file.content, "utf8");
     console.log(`wrote ${file.relativePath}`);
   }

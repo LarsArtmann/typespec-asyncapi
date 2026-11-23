@@ -1,9 +1,5 @@
-import type {
-  DecoratorContext,
-  Namespace,
-  Operation,
-  Type,
-} from "@typespec/compiler";
+import type { Program, Type } from "@typespec/compiler";
+import type { DecoratorContext, Namespace, Operation } from "@typespec/compiler";
 import { isSupportedProtocol } from "./constants/protocols.js";
 import {
   storeDefaultContentType,
@@ -15,9 +11,9 @@ import { stateSymbols } from "./lib.js";
 import {
   extractConfigRecord,
   isValidUrl,
+  validatedDecorator,
   reportDiagnostic,
   reportUnsupportedProtocol,
-  validateConfig,
   validateNonEmptyString,
 } from "./decorator-helpers.js";
 import { processBindings } from "./validation/binding-validator.js";
@@ -32,18 +28,19 @@ function validateServerArgs(
   name: string,
   config: unknown,
 ): Record<string, unknown> | null {
-  if (
-    !validateConfig(config, {
-      context,
-      target,
-      diagnosticCode: "invalid-server-config",
-      format: { serverName: name },
-    })
-  ) {
+  let typed: Record<string, unknown> | undefined;
+  validatedDecorator(context, target, config, {
+    code: "invalid-server-config",
+    format: { serverName: name },
+    run: () => {
+      typed = config as Record<string, unknown>;
+    },
+  });
+  if (!typed) {
     return null;
   }
 
-  const configTyped = config as Record<string, unknown>;
+  const configTyped: Record<string, unknown> = typed;
 
   if (!configTyped.url) {
     reportDiagnostic(context, "server-url-required", target);
@@ -96,13 +93,7 @@ export function $server(
     reportDiagnostic(context, "server-target-invalid", target);
     return;
   }
-
-  const configTyped = validateServerArgs(context, target, name, config);
-  if (!configTyped) {
-    return;
-  }
-
-  storeServerConfig(context.program, target, { ...configTyped, name });
+  withServerConfig(context, name, target, config, storeServerConfig);
 }
 
 export function $reusableServer(
@@ -111,12 +102,25 @@ export function $reusableServer(
   name: string,
   config: unknown,
 ): void {
-  const configTyped = validateServerArgs(context, target, name, config);
-  if (!configTyped) {
-    return;
-  }
+  withServerConfig(context, name, target, config, storeReusableServer);
+}
 
-  storeReusableServer(context.program, target, { ...configTyped, name });
+/** Validate server args, then hand the typed config to the target store. */
+function withServerConfig(
+  context: DecoratorContext,
+  name: string,
+  target: Type,
+  config: unknown,
+  store: (
+    program: Program,
+    target: Namespace,
+    typed: Record<string, unknown> & { name: string },
+  ) => void,
+): void {
+  const configTyped = validateServerArgs(context, target, name, config);
+  if (configTyped) {
+    store(context.program, target as Namespace, { ...configTyped, name });
+  }
 }
 
 export function $defaultContentType(
