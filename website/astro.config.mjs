@@ -139,6 +139,7 @@ export default defineConfig({
           label: "Reference",
           items: [
             { label: "Architecture", slug: "reference/architecture" },
+            { label: "Decorators", slug: "reference/decorators" },
             { label: "Emitter Options", slug: "reference/emitter-options" },
             { label: "Diagnostics", slug: "reference/diagnostics" },
             {

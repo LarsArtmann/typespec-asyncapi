@@ -6,7 +6,32 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+
+- `@reusableServer` decorator: named server definitions in
+  `components.servers`; `@useChannelServer` now resolves names against
+  `components.servers` first (the AsyncAPI 3.1 channel-servers target) and
+  falls back to root `@server` definitions.
+- `@correlationId` accepts an Operation target: the correlation applies to
+  every message the operation references; explicit model-level
+  configuration wins.
+- `@externalDocs` decorator: External Documentation Objects on operations,
+  messages, or the document `info.externalDocs` (Namespace target);
+  non-absolute URLs warn with `invalid-external-docs-config` and are skipped.
+- `@message` raw `payload` passthrough paired with `schemaFormat`, emitted
+  as the AsyncAPI 3.1 Multi Format Schema Object wrapper
+  (`{schemaFormat, schema}`) instead of an invalid message-level field.
+- axe-core accessibility audit (`website/scripts/axe-audit.mjs`): 0
+  violations across all 22 built pages (WCAG 2.1 A/AA).
+- JSON-LD structured data: FAQPage on `/faq/`, HowTo on the quick-start page.
+- Lighthouse CI wiring (`website/lighthouserc.json`, warn-only budgets for
+  calibration) and Playwright smoke specs running in CI.
+- Generated reference pages (`/reference/decorators`, `/reference/diagnostics`,
+  `/reference/emitter-options`) derived from `lib/main.tsp`, `src/lib.ts`,
+  and the emitter options interface with a drift test.
+
 ### Changed
+
 
 - The dev-only ESLint `minimatch` chain is overridden to 11.0.9 (dual-mode
   CJS), clearing Dependabot alert 126 (GHSA-g3hv-75wg-m249). spectral-core's

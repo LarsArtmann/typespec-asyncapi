@@ -172,7 +172,11 @@ export function parseDiagnostics(source: string): readonly DiagnosticDoc[] {
     const code = match.groups?.code;
     const block = match.groups?.block;
     const severity = match.groups?.severity;
-    if (code === undefined || block === undefined || severity === undefined) {
+    if (
+      code === undefined ||
+      block === undefined ||
+      (severity !== "error" && severity !== "warning")
+    ) {
       throw new Error(`cannot parse diagnostic entry near: ${match[0]}`);
     }
     const message = DEFAULT_MESSAGE_PATTERN.exec(block);
@@ -311,7 +315,7 @@ function renderDecoratorsPage(decorators: readonly DecoratorDoc[]): GeneratedPag
         ? decorator.parameters
             .map(
               (param) =>
-                `\`${param.name}${param.optional ? "?" : ""}: ${param.type}\``,
+                escapeCell(`\`${param.name}${param.optional ? "?" : ""}: ${param.type}\``),
             )
             .join(", ")
         : "—";

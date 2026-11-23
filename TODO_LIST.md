@@ -317,8 +317,6 @@ What remains is the gated release chain and the tail:
 
 - [ ] Screenshot `/` at 1440 / 768 / 390 and store as review artefacts
       (docs/status/2026-11-02_12-09:118).
-- [ ] Run axe-core over `/` and fix violations
-      (docs/status/2026-11-02_12-09:121).
 - [ ] Test the copy-button path with a mocked clipboard
       (docs/status/2026-11-02_12-09:129).
 - [ ] Verify the playground overlay editor in Safari/Firefox
@@ -331,12 +329,15 @@ What remains is the gated release chain and the tail:
       (docs/status/2026-11-04_17-42:122).
 - [ ] Review favicon manifest `id`/`scope` for PWA installability score
       (Lighthouse pass) (docs/status/2026-11-04_17-42:153).
-- [ ] Lighthouse CI budgets for performance/a11y/SEO
+- [ ] Calibrate Lighthouse budgets to measured scores and flip
+      `website/lighthouserc.json` assertions from warn to error (the first
+      CI runs calibrate; local NixOS shells have no Chrome)
       (docs/status/2026-10-23_12-00:246).
-- [ ] Playwright smoke tests for nav, theme, copy, and search
-      (docs/status/2026-10-23_12-00:244).
-- [ ] JSON-LD structured data: FAQPage (FAQ), HowTo (Quick Start),
-      TechArticle + BreadcrumbList (docs pages)
+- [ ] Verify the Playwright smoke suite green on its first CI run (specs
+      landing + JSON-LD + copy written; local NixOS shells cannot launch the
+      bundled Chromium) (docs/status/2026-10-23_12-00:244).
+- [ ] JSON-LD remaining scope: TechArticle + BreadcrumbList on docs pages
+      (FAQPage and HowTo shipped 2026-11-23)
       (docs/status/2026-10-23_12-00:251-253).
 - [ ] Compress `public/og.png` and audit icon weights
       (docs/status/2026-10-23_12-00:254).

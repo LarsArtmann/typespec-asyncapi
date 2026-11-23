@@ -41,13 +41,13 @@ Push toward complete AsyncAPI 3.1 coverage — every field, every binding, every
 
 Raw ideas:
 
-- Support multi-format schemas (`schemaFormat`, Avro/Protobuf payload) per AsyncAPI 3.1 — allow `@schemaFormat` decorator to set message-level schema format
-- Reusable server definitions (`components.servers`) — `@reusableServer` + `@useServer` pattern matching the reusable binding/trait model
+- ~~Support multi-format schemas (`schemaFormat`, Avro/Protobuf payload)~~ SHIPPED 2026-11-23 (Unreleased): `@message` raw `payload` + `schemaFormat` emit the 3.1 Multi Format Schema Object wrapper; no separate decorator needed
+- ~~Reusable server definitions (`components.servers`)~~ SHIPPED 2026-11-23 (Unreleased): `@reusableServer` + `@useChannelServer` resolution preference
 - Reactive streaming patterns — server-sent events (SSE), WebSocket subprotocol negotiation, Kafka consumer group rebalance semantics
-- Message correlation beyond simple `$ref` location — support `@correlationId` on operations (not just models) for reply correlation
-- Top-level `defaultContentType` validation — ensure the `@defaultContentType` value is a valid MIME type
+- ~~Message correlation — support `@correlationId` on operations~~ SHIPPED 2026-11-23 (Unreleased): Operation target applies the correlation to every referenced message
+- ~~Top-level `defaultContentType` validation~~ SHIPPED (the MIME regex + `invalid-default-content-type` diagnostic exist; negative tests locked 2026-11-23)
 - Honor `@messageId` when `@publish` supplies `messageType` — publish/subscribe operations reuse the shared message-key resolution
-- Dedicated `@externalDocs` decorator — `Tag.externalDocs` exists via `@tags` objects, but no standalone decorator
+- ~~Dedicated `@externalDocs` decorator~~ SHIPPED 2026-11-23 (Unreleased): Operation/Model/Namespace targets
 
 ### 2. Developer Experience
 

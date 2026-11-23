@@ -93,6 +93,8 @@
     "check": "pnpm run typecheck && pnpm run lint",
     "brand:generate": "bun run scripts/generate-brand-assets.ts && pnpm --filter typespec-asyncapi-website run brand:png",
     "brand:check": "bun run scripts/generate-brand-assets.ts --check",
+    "references:generate": "bun run scripts/generate-references.ts",
+    "references:check": "bun run scripts/generate-references.ts --check",
     "validate": "pnpm run check && pnpm run test",
     "verify": "pnpm run build && pnpm run lint && pnpm run typecheck:test && pnpm run brand:check && pnpm run test && pnpm run test:coverage:gate && pnpm run duplicate",
     "dev": "bun run --watch src/index.ts",

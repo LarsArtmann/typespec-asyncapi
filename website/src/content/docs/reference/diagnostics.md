@@ -1,89 +1,51 @@
 ---
 title: Diagnostics
-description: The 38 compile-time diagnostics (22 errors, 16 warnings) that catch invalid configuration before output.
-head:
-  - tag: meta
-    attrs:
-      property: og:image
-      content: "https://typespec-asyncapi.lars.software/og/reference/diagnostics.png"
-  - tag: meta
-    attrs:
-      property: og:image:width
-      content: "1200"
-  - tag: meta
-    attrs:
-      property: og:image:height
-      content: "630"
-  - tag: meta
-    attrs:
-      property: og:image:alt
-      content: "Diagnostics — typespec-asyncapi"
-  - tag: meta
-    attrs:
-      name: twitter:image
-      content: "https://typespec-asyncapi.lars.software/og/reference/diagnostics.png"
+description: Generated from source on every run of scripts/generate-references.ts — never hand-edit.
 ---
 
-All diagnostics are prefixed `@lars-artmann/typespec-asyncapi/` in compiler output. They fire at compile time — invalid configurations never reach the emitted document.
+> **Generated file** — produced by `scripts/generate-references.ts` (`pnpm run references:generate`). Never hand-edit; the drift test fails if this file is stale.
 
-## Errors (22)
+## Diagnostics
 
-Compilation fails; no (or partial) output.
-
-| Code                            | Meaning                                                            |
-| ------------------------------- | ------------------------------------------------------------------ |
-| `invalid-bindings-config`       | `@bindings` used without a configuration object                    |
-| `invalid-correlationId-config`  | `@correlationId` missing its location path                         |
-| `invalid-header-config`         | Invalid `@header` configuration                                    |
-| `invalid-message-config`        | Invalid `@message` configuration                                   |
-| `invalid-protocol-config`       | Invalid `@protocol` configuration                                  |
-| `invalid-security-config`       | Invalid `@security` configuration                                  |
-| `invalid-security-scheme-type`  | Scheme type not in the AsyncAPI 3.1 set (e.g. `sasl`, `mutualTLS`) |
-| `invalid-server-config`         | Invalid `@server` configuration                                    |
-| `invalid-server-url`            | Malformed server URL                                               |
-| `invalid-tags-config`           | Tags without a `name`, or empty tag names                          |
-| `missing-channel-path`          | Operation missing a `@channel` address                             |
-| `invalid-channel-id`            | `@channel` used an empty channel ID                                |
-| `conflicting-channel-address`   | One channel ID used for two different addresses                    |
-| `server-protocol-required`      | Server config without a protocol                                   |
-| `server-target-invalid`         | `@useChannelServer` references an unknown server                   |
-| `server-url-required`           | Server config without a URL                                        |
-| `unsupported-protocol`          | Protocol not among the 22 supported                                |
-| `invalid-operation-id`          | Invalid `@operationId` value                                       |
-| `invalid-message-id`            | Invalid `@messageId` value                                         |
-| `invalid-trait-config`          | Invalid `@operationTrait` / `@messageTrait` configuration          |
-| `invalid-parameter-config`      | Invalid `@parameter` configuration                                 |
-| `invalid-channel-server-config` | Invalid `@useChannelServer` usage                                  |
-
-## Warnings (16)
-
-Compilation succeeds; the flagged issue is skipped or normalized in output.
-
-| Code                                | Meaning                                                                                                                   |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `invalid-binding-version`           | Binding version not valid for the protocol (valid versions listed)                                                        |
-| `misplaced-binding`                 | Binding placed where the protocol defines none (e.g. Kafka channel binding on a message)                                  |
-| `schema-generation-failed`          | A schema could not be generated                                                                                           |
-| `duplicate-schema-name`             | Model name collides with a generic instantiation name (last wins)                                                         |
-| `invalid-json-schema-extension-key` | `@jsonSchemaExtension` key failed validation                                                                              |
-| `invalid-extension-key`             | `@extension` key does not start with `x-`                                                                                 |
-| `unknown-binding-protocol`          | Binding for a protocol with no generated binding spec                                                                     |
-| `invalid-binding-field`             | Binding field value failed spec-derived validation                                                                        |
-| `invalid-parameter-location`        | `@parameter` location is not a `$message.` JSON pointer                                                                   |
-| `invalid-default-content-type`      | Invalid `@defaultContentType` value                                                                                       |
-| `conflicting-default-content-type`  | Multiple namespaces declare different default content types                                                               |
-| `conflicting-api-version`           | Multiple namespaces declare different API versions                                                                        |
-| `protocol-model-fields-unplaced`    | `@protocol` fields on a model only apply to channel/operation bindings and were not attached to the message               |
-| `event-op-in-service-namespace`     | AsyncAPI operation declared inside a `@service` namespace while `@typespec/http` is loaded (leaks into REST output)       |
-| `bare-op-assumed-rest`              | Bare operation excluded because `@typespec/http` routed it (cites `VERB /path`, or the owning namespace in fallback mode) |
-| `bare-op-inference-deprecated`      | Fallback namespace-geometry ownership was used because the route table was unreadable (deprecated, removed in 2.0)        |
-
-:::tip
-In test assertions, diagnostic codes are library-prefixed: match with `d.code?.endsWith("<code>")` or the full `"@lars-artmann/typespec-asyncapi/<code>"` string.
-:::
-
-## Where to go next
-
-- [Protocol Bindings](/guides/bindings/) — binding validation rules
-- [Security](/guides/security/) — valid scheme types
-- [Contributing](/contributing/) — how diagnostics are declared
+| Code | Severity | Message |
+| --- | --- | --- |
+| `bare-op-assumed-rest` | warning | Operation '{operationName}' was routed by @typespec/http as {verb} {path} and is therefore excluded from the AsyncAPI document. Rename it or add @publish/@subscribe if it is meant to be an event operation. |
+| `bare-op-inference-deprecated` | warning | Bare operation ownership in mixed programs is inferred from namespace geometry because the @typespec/http route table was not readable. This inference is deprecated and will be removed in 2.0; operation '{operationName}' was excluded based on containment in @service namespace '{serviceName}'. |
+| `conflicting-api-version` | warning | Multiple @apiVersion values found; using '{version}' and ignoring '{ignoredVersion}'. |
+| `conflicting-channel-address` | error | Channel ID '{channelId}' is used for different addresses: '{firstAddress}' and '{secondAddress}'. Use a different ID for each address. |
+| `conflicting-default-content-type` | warning | Multiple @defaultContentType values found; using '{contentType}' and ignoring '{ignoredContentType}'. |
+| `duplicate-schema-name` | warning | Two schemas resolve to the same name '{name}' (e.g. a model named 'PageUser' colliding with a template instantiation 'Page<User>'). Rename one of them; the last declaration wins in the output. |
+| `event-op-in-service-namespace` | warning | AsyncAPI operation '{operationName}' is declared inside the @service namespace '{serviceName}' while @typespec/http is loaded.{routeDetail} Every operation under a @service namespace is also routed as a REST endpoint (verb-less operations default to GET), which leaks events into OpenAPI output and can cause duplicate-operation errors.{additional} Move event operations to a namespace outside the REST @service namespace, or suppress this warning if the operation is intentionally an AsyncAPI-over-HTTP channel. |
+| `invalid-binding-field` | warning | Binding field '{field}' has invalid value. {detail} |
+| `invalid-binding-version` | warning | Binding version '{version}' is not valid for protocol '{protocol}'. Valid versions: {validVersions}. |
+| `invalid-bindings-config` | error | Protocol bindings missing for '{targetKind}'. Use @bindings with configuration object. |
+| `invalid-channel-id` | error | @channel on operation '{operationName}' must use a non-empty channel ID. |
+| `invalid-channel-server-config` | error | @channelServer requires a non-empty server name string. |
+| `invalid-correlationId-config` | error | Correlation ID location missing for model '{modelName}'. Use @correlationId with location path. |
+| `invalid-default-content-type` | warning | @defaultContentType value '{contentType}' is not a valid MIME type (expected e.g. 'application/json'). |
+| `invalid-extension-key` | warning | Invalid @extension key '{key}': AsyncAPI specification extension keys must start with "x-". The extension was skipped. |
+| `invalid-external-docs-config` | warning | External docs url '{url}' is not a valid absolute URI. Provide a full URL (e.g. "https://example.com/docs"). |
+| `invalid-header-config` | error | Header name missing for '{targetKind}'. Use @header with name and value. |
+| `invalid-json-schema-extension-key` | warning | Invalid @jsonSchemaExtension key '{key}': must be a non-empty string matching /^[A-Za-z_][A-Za-z0-9_.-]*$/. The extension was skipped. |
+| `invalid-message-config` | error | Message model '{modelName}' missing configuration. Use @message with configuration object. |
+| `invalid-message-id` | error | @messageId on model '{modelName}' must be a non-empty string. |
+| `invalid-operation-correlationId-config` | error | Correlation ID location missing for operation '{operationName}'. Use @correlationId with location path. |
+| `invalid-operation-id` | error | @operationId on operation '{operationName}' must be a non-empty string. |
+| `invalid-parameter-config` | error | Parameter name missing or invalid for '{parameterName}'. Use @parameter with a name and configuration object. |
+| `invalid-parameter-location` | warning | Parameter location '{location}' should be a runtime expression starting with '$message.' and containing a '#' JSON pointer (e.g., '$message.header#/correlationId'). |
+| `invalid-protocol-config` | error | Protocol configuration missing for '{targetKind}'. Use @protocol with configuration object. |
+| `invalid-security-config` | error | Security configuration missing for '{targetKind}'. Use @security with configuration object. |
+| `invalid-security-scheme-type` | error | Unsupported security scheme type '{schemeType}'. Valid types: {validTypes}. |
+| `invalid-server-config` | error | Server '{serverName}' configuration is missing. Must include url and protocol. |
+| `invalid-server-url` | error | Server URL '{url}' is not valid. URL must not be empty or contain spaces/control characters. |
+| `invalid-tags-config` | error | Tags configuration missing or invalid. Use @tags with string array. |
+| `invalid-trait-config` | error | Trait name missing or invalid for '{traitName}'. Use @operationTrait or @messageTrait with a name and configuration object. |
+| `misplaced-binding` | warning | Binding protocol '{protocol}' is not defined for {targetKind} bindings in the AsyncAPI specification. Valid placements: {validPlacements}. |
+| `missing-channel-path` | error | Operation '{operationName}' missing @channel decorator path. |
+| `protocol-model-fields-unplaced` | warning | @protocol on Model '{model}': field(s) {fields} only apply to channel or operation bindings and were not attached to the message. For message-level binding fields use @bindings on the model. |
+| `schema-generation-failed` | warning | Schema generation failed: {error}. |
+| `server-protocol-required` | error | Server protocol is required. |
+| `server-target-invalid` | error | @server can only be applied to namespaces. |
+| `server-url-required` | error | Server URL is required. |
+| `unknown-binding-protocol` | warning | Binding key '{protocol}' is not a recognized AsyncAPI protocol. Valid protocols: {validProtocols}. |
+| `unsupported-protocol` | error | Protocol '{protocol}' is not supported. Supported protocols: {validProtocols}. |
