@@ -1,0 +1,87 @@
+# Website deploy workflow (DRAFT — awaits Lars's decision).
+
+# Decision points before enabling any automatic trigger:
+#   1. Auto-deploy on master push vs dispatch-only (current: dispatch-only,
+#      so nothing deploys until a maintainer clicks Run).
+#   2. Create the FIREBASE_SERVICE_ACCOUNT secret (a service-account JSON
+#      with Firebase Hosting deploy rights on project lars-software).
+#      Until the secret exists the guard step below fails with a clear
+#      message and nothing is deployed.
+#   3. Optional: protect the "production" GitHub environment so deploys
+#      need an approval, mirroring the npm stage-approval posture.
+# The local path (nix run .#deploy-website) remains the canonical deploy
+# until (1) is decided; this workflow only ever runs when dispatched.
+
+name: Deploy Website
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip_smoke:
+        description: "Skip the post-deploy smoke checks"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-website
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Guard — FIREBASE_SERVICE_ACCOUNT secret must exist
+        env:
+          HAS_SECRET: ${{ secrets.FIREBASE_SERVICE_ACCOUNT != '' }}
+        run: |
+          if [ "$HAS_SECRET" != "true" ]; then
+            echo "::error::FIREBASE_SERVICE_ACCOUNT is not set. Add a service-account JSON with Firebase Hosting deploy rights (project lars-software) to the repository secrets, then re-run."
+            exit 1
+          fi
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          version: latest
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build website (includes sync-stats + fix-csp + link/CSP checks)
+        run: pnpm --filter typespec-asyncapi-website run check
+
+      - name: Deploy to Firebase Hosting
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: npx firebase-tools@14.11.0 deploy --only hosting:typespec-asyncapi --project lars-software --non-interactive
+
+      - name: Smoke — live headers and content markers
+        if: ${{ !inputs.skip_smoke }}
+        run: |
+          set -e
+          check() {
+            url="$1"; marker="$2"
+            body=$(curl -fsS "$url")
+            headers=$(curl -fsSI -o /dev/null -w '%{http_code} %{cache_control}' "$url")
+            echo "$url -> $headers"
+            case "$headers" in
+              "200 "*) ;;
+              *) echo "::error::$url did not return 200 ($headers)"; exit 1 ;;
+            esac
+            if ! printf '%s' "$body" | grep -q "$marker"; then
+              echo "::error::$url is missing the expected marker: $marker"
+              exit 1
+            fi
+          }
+          check "https://typespec-asyncapi.lars.software/" "data-playground"
+          check "https://typespec-asyncapi.lars.software/faq/" "AsyncAPI"
+          check "https://typespec-asyncapi.lars.software/playground/engine.js" "asyncapi"
+          echo "Smoke checks passed."
