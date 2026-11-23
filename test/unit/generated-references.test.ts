@@ -85,7 +85,7 @@ describe("generated reference pages", () => {
 
     const pageCodes: string[] = [];
     for (const match of readPage("diagnostics.md").matchAll(
-      /^\| `(?<code>[A-Za-z][A-Za-z0-9-]*)` \| (?:(?:error)|(?:warning)) \|/gmu,
+      /^\| `(?<code>[A-Za-z][A-Za-z0-9-]*)` +\| +(?:error|warning) +\|/gmu,
     )) {
       const code = match.groups?.code;
       if (code !== undefined) {
