@@ -8,7 +8,6 @@ import { isSupportedProtocol } from "./constants/protocols.js";
 import {
   storeDefaultContentType,
   storeMulti,
-  storeReusableServer,
   storeServerConfig,
 } from "./state-writers.js";
 import { stateSymbols } from "./lib.js";
@@ -106,7 +105,9 @@ export function $reusableServer(
   name: string,
   config: unknown,
 ): void {
-  withServerConfig(context, name, target, config, storeReusableServer);
+  withServerConfig(context, name, target, config, (program, t, typed) => {
+    storeServerConfig(program, t, typed, true);
+  });
 }
 
 /** Validate server args, then hand the typed config to the target store. */

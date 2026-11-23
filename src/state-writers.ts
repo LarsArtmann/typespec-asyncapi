@@ -162,13 +162,20 @@ function putServerEntry(
   }
 }
 
-export const storeServerConfig = (
+export function storeServerConfig(
   program: Program,
   target: Namespace,
   config: NamedServerConfig,
-): void => {
-  putServerEntry(program, target, config, stateSymbols.serverConfigs, true);
-};
+  reusable = false,
+): void {
+  putServerEntry(
+    program,
+    target,
+    config,
+    reusable ? stateSymbols.reusableServers : stateSymbols.serverConfigs,
+    reusable,
+  );
+}
 
 export const storeExternalDocs = (
   program: Program,
@@ -180,13 +187,7 @@ export const storeExternalDocs = (
   map.set(target, description ? { url, description } : { url });
 };
 
-export const storeReusableServer = (
-  program: Program,
-  target: Namespace,
-  config: NamedServerConfig,
-): void => {
-  putServerEntry(program, target, config, stateSymbols.reusableServers, false);
-};
+
 
 export const storeSecurityConfig = (
   program: Program,
