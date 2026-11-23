@@ -1,6 +1,6 @@
 ---
 title: Decorators
-description: All 31 decorators — channels, messages, servers, security, bindings, and reusable components.
+description: All 32 decorators — channels, messages, servers, security, bindings, and reusable components.
 head:
   - tag: meta
     attrs:
@@ -80,6 +80,7 @@ See [Security](/guides/security/) for scheme details.
 
 | Decorator                          | Target                                        | Purpose                                                            |
 | ---------------------------------- | --------------------------------------------- | ------------------------------------------------------------------ |
+| `@externalDocs(url, description?)` | Operation, Model, Namespace | Adds an External Documentation Object (Namespace → info.externalDocs) |
 | `@apiVersion(version)`             | Namespace                                     | Sets `info.version`                                                |
 | `@defaultContentType(type)`        | Namespace                                     | Sets `defaultContentType` on document root                         |
 | `@operationId(id)`                 | Operation                                     | Overrides auto-generated operation key                             |

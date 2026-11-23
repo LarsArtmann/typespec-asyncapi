@@ -53,7 +53,7 @@ Tests run via vitest, but coverage runs via `bun test --coverage`: the TypeSpec 
 ## Project layout
 
 - `src/` — the emitter (schema generation, document builders, decorators, validation)
-- `lib/main.tsp` — the TypeSpec library surface (31 decorators, `EmitterOptions` model)
+- `lib/main.tsp` — the TypeSpec library surface (32 decorators, `EmitterOptions` model)
 - `test/` — compliance, golden, property, integration, e2e, realworld suites
 - `examples/` — 15 runnable examples, all CI-validated
 - `website/` — this documentation site (Astro + Starlight)

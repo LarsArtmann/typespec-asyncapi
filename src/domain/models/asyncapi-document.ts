@@ -390,12 +390,9 @@ interface DocumentBody {
 }
 
 /**
- * Parsed AsyncAPI 3.1 document from YAML/JSON output.
- *
- * Relaxed version of `AsyncAPIDocument` for use with deserialized output
- * where literal types are widened (e.g. `asyncapi` is `string`, not `"3.1.0"`)
- * and `channels` is optional (deserialized output may be missing it).
- * Eliminates `as any` casts in test assertions.
+ * Parsed AsyncAPI 3.1 document from YAML/JSON output: the relaxed version of
+ * `AsyncAPIDocument` for deserialized output (literal types widened, `channels`
+ * optional), eliminating `as any` casts in test assertions.
  */
 export interface ParsedAsyncAPIDocument extends DocumentBody {
   asyncapi: string;

@@ -4,7 +4,7 @@
 **Project:** `@lars-artmann/typespec-asyncapi` v1.3.0 (live on npm, `latest` dist-tag)
 **Lint:** oxlint 0 errors / 0 warnings, ESLint 0 errors / 0 warnings
 **Diagnostics:** 36 codes (20 error + 16 warning), all compile-time validated via `$lib.reportDiagnostic()`
-**Decorators:** 31 declared in `lib/main.tsp` (19 core + 12 reusable-component); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
+**Decorators:** 32 declared in `lib/main.tsp` (20 core + 12 reusable-component); plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`
 **Duplication:** 0% threshold enforced via jscpd (source files only), 0 clones
 **Coverage:** 97.9% average line coverage (45 source files, 75% per-file minimum gate)
 
@@ -74,7 +74,7 @@
 
 ## Decorator System
 
-31 decorators declared in `lib/main.tsp` (19 core + 12 reusable-component). Plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`.
+32 decorators declared in `lib/main.tsp` (20 core + 12 reusable-component). Plus 16 TypeSpec stdlib constraint/metadata mappings in `src/constraint-mapper.ts`.
 
 | Decorator              | Status           | Evidence                                                                                                                                                                                                                                                                                                            |
 | ---------------------- | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -87,6 +87,7 @@
 | `@security`            | FULLY_FUNCTIONAL | Emitted as `components.securitySchemes`; multiple schemes per namespace; spec-exact type allowlist (locked by 13 AJV-validated tests)                                                                                                                                                                               |
 | `@operationSecurity`   | FULLY_FUNCTIONAL | Emits `security: [{ $ref: "#/components/securitySchemes/<name>" }]` on operations                                                                                                                                                                                                                                   |
 | `@tags`                | FULLY_FUNCTIONAL | String arrays AND rich tag objects (`description`/`externalDocs`); collected into reusable `components.tags` map (`src/builders/tag-builder.ts`)                                                                                                                                                                    |
+| `@externalDocs`        | FULLY_FUNCTIONAL | External Documentation Object on Operation, message, or document `info.externalDocs` (Namespace target); warns and skips non-absolute URLs                                                                                                                                                                            |
 | `@correlationId`       | FULLY_FUNCTIONAL | Emitted as `correlationId` objects on all messages; targets Model or Operation (Operation applies it to every referenced message, explicit model-level config wins)                                                                                                                                                  |
 | `@bindings`            | FULLY_FUNCTIONAL | Emitted as `bindings` on operations/messages/servers; keys normalized, versions auto-injected. Namespace target enables server bindings                                                                                                                                                                             |
 | `@header`              | FULLY_FUNCTIONAL | Emitted as JSON Schema `headers` on messages                                                                                                                                                                                                                                                                        |

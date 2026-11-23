@@ -24,7 +24,6 @@ import {
   $security,
   $subscribe,
   $tags,
-  $externalDocs,
 } from "./minimal-decorators.js";
 import {
   $defaultContentType,
@@ -37,6 +36,7 @@ import {
   $server,
 } from "./namespace-decorators.js";
 import { $extension, $jsonSchemaExtension } from "./extension-decorators.js";
+import { $externalDocs } from "./external-docs-decorator.js";
 import {
   $useBinding,
   $useChannelBinding,
