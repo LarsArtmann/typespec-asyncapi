@@ -8,7 +8,7 @@ READ the target before writing · RESEARCH via grep/gate before claiming · one 
 
 **Verschlimmbern guardrails (hard rules):**
 
-- AGENTS.md line 203 is a PARALLEL session's release record. Fix ONLY the spacing violations (insert a space or reword the suffix, e.g. `` `npm pack`s `` → "`npm pack` runs"). Do not reword, reorder, or delete any factual claim on that line.
+- AGENTS.md line 203 is a PARALLEL session's release record. Fix ONLY the spacing violations (insert a space or reword the suffix, e.g. a glued "s" after `npm pack` becomes "npm pack runs"). Do not reword, reorder, or delete any factual claim on that line.
 - The corpus is GREEN except two gates. Every fix must be the minimal one; if a fix turns a second gate red, revert the fix, not the gate.
 - `docs/status/archived/` is immutable. Corrections to archived content go into living docs.
 - `.docs-gates.json` `audit_max` only steps DOWN (11 → 4 is authorized by measurement; never upward).
@@ -19,7 +19,7 @@ READ the target before writing · RESEARCH via grep/gate before claiming · one 
 
 | Item | Why it is 51% |
 | --- | --- |
-| Fix `AGENTS.md:203` rule-F adjacency (2-3 spans: `` `npm pack`s `` et al.) | single-handedly turns `annotate` PASS — the only gate that verifies verdict honesty for 5,151 struck items |
+| Fix `AGENTS.md:203` rule-F adjacency (1 genuine span: glued "s" after `npm pack`, et al.) | single-handedly turns `annotate` PASS — the only gate that verifies verdict honesty for 5,151 struck items |
 | Reduce unarchived count 18 → 15 (annotate + archive the 3 oldest 2026-11-02 reports) | single-handedly turns `cadence` PASS — the gate that was red for 5 weeks |
 | Commit + push master (1 commit ahead) | ships the entire sweep; CI on origin is the only unverified surface |
 
