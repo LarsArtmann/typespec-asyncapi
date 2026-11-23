@@ -10,9 +10,8 @@ import type {
 } from "@typespec/compiler";
 import { $lib } from "./lib.js";
 import { PROTOCOL_LIST } from "./constants/protocols.js";
-import type { Tag } from "./domain/models/asyncapi-document.js";
+import type { JsonSchema, Tag } from "./domain/models/asyncapi-document.js";
 import type { MessageConfigData } from "./state.js";
-import type { JsonSchema } from "./domain/models/asyncapi-document.js";
 
 // === DIAGNOSTIC HELPERS ===
 
@@ -336,6 +335,7 @@ export function extractMessageConfig(
     description: description ?? `Message ${target.name}`,
     title: title ?? target.name,
     ...(schemaFormat ? { schemaFormat } : {}),
+    ...(payload ? { payload } : {}),
     ...(examples ? { examples } : {}),
   };
 }
