@@ -2,10 +2,10 @@
 /**
  * axe-core accessibility audit over every built HTML page.
  *
- * Loads each built HTML page under website/dist into jsdom, runs axe-core with the
- * wcag2a/wcag2aa/wcag21a/wcag21aa rules, and prints a per-page violation
- * report. Exit 1 when violations exist (CI-friendly); `--report-only`
- * always exits 0.
+ * Loads each built page under website/dist into jsdom, injects axe-core as a
+ * real script element, and runs the wcag2a/wcag2aa/wcag21a/wcag21aa rules.
+ * Prints a per-page violation report; exit 1 when violations exist
+ * (CI-friendly); `--report-only` always exits 0.
  *
  * Usage: node website/scripts/axe-audit.mjs [--report-only] [--out <file>]
  */
@@ -38,21 +38,30 @@ function listHtml(dir) {
   return entries;
 }
 
+async function auditPage(page, rel) {
+  const dom = new JSDOM(readFileSync(page, "utf8"), {
+    url: `https://typespec-asyncapi.lars.software/${rel}`,
+    runScripts: "dangerously",
+  });
+  const { window } = dom;
+  const script = window.document.createElement("script");
+  script.textContent = axeSource;
+  window.document.body.append(script);
+  const results = await window.axe.run(window.document, {
+    runOnly: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
+    resultTypes: ["violations"],
+  });
+  window.close();
+  return results.violations;
+}
+
 const pages = listHtml(DIST);
 const report = [];
 let violationCount = 0;
 
 for (const page of pages) {
   const rel = page.slice(DIST.length);
-  const dom = new JSDOM(readFileSync(page, "utf8"), { url: `https://typespec-asyncapi.lars.software/${rel}` });
-  const { window } = dom;
-  window.axe = { run: undefined };
-  const exec = new window.Function(`${axeSource}; return axe;`)();
-  const results = await exec.run(window.document, {
-    runOnly: ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"],
-    resultTypes: ["violations"],
-  });
-  for (const v of results.violations) {
+  for (const v of await auditPage(page, rel)) {
     violationCount += v.nodes.length;
     report.push({
       page: rel,
@@ -63,7 +72,6 @@ for (const page of pages) {
       totalNodes: v.nodes.length,
     });
   }
-  window.close();
 }
 
 const lines = report.map(

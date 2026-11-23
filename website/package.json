@@ -2,7 +2,7 @@
   "name": "typespec-asyncapi-website",
   "version": "1.0.0",
   "private": true,
-  "description": "Website and documentation for typespec-asyncapi — generate validated AsyncAPI 3.1 specifications from TypeSpec",
+  "description": "Website and documentation for typespec-asyncapi \u2014 generate validated AsyncAPI 3.1 specifications from TypeSpec",
   "keywords": [
     "asyncapi",
     "astro",
@@ -38,7 +38,8 @@
     "check": "pnpm run typecheck && pnpm run build && pnpm run check:html && pnpm run check:links && pnpm run check:csp",
     "clean": "rm -rf dist .astro node_modules/.cache",
     "astro": "astro",
-    "playground": "node scripts/build-playground.mjs"
+    "playground": "node scripts/build-playground.mjs",
+    "audit:a11y": "node scripts/axe-audit.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
