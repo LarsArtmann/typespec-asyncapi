@@ -26,6 +26,12 @@ export const $lib = createTypeSpecLibrary({
       },
       severity: "error",
     },
+    "invalid-external-docs-config": {
+      messages: {
+        default: paramMessage`External docs url '${"url"}' is not a valid absolute URI. Provide a full URL (e.g. "https://example.com/docs").`,
+      },
+      severity: "warning",
+    },
     "invalid-header-config": {
       messages: {
         default: paramMessage`Header name missing for '${"targetKind"}'. Use @header with name and value.`,
@@ -256,6 +262,7 @@ export const $lib = createTypeSpecLibrary({
     securityConfigs: { description: "Security configurations" },
     securitySchemes: { description: "Security scheme configurations" },
     reusableServers: { description: "Namespace to reusable server definitions (components.servers)" },
+    externalDocs: { description: "Targets to external docs references" },
     serverConfigs: { description: "Server configurations" },
     tags: { description: "Targets to tag arrays" },
     apiVersion: { description: "Namespace to API version string" },
@@ -304,6 +311,7 @@ export const stateSymbols = {
   securityConfigs: Symbol("securityConfigs"),
   securitySchemes: Symbol("securitySchemes"),
   reusableServers: Symbol("reusableServers"),
+  externalDocs: Symbol("externalDocs"),
   serverConfigs: Symbol("serverConfigs"),
   tags: Symbol("tags"),
   apiVersion: Symbol("apiVersion"),

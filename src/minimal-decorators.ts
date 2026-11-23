@@ -223,6 +223,38 @@ export function $tags(
   storeTags(context.program, target as Operation, tags);
 }
 
+export function $externalDocs(
+  context: DecoratorContext,
+  target: Model | Operation | Namespace,
+  url: unknown,
+  description?: unknown,
+): void {
+  const validUrl =
+    typeof url === "string" &&
+    (() => {
+      try {
+        new URL(url);
+        return true;
+      } catch {
+        return false;
+      }
+    })();
+  if (!validUrl) {
+    reportDiagnostic(context, "invalid-external-docs-config", target, {
+      url: typeof url === "string" ? url : String(url),
+    });
+    return;
+  }
+  if (description !== undefined && typeof description !== "string") {
+    reportDiagnostic(context, "invalid-external-docs-config", target, {
+      url: url as string,
+    });
+    return;
+  }
+
+  storeExternalDocs(context.program, target, url as string, description);
+}
+
 export function $correlationId(
   context: DecoratorContext,
   target: Model | Operation,

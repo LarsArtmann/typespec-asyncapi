@@ -157,6 +157,14 @@ export interface CorrelationIdData {
 }
 
 /**
+ * External Documentation State Data
+ */
+export interface ExternalDocsData {
+  url: string;
+  description?: string;
+}
+
+/**
  * Message Header State Data
  */
 export interface MessageHeaderData {
@@ -237,6 +245,7 @@ export interface AsyncAPIConsolidatedState {
   reusableServers: Map<Type, ServerConfigData>;
   operations: Map<Type, OperationTypeData>;
   tags: Map<Type, TagData>;
+  externalDocs: Map<Type, ExternalDocsData>;
   protocolConfigs: Map<Type, ProtocolConfigData>;
   protocolBindings: Map<Type, ProtocolBindings>;
   securityConfigs: Map<Type, SecurityConfigData[]>;
@@ -323,6 +332,10 @@ export function consolidateAsyncAPIState(
       stateSymbols.reusableServers,
     ),
     tags: getStateMap<TagData>(program, stateSymbols.tags),
+    externalDocs: getStateMap<ExternalDocsData>(
+      program,
+      stateSymbols.externalDocs,
+    ),
     objectExtensions: getStateMap<Record<string, unknown>>(
       program,
       stateSymbols.objectExtensions,

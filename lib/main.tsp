@@ -95,10 +95,11 @@ extern dec tags(target: Model | Operation | Namespace, value: valueof (string | 
 /**
  * Specify correlation ID configuration
  * @param location Location of the correlation ID (e.g., "$message.header#/correlationId")
- */
+ *
  * Decorate a Model to set its message correlationId, or an Operation to
  * apply it to every message that operation references (explicit model-level
  * correlationIds win).
+ */
 extern dec correlationId(target: Model | Operation, location: valueof string);
 
 /**
