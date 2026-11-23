@@ -38,6 +38,7 @@ const COVERAGE_FLAGS = [
   "--coverage",
   "--coverage-reporter=lcov",
   "--coverage-dir=coverage",
+  "test/",
 ];
 
 const MAX_ATTEMPTS = 3;
