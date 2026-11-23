@@ -18,10 +18,12 @@
  * Never hand-edit the generated pages; edit the sources (or this script) and
  * regenerate. Run it with bun like the other scripts in this directory.
  */
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import path from "node:path";
+import { syncGeneratedFiles } from "./generated-files.js";
 
-const repoRoot = path.join(import.meta.dirname, "..");
+const here = import.meta.dirname;
+const repoRoot = path.join(here, "..");
 
 const MAIN_TSP = path.join(repoRoot, "lib", "main.tsp");
 const LIB_TS = path.join(repoRoot, "src", "lib.ts");
@@ -400,35 +402,19 @@ function main(): void {
     parseDiagnostics(readSource(LIB_TS)),
     parseOptions(readSource(EMITTER_OPTIONS_TS)),
   );
-  const drifted: string[] = [];
-  for (const page of pages) {
-    const relativePath = path.join("website", "src", "content", "docs", "reference", page.file);
-    const absolutePath = path.join(repoRoot, relativePath);
-    const current = existsSync(absolutePath)
-      ? readFileSync(absolutePath, "utf8")
-      : undefined;
-    if (current === page.content) {
-      continue;
-    }
-    if (checkOnly) {
-      drifted.push(
-        current === undefined ? `${relativePath} (missing)` : `${relativePath} (differs)`,
-      );
-      continue;
-    }
-    mkdirSync(path.dirname(absolutePath), { recursive: true });
-    writeFileSync(absolutePath, page.content, "utf8");
-    console.log(`wrote ${relativePath}`);
-  }
+  syncGeneratedFiles(
+    repoRoot,
+    pages.map((p) => ({
+      relativePath: path.join("website", "src", "content", "docs", "reference", p.file),
+      content: p.content,
+    })),
+    {
+      checkOnly,
+      label: "Generated reference pages",
+      regenerateHint: "pnpm run references:generate",
+    },
+  );
   if (checkOnly) {
-    if (drifted.length > 0) {
-      console.error("Generated reference pages are out of date:");
-      for (const entry of drifted) {
-        console.error(`  - ${entry}`);
-      }
-      console.error("Run `pnpm run references:generate` and commit the result.");
-      process.exit(1);
-    }
     console.log(`generated reference pages up to date (${pages.length} files)`);
     return;
   }

@@ -169,11 +169,10 @@ export const storeReusableServer = (
   target: Namespace,
   config: Record<string, unknown> & { name: string },
 ): void => {
-  const map = getStateMap<ServerConfigData>(
-    program,
-    stateSymbols.reusableServers,
+  getStateMap<ServerConfigData>(program, stateSymbols.reusableServers).set(
+    target,
+    buildServerConfigEntry(target, config),
   );
-  map.set(target, buildServerConfigEntry(target, config));
 };
 
 export const storeSecurityConfig = (

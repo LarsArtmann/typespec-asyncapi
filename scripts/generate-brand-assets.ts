@@ -14,8 +14,8 @@
  * Run it with bun (`bun run scripts/generate-brand-assets.ts`) like the other
  * scripts in this directory.
  */
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { syncGeneratedFiles } from "./generated-files.js";
 
 const repoRoot = path.join(import.meta.dirname, "..");
 
@@ -637,37 +637,12 @@ const artifacts: Artifact[] = [
 ];
 
 const checkOnly = process.argv.includes("--check");
-const drifted: string[] = [];
 
-for (const artifact of artifacts) {
-  const absolutePath = path.join(repoRoot, artifact.relativePath);
-  const current = existsSync(absolutePath)
-    ? readFileSync(absolutePath, "utf8")
-    : undefined;
-
-  if (current === artifact.content) {
-    continue;
-  }
-  if (checkOnly) {
-    drifted.push(
-      current === undefined
-        ? `${artifact.relativePath} (missing)`
-        : `${artifact.relativePath} (differs)`,
-    );
-    continue;
-  }
-  writeFileSync(absolutePath, artifact.content, "utf8");
-  console.log(`wrote ${artifact.relativePath}`);
-}
-
+syncGeneratedFiles(repoRoot, artifacts, {
+  checkOnly,
+  label: "Brand assets",
+  regenerateHint: "pnpm run brand:generate",
+});
 if (checkOnly) {
-  if (drifted.length > 0) {
-    console.error("Brand assets are out of date:");
-    for (const entry of drifted) {
-      console.error(`  - ${entry}`);
-    }
-    console.error("Run `pnpm run brand:generate` and commit the result.");
-    process.exit(1);
-  }
   console.log(`brand assets up to date (${artifacts.length} files)`);
 }

@@ -111,17 +111,6 @@ export function $reusableServer(
   name: string,
   config: unknown,
 ): void {
-  if (
-    !validateConfig(config, {
-      context,
-      target,
-      diagnosticCode: "invalid-server-config",
-      format: { serverName: name },
-    })
-  ) {
-    return;
-  }
-
   const configTyped = validateServerArgs(context, target, name, config);
   if (!configTyped) {
     return;
