@@ -8,6 +8,7 @@
 import type {
   MessageConfigData,
   MessageHeaderData,
+  ExternalDocsData,
   OperationReplyData,
   ProtocolBindings,
   SecurityConfigData,
@@ -110,11 +111,11 @@ function getMessageConfigsMap(
   return getStateMap<MessageConfigData>(program, stateSymbols.messageConfigs);
 }
 
-export const storeServerConfig = (
-  program: Program,
+/** Normalize a raw `@server`/`@reusableServer` config into a ServerConfigData entry. */
+function buildServerConfigEntry(
   target: Namespace,
   config: Record<string, unknown> & { name: string },
-): void => {
+): ServerConfigData {
   const newEntry: ServerConfigData = {
     description:
       (config.description as string | undefined) ?? `Server for ${target.name}`,
@@ -138,12 +139,48 @@ export const storeServerConfig = (
       config.security,
     ) as SecurityRequirement[];
   }
-  const map = getStateMap<ServerConfigData[]>(
-    program,
-    stateSymbols.serverConfigs,
-  );
-  appendToStateArray(map, target, newEntry);
+  return newEntry;
+}
+
+type NamedServerConfig = Record<string, unknown> & { name: string };
+function putServerEntry(
+  program: Program,
+  target: Namespace,
+  config: NamedServerConfig,
+  symbol: symbol,
+  append: boolean,
+): void {
+  const entry = buildServerConfigEntry(target, config);
+  if (append) {
+    appendToStateArray(getStateMap<ServerConfigData[]>(program, symbol), target, entry);
+  } else {
+    getStateMap<ServerConfigData>(program, symbol).set(target, entry);
+  }
+}
+
+export function storeServerConfig(
+  program: Program,
+  target: Namespace,
+  config: NamedServerConfig,
+  reusable = false,
+): void {
+  const symbol = reusable
+    ? stateSymbols.reusableServers
+    : stateSymbols.serverConfigs;
+  putServerEntry(program, target, config, symbol, !reusable);
+}
+
+export const storeExternalDocs = (
+  program: Program,
+  target: Model | Operation | Namespace,
+  url: string,
+  description: string | undefined,
+): void => {
+  const map = getStateMap<ExternalDocsData>(program, stateSymbols.externalDocs);
+  map.set(target, description ? { url, description } : { url });
 };
+
+
 
 export const storeSecurityConfig = (
   program: Program,
@@ -189,7 +226,7 @@ export const storeTags = (
 
 export const storeCorrelationId = (
   program: Program,
-  target: Model,
+  target: Model | Operation,
   location: string,
 ): void => {
   const map = getStateMap(program, stateSymbols.correlationIds);

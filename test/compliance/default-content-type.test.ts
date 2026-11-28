@@ -89,4 +89,33 @@ describe("spec Compliance: defaultContentType", () => {
     ).toBeFalsy();
     expect(asyncApiDoc!.defaultContentType).toBe("application/json");
   });
+
+  it("rejects a non-MIME defaultContentType with invalid-default-content-type", async () => {
+    const { asyncApiDoc, diagnostics } = await compileAsyncAPI(`
+      @defaultContentType("not-a-mime-type")
+      namespace Demo;
+
+      model Broken { id: string; }
+      @channel("events")
+      op publish(): Broken;
+    `);
+
+    expect(
+      diagnostics.some((d) => d.code?.endsWith("invalid-default-content-type")),
+    ).toBeTruthy();
+    expect(asyncApiDoc?.defaultContentType).toBeUndefined();
+  });
+
+  it("accepts a MIME type with parameters", async () => {
+    const doc = await compileAndValidateOrThrow(`
+      @defaultContentType("application/json; charset=utf-8")
+      namespace Demo;
+
+      model Event { id: string; }
+      @channel("events")
+      op publish(): Event;
+    `);
+
+    expect(doc.defaultContentType).toBe("application/json; charset=utf-8");
+  });
 });

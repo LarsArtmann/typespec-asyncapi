@@ -77,6 +77,6 @@ Every emitted document is validated against the official AsyncAPI 3.1.0 JSON Sch
 ## Where to go next
 
 - [Quick Start](/getting-started/quick-start/) — your first channel, operation, and message in 5 minutes
-- [Decorators](/guides/decorators/) — all 30 decorators with targets and examples
+- [Decorators](/guides/decorators/) — all 32 decorators with targets and examples
 - [Protocol Bindings](/guides/bindings/) — Kafka, MQTT, WebSocket, and 16 more
 - [Related Tools](/related-tools/) — AsyncAPI Studio, Spectral, and sibling emitters

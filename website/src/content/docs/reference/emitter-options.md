@@ -1,66 +1,18 @@
 ---
-title: Emitter Options
-description: Output file, format, pretty-printing, split-schemas, and version options in tspconfig.yaml.
-head:
-  - tag: meta
-    attrs:
-      property: og:image
-      content: "https://typespec-asyncapi.lars.software/og/reference/emitter-options.png"
-  - tag: meta
-    attrs:
-      property: og:image:width
-      content: "1200"
-  - tag: meta
-    attrs:
-      property: og:image:height
-      content: "630"
-  - tag: meta
-    attrs:
-      property: og:image:alt
-      content: "Emitter Options — typespec-asyncapi"
-  - tag: meta
-    attrs:
-      name: twitter:image
-      content: "https://typespec-asyncapi.lars.software/og/reference/emitter-options.png"
+title: Emitter options
+description: Generated from source on every run of scripts/generate-references.ts — never hand-edit.
 ---
 
-All options live under `options."@lars-artmann/typespec-asyncapi"` in `tspconfig.yaml`, or on the command line via `--option @lars-artmann/typespec-asyncapi.<option>=<value>`.
+> **Generated file** — produced by `scripts/generate-references.ts` (`pnpm run references:generate`). Never hand-edit; the drift test fails if this file is stale.
 
-## Options
+## Emitter options
 
-| Option          | Type               | Default    | Purpose                                                                       |
-| --------------- | ------------------ | ---------- | ----------------------------------------------------------------------------- |
-| `output-file`   | `string`           | `asyncapi` | Base filename (without extension)                                             |
-| `file-type`     | `string` or object | `yaml`     | `"json"`, `"yaml"`, `"yml"`, or `{ format: "json", pretty: true, indent: 2 }` |
-| `split-schemas` | `boolean`          | `false`    | Split schemas into individual files under `schemas/`                          |
-| `asyncapi-id`   | `string`           | unset      | Root document `id` (e.g. `"urn:com:example:api"`); omitted when unset         |
-| `version`       | `string`           | unset      | Overrides `info.version` (highest precedence)                                 |
-
-## Examples
-
-Pretty JSON:
-
-```yaml
-options:
-  "@lars-artmann/typespec-asyncapi":
-    file-type: { format: "json", pretty: true, indent: 2 }
-```
-
-Split schemas with a URN id:
-
-```yaml
-options:
-  "@lars-artmann/typespec-asyncapi":
-    split-schemas: true
-    asyncapi-id: "urn:com:example:api"
-```
-
-## Output location
-
-Output lands in `tsp-output/@lars-artmann/typespec-asyncapi/` by convention (`emitter-output-dir` from the package manifest). With `split-schemas`, schema files land in a `schemas/` subdirectory with all `$ref` pointers rewritten.
-
-## Where to go next
-
-- [Multi-File Output](/guides/split-schemas/) — split schemas in depth
-- [Versioning](/guides/versioning/) — the `version` precedence chain
-- [Installation](/getting-started/installation/) — wiring the emitter
+| Option            | Type                                                                                                      | Description                                                       |
+| ----------------- | --------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| `"asyncapi-id"`   | string?                                                                                                   | Unique document identifier (AsyncAPI root `id`, e.g. a URN)       |
+| `"file-type"`     | \| "json" \| "yaml" \| "yml" \| { format: "json" \| "yaml" \| "yml"; pretty?: boolean; indent?: number }? | Output file format (json, yaml, yml) or detailed format config    |
+| `"output-dir"`    | string?                                                                                                   | Output directory for generated files                              |
+| `"output-file"`   | string?                                                                                                   | Output file name without extension                                |
+| `"split-schemas"` | boolean?                                                                                                  | Split schemas into individual files under a schemas/ subdirectory |
+| `title`           | string?                                                                                                   | Generated document title                                          |
+| `version`         | string?                                                                                                   | Target AsyncAPI specification version                             |

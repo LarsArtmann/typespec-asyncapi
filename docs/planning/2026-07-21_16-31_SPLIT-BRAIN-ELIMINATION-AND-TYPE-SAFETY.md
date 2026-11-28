@@ -1,7 +1,7 @@
 # Split-Brain Elimination & Type Safety Completion
 
 **Date:** 2026-07-21 16:31
-**Status:** ~~PLANNED (awaiting execution approval)~~ EXECUTED 2026-07-22 (commit `42ad7ac`). All 8 tasks completed; results in `docs/status/2026-07-22_03-46_SPLIT-BRAIN-FIX-VITEST-MIGRATION.md`.
+**Status:** ~~PLANNED (awaiting execution approval)~~ EXECUTED 2026-07-22 (commit `42ad7ac`). All 8 tasks completed; results in `docs/status/archived/2026-07-22_03-46_SPLIT-BRAIN-FIX-VITEST-MIGRATION.md`.
 **Scope:** 7 TODO items from `TODO_LIST.md`, verified against code this session
 **Risk:** Low — 4 of 7 items are dead-code deletion or type tightening; 1 is investigation; only 2 touch live behavior
 
@@ -241,7 +241,7 @@ Before each change, verify:
 
 ## Resolution (2026-07-22)
 
-All 8 tasks executed in commit `42ad7ac` ("eliminate diagnostic drift and stabilize test execution"). Final test count: 426 pass (up from 406 baseline). Full results documented in `docs/status/2026-07-22_03-46_SPLIT-BRAIN-FIX-VITEST-MIGRATION.md`.
+All 8 tasks executed in commit `42ad7ac` ("eliminate diagnostic drift and stabilize test execution"). Final test count: 426 pass (up from 406 baseline). Full results documented in `docs/status/archived/2026-07-22_03-46_SPLIT-BRAIN-FIX-VITEST-MIGRATION.md`.
 
 | Task       | Plan claim                          | Outcome                                                                                |
 | ---------- | ----------------------------------- | -------------------------------------------------------------------------------------- |

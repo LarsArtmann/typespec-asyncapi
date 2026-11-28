@@ -22,6 +22,10 @@ head:
     attrs:
       name: twitter:image
       content: "https://typespec-asyncapi.lars.software/og/getting-started/quick-start.png"
+  - tag: script
+    attrs:
+      type: application/ld+json
+    content: '{"@context": "https://schema.org", "@type": "HowTo", "name": "Generate an AsyncAPI 3.1 document from TypeSpec", "description": "Install the emitter, describe an event channel in TypeSpec, compile, and read the emitted AsyncAPI YAML.", "step": [{"@type": "HowToStep", "position": 1, "name": "Install the emitter", "text": "Add @lars-artmann/typespec-asyncapi to the project and reference it from the TypeSpec file."}, {"@type": "HowToStep", "position": 2, "name": "Create a TypeSpec file", "text": "Import the emitter, define a model for the message payload, and decorate a publish operation with a channel address."}, {"@type": "HowToStep", "position": 3, "name": "Compile", "text": "Run the tsp CLI with the emitter configured in tspconfig.yaml."}, {"@type": "HowToStep", "position": 4, "name": "Read the output", "text": "The emitted AsyncAPI 3.1 YAML document appears under tsp-output with the channel, operation, message, and schema wired through the required $ref chain."}]}'
 ---
 
 This page walks the shortest path from zero to a validated AsyncAPI 3.1 document.

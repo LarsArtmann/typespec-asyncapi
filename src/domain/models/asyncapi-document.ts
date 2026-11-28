@@ -193,6 +193,7 @@ export interface ChannelObject extends CommonMetadata {
 export interface OperationObject extends CommonMetadata {
   action: OperationAction;
   channel: Ref;
+  externalDocs?: ExternalDocumentationObject;
   security?: SecurityRequirement[];
   traits?: Ref[];
   messages?: Ref[];
@@ -214,6 +215,7 @@ export interface MessageObject extends CommonMetadata {
   name?: string;
   traits?: Ref[];
   schemaFormat?: string;
+  externalDocs?: ExternalDocumentationObject;
   examples?: {
     headers?: unknown;
     payload?: unknown;
@@ -376,6 +378,7 @@ export interface AsyncAPIDocument extends DocumentBody {
 interface DocumentBody {
   info: InfoObject;
   id?: string;
+  externalDocs?: ExternalDocumentationObject;
   servers?: Record<string, ServerObject>;
   defaultContentType?: string;
   operations?: Record<string, OperationObject>;
@@ -384,12 +387,9 @@ interface DocumentBody {
 }
 
 /**
- * Parsed AsyncAPI 3.1 document from YAML/JSON output.
- *
- * Relaxed version of `AsyncAPIDocument` for use with deserialized output
- * where literal types are widened (e.g. `asyncapi` is `string`, not `"3.1.0"`)
- * and `channels` is optional (deserialized output may be missing it).
- * Eliminates `as any` casts in test assertions.
+ * Parsed AsyncAPI 3.1 document from YAML/JSON output: the relaxed version of
+ * `AsyncAPIDocument` for deserialized output (literal types widened, `channels`
+ * optional), eliminating `as any` casts in test assertions.
  */
 export interface ParsedAsyncAPIDocument extends DocumentBody {
   asyncapi: string;

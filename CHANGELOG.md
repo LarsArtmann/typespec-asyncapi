@@ -4,6 +4,71 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Added
+
+- `@reusableServer` decorator: named server definitions in
+  `components.servers`; `@useChannelServer` now resolves names against
+  `components.servers` first (the AsyncAPI 3.1 channel-servers target) and
+  falls back to root `@server` definitions.
+- `@correlationId` accepts an Operation target: the correlation applies to
+  every message the operation references; explicit model-level
+  configuration wins.
+- `@externalDocs` decorator: External Documentation Objects on operations,
+  messages, or the document `info.externalDocs` (Namespace target);
+  non-absolute URLs warn with `invalid-external-docs-config` and are skipped.
+- `@message` raw `payload` passthrough paired with `schemaFormat`, emitted
+  as the AsyncAPI 3.1 Multi Format Schema Object wrapper
+  (`{schemaFormat, schema}`) instead of an invalid message-level field.
+- axe-core accessibility audit (`website/scripts/axe-audit.mjs`): 0
+  violations across all 22 built pages (WCAG 2.1 A/AA).
+- JSON-LD structured data: FAQPage on `/faq/`, HowTo on the quick-start page.
+- Lighthouse CI wiring (`website/lighthouserc.json`, warn-only budgets for
+  calibration) and Playwright smoke specs running in CI.
+- Generated reference pages (`/reference/decorators`, `/reference/diagnostics`,
+  `/reference/emitter-options`) derived from `lib/main.tsp`, `src/lib.ts`,
+  and the emitter options interface with a drift test.
+
+### Changed
+
+- The dev-only ESLint `minimatch` chain is overridden to 11.0.9 (dual-mode
+  CJS), clearing Dependabot alert 126 (GHSA-g3hv-75wg-m249). spectral-core's
+  pinned 3.x copy sits below the advisory range (`>= 7.0.0`) and stays put.
+
+## [1.3.0] - 2026-11-21
+
+> **npm note:** 1.2.0 was tagged and released on GitHub, but its npm publish
+> failed — the npm trusted-publisher registration was not yet in place — so
+> the registry never saw it. This is the first release on npm since 1.1.0 and
+> includes every 1.2.0 change.
+
+### Added
+
+- **CI failure alerting** — `.github/workflows/ci-alert.yml` opens or comments
+  on a single `ci-alert`-labeled tracking issue whenever CI on master fails
+  or a Release run fails, and closes the issue automatically once CI on
+  master is green again. This closes the daemon-push blind spot that let
+  master CI stay red for two weeks unnoticed (2026-11-04 to 2026-11-18).
+- Property-test generators for the 1.2.0 channel-ID and variant-expansion
+  behaviors, plus two new invariants: the channel key is always exactly
+  `id ?? address` with agreeing refs (RFC 6901 token escaping included), and
+  a discriminated base return expands to one message per derived variant.
+- E2E coverage for `@channel(address, id)` combined with `split-schemas`
+  output (id-keyed channels, operation pairing at a shared ID, distinct IDs
+  at one address, external schema ref rewriting, YAML flavor).
+
+### Changed
+
+- **Releases publish to npm via trusted publishing (GitHub OIDC, #298)** —
+  the release workflow exchanges a GitHub Actions OIDC token for npm
+  credentials and publishes with provenance, dropping the long-lived
+  `NPM_TOKEN` secret entirely. It runs as three least-privilege jobs (verify,
+  publish, GitHub release), and the tarball that passed the gate is the
+  tarball that publishes.
+- Dependabot ignores `minimatch` (the documented ESM-only advisory
+  dismissal) so update runs stop failing daily on an unfixable bump.
+
 ## [1.2.0] - 2026-11-19
 
 ### Added
@@ -205,7 +270,7 @@ This is a direct promotion of `0.3.0-beta.1`, which has been live on npm `latest
 
 - **Constraint metadata no longer leaks across usages of the same type** — the asset-emitter interns one shared schema value per declaration (intrinsics included), and the emitter applied `@doc`/constraints to that shared object in place. A doc on any `unknown`-typed property (e.g. the stdlib's `OperationExample.returnType`, "Example response body.") contaminated every other `unknown` in the document. Property schemas are now cloned before constraints are applied.
 
-- **Template instantiations no longer emit dangling `$ref`s** — `Page<User>` in a property, array, union variant, or operation return type previously emitted an unresolvable `$ref: "#/components/schemas/Page"` (the generic template declaration is never a schema). Speakable instantiations are now declared under stable argument-derived names mirroring the asset-emitter's `declarationName`: `Page<User>` → `PageUser`, `Box<int32>` → `BoxInt32`, `Page<Page<User>>` → `PagePageUser`. Unspeakable instantiations (`Box<{ ... }>`, literal/union arguments) are inlined. `Record<K, V>` instantiations inline as `{ type: "object", additionalProperties }` (no junk `RecordStringUser` declarations). `model X extends Base<{ ... }>` with an unspeakable base now composes via an inline `allOf` schema instead of a dangling `$ref` to the template declaration. Operation returns are now emitted, so `op list(): Page<User>` registers message `PageUser` with `payload: { $ref: "#/components/schemas/PageUser" }`. A named model colliding with an instantiation name (e.g. `model PageUser` + `Page<User>`) emits the new `duplicate-schema-name` warning (last declaration wins). Locked by `test/compliance/template-instantiations.test.ts` (8 tests, all validated against the official AsyncAPI 3.1 JSON Schema).
+- **Template instantiations no longer emit dangling `$ref` pointers** — `Page<User>` in a property, array, union variant, or operation return type previously emitted an unresolvable `$ref: "#/components/schemas/Page"` (the generic template declaration is never a schema). Speakable instantiations are now declared under stable argument-derived names mirroring the asset-emitter's `declarationName`: `Page<User>` → `PageUser`, `Box<int32>` → `BoxInt32`, `Page<Page<User>>` → `PagePageUser`. Unspeakable instantiations (`Box<{ ... }>`, literal/union arguments) are inlined. `Record<K, V>` instantiations inline as `{ type: "object", additionalProperties }` (no junk `RecordStringUser` declarations). `model X extends Base<{ ... }>` with an unspeakable base now composes via an inline `allOf` schema instead of a dangling `$ref` to the template declaration. Operation returns are now emitted, so `op list(): Page<User>` registers message `PageUser` with `payload: { $ref: "#/components/schemas/PageUser" }`. A named model colliding with an instantiation name (e.g. `model PageUser` + `Page<User>`) emits the new `duplicate-schema-name` warning (last declaration wins). Locked by `test/compliance/template-instantiations.test.ts` (8 tests, all validated against the official AsyncAPI 3.1 JSON Schema).
 
 - **`@protocol` config fields now emitted at spec-correct placements** — `partitions`/`replicationFactor` (kafka channel binding, as `partitions`/`replicas`), `consumerGroup` (kafka operation binding `groupId`, emitted as a schema `{ type: "string", const: ... }` per AsyncAPI 3.1), `qos`/`retain` (mqtt operation binding), and `headers`/`queryParams` (ws channel binding, as `headers`/`query`) were previously stored but never emitted. The emitter no longer fabricates default values (partitions=1, consumerGroup="default", sasl credentials) that users never wrote, no longer emits version-only binding shells, and no longer emits bindings at placements the protocol does not define (mqtt/http channel bindings). Raw `binding:` passthrough and unknown top-level config keys route to the operation binding when the protocol has no channel binding (e.g. HTTP). `mqtt5` now normalizes to the `mqtt` binding key.
 
@@ -240,7 +305,7 @@ This is a direct promotion of `0.3.0-beta.1`, which has been live on npm `latest
 - **Test suite typechecked and hardened** — new `tsconfig.test.json` + `pnpm run typecheck:test` (now a `verify` gate stage) took the test suite from never-typechecked to 0 errors, surfacing real bugs: a fake `validateAsyncAPIObjectComprehensive` validator (checked only `asyncapi`+`info` presence) replaced by real AJV via `validateAsyncAPIDocument()`; a no-op severity filter in `studio-compatibility.test.ts` (spectral's `DiagnosticSeverity` is a numeric enum — `=== "error"` never matched); spec-invalid kafka/ws binding fixtures repaired to placement-correct shapes. `protocol-binding-integration.test.ts` now zero-error-diagnostics + whole-document-AJV-validates every spec; `external-specs.test.ts` bare `not.toBeNull()` checks replaced with structural assertions (inheritance `allOf` chains, enum values, union `oneOf` refs, defaults, `Record` mappings); `server.test.ts` protocol coverage derived from `PROTOCOL_LIST` (all 22) plus alias-normalization cases; conflict diagnostics (`conflicting-default-content-type`, `conflicting-api-version`) locked by tests; dead `modelsPerChannel` benchmark option removed.
 
 - **WebSocket/MQTT suite rewritten with real assertions** — `test/domain/protocol-websocket-mqtt.test.ts`: 1515 lines / 50 fake tests (every assertion was only `asyncapi === "3.1.0"`) → 14 real tests locking `websocket`/`wss`/`mqtt5` normalization, exact auto-injected bindingVersions (ws 0.1.0, mqtt 0.2.0), mqtt `qos`/`retain`/`clientId`/`cleanSession`/`keepAlive`, and the ws-channel-only vs mqtt-server/operation/message placement matrix, including the misplacement warning (−1272 lines). (`fded21d`)
-- **Security suites consolidated to spec-exact checks** — five fantasy suites (3208 lines, 81 tests: HOBA/VAPID/AWS-SigV4/MAC/risk-based-auth bearer clones) → 13 AJV-validated tests in `test/domain/security-schemes.test.ts` asserting `in`/`name`/`scheme`/`bearerFormat`/`availableScopes` maps across all four OAuth2 flows, `openIdConnectUrl`, SASL types, X509, and `@operationSecurity` `$ref`s. Also corrected the AGENTS.md claim about `apiKey` locations (AsyncAPI 3.1 `apiKey` allows `in: user|password` only; header/query/cookie is `httpApiKey`). (`c816637`)
+- **Security suites consolidated to spec-exact checks** — five fantasy suites (3208 lines, 81 tests: HOBA/VAPID/AWS-SigV4/MAC/risk-based-auth bearer clones) → 13 AJV-validated tests in `test/domain/security-schemes.test.ts` asserting `in`/`name`/`scheme`/`bearerFormat`/`availableScopes` maps across all four OAuth2 flows, `openIdConnectUrl`, SASL types, X509, and `@operationSecurity` `$ref` pointers. Also corrected the AGENTS.md claim about `apiKey` locations (AsyncAPI 3.1 `apiKey` allows `in: user|password` only; header/query/cookie is `httpApiKey`). (`c816637`)
 - **fast-check property suite** — 6 invariants × 20 seeded runs over randomly generated specs: AJV always passes, consistent constraints, `~1`/`~0`-aware `$ref` resolution, type/const shape, split-schemas graph validity, byte-identical determinism. `FC_SEED` env reproduces counterexamples exactly. (`b2c2a5c`)
 - **asset-emitter containment enforced** — ESLint `no-restricted-imports` bans `@typespec/asset-emitter` in all of `src/` except the three-file schema seam (`schema-generator.ts`, `schema-emitter.ts`, `extract-value.ts`); the 11 document builders are compiler-only by construction. (`8669e9b`)
 

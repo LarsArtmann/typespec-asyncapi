@@ -1,0 +1,51 @@
+# Lighthouse budgets for the website. All assertions start at "warn" so the
+# first CI runs CALIBRATE the scores (AGENTS.md constraint: budgets must be
+# measured, not invented); tighten them to "error" once the baseline is real.
+# Requires no secrets; Chrome is provided by the runner.
+
+name: Lighthouse
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths:
+      - "website/**"
+      - ".github/workflows/lighthouse.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lighthouse-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
+        with:
+          version: latest
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: "24"
+          cache: pnpm
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: latest
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build emitter (website build resolves dist/)
+        run: pnpm run build
+
+      - name: Build website
+        run: pnpm --filter typespec-asyncapi-website run build
+
+      - name: Run Lighthouse CI (warn-only budgets)
+        run: npx --yes @lhci/cli@0.15.x autorun --config=website/lighthouserc.json

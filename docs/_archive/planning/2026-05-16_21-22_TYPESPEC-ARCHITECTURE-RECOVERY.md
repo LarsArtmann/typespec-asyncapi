@@ -242,7 +242,7 @@ After C07-S38, refactor `src/emitter.ts:133-192` from `Effect.runPromise(Effect.
 | C11-S58 | Add securitySchemes to components | 9min | 2 | 1 | 2 | `src/emitter.ts:29-31` | Extend `components` type with `securitySchemes?: Record<string, SecuritySchemeObject>`. | C11-S57 | OPEN |
 | C11-S59 | Read protocolConfigs state | 9min | 2 | 1 | 2 | `src/emitter.ts:148` | Read `protocolConfigs` map for bindings. | C11-S58 | OPEN |
 | C11-S60 | Add protocol bindings to channels | 9min | 2 | 1 | 2 | `src/emitter.ts:51-55` | When building channel object, lookup `protocolConfigs` for target. Add `bindings` property if found. | C11-S59 | OPEN |
-| C11-S61 | Generate $ref patterns for messages | 9min     | 2      | 1      | 2   | `src/emitter.ts:59-70`                   | Link messages in operations via `$ref`to channel messages. Ensure message IDs are properly namespaced under`components.messages`. | C11-S60       | OPEN    |
+| C11-S61 | Generate $ref patterns for messages | 9min     | 2      | 1      | 2   | `src/emitter.ts:59-70`                   | Link messages in operations via `$ref` to channel messages. Ensure message IDs are properly namespaced under `components.messages`. | C11-S60       | OPEN    |
 | C11-S62 | Integration test for full document  | 9min     | 3      | 1      | 3   |`test/integration/full-document.test.ts`| Compile a spec with`@server`,`@publish`,`@security`,`@protocol`. Assert all sections exist in output. | C11-S61 | OPEN |
 
 ### C12: Extract Decorators to Domain Modules (90min → 12 sub-tasks)

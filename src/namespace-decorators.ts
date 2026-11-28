@@ -1,3 +1,4 @@
+import type { Program, Type } from "@typespec/compiler";
 import type {
   DecoratorContext,
   Namespace,
@@ -13,58 +14,58 @@ import { stateSymbols } from "./lib.js";
 import {
   extractConfigRecord,
   isValidUrl,
+  validatedDecorator,
   reportDiagnostic,
   reportUnsupportedProtocol,
-  validateConfig,
   validateNonEmptyString,
 } from "./decorator-helpers.js";
 import { processBindings } from "./validation/binding-validator.js";
 
-export function $server(
+/**
+ * Validate `@server`/`@reusableServer` config. Returns the typed config
+ * record on success, or null after reporting the appropriate diagnostic.
+ */
+function validateServerArgs(
   context: DecoratorContext,
-  target: Namespace | Operation,
+  target: Type,
   name: string,
   config: unknown,
-): void {
-  if (target.kind !== "Namespace") {
-    reportDiagnostic(context, "server-target-invalid", target);
-    return;
+): Record<string, unknown> | null {
+  let typed: Record<string, unknown> | undefined;
+  validatedDecorator(context, target, config, {
+    code: "invalid-server-config",
+    format: { serverName: name },
+    run: () => {
+      typed = config as Record<string, unknown>;
+    },
+  });
+  if (!typed) {
+    return null;
   }
 
-  if (
-    !validateConfig(config, {
-      context,
-      target,
-      diagnosticCode: "invalid-server-config",
-      format: { serverName: name },
-    })
-  ) {
-    return;
-  }
-
-  const configTyped = config as Record<string, unknown>;
+  const configTyped: Record<string, unknown> = typed;
 
   if (!configTyped.url) {
     reportDiagnostic(context, "server-url-required", target);
-    return;
+    return null;
   }
 
   if (!isValidUrl(configTyped.url as string)) {
     reportDiagnostic(context, "invalid-server-url", target, {
       url: configTyped.url,
     });
-    return;
+    return null;
   }
 
   if (!configTyped.protocol) {
     reportDiagnostic(context, "server-protocol-required", target);
-    return;
+    return null;
   }
 
   const protocol = (configTyped.protocol as string).toLowerCase();
   if (!isSupportedProtocol(protocol)) {
     reportUnsupportedProtocol(context, target, protocol);
-    return;
+    return null;
   }
 
   if (
@@ -79,10 +80,52 @@ export function $server(
     reportDiagnostic(context, "invalid-server-config", target, {
       serverName: name,
     });
-    return;
+    return null;
   }
 
-  storeServerConfig(context.program, target, { ...configTyped, name });
+  return configTyped;
+}
+
+export function $server(
+  context: DecoratorContext,
+  target: Namespace | Operation,
+  name: string,
+  config: unknown,
+): void {
+  if (target.kind !== "Namespace") {
+    reportDiagnostic(context, "server-target-invalid", target);
+    return;
+  }
+  withServerConfig(context, name, target, config, storeServerConfig);
+}
+
+export function $reusableServer(
+  context: DecoratorContext,
+  target: Namespace,
+  name: string,
+  config: unknown,
+): void {
+  withServerConfig(context, name, target, config, (program, t, typed) => {
+    storeServerConfig(program, t, typed, true);
+  });
+}
+
+/** Validate server args, then hand the typed config to the target store. */
+function withServerConfig(
+  context: DecoratorContext,
+  name: string,
+  target: Type,
+  config: unknown,
+  store: (
+    program: Program,
+    target: Namespace,
+    typed: Record<string, unknown> & { name: string },
+  ) => void,
+): void {
+  const configTyped = validateServerArgs(context, target, name, config);
+  if (configTyped) {
+    store(context.program, target as Namespace, { ...configTyped, name });
+  }
 }
 
 export function $defaultContentType(

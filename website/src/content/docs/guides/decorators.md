@@ -1,6 +1,6 @@
 ---
 title: Decorators
-description: All 30 decorators — channels, messages, servers, security, bindings, and reusable components.
+description: All 32 decorators — channels, messages, servers, security, bindings, and reusable components.
 head:
   - tag: meta
     attrs:
@@ -32,18 +32,19 @@ Reserved words cannot be keys in `#{}` literals (`model`, `enum`, `default`, ...
 
 ## Core messaging
 
-| Decorator                         | Target    | Purpose                                |
-| --------------------------------- | --------- | -------------------------------------- |
-| `@channel(address, description?)` | Operation | Defines a channel address              |
-| `@publish` / `@subscribe`         | Operation | Marks operation as send / receive      |
-| `@reply(replyModel, address?)`    | Operation | Operation reply with message reference |
+| Decorator                      | Target    | Purpose                                           |
+| ------------------------------ | --------- | ------------------------------------------------- |
+| `@channel(address, id?)`       | Operation | Defines a channel address and optional channel ID |
+| `@publish` / `@subscribe`      | Operation | Marks operation as send / receive                 |
+| `@reply(replyModel, address?)` | Operation | Operation reply with message reference            |
 
 ## Servers
 
-| Decorator                 | Target    | Purpose                                                |
-| ------------------------- | --------- | ------------------------------------------------------ |
-| `@server(name, config)`   | Namespace | Defines server (url, protocol, description, variables) |
-| `@useChannelServer(name)` | Operation | Binds a channel to a specific server                   |
+| Decorator                       | Target    | Purpose                                                                    |
+| ------------------------------- | --------- | -------------------------------------------------------------------------- |
+| `@server(name, config)`         | Namespace | Defines server (url, protocol, description, variables)                     |
+| `@useChannelServer(name)`       | Operation | Binds a channel to a specific server                                       |
+| `@reusableServer(name, config)` | Namespace | Declares `components.servers` entry; `@useChannelServer` resolves it first |
 
 ## Messages
 
@@ -77,14 +78,15 @@ See [Security](/guides/security/) for scheme details.
 
 ## Document metadata
 
-| Decorator                          | Target                                        | Purpose                                                            |
-| ---------------------------------- | --------------------------------------------- | ------------------------------------------------------------------ |
-| `@apiVersion(version)`             | Namespace                                     | Sets `info.version`                                                |
-| `@defaultContentType(type)`        | Namespace                                     | Sets `defaultContentType` on document root                         |
-| `@operationId(id)`                 | Operation                                     | Overrides auto-generated operation key                             |
-| `@jsonSchemaExtension(key, value)` | Model / ModelProperty / Union / Enum / Scalar | Arbitrary JSON Schema keywords, repeatable                         |
-| `@extension(key, value)`           | Namespace / Operation / Model                 | AsyncAPI `x-` spec extensions (root / operation / message objects) |
-| `@tags(value)`                     | Model / Operation / Namespace                 | Tags (strings or rich objects)                                     |
+| Decorator                          | Target                                        | Purpose                                                               |
+| ---------------------------------- | --------------------------------------------- | --------------------------------------------------------------------- |
+| `@externalDocs(url, description?)` | Operation, Model, Namespace                   | Adds an External Documentation Object (Namespace → info.externalDocs) |
+| `@apiVersion(version)`             | Namespace                                     | Sets `info.version`                                                   |
+| `@defaultContentType(type)`        | Namespace                                     | Sets `defaultContentType` on document root                            |
+| `@operationId(id)`                 | Operation                                     | Overrides auto-generated operation key                                |
+| `@jsonSchemaExtension(key, value)` | Model / ModelProperty / Union / Enum / Scalar | Arbitrary JSON Schema keywords, repeatable                            |
+| `@extension(key, value)`           | Namespace / Operation / Model                 | AsyncAPI `x-` spec extensions (root / operation / message objects)    |
+| `@tags(value)`                     | Model / Operation / Namespace                 | Tags (strings or rich objects)                                        |
 
 ## Reusable components
 

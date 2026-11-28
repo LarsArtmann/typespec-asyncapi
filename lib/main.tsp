@@ -95,8 +95,20 @@ extern dec tags(target: Model | Operation | Namespace, value: valueof (string | 
 /**
  * Specify correlation ID configuration
  * @param location Location of the correlation ID (e.g., "$message.header#/correlationId")
+ *
+ * Decorate a Model to set its message correlationId, or an Operation to
+ * apply it to every message that operation references (explicit model-level
+ * correlationIds win).
  */
-extern dec correlationId(target: Model, location: valueof string);
+extern dec correlationId(target: Model | Operation, location: valueof string);
+
+/**
+ * Reference external documentation for a message, operation, or the whole
+ * document (namespace target)
+ * @param url Absolute URL of the external documentation
+ * @param description Optional description of the linked documentation
+ */
+extern dec externalDocs(target: Model | Operation | Namespace, url: valueof string, description?: valueof string);
 
 /**
  * Define protocol bindings (generic)
@@ -206,6 +218,13 @@ extern dec parameter(target: Namespace, name: valueof string, config: {} | value
  * @param location Location path (e.g., "$message.header#/correlationId")
  */
 extern dec reusableCorrelationId(target: Namespace, name: valueof string, location: valueof string);
+
+/**
+ * Define a reusable server in `components.servers`
+ * @param name Server name (used as key in components.servers)
+ * @param config Server configuration object (`#{ url, protocol, ... }`) — same fields as `@server`
+ */
+extern dec reusableServer(target: Namespace, name: valueof string, config: valueof Record<unknown>);
 
 /**
  * Reference a reusable correlation ID by name on a model

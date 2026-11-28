@@ -41,12 +41,13 @@ Push toward complete AsyncAPI 3.1 coverage — every field, every binding, every
 
 Raw ideas:
 
-- Support multi-format schemas (`schemaFormat`, Avro/Protobuf payload) per AsyncAPI 3.1 — allow `@schemaFormat` decorator to set message-level schema format
-- Reusable server definitions (`components.servers`) — `@reusableServer` + `@useServer` pattern matching the reusable binding/trait model
+- ~~Support multi-format schemas (`schemaFormat`, Avro/Protobuf payload)~~ SHIPPED 2026-11-23 (Unreleased): `@message` raw `payload` + `schemaFormat` emit the 3.1 Multi Format Schema Object wrapper; no separate decorator needed
+- ~~Reusable server definitions (`components.servers`)~~ SHIPPED 2026-11-23 (Unreleased): `@reusableServer` + `@useChannelServer` resolution preference
 - Reactive streaming patterns — server-sent events (SSE), WebSocket subprotocol negotiation, Kafka consumer group rebalance semantics
-- Message correlation beyond simple `$ref` location — support `@correlationId` on operations (not just models) for reply correlation
-- AsyncAPI 3.1 `channel.servers` field — bind channels to specific servers from the server list
-- Top-level `defaultContentType` validation — ensure the `@defaultContentType` value is a valid MIME type
+- ~~Message correlation — support `@correlationId` on operations~~ SHIPPED 2026-11-23 (Unreleased): Operation target applies the correlation to every referenced message
+- ~~Top-level `defaultContentType` validation~~ SHIPPED (the MIME regex + `invalid-default-content-type` diagnostic exist; negative tests locked 2026-11-23)
+- Honor `@messageId` when `@publish` supplies `messageType` — publish/subscribe operations reuse the shared message-key resolution
+- ~~Dedicated `@externalDocs` decorator~~ SHIPPED 2026-11-23 (Unreleased): Operation/Model/Namespace targets
 
 ### 2. Developer Experience
 
@@ -58,6 +59,7 @@ Raw ideas:
 - Mixed-program strictness (2.0): remove the namespace-geometry fallback for bare-operation ownership — route-table facts or explicit decoration only (`bare-op-inference-deprecated` is the removal signal)
 - Upstream watch: [microsoft/typespec#12105](https://github.com/microsoft/typespec/issues/12105) (filed 2026-10-03) — verb-less implicit-GET friction in mixed programs; if http adds a warning or changes its fallback, our route-facts and warnings simplify
 - Split `./shared` subpath into neutral (`./shared`) vs AsyncAPI-bound (`./asyncapi`) entry points so neutral consumers pay zero AsyncAPI runtime cost
+- Evaluate knip for the frozen public API surface — detect dead exports behind the semver freeze
 - Document which `@parameter`/`@reusableBinding` config fields are unreachable via TypeSpec `#{}` syntax (`enum`, `const`, and other reserved keywords cannot be property keys in value literals)
 
 ### 3. Architecture
@@ -67,6 +69,9 @@ Keep the codebase honest as it grows.
 Raw ideas:
 
 - Type safety: tighten `OperationObject.action` to required, add `SecurityScheme.description`
+- Type safety: replace the `ProtocolBindings` record with protocol-specific discriminated unions so binding-key/protocol mismatches fail at compile time
+- Type safety: replace the diagnostic `messageId` as-default cast with conditional types or overloads preserving per-code message IDs
+- Type safety: narrow `ParsedAsyncAPIDocument.asyncapi` from `string` to the supported AsyncAPI 3.1 literal
 - Move generic utilities (`applyOverrides`, `collectNamesInto`) to a shared `src/util/` module
 - ~~Property-based testing infrastructure~~ — DONE: fast-check suite (`test/property/emitter-properties.test.ts`, 6 invariants, `FC_SEED` reproduction)
 - ~~TypeSpec 1.14.0 upgrade~~ — DONE: repo now pins `@typespec/compiler` ^1.15.0
@@ -132,6 +137,16 @@ Raw ideas:
   whole near-term commitment.
 
 ---
+
+### 6. Website expansion (raw ideas from the 2026-10-23 overhaul backlog)
+
+- Generated references: decorator reference from `lib/main.tsp`, diagnostics reference from `src/lib.ts`, emitter-option reference from the options interface
+- Explainers: AsyncAPI 3.0 vs 3.1, "TypeSpec vs hand-written YAML", protocol series (Kafka/MQTT/WebSocket)
+- Troubleshooting page keyed by diagnostic code; security/supply-chain page; support/maintenance policy page
+- Glossary/domain-language page; printable one-page cheatsheet; docs IA landing; "Start here" persona paths
+- Versioned docs + version selector; TypeDoc API reference
+- Weekly external-link monitoring; cspell + markdownlint in CI
+- Playground/hero UX ideas: share-permalink (hash-encoded source), engine-load retry with backoff, loading progress with byte size, a fifth intentionally-failing example teaching diagnostics, inline explainer for unsupported-but-valid stdlib imports, decorator-to-line diff affordance
 
 ## Non-Goals
 

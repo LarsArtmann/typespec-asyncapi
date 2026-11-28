@@ -32,9 +32,11 @@ import {
   $parameter,
   $reusableBinding,
   $reusableCorrelationId,
+  $reusableServer,
   $server,
 } from "./namespace-decorators.js";
 import { $extension, $jsonSchemaExtension } from "./extension-decorators.js";
+import { $externalDocs } from "./external-docs-decorator.js";
 import {
   $useBinding,
   $useChannelBinding,
@@ -59,6 +61,7 @@ export const $decorators = {
     operationId: $operationId,
     operationSecurity: $operationSecurity,
     operationTrait: $operationTrait,
+    externalDocs: $externalDocs,
     extension: $extension,
     jsonSchemaExtension: $jsonSchemaExtension,
     parameter: $parameter,
@@ -66,6 +69,7 @@ export const $decorators = {
     publish: $publish,
     reusableBinding: $reusableBinding,
     reusableCorrelationId: $reusableCorrelationId,
+    reusableServer: $reusableServer,
     reply: $reply,
     security: $security,
     server: $server,

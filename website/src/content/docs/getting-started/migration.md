@@ -82,5 +82,5 @@ Review the warnings, fill in unsupported details, and compile with `tsp compile 
 ## Where to go next
 
 - [Examples](/examples/) — working specs for Kafka, MQTT, WebSocket, and reusable components
-- [Decorators](/guides/decorators/) — targets and configuration for all 30 decorators
+- [Decorators](/guides/decorators/) — targets and configuration for all 32 decorators
 - [Diagnostics](/reference/diagnostics/) — every code and how to resolve it

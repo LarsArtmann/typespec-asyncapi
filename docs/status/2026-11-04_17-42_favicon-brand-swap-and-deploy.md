@@ -119,7 +119,7 @@ None of these existed as intentions before this session's discoveries; all are n
 | # | Item | Why / impact |
 | --- | --- | --- |
 | 1 | Apple-touch-icon 180×180 PNG generated via the sharp pipeline + `<link rel="apple-touch-icon">` | The single biggest unticked icon surface (iOS bookmarks/home screen); ADR explicitly lists it as unblocked now |
-| 2 | Multi-size `.ico` fallback (16/32/48) | Safari/legacy-tool coverage; trivial to generate next to `brand-mark.png` |
+| 2 **→ TODO_LIST §Website QA & Brand Follow-ups** | Multi-size `.ico` fallback (16/32/48) | Safari/legacy-tool coverage; trivial to generate next to `brand-mark.png` |
 | 3 | Raster maskable PNGs (192/512) in `manifest.json` | Android install prompts currently rely on SVG `"sizes":"any"`; PNGs are the safe path |
 | 4 | Safari pinned-tab `mask-icon` (+ color) | Last major browser surface with no representation |
 | 5 | Extend `test/unit/brand-assets.test.ts`: favicons byte-match generator; manifest icon entries point at existing files | Gates the wiring; the generator gate only gates bytes |
@@ -131,7 +131,7 @@ None of these existed as intentions before this session's discoveries; all are n
 | 11 | Decide + migrate site accent off `#14b8a6` (needs Q2) | Ends the two-brand-stories split brain; touches `global.css` + `starlight.css` |
 | 12 | Derive the artifact count in the generator; delete hardcoded counts from ADR/README/AGENTS.md | Kills the 3-doc drift trap permanently |
 | 13 | ADR trademark posture decision (needs Q1) | Gates ADR acceptance; favicon now puts derivative marks in every browser tab, which raises the stakes |
-| 14 | ADR npm-surface decision | Last open row; unblocks README/release-checklist work |
+| 14 **→ TODO_LIST §Release (ADR npm-surface row)** | ADR npm-surface decision | Last open row; unblocks README/release-checklist work |
 | 15 | ADR 0002 Status → Accepted (after 13) + add raster-QA evidence reference to Decision 6 | Status currently says "Proposed" while decisions 1–6 are shipped reality |
 | 16 | `scripts/render-favicon-qa.mjs`: committed script rendering 16/32/192 QA PNGs | Makes visual QA repeatable instead of a one-off `node -e` |
 | 17 | Audit + trash `website/public/og.png` (305 KB, Sep 19) if unreferenced; trash empty `screenshots/` | Public-dir hygiene; both suspected legacy ghosts (verify first) |
@@ -150,7 +150,7 @@ None of these existed as intentions before this session's discoveries; all are n
 | 30 | `Logo.astro` id-collision spot-check on pages rendering the mark twice (header + footer) | id-suffix mechanism exists; one grep-level audit confirms no page breaks it |
 | 31 | Dark-tab-bar-only favicon variant (SVG `prefers-color-scheme` media query inside favicon.svg) | Brainstorm: brighter plum on dark tab bars |
 | 32 | OG-card art refresh to the full pipeline lockup (currently compact mark PNG) | Brainstorm: richer social preview |
-| 33 | Favicon manifest `id`/`scope` review for PWA installability score | Brainstorm: Lighthouse pass |
+| 33 **→ TODO_LIST §Website QA & Brand Follow-ups** | Favicon manifest `id`/`scope` review for PWA installability score | Brainstorm: Lighthouse pass |
 | 34 | Add the favicon "composition" row to `assets/brand/README.md` Compositions table (currently only in Files) | Doc completeness |
 | 35 | Consider `sharp`-free rasterization (resvg CLI) to dodge the libstdc++ dance | Brainstorm: simpler QA tooling |
 | 36 | Sweep for other legacy teal hexes site-wide (`#14b8a6`, `#2dd4bf`, `#0f766e` family) | Same split-brain family as #11, enumeration only |

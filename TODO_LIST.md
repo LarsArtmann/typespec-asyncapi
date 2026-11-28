@@ -26,13 +26,62 @@ removal.
   - [x] CHANGELOG 1.0.0 entry (fold `[Unreleased]`) + package.json bump
   - [x] README de-beta-ification + stability statement
   - [x] Tag `v1.0.0` → provenance workflow; fresh-install smoke test
-  - [ ] NPM_TOKEN rotation + update the GitHub publish secret (maintainer;
-        current token still works — the 1.0.0 publish succeeded — but was
-        flagged for rotation before the beta)
-  - [x] ~~Remove the stale `alpha` dist-tag~~ RESOLVED DIFFERENTLY 2026-10-04:
-        all three dist-tags (`latest`/`beta`/`alpha`) were re-pointed at 1.1.0
-        via `npm dist-tag add`; `alpha`/`beta` are now intentional prerelease
-        channels, not stale pointers — nothing to delete.
+  - [ ] ADR npm-surface decision (`docs/adr/0002`): trademark posture + npm
+        package surface — the last open row there; unblocks README and
+        release-checklist work (docs/status/2026-11-04_17-42:134).
+- [ ] Verify the npm package page renders the README `<picture>` logo
+      after the next publish; add a raster fallback if npm strips it
+      (docs/status/2026-11-02_01-20:231).
+- [ ] Provenance verification instructions in the README — how consumers
+      verify sigstore/provenance on the package
+      (docs/status/2026-10-03_13-58:332).
+- [x] Ship 1.2.0 + 1.3.0 through npm STAGED publishing — DONE 2026-11-21 ~06:30 UTC, both approved and live, latest = 1.3.0 (supersedes
+      the "allow direct publish" plan, 2026-11-21 ~03:05; that toggle
+      will NOT be flipped): npm's intended maximum-security model is
+      stage-only — CI runs `npm stage publish` over OIDC
+      (`.github/workflows/release.yml`, rebuilt 2026-11-21), a
+      maintainer approves each staged version with 2FA on npmjs.com,
+      and `.github/workflows/finalize-release.yml` then verifies the
+      version is live, downloads the exact published tarball and
+      creates the GitHub release (idempotent). Fuse: a successful
+      stage publish before 2026-11-23 02:30 UTC validates the
+      trusted-publisher card; otherwise delete + recreate it. Five
+      direct-publish attempts failed (404 before the card existed,
+      then 403 `OIDC permission denied for this action` at
+      02:44/02:52/02:56 UTC); local CLI `npm publish` cannot
+      substitute (EOTP per write, 2FA cannot be delegated). ORDER:
+      stage 1.2.0 from `release/1.2.0` (33dd90d6 = exact v1.2.0 tree +
+      stage workflow; the tag's own workflow still uses the deleted
+      NPM_TOKEN) → approve → stage 1.3.0 from master (`gh workflow run
+release.yml -f dry_run=false`) → approve → `gh workflow run
+finalize-release.yml -f version=1.3.0` (v1.2.0's GitHub release
+      already exists; don't finalize it). Dist-tags DONE 2026-11-21:
+      beta/alpha removed via `npm login` + `npm dist-tag rm`;
+      npmjs.com has NO dist-tag UI. Status comment on #297:
+      issuecomment-7020669604.
+  - [x] Post-publish verification — DONE 2026-11-21: both versions live, SLSA provenance present for each, fresh-install smoke test green (published 1.3.0 compiles + parser-clean), single dist-tag `latest`, v1.3.0 GitHub release Latest with the published tarball, website deployed (original checklist: watch the publish
+        job (five failed direct-publish exercises 2026-11-19→21; now
+        staged — see the staged-release item above), then
+        `npm view @lars-artmann/typespec-asyncapi version` → 1.3.0,
+        provenance attestation on the npm page, fresh-install smoke test
+        (new project, compile, AJV-validate), dist-tags reduced to
+        `latest` only, confirm the prerelease `--tag latest` branch did
+        NOT fire (1.3.0 is stable). The GitHub release is created by
+        `finalize-release.yml` AFTER approval (staged publishing,
+        2026-11-21) — the approved version is fetched with `npm pack`
+        from the registry so the release asset matches the published
+        tarball byte for byte. v1.2.0's release stays as the GitHub-only
+        record of what shipped there.
+        FINALLY deploy the website (`nix run .#deploy-website`): its
+        hero/FAQ/stats already say v1.3.0 and were verified locally, but
+        deploying before the npm publish would advertise a version
+        `npm install` cannot give yet.
+  - [x] ~~Remove the stale `alpha` dist-tag~~ DONE 2026-11-21: all three
+        dist-tags had been re-pointed at 1.1.0 as "intentional prerelease
+        channels", but the owner retired `beta`/`alpha` outright — both
+        were removed with `npm login` (browser 2FA) + `npm dist-tag rm`;
+        an expired local token had made this look UI-only, but npmjs.com
+        has no dist-tag UI at all. `latest` is the only dist-tag.
   - Resolved en route 2026-09-30 (release blockers fixed before the tag):
     Dependabot bumped package.json without regenerating pnpm-lock.yaml
     (frozen-lockfile CI failure), `typescript` had drifted to ^7.0.2
@@ -48,23 +97,50 @@ removal.
       marks it ready; then deep-review the ~2100 lines, including the
       `@typespec/openapi3` as-runtime-dependency decision (question posted on
       the PR 2026-11-19). (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.21)
-- [ ] **CI alerting on daemon-push failures** — master CI ran red for two
-      weeks (2026-11-04→18, jscpd clone in `scripts/generate-brand-assets.ts`)
-      because nobody watches daemon-pushed runs; add a workflow-level
-      notification (e.g. failed-run → issue/notify) or an external watcher.
+- [x] **CI alerting on daemon-push failures** — DONE 2026-11-19:
+      `.github/workflows/ci-alert.yml` (workflow_run on CI/Release) opens or
+      comments on a single `ci-alert`-labeled tracking issue for every failed
+      run (Release failures always alert; CI only on master/main — PR runs
+      stay excluded) and auto-closes it once CI on master is green again. No
+      third-party actions to pin; actionlint clean, heredoc logic dry-run
+      verified locally. **NOT LIVE YET** (verified 21:17 CET): it sits in
+      daemon commits not yet pushed — GitHub's workflow list has no "CI
+      Alert". Once pushed, `workflow_run` only observes runs started AFTER
+      the landing, so the 19:58Z Release failure predates it and will never
+      alert; the first incident after the push is the live-fire test.
       (`docs/status/2026-11-19_07-36_merge-sequence-phase2.md` §f.13)
-- [ ] **Property-test seeds for the new 1.2.0 behaviors** — channel-id
-      (`data.id ?? data.path`) and derived-variant message expansion have no
-      `test/property` generators yet; extend `specArbitrary` in
-      `test/property/emitter-properties.test.ts` (compliance/golden cover them
-      today). (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.32)
-- [ ] **E2E test: `@channel(address, id)` × `split-schemas`** — the channel-ID
-      key flows into `$ref` rewriting; no e2e locks the combination.
+- [x] **Property-test seeds for the new 1.2.0 behaviors** — DONE
+      2026-11-19: `specArbitrary` now generates optional channel IDs
+      (`@channel(address, id)`) and optional discriminated variant families
+      (`@discriminator("kind")` + 2-4 derived models); all six original
+      properties run over the enriched space, and two new invariants lock the
+      behaviors directly: P7 (channel key = `id ?? address`, every ref agrees
+      incl. RFC 6901 token escaping) and P8 (variant expansion: one message
+      per variant, base excluded, payload refs per variant schema).
+      (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.32)
+- [x] **E2E test: `@channel(address, id)` with `split-schemas`** — DONE
+      2026-11-19: `test/e2e/channel-id-split-schemas.test.ts` (6 tests:
+      id-keyed channels, op pairing at a shared id, separation of distinct
+      ids at one address, ref-chain rewriting to external schema files, file
+      emission, YAML flavor).
       (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.33)
-- [ ] (repo: fleet) **Daemon-push CI health sweep** — the same blind spot
-      (auto-commits pushing without a watcher) may exist in other owned repos;
-      one glance per repo at recent master-run conclusions.
+- [x] (repo: fleet) **Daemon-push CI health sweep** — DONE 2026-11-19
+      (agent sweep, 57 active repos): **16 red**, worst: BuildFlow (every
+      gate red across the whole 15-run window — no green in days); nextd,
+      project-dependency-graph, gh-constellation, index, Code-To-CV-Agent,
+      mr-sync, sox-cra, crush-config (gitleaks), pim-sync, blog, CV red
+      12h-1.3d; go-cqrs-lite, dnsblockd, templ-components flipped red within
+      ~2h of the sweep (same daemon blind spot). Follow-up: port
+      `ci-alert.yml` to the red repos (owner call per repo), triage BuildFlow
+      first. This repo's own reds (Release dispatch failure, Dependabot
+      minimatch) are handled in the Release section and below.
       (`docs/status/2026-11-18_23-23_pr-review-sweep-master-red-ci-fix.md` §f.35)
+- [x] **Dependabot `minimatch` failures** — DONE 2026-11-19: Dependabot
+      Updates failed 3x from 12:51Z (new advisory fetch for the documented
+      GHSA-g3hv-75wg-m249 dismissal — only patched minimatch releases are
+      ESM-only, spectral-core is CJS). Added `ignore:
+dependency-name: minimatch` to the root npm updater in
+      `.github/dependabot.yml` with the rationale as a comment.
 
 ## Dependency & Toolchain Refresh (2026-11-04, harvested from the BuildFlow triage session)
 
@@ -114,8 +190,10 @@ What remains is the gated release chain and the tail:
       (NOTICE provenance banner + review ledger ticked; TL;DR asks for an
       implicit-verb warning AND duplicate-operation errors that name the
       operations). Remaining: watch for maintainer response.
-- [ ] **⏰ eslint 10.12.0 bump** — after the 20:08 UTC soak on 2026-10-03;
-      relock, frozen-lockfile proof, quick lint.
+- [x] **⏰ eslint 10.12.0 bump** — SUPERSEDED (2026-11-19): the tree already
+      resolved eslint 10.14.0 (verified via `pnpm why minimatch`), so the
+      10.12.0 window is long gone; eslint rides the "one verified pass"
+      dependency item above if it ever needs a deliberate bump again.
 - [ ] **⏰ After the BuildFlow baseline WIP lands** — remove
       `.bf-jscpd-worktree`, reinstall buildflow from the main URL, verify
       version is not `-dirty`.
@@ -140,7 +218,52 @@ What remains is the gated release chain and the tail:
       markdownlint.
 - [ ] Add `BUILDFLOW_NO_RESULT_CACHE=1` to the CI final-gate job
       (cache-masking defense).
+- [ ] Decide `docs/_archive/` policy — prune/move the archived reports or
+      declare the archive permanent (harvested from the 2026-10-03
+      toolchain-restore + 2026-08-21 phase-1 reports; lychee already
+      excludes archives from link checks, the storage-growth call does not
+      exist yet).
+- [ ] Dependabot: allow-list the `typescript-eslint-eslint` group so its
+      PRs can actually build (other groups create unbuildable PRs)
+      (docs/status/2026-10-23_09-46:58).
+- [ ] Add a `website/video` CI install job — CI never runs `npm ci` there,
+      which let the master lockfile rot for 9 days unnoticed
+      (docs/status/2026-10-23_09-46:103).
+- [ ] Pin pnpm via a file the daemon cannot rewrite — `packageManager`
+      drift was missed by three sessions
+      (docs/status/2026-10-23_09-46:104).
+- [ ] Retire `tsx` remnants: swap the typecheck runner to plain `tsc`
+      (docs/status/2026-10-23_09-46:125).
+- [ ] Remove the dead `messageSchemas` state symbol — declared at `src/lib.ts:245,293`,
+      referenced nowhere else (docs/status/2026-07-22_05-58:180).
 - [ ] Trash `scripts/ns-test/` (113-byte scratch, not referenced; owner call).
+- [ ] Dependabot automerge policy decision — enable green-CI + gates
+      automerge for minor/patch + security groups, majors stay manual
+      (docs/status/2026-11-01_23-58:73).
+- [ ] CI gate: `pnpm audit` on the root workspace (currently manual only;
+      the one advisory is the documented minimatch dismissal)
+      (docs/status/2026-11-01_23-58:72).
+- [ ] CI check: fail when the lockfile's embedded root manifest disagrees
+      with `package.json` — the drift class that bit twice
+      (docs/status/2026-11-01_23-58:74).
+- [ ] Scheduled `pnpm outdated` report workflow so bumps arrive in batches
+      (docs/status/2026-11-01_23-58:75).
+- [ ] Branch protection review — direct master pushes are possible; decide
+      if that stays (docs/status/2026-11-01_23-58:76).
+- [ ] Revisit `website/video` npm overrides on every hyperframes bump —
+      floor pins can mask or conflict with newer trees
+      (docs/status/2026-11-01_23-58:64).
+- [ ] Refresh CONTRIBUTING.md commands/testing guidance from Bun/bun:test
+      to pnpm + Vitest (Bun stays for coverage)
+      (docs/status/2026-07-22_03-46:267).
+- [ ] Add an unknown-payload runnable example documenting the
+      unconstrained-schema semantics (docs/status/2026-08-22_00-17:99).
+- [ ] Refresh ROADMAP to the current era — Current State exists but no
+      1.2.0-era mentions yet; upstream-watch section references #12105
+      (docs/status/2026-10-03_16-48:53,128).
+- [ ] github-voice skill: add the `test -s body` non-empty guard step to
+      the posting procedure (repo: crush-config)
+      (docs/status/2026-10-03_16-48:134).
 - [ ] Decide `global.out.css` policy (11-20 report g)3).
 - [ ] Harmonize AGENTS pin wording (`^6.0.3` prose vs exact `6.0.3` manifest).
 - [ ] Note or upstream: website `@astrojs/check` wants TS `^5||^6` while
@@ -149,6 +272,113 @@ What remains is the gated release chain and the tail:
       (pnpm-update manifest drift); consider a daemon/preflight guard.
 - [ ] Consider checkbox templates for ⏰ items so reports aren't the reminder
       system.
+      ~~- [ ] Docs corpus sweep (2026-11-19): 272 unharvested open items across 99
+      reports in `docs/status/` — harvest into TODO_LIST/ROADMAP or annotate
+      resolved (docs-health ANNOTATE ritual), then archive per cadence
+      thresholds (15 reports / 21 days, currently 99 / oldest 128d).
+      `audit_max: 267` in `.docs-gates.json` is the ratchet pin (ratcheted
+      from 272 the moment this row landed): NEVER raise it; every future item
+      gets an inline verdict or a TODO_LIST/ROADMAP row, and the pin steps
+      down as the corpus drains. Source: `docs-gates freshness . --audit-all`
+      evidence.~~ done — the sweep ran 2026-11-19/20: 88 reports annotated item-by-item (every hash judge-verified), archived to `docs/status/archived/` with Live-remainder banners, audit_max ratcheted 267 → 11, full battery PASS
+      reports in `docs/status/` — harvest into TODO_LIST/ROADMAP or annotate
+      resolved (docs-health ANNOTATE ritual), then archive per cadence
+      thresholds (15 reports / 21 days, currently 99 / oldest 128d).
+      `audit_max: 267` in `.docs-gates.json` is the ratchet pin (ratcheted
+      from 272 the moment this row landed): NEVER raise it; every future item
+      gets an inline verdict or a TODO_LIST/ROADMAP row, and the pin steps
+      down as the corpus drains. Source: `docs-gates freshness . --audit-all`
+      evidence.
+- [ ] Bump `go-finding` to v1.15.1 in `md-go-validator`'s flake.nix (repo:
+      md-go-validator — the `ref = "v1.14.0"` pin lives THERE, so
+      `nix flake update` here cannot move `website/flake.lock`'s 45-day-old
+      `go-finding-src` follow; v1.15.0/v1.15.1 tags exist upstream, verified
+      via `git ls-remote` 2026-11-19). Release md-go-validator, then
+      `nix flake update md-go-validator` here + `nix flake check` both sides.
+- [ ] CI tripwire: fail when `minimumReleaseAgeExclude` gains entries; add
+      `tmp-*.test.ts` to `.gitignore` (scratch tests must not be committable)
+      (docs/status/2026-11-02_12-09:156).
+- [ ] Replace the typed test counts in `FEATURES.md`/`ROADMAP.md` (stale at 1275) with a derived stat like `stats.ts`
+      (docs/status/2026-11-02_12-09:166).
+- [ ] Refresh `website/video` storyboard `270+` copy and the
+      `04-receipt.html` counter (docs/status/2026-11-02_12-09:160).
+- [ ] Clean the dead `~/.npmrc` auth token line on the local machine
+      (expired NPM_TOKEN remnant; the npmjs.com secret was deleted
+      2026-11-19) (docs/status/2026-11-19_20-38:266).
+- [ ] (repo: SKILLS) docs-health: add a writer-claims protocol to the
+      sweep PROTOCOL template so parallel annotators never double-annotate
+      (docs/status/2026-11-20_22-19:101).
+- [ ] (repo: SKILLS) docs-gates: when annotate.go gains a dense-line mode,
+      review the three dense-prose hand-rejoins in the archived corpus
+      (docs/status/2026-11-20_22-19:119).
+
+## Website QA & Brand Follow-ups (harvested 2026-11-19 from kept status reports)
+
+- [ ] Screenshot `/` at 1440 / 768 / 390 and store as review artefacts
+      (docs/status/2026-11-02_12-09:118).
+- [ ] Test the copy-button path with a mocked clipboard
+      (docs/status/2026-11-02_12-09:129).
+- [ ] Verify the playground overlay editor in Safari/Firefox
+      (scrollbar-width support, scroll sync)
+      (docs/status/2026-11-04_00-04:117).
+- [ ] Document the `faq.mdx` MDX exception where the docs conventions live
+      (docs/status/2026-11-02_12-09:169).
+- [ ] Generate a multi-size `.ico` fallback (16/32/48) next to
+      `brand-mark.png` — Safari/legacy-tool coverage
+      (docs/status/2026-11-04_17-42:122).
+- [ ] Review favicon manifest `id`/`scope` for PWA installability score
+      (Lighthouse pass) (docs/status/2026-11-04_17-42:153).
+- [ ] Calibrate Lighthouse budgets to measured scores and flip
+      `website/lighthouserc.json` assertions from warn to error (the first
+      CI runs calibrate; local NixOS shells have no Chrome)
+      (docs/status/2026-10-23_12-00:246).
+- [ ] Verify the Playwright smoke suite green on its first CI run (specs
+      landing + JSON-LD + copy written; local NixOS shells cannot launch the
+      bundled Chromium) (docs/status/2026-10-23_12-00:244).
+- [ ] JSON-LD remaining scope: TechArticle + BreadcrumbList on docs pages
+      (FAQPage and HowTo shipped 2026-11-23)
+      (docs/status/2026-10-23_12-00:251-253).
+- [ ] Compress `public/og.png` and audit icon weights
+      (docs/status/2026-10-23_12-00:254).
+- [ ] Package-manager tabs on install snippets
+      (docs/status/2026-10-23_12-00:260).
+- [ ] "Copy page as Markdown" button (docs/status/2026-10-23_12-00:261).
+- [ ] "Was this page helpful?" widget opening a prefilled issue
+      (docs/status/2026-10-23_12-00:262).
+- [ ] Reduce llms.txt anchor noise — "Section titled" spam in the llms
+      output; try starlight-llms-txt `customSelectors`
+      (docs/status/2026-10-23_14-13:206).
+- [ ] Visual QA of `guides/mixing-with-openapi` in a real browser; fix
+      rendering/analytics gaps (docs/status/2026-10-03_13-58:261).
+- [ ] og:image / social card refresh for the new guide (fleet review
+      follow-up) (docs/status/2026-10-03_13-58:268).
+- [ ] CI deploy workflow for the website (Phase 7 build+deploy,
+      FIREBASE_SERVICE_ACCOUNT secret) — needs a Lars decision
+      (docs/status/2026-10-04_03-00:96).
+- [ ] /guides index still 404s — add an overview page or redirect
+      (design call open) (docs/status/2026-10-04_03-00:67).
+- [ ] Update `website/README.md` pages/ listing: drop the manual llms.txt
+      endpoints line, document `starlight-llms-txt` plugin generation
+      (docs/status/2026-10-23_14-13:215).
+- [ ] Spectral runtime proof: run `spectral lint` (CLI >= 6.17.0, extends
+      `spectral:asyncapi`) against an emitted 3.1.0 document and date-stamp
+      the result in the AGENTS.md gotcha
+      (docs/status/2026-11-03_23-45:126).
+- [ ] Decide + reconcile the "Spectral, at best" comparison copy across the
+      landing row, ComparisonSection, and the demo-video captures (schema
+      validation parity concession vs workflow framing; one commit)
+      (docs/status/2026-11-03_23-45:127).
+- [ ] Deploy observability: `scripts/check-live-headers.mjs` asserting status +
+      `Cache-Control` + one content marker per URL class (`/`, `/faq/`,
+      `/_astro/*`, `/js/*.js`, `/playground/engine.js`), wired as the final
+      deploy step (docs/status/2026-11-02_12-09:106).
+- [ ] Hero contract tests: adversarial highlighter fixtures (quoted keys,
+      `#` inside strings, block scalars) and a DOM test that
+      `data-copy-target` text equals `heroAsyncAPI`
+      (docs/status/2026-11-02_12-09:146).
+- [ ] Document the hero-fixture generate-and-lock rule in
+      `website/README.md` contribute-a-sample workflow
+      (docs/status/2026-11-02_12-09:168).
 
 ## Test-Suite Integrity (residual)
 
@@ -157,6 +387,36 @@ What remains is the gated release chain and the tail:
       unions of models, inheritance, generics, and channel parameters are
       still only covered by the compliance suite. Consider extending
       `specArbitrary` in `test/property/emitter-properties.test.ts`.
+- [ ] Negative-proof pass for e2e + P7/P8: mutate one expectation, see red
+      (docs/status/2026-11-19_21-17:183).
+- [ ] Order-asserting variant for P8 (or document the suite is
+      sorted-by-design) (docs/status/2026-11-19_21-17:184).
+- [ ] Watch the coverage-average trend (96.9% and drifting)
+      (docs/status/2026-11-19_21-17:189).
+- [ ] Intrinsic-output hardening tests: golden lock for unknown/nullable
+      unions, e2e never/void mapping tests, AJV negative `type: null` tests
+      (docs/status/2026-08-22_00-17:85-93).
+- [ ] Lock the diagnostic-code count with a unit test — `src/lib.ts`
+      diagnostics registry otherwise grows silently
+      (docs/status/2026-10-03_13-58:243).
+- [ ] Type-mapping tests for enum arrays (`Status[]`) plus `Map<T>` /
+      `Set<T>` stdlib shapes — none in
+      `test/compliance/type-mapping-completeness.test.ts`
+      (docs/status/2026-08-06_20-06:240).
+- [ ] End-to-end test importing `@lars-artmann/typespec-asyncapi/shared`
+      from built `dist/` via the package exports map — current tests
+      import from `src/` only (docs/status/2026-08-05_18-14:74).
+- [ ] Extend the mixed-ownership property suite to cover the http-route
+      fallback path (docs/status/2026-10-03_13-58:281).
+- [ ] Integration test running BOTH emitters' outputs through AJV in one
+      program (docs/status/2026-10-03_13-58:284).
+- [ ] Negative tests for `@operationId`/`@messageId` empty strings and
+      invalid special characters (docs/status/2026-07-22_20-09:140).
+- [ ] Consolidate duplicated compileAndGetDoc-style helpers into one
+      shared test utility (docs/status/2026-07-22_17-57:93).
+- [ ] Audit all `extractValue`/`refOrFallback` consumers for in-place
+      mutation of framework-interned schemas
+      (docs/status/2026-08-22_00-17:73).
 - [ ] Root-cause the transient `bun test` / vitest exit-with-zero-failures
       (suspected worker/coverage race; last observed 2026-09-13 once in
       `vitest run test/golden/` — immediate re-run passed). The defensive
@@ -169,6 +429,8 @@ What remains is the gated release chain and the tail:
       after restart in some sessions; `test/tsconfig.json` (added 2026-09-13)
       scopes tsserver correctly for workspace editors — trust
       `tsc -p tsconfig.test.json` meanwhile (see AGENTS.md).
+- [ ] CI: add the nix/treefmt format check — the 2026-11-18 session's
+      format debt was invisible to CI (docs/status/2026-11-19_20-38:240).
 
 ## Release Hardening (harvested 2026-09-30 from post-1.0 status report)
 

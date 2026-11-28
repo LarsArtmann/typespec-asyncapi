@@ -426,7 +426,7 @@ Run all commands inside `nix develop .#default` to get the right toolchain (pnpm
 
 ### Releasing
 
-Releases are published automatically by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a `v*` tag runs the full `pnpm run verify` gate (build, lint, 1236 tests, coverage ≥ 75%/file, zero code clones) and then publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements) attestation.
+Releases are published automatically by [`.github/workflows/release.yml`](.github/workflows/release.yml): pushing a `v*` tag runs the full `pnpm run verify` gate (build, lint, 1236 tests, coverage ≥ 75%/file, zero code clones) and then publishes to npm with [provenance](https://docs.npmjs.com/generating-provenance-statements) attestation. After npm publishing succeeds, the workflow creates the GitHub Release and attaches the same tarball as `typespec-asyncapi.tgz`.
 
 ```bash
 # bump version in package.json and update CHANGELOG.md first
@@ -434,7 +434,7 @@ git tag -m "v1.0.0" v1.0.0
 git push origin v1.0.0
 ```
 
-The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publish --dry-run`, no upload). The `NPM_TOKEN` secret must be a granular access token with publish rights for this package.
+The workflow also supports `workflow_dispatch` for dry runs (verify + `npm publish --dry-run`, no upload or publish credentials). Real releases pass the verified npm tarball to a separate [trusted publishing](https://docs.npmjs.com/trusted-publishers/#for-github-actions) job. Only that job gets GitHub Actions OIDC permission, and only the GitHub Release job gets repository write permission. In the npm package settings, authorize `LarsArtmann/typespec-asyncapi` with workflow filename `release.yml` and allow direct `npm publish`.
 
 ## Status
 
