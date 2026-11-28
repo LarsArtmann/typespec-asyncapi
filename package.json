@@ -50,6 +50,9 @@
   ],
   "type": "module",
   "sideEffects": false,
+  "bin": {
+    "tsp-asyncapi": "dist/src/importer/cli.js"
+  },
   "main": "dist/src/index.js",
   "types": "dist/src/index.d.ts",
   "exports": {
@@ -77,7 +80,7 @@
     "clean:test": "trash tsp-test tsp-output test-output @lars-artmann output 2>/dev/null || true",
     "pretest": "pnpm run clean:test && pnpm run build",
     "test": "vitest run",
-    "test:watch": "vitest",
+    "test:watch": "pnpm run build && vitest",
     "test:coverage": "pnpm run build && rm -rf coverage && bun run scripts/coverage-run.ts",
     "test:coverage:gate": "pnpm run test:coverage && bun run scripts/coverage-gate.ts",
     "test:validation": "pnpm run build && vitest run test/critical-validation.test.ts test/all-generated-specs-validation.test.ts",
@@ -142,7 +145,13 @@
   "peerDependencies": {
     "@typespec/asset-emitter": "^0.79.3",
     "@typespec/compiler": "^1.17.0",
+    "@typespec/openapi3": "^1.17.0",
     "@typespec/versioning": "^0.87.0"
+  },
+  "peerDependenciesMeta": {
+    "@typespec/openapi3": {
+      "optional": true
+    }
   },
   "overrides": {
     "@asyncapi/specs": "6.11.1",

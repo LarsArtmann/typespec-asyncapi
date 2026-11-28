@@ -70,7 +70,7 @@ The TypeSpec compiler itself runs on Node.js. The emitter is plain ESM and has n
 
 ## Can I keep my existing AsyncAPI YAML?
 
-Yes, as a reference while you migrate. There is no importer: model the same channels and messages in TypeSpec, then compare the emitted document to your hand-written one. [Migration guide](/getting-started/migration/).
+Yes. The `tsp-asyncapi` importer generates TypeSpec from supported parts of local AsyncAPI 3.1 YAML and JSON files. Review any import warnings and compare the emitted document with the original. [Migration guide](/getting-started/migration/).
 
 ## How do I version the emitted document?
 
